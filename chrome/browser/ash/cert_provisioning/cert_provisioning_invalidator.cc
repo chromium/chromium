@@ -234,6 +234,11 @@ CertProvisioningDeviceInvalidator::CertProvisioningDeviceInvalidator(
 }
 
 CertProvisioningDeviceInvalidator::~CertProvisioningDeviceInvalidator() {
+  // As mentioned in the class-level comment, this intentionally doesn't call
+  // Unregister so that a subscription can be preserved across process restarts.
+  //
+  // Note that it is OK to call this even if this instance has not called
+  // RegisterConsumer yet.
   service_provider_->UnregisterConsumer(this);
 }
 
@@ -241,6 +246,7 @@ void CertProvisioningDeviceInvalidator::Register(
     const invalidation::Topic& topic,
     OnInvalidationCallback on_invalidation_callback) {
   topic_ = topic;
+  DCHECK(!topic_.empty());
   on_invalidation_callback_ = std::move(on_invalidation_callback);
   service_provider_->RegisterConsumer(this);
 }
@@ -248,12 +254,20 @@ void CertProvisioningDeviceInvalidator::Register(
 void CertProvisioningDeviceInvalidator::Unregister() {
   service_provider_->UnregisterConsumer(this);
   CertProvisioningInvalidator::Unregister();
+  topic_.clear();
 }
 
 void CertProvisioningDeviceInvalidator::OnInvalidationServiceSet(
     invalidation::InvalidationService* invalidation_service) {
+  // This can only be called after Register() has been called, so the `topic_`
+  // must be non-empty.
+  DCHECK(!topic_.empty());
+
+  // Reset any previously active `invalidation_handler` as it could be referring
+  // to the previous `invalidation_service`.
+  invalidation_handler_.reset();
+
   if (!invalidation_service) {
-    invalidation_handler_.reset();
     return;
   }
 
