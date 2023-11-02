@@ -178,7 +178,7 @@ class AutofillProfile : public AutofillDataModel {
   // in the comparison. Usage metadata (use count, use date, modification date)
   // are NOT compared.
   bool operator==(const AutofillProfile& profile) const;
-  virtual bool operator!=(const AutofillProfile& profile) const;
+  bool operator!=(const AutofillProfile& profile) const;
 
   // Tests that for every supported type of AutofillProfile, the values of
   // `this` and `profile` either agree or the value of `*this` is empty (meaning
