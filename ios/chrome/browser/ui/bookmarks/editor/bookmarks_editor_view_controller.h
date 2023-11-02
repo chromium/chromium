@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_consumer.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
@@ -19,7 +19,8 @@
 // accordingly depending on whether the bookmark and folder it is editing
 // changes underneath it.
 @interface BookmarksEditorViewController
-    : ChromeTableViewController <BookmarksEditorConsumer, KeyCommandActions>
+    : LegacyChromeTableViewController <BookmarksEditorConsumer,
+                                       KeyCommandActions>
 
 @property(nonatomic, weak) id<BookmarksEditorViewControllerDelegate> delegate;
 // Cancel button item in navigation bar.

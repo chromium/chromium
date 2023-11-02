@@ -163,7 +163,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   self.viewDidScroll = YES;
 }
 
-#pragma mark - ChromeTableViewController
+#pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {
   [super loadModel];

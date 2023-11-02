@@ -7,12 +7,12 @@
 
 #import <vector>
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_constants.h"
 
 @protocol BulkUploadMutator;
 
-@interface BulkUploadTableViewController : ChromeTableViewController
+@interface BulkUploadTableViewController : LegacyChromeTableViewController
 
 @property(nonatomic, weak) id<BulkUploadMutator> mutator;
 

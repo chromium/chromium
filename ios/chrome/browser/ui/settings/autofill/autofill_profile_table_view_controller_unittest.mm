@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/ui/settings/personal_data_manager_finished_profile_tasks_waiter.h"
@@ -31,7 +31,7 @@
 namespace {
 
 class AutofillProfileTableViewControllerTest
-    : public ChromeTableViewControllerTest {
+    : public LegacyChromeTableViewControllerTest {
  protected:
   AutofillProfileTableViewControllerTest() {
     TestChromeBrowserState::Builder test_cbs_builder;
@@ -57,7 +57,7 @@ class AutofillProfileTableViewControllerTest
         ->SetSyncServiceForTest(nullptr);
   }
 
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     return [[AutofillProfileTableViewController alloc]
         initWithBrowser:browser_.get()];
   }
@@ -65,7 +65,7 @@ class AutofillProfileTableViewControllerTest
   void TearDown() override {
     [base::apple::ObjCCastStrict<AutofillProfileTableViewController>(
         controller()) settingsWillBeDismissed];
-    ChromeTableViewControllerTest::TearDown();
+    LegacyChromeTableViewControllerTest::TearDown();
   }
 
   void AddProfile(const std::string& name, const std::string& address) {
@@ -94,8 +94,8 @@ class AutofillProfileTableViewControllerTest
 
 // Default test case of no addresses.
 TEST_F(AutofillProfileTableViewControllerTest, TestInitialization) {
-  ChromeTableViewController* controller =
-      ChromeTableViewControllerTest::controller();
+  LegacyChromeTableViewController* controller =
+      LegacyChromeTableViewControllerTest::controller();
   CheckController();
 
   // Expect only the header section.

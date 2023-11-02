@@ -2,32 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CHROME_TABLE_VIEW_CONTROLLER_TEST_H_
-#define IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CHROME_TABLE_VIEW_CONTROLLER_TEST_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_LEGACY_CHROME_TABLE_VIEW_CONTROLLER_TEST_H_
+#define IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_LEGACY_CHROME_TABLE_VIEW_CONTROLLER_TEST_H_
 
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
 #import "ios/chrome/test/block_cleanup_test.h"
 
-@class ChromeTableViewController;
+@class LegacyChromeTableViewController;
 
-class ChromeTableViewControllerTest : public BlockCleanupTest {
+class LegacyChromeTableViewControllerTest : public BlockCleanupTest {
  public:
-  ChromeTableViewControllerTest();
-  ~ChromeTableViewControllerTest() override;
+  LegacyChromeTableViewControllerTest();
+  ~LegacyChromeTableViewControllerTest() override;
 
  protected:
   void TearDown() override;
 
   // Derived classes allocate their controller here.
-  virtual ChromeTableViewController* InstantiateController() = 0;
+  virtual LegacyChromeTableViewController* InstantiateController() = 0;
 
   // Tests should call this function to create their controller for testing.
   void CreateController();
 
   // Will call CreateController() if `controller_` is nil.
-  ChromeTableViewController* controller();
+  LegacyChromeTableViewController* controller();
 
   // Deletes the controller.
   void ResetController();
@@ -161,7 +161,7 @@ class ChromeTableViewControllerTest : public BlockCleanupTest {
   void DeleteItem(int section, int item, ProceduralBlock completion_block);
 
  private:
-  ChromeTableViewController* controller_;
+  LegacyChromeTableViewController* controller_;
 };
 
-#endif  // IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CHROME_TABLE_VIEW_CONTROLLER_TEST_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_LEGACY_CHROME_TABLE_VIEW_CONTROLLER_TEST_H_

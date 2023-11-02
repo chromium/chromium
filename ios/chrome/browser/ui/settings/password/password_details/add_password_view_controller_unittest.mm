@@ -16,7 +16,7 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
@@ -94,7 +94,8 @@ constexpr char kPassword[] = "test";
 @end
 
 // Unit tests for PasswordIssuesTableViewController.
-class AddPasswordViewControllerTest : public ChromeTableViewControllerTest {
+class AddPasswordViewControllerTest
+    : public LegacyChromeTableViewControllerTest {
  protected:
   AddPasswordViewControllerTest() {
     feature_list_.InitWithFeatures(
@@ -109,7 +110,7 @@ class AddPasswordViewControllerTest : public ChromeTableViewControllerTest {
     mock_reauthentication_module_.shouldReturnSynchronously = NO;
   }
 
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     AddPasswordViewController* controller =
         [[AddPasswordViewController alloc] init];
     controller.delegate = delegate_;

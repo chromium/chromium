@@ -107,7 +107,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return cellToReturn;
 }
 
-#pragma mark - ChromeTableViewController
+#pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {
   [super loadModel];

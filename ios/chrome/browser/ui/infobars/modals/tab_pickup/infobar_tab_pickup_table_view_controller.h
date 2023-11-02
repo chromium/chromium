@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_TAB_PICKUP_INFOBAR_TAB_PICKUP_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_TAB_PICKUP_INFOBAR_TAB_PICKUP_TABLE_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/infobars/modals/tab_pickup/infobar_tab_pickup_consumer.h"
 
 @protocol InfobarModalDelegate;
@@ -13,7 +13,7 @@
 
 // Controller for the UI that allows the user to update tab pickup modal.
 @interface InfobarTabPickupTableViewController
-    : ChromeTableViewController <InfobarTabPickupConsumer>
+    : LegacyChromeTableViewController <InfobarTabPickupConsumer>
 
 // The delegate receives events related to this view controller.
 @property(nonatomic, weak)

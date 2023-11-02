@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_INFOBAR_PASSWORD_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_INFOBAR_PASSWORD_TABLE_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 
 #import "ios/chrome/browser/infobars/infobar_type.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_password_modal_consumer.h"
@@ -15,7 +15,7 @@
 // InfobarPasswordTableViewController represents the content for the Passwords
 // InfobarModal.
 @interface InfobarPasswordTableViewController
-    : ChromeTableViewController <InfobarPasswordModalConsumer>
+    : LegacyChromeTableViewController <InfobarPasswordModalConsumer>
 
 - (instancetype)initWithDelegate:(id<InfobarPasswordModalDelegate>)modalDelegate
                             type:(InfobarType)infobarType

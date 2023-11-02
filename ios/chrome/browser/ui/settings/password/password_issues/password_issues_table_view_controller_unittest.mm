@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issue.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_consumer.h"
@@ -116,13 +116,13 @@ CrURL* GetHeaderURL() {
 
 // Unit tests for PasswordIssuesTableViewController.
 class PasswordIssuesTableViewControllerTest
-    : public ChromeTableViewControllerTest {
+    : public LegacyChromeTableViewControllerTest {
  protected:
   PasswordIssuesTableViewControllerTest() {
     presenter_ = [[FakePasswordIssuesPresenter alloc] init];
   }
 
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     PasswordIssuesTableViewController* controller =
         [[PasswordIssuesTableViewController alloc]
             initWithWarningType:password_manager::WarningType::

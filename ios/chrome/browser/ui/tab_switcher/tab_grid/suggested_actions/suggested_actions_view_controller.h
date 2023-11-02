@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_SUGGESTED_ACTIONS_SUGGESTED_ACTIONS_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_SUGGESTED_ACTIONS_SUGGESTED_ACTIONS_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 
 @protocol SuggestedActionsDelegate;
 @class SuggestedActionsViewController;
@@ -32,7 +32,7 @@
 // SuggestedActionsViewController represents the suggestions will appear on
 // the tab grid to extend the users search journey beyond the current active
 // page of the tab grid.
-@interface SuggestedActionsViewController : ChromeTableViewController
+@interface SuggestedActionsViewController : LegacyChromeTableViewController
 
 - (instancetype)initWithDelegate:
     (id<SuggestedActionsViewControllerDelegate>)delegate

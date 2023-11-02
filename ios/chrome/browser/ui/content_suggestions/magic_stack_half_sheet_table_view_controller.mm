@@ -113,7 +113,7 @@ enum ItemType : NSInteger {
   _parcelTrackingToggle.on = !_parcelTrackingDisabled;
 }
 
-#pragma mark - ChromeTableViewController
+#pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {
   [super loadModel];

@@ -140,7 +140,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.navigationController.toolbarHidden = NO;
 }
 
-#pragma mark - ChromeTableViewController
+#pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {
   [super loadModel];

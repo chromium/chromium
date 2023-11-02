@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
@@ -57,11 +57,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeFooBar = kItemTypeEnumZero,
 };
 
-using ChromeTableViewControllerTest = PlatformTest;
+using LegacyChromeTableViewControllerTest = PlatformTest;
 
-TEST_F(ChromeTableViewControllerTest, CellForItemAtIndexPath) {
-  ChromeTableViewController* controller =
-      [[ChromeTableViewController alloc] initWithStyle:UITableViewStylePlain];
+TEST_F(LegacyChromeTableViewControllerTest, CellForItemAtIndexPath) {
+  LegacyChromeTableViewController* controller =
+      [[LegacyChromeTableViewController alloc]
+          initWithStyle:UITableViewStylePlain];
   [controller loadModel];
 
   [[controller tableViewModel] addSectionWithIdentifier:SectionIdentifierFoo];
@@ -76,9 +77,10 @@ TEST_F(ChromeTableViewControllerTest, CellForItemAtIndexPath) {
   EXPECT_EQ(YES, [someItem configureCellCalled]);
 }
 
-TEST_F(ChromeTableViewControllerTest, HeaderForItemAtSection) {
-  ChromeTableViewController* controller =
-      [[ChromeTableViewController alloc] initWithStyle:UITableViewStylePlain];
+TEST_F(LegacyChromeTableViewControllerTest, HeaderForItemAtSection) {
+  LegacyChromeTableViewController* controller =
+      [[LegacyChromeTableViewController alloc]
+          initWithStyle:UITableViewStylePlain];
   [controller loadModel];
 
   [[controller tableViewModel] addSectionWithIdentifier:SectionIdentifierFoo];
@@ -92,9 +94,10 @@ TEST_F(ChromeTableViewControllerTest, HeaderForItemAtSection) {
   EXPECT_EQ(YES, [headerItem configureHeaderFooterViewCalled]);
 }
 
-TEST_F(ChromeTableViewControllerTest, FooterForItemAtSection) {
-  ChromeTableViewController* controller =
-      [[ChromeTableViewController alloc] initWithStyle:UITableViewStylePlain];
+TEST_F(LegacyChromeTableViewControllerTest, FooterForItemAtSection) {
+  LegacyChromeTableViewController* controller =
+      [[LegacyChromeTableViewController alloc]
+          initWithStyle:UITableViewStylePlain];
   [controller loadModel];
 
   [[controller tableViewModel] addSectionWithIdentifier:SectionIdentifierFoo];

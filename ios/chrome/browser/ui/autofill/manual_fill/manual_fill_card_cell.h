@@ -13,7 +13,7 @@
 @protocol CardListDelegate;
 @protocol ManualFillContentInjector;
 
-// Wrapper to show card cells in a ChromeTableViewController.
+// Wrapper to show card cells in a LegacyChromeTableViewController.
 @interface ManualFillCardItem : TableViewItem
 
 - (instancetype)initWithCreditCard:(ManualFillCreditCard*)card

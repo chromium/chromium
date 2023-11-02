@@ -201,7 +201,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   }
 }
 
-#pragma mark - ChromeTableViewController
+#pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {
   [super loadModel];

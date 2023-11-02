@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 
 enum class ParcelType;
 @class ParcelTrackingItem;
@@ -24,7 +24,7 @@ enum class ParcelType;
 
 // Presents a list of tracked parcels.
 @interface MagicStackParcelListHalfSheetTableViewController
-    : ChromeTableViewController
+    : LegacyChromeTableViewController
 
 // Delegate for this ViewController.
 @property(nonatomic, weak)

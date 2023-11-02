@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/settings/personal_data_manager_finished_profile_tasks_waiter.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -24,7 +24,7 @@
 namespace {
 
 class AutofillCreditCardTableViewControllerTest
-    : public ChromeTableViewControllerTest {
+    : public LegacyChromeTableViewControllerTest {
  protected:
   AutofillCreditCardTableViewControllerTest() {
     TestChromeBrowserState::Builder test_cbs_builder;
@@ -43,7 +43,7 @@ class AutofillCreditCardTableViewControllerTest
         ->SetSyncServiceForTest(nullptr);
   }
 
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     return [[AutofillCreditCardTableViewController alloc]
         initWithBrowser:browser_.get()];
   }
@@ -51,7 +51,7 @@ class AutofillCreditCardTableViewControllerTest
   void TearDown() override {
     [base::apple::ObjCCastStrict<AutofillCreditCardTableViewController>(
         controller()) settingsWillBeDismissed];
-    ChromeTableViewControllerTest::TearDown();
+    LegacyChromeTableViewControllerTest::TearDown();
   }
 
   void AddCreditCard(const std::string& origin,

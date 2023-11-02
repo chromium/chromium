@@ -380,7 +380,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   [self.delegate dismissReadingListListViewController:self];
 }
 
-#pragma mark - ChromeTableViewController
+#pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {
   [super loadModel];

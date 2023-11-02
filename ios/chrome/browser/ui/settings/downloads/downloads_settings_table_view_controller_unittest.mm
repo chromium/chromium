@@ -6,7 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
 #import "ios/chrome/browser/ui/settings/downloads/downloads_settings_table_view_controller_action_delegate.h"
 #import "ios/chrome/browser/ui/settings/downloads/downloads_settings_table_view_controller_presentation_delegate.h"
@@ -65,10 +65,10 @@ UIImage* GenerateTestImage(CGFloat width, CGFloat height) {
 
 // Unit tests for DownloadsSettingsTableViewController.
 class DownloadsSettingsTableViewControllerTest
-    : public ChromeTableViewControllerTest {
+    : public LegacyChromeTableViewControllerTest {
  protected:
   void SetUp() final {
-    ChromeTableViewControllerTest::SetUp();
+    LegacyChromeTableViewControllerTest::SetUp();
 
     save_to_photos_mutator_ = [[FakeSaveToPhotosSettingsMutator alloc] init];
     presentation_delegate_ =
@@ -80,7 +80,7 @@ class DownloadsSettingsTableViewControllerTest
     CreateController();
   }
 
-  ChromeTableViewController* InstantiateController() final {
+  LegacyChromeTableViewController* InstantiateController() final {
     DownloadsSettingsTableViewController* controller =
         [[DownloadsSettingsTableViewController alloc] init];
     controller.saveToPhotosSettingsMutator = save_to_photos_mutator_;

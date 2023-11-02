@@ -14,7 +14,7 @@
 // https://crrev.com/c/1317853/7/ios/chrome/browser/ui/autofill/manual_fill/manual_fill_address_cell.h#17.
 @protocol ManualFillContentInjector;
 
-// Wrapper to show address cells in a ChromeTableViewController.
+// Wrapper to show address cells in a LegacyChromeTableViewController.
 @interface ManualFillAddressItem : TableViewItem
 
 // Inits an address with a `profile` and the `delegate` for user selection.

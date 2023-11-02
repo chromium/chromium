@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSPHRASE_TABLE_VIEW_CONTROLLER_TEST_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSPHRASE_TABLE_VIEW_CONTROLLER_TEST_H_
 
-#include "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#include "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
@@ -30,7 +30,8 @@ class TestChromeBrowserState;
 // Base class for PassphraseTableViewController tests.
 // Sets up a testing profile and a mock profile sync service, along with the
 // supporting structure they require.
-class PassphraseTableViewControllerTest : public ChromeTableViewControllerTest {
+class PassphraseTableViewControllerTest
+    : public LegacyChromeTableViewControllerTest {
  public:
   PassphraseTableViewControllerTest();
   ~PassphraseTableViewControllerTest() override;

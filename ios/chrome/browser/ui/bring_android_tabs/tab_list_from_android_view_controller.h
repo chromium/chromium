@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_BRING_ANDROID_TABS_TAB_LIST_FROM_ANDROID_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_BRING_ANDROID_TABS_TAB_LIST_FROM_ANDROID_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/tab_list_from_android_consumer.h"
 
 @protocol TableViewFaviconDataSource;
@@ -13,8 +13,8 @@
 
 // Table view controller for the "Bring Android Tabs" tab list.
 @interface TabListFromAndroidViewController
-    : ChromeTableViewController <TabListFromAndroidConsumer,
-                                 UIAdaptivePresentationControllerDelegate>
+    : LegacyChromeTableViewController <TabListFromAndroidConsumer,
+                                       UIAdaptivePresentationControllerDelegate>
 
 // Delegate protocol that handles model updates on interaction.
 @property(nonatomic, weak) id<TabListFromAndroidViewControllerDelegate>

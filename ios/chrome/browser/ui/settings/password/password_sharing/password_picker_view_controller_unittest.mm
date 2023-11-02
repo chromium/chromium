@@ -9,16 +9,17 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 
-class PasswordPickerViewControllerTest : public ChromeTableViewControllerTest {
+class PasswordPickerViewControllerTest
+    : public LegacyChromeTableViewControllerTest {
  protected:
   PasswordPickerViewControllerTest() = default;
 
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     return [[PasswordPickerViewController alloc]
         initWithStyle:ChromeTableViewStyle()];
   }

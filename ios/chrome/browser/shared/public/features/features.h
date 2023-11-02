@@ -231,7 +231,7 @@ BASE_DECLARE_FEATURE(kTabGridRefactoring);
 bool IsSafetyCheckMagicStackEnabled();
 
 // Kill switch to control the blocking of the simultaneous cell selection in
-// ChromeTableViewController.
+// LegacyChromeTableViewController.
 BASE_DECLARE_FEATURE(kBlockSimultaneousCellSelectionKillSwitch);
 
 // Feature flag enabling Save to Drive.

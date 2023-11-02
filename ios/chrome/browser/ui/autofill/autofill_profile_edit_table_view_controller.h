@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_PROFILE_EDIT_TABLE_VIEW_CONTROLLER_H_
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item_delegate.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_consumer.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_handler.h"
 
@@ -24,7 +24,7 @@
 - (instancetype)initWithDelegate:
                     (id<AutofillProfileEditTableViewControllerDelegate>)delegate
                        userEmail:(NSString*)userEmail
-                      controller:(ChromeTableViewController*)controller
+                      controller:(LegacyChromeTableViewController*)controller
                     settingsView:(BOOL)settingsView NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

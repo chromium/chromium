@@ -251,7 +251,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   }
 }
 
-#pragma mark - ChromeTableViewController
+#pragma mark - LegacyChromeTableViewController
 
 - (void)editButtonPressed {
   [self setOrExtendAuthValidityTimer];

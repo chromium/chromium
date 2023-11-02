@@ -7,12 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_consumer.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_consumer.h"
 
 @class TableViewItem;
 
 // Consumer protocol for Notifications settings.
-@protocol NotificationsConsumer <ChromeTableViewConsumer>
+@protocol NotificationsConsumer <LegacyChromeTableViewConsumer>
 
 // Initializes price tracking item.
 - (void)setPriceTrackingItem:(TableViewItem*)priceTrackingItem;

@@ -8,16 +8,16 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_root_view_controlling.h"
 
 // SettingsRootTableViewController is a base class for integrating UITableViews
 // into the Settings UI. This class is made to be subclassed and contains the
 // logic to handle the most common user interactions (edit, delete...).
 @interface SettingsRootTableViewController
-    : ChromeTableViewController <SettingsRootViewControlling,
-                                 TableViewLinkHeaderFooterItemDelegate,
-                                 UIAdaptivePresentationControllerDelegate>
+    : LegacyChromeTableViewController <SettingsRootViewControlling,
+                                       TableViewLinkHeaderFooterItemDelegate,
+                                       UIAdaptivePresentationControllerDelegate>
 
 // Delete button for the toolbar.
 @property(nonatomic, strong, readonly) UIBarButtonItem* deleteButton;

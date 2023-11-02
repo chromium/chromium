@@ -662,9 +662,10 @@ enum class PresentedState {
 // `self.bookmarkNavigationController` to the UINavigationController subclass
 // used. If `replacementViewControllers` is not nil, those controllers are
 // swapped in to the UINavigationController instead of `viewController`.
-- (void)presentTableViewController:(ChromeTableViewController*)viewController
+- (void)presentTableViewController:
+            (LegacyChromeTableViewController*)viewController
     withReplacementViewControllers:
-        (NSArray<ChromeTableViewController*>*)replacementViewControllers {
+        (NSArray<LegacyChromeTableViewController*>*)replacementViewControllers {
   TableViewNavigationController* navController =
       [[TableViewNavigationController alloc] initWithTable:viewController];
   navController.modalPresentationStyle = UIModalPresentationFormSheet;

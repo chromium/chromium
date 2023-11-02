@@ -20,7 +20,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
@@ -66,7 +66,8 @@ void SetSyncStateTransportActive(const CoreAccountInfo& account,
 
 }  // namespace
 
-class AccountsTableViewControllerTest : public ChromeTableViewControllerTest {
+class AccountsTableViewControllerTest
+    : public LegacyChromeTableViewControllerTest {
  public:
   AccountsTableViewControllerTest()
       : task_environment_(web::WebTaskEnvironment::IO_MAINLOOP) {
@@ -87,7 +88,7 @@ class AccountsTableViewControllerTest : public ChromeTableViewControllerTest {
         std::make_unique<FakeAuthenticationServiceDelegate>());
   }
 
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     // Set up ApplicationCommands mock. Because ApplicationCommands conforms
     // to ApplicationSettingsCommands, that needs to be mocked and dispatched
     // as well.
@@ -113,7 +114,7 @@ class AccountsTableViewControllerTest : public ChromeTableViewControllerTest {
   void TearDown() override {
     [base::apple::ObjCCast<AccountsTableViewController>(controller())
         settingsWillBeDismissed];
-    ChromeTableViewControllerTest::TearDown();
+    LegacyChromeTableViewControllerTest::TearDown();
   }
 
   // Identity Services

@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_consumer.h"
 
 @protocol ConsistencyAccountChooserTableViewControllerActionDelegate;
@@ -15,7 +15,7 @@
 
 // View controller for ConsistencyAccountChooserCoordinator.
 @interface ConsistencyAccountChooserTableViewController
-    : ChromeTableViewController <ConsistencyAccountChooserConsumer>
+    : LegacyChromeTableViewController <ConsistencyAccountChooserConsumer>
 
 @property(nonatomic, weak)
     id<ConsistencyAccountChooserTableViewControllerActionDelegate>

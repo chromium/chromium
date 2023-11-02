@@ -8,7 +8,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "components/password_manager/core/browser/sharing/recipients_fetcher.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_consumer.h"
@@ -30,11 +30,12 @@ const CGFloat kAccessorySymbolSize = 22;
 
 }  // namespace
 
-class FamilyPickerViewControllerTest : public ChromeTableViewControllerTest {
+class FamilyPickerViewControllerTest
+    : public LegacyChromeTableViewControllerTest {
  protected:
   FamilyPickerViewControllerTest() = default;
 
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     return [[FamilyPickerViewController alloc]
         initWithStyle:ChromeTableViewStyle()];
   }

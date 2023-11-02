@@ -6,7 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -46,12 +46,13 @@ typedef NS_ENUM(NSInteger, ItemIndex) {
 
 namespace {
 
-class ImportDataTableViewControllerTest : public ChromeTableViewControllerTest {
+class ImportDataTableViewControllerTest
+    : public LegacyChromeTableViewControllerTest {
  public:
   ImportDataControllerTestDelegate* delegate() { return delegate_; }
 
  protected:
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     delegate_ = [[ImportDataControllerTestDelegate alloc] init];
     return [[ImportDataTableViewController alloc]
         initWithDelegate:delegate_

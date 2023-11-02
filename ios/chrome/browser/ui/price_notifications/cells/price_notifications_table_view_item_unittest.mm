@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_price_chip_view.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_track_button_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

@@ -36,7 +36,7 @@
 #import "ios/chrome/browser/policy/browser_state_policy_connector_mock.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/settings/cells/search_engine_item.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -52,10 +52,10 @@ const char kUmaSelectDefaultSearchEngine[] =
     "Search.iOS.SelectDefaultSearchEngine";
 
 class SearchEngineTableViewControllerTest
-    : public ChromeTableViewControllerTest {
+    : public LegacyChromeTableViewControllerTest {
  protected:
   void SetUp() override {
-    ChromeTableViewControllerTest::SetUp();
+    LegacyChromeTableViewControllerTest::SetUp();
     TestChromeBrowserState::Builder test_cbs_builder;
 
     test_cbs_builder.AddTestingFactory(
@@ -84,7 +84,7 @@ class SearchEngineTableViewControllerTest
     DefaultSearchManager::SetFallbackSearchEnginesDisabledForTesting(false);
     [base::apple::ObjCCastStrict<SearchEngineTableViewController>(controller())
         settingsWillBeDismissed];
-    ChromeTableViewControllerTest::TearDown();
+    LegacyChromeTableViewControllerTest::TearDown();
   }
 
   void SetupForChoiceScreenDisplay() {
@@ -98,7 +98,7 @@ class SearchEngineTableViewControllerTest
         switches::kSearchEngineChoiceCountry, "BE");
   }
 
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     return [[SearchEngineTableViewController alloc]
         initWithBrowserState:chrome_browser_state_.get()];
   }

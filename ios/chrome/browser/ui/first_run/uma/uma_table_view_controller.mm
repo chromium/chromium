@@ -119,7 +119,7 @@ NSMutableAttributedString* AddIndentAttributes(NSString* string,
   return cell;
 }
 
-#pragma mark - ChromeTableViewController
+#pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {
   [super loadModel];

@@ -121,7 +121,7 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
   return view;
 }
 
-#pragma mark - ChromeTableViewController
+#pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {
   [super loadModel];

@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/fallback_view_controller.h"
 
 #import "base/apple/foundation_util.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 
 namespace {
 
@@ -18,15 +18,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 }
 
-class FallbackViewControllerTest : public ChromeTableViewControllerTest {
+class FallbackViewControllerTest : public LegacyChromeTableViewControllerTest {
  protected:
   void SetUp() override {
-    ChromeTableViewControllerTest::SetUp();
+    LegacyChromeTableViewControllerTest::SetUp();
     CreateController();
     CheckController();
   }
 
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     FallbackViewController* viewController =
         [[FallbackViewController alloc] init];
     [viewController loadModel];

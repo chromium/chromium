@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 
 #import "testing/gtest_mac.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -21,18 +21,18 @@
 - (NSString*)displayedURL;
 @end
 
-ChromeTableViewControllerTest::ChromeTableViewControllerTest() {}
+LegacyChromeTableViewControllerTest::LegacyChromeTableViewControllerTest() {}
 
-ChromeTableViewControllerTest::~ChromeTableViewControllerTest() {}
+LegacyChromeTableViewControllerTest::~LegacyChromeTableViewControllerTest() {}
 
-void ChromeTableViewControllerTest::TearDown() {
+void LegacyChromeTableViewControllerTest::TearDown() {
   // Delete the controller before deleting other test variables, such as a
   // profile, to ensure things are cleaned up in the same order as in Chrome.
   controller_ = nil;
   BlockCleanupTest::TearDown();
 }
 
-void ChromeTableViewControllerTest::CreateController() {
+void LegacyChromeTableViewControllerTest::CreateController() {
   DCHECK(!controller_);
   controller_ = InstantiateController();
 
@@ -40,40 +40,43 @@ void ChromeTableViewControllerTest::CreateController() {
   EXPECT_TRUE([controller_ view]);
 }
 
-ChromeTableViewController* ChromeTableViewControllerTest::controller() {
+LegacyChromeTableViewController*
+LegacyChromeTableViewControllerTest::controller() {
   if (!controller_) {
     CreateController();
   }
   return controller_;
 }
 
-void ChromeTableViewControllerTest::ResetController() {
+void LegacyChromeTableViewControllerTest::ResetController() {
   controller_ = nil;
 }
 
-void ChromeTableViewControllerTest::CheckController() {
+void LegacyChromeTableViewControllerTest::CheckController() {
   EXPECT_TRUE([controller_ view]);
   EXPECT_TRUE([controller_ tableView]);
   EXPECT_TRUE([controller_ tableViewModel]);
   EXPECT_EQ(controller_, [controller_ tableView].delegate);
 }
 
-int ChromeTableViewControllerTest::NumberOfSections() {
+int LegacyChromeTableViewControllerTest::NumberOfSections() {
   return [[controller_ tableViewModel] numberOfSections];
 }
 
-int ChromeTableViewControllerTest::NumberOfItemsInSection(int section) {
+int LegacyChromeTableViewControllerTest::NumberOfItemsInSection(int section) {
   return [[controller_ tableViewModel] numberOfItemsInSection:section];
 }
 
-bool ChromeTableViewControllerTest::HasTableViewItem(int section, int item) {
+bool LegacyChromeTableViewControllerTest::HasTableViewItem(int section,
+                                                           int item) {
   TableViewModel* model = [controller_ tableViewModel];
   NSIndexPath* index_path = [NSIndexPath indexPathForItem:item
                                                 inSection:section];
   return [model hasItemAtIndexPath:index_path];
 }
 
-id ChromeTableViewControllerTest::GetTableViewItem(int section, int item) {
+id LegacyChromeTableViewControllerTest::GetTableViewItem(int section,
+                                                         int item) {
   TableViewModel* model = [controller_ tableViewModel];
   NSIndexPath* index_path = [NSIndexPath indexPathForItem:item
                                                 inSection:section];
@@ -84,58 +87,62 @@ id ChromeTableViewControllerTest::GetTableViewItem(int section, int item) {
   return collection_view_item;
 }
 
-void ChromeTableViewControllerTest::CheckTitle(NSString* expected_title) {
+void LegacyChromeTableViewControllerTest::CheckTitle(NSString* expected_title) {
   EXPECT_NSEQ(expected_title, [controller_ title]);
 }
 
-void ChromeTableViewControllerTest::CheckTitleWithId(int expected_title_id) {
+void LegacyChromeTableViewControllerTest::CheckTitleWithId(
+    int expected_title_id) {
   CheckTitle(l10n_util::GetNSString(expected_title_id));
 }
 
-void ChromeTableViewControllerTest::CheckSectionHeader(NSString* expected_text,
-                                                       int section) {
+void LegacyChromeTableViewControllerTest::CheckSectionHeader(
+    NSString* expected_text,
+    int section) {
   TableViewHeaderFooterItem* header =
       [[controller_ tableViewModel] headerForSectionIndex:section];
   ASSERT_TRUE([header respondsToSelector:@selector(text)]);
   EXPECT_NSEQ(expected_text, [(id)header text]);
 }
 
-void ChromeTableViewControllerTest::CheckSectionHeaderWithId(
+void LegacyChromeTableViewControllerTest::CheckSectionHeaderWithId(
     int expected_text_id,
     int section) {
   CheckSectionHeader(l10n_util::GetNSString(expected_text_id), section);
 }
 
-void ChromeTableViewControllerTest::CheckSectionFooter(NSString* expected_text,
-                                                       int section) {
+void LegacyChromeTableViewControllerTest::CheckSectionFooter(
+    NSString* expected_text,
+    int section) {
   TableViewHeaderFooterItem* footer =
       [[controller_ tableViewModel] footerForSectionIndex:section];
   ASSERT_TRUE([footer respondsToSelector:@selector(text)]);
   EXPECT_NSEQ(expected_text, [(id)footer text]);
 }
 
-void ChromeTableViewControllerTest::CheckSectionFooterWithId(
+void LegacyChromeTableViewControllerTest::CheckSectionFooterWithId(
     int expected_text_id,
     int section) {
   CheckSectionFooter(l10n_util::GetNSString(expected_text_id), section);
 }
 
-void ChromeTableViewControllerTest::CheckTextCellText(NSString* expected_text,
-                                                      int section,
-                                                      int item) {
+void LegacyChromeTableViewControllerTest::CheckTextCellText(
+    NSString* expected_text,
+    int section,
+    int item) {
   id cell = GetTableViewItem(section, item);
   ASSERT_TRUE([cell respondsToSelector:@selector(text)]);
   EXPECT_NSEQ(expected_text, [cell text]);
 }
 
-void ChromeTableViewControllerTest::CheckTextCellTextWithId(
+void LegacyChromeTableViewControllerTest::CheckTextCellTextWithId(
     int expected_text_id,
     int section,
     int item) {
   CheckTextCellText(l10n_util::GetNSString(expected_text_id), section, item);
 }
 
-void ChromeTableViewControllerTest::CheckTextCellTextAndDetailText(
+void LegacyChromeTableViewControllerTest::CheckTextCellTextAndDetailText(
     NSString* expected_text,
     NSString* expected_detail_text,
     int section,
@@ -147,7 +154,7 @@ void ChromeTableViewControllerTest::CheckTextCellTextAndDetailText(
   EXPECT_NSEQ(expected_detail_text, [cell detailText]);
 }
 
-void ChromeTableViewControllerTest::CheckURLCellTitleAndDetailText(
+void LegacyChromeTableViewControllerTest::CheckURLCellTitleAndDetailText(
     NSString* expected_title,
     NSString* expected_detail_text,
     int section,
@@ -159,15 +166,16 @@ void ChromeTableViewControllerTest::CheckURLCellTitleAndDetailText(
   EXPECT_NSEQ(expected_detail_text, [cell detailText]);
 }
 
-void ChromeTableViewControllerTest::CheckURLCellTitle(NSString* expected_title,
-                                                      int section,
-                                                      int item) {
+void LegacyChromeTableViewControllerTest::CheckURLCellTitle(
+    NSString* expected_title,
+    int section,
+    int item) {
   id cell = GetTableViewItem(section, item);
   ASSERT_TRUE([cell respondsToSelector:@selector(title)]);
   EXPECT_NSEQ(expected_title, [cell title]);
 }
 
-void ChromeTableViewControllerTest::CheckDetailItemTextWithIds(
+void LegacyChromeTableViewControllerTest::CheckDetailItemTextWithIds(
     int expected_text_id,
     int expected_detail_text_id,
     int section_id,
@@ -180,7 +188,7 @@ void ChromeTableViewControllerTest::CheckDetailItemTextWithIds(
               [item detailText]);
 }
 
-void ChromeTableViewControllerTest::CheckSwitchCellStateAndText(
+void LegacyChromeTableViewControllerTest::CheckSwitchCellStateAndText(
     BOOL expected_state,
     NSString* expected_title,
     int section,
@@ -192,7 +200,7 @@ void ChromeTableViewControllerTest::CheckSwitchCellStateAndText(
   EXPECT_EQ(expected_state, [switch_item isOn]);
 }
 
-void ChromeTableViewControllerTest::CheckSwitchCellStateAndTextWithId(
+void LegacyChromeTableViewControllerTest::CheckSwitchCellStateAndTextWithId(
     BOOL expected_state,
     int expected_title_id,
     int section,
@@ -201,7 +209,7 @@ void ChromeTableViewControllerTest::CheckSwitchCellStateAndTextWithId(
       expected_state, l10n_util::GetNSString(expected_title_id), section, item);
 }
 
-void ChromeTableViewControllerTest::CheckInfoButtonCellStatusAndText(
+void LegacyChromeTableViewControllerTest::CheckInfoButtonCellStatusAndText(
     NSString* expected_status_text,
     NSString* expected_title,
     int section,
@@ -214,7 +222,7 @@ void ChromeTableViewControllerTest::CheckInfoButtonCellStatusAndText(
   EXPECT_NSEQ(expected_status_text, [info_button_item statusText]);
 }
 
-void ChromeTableViewControllerTest::
+void LegacyChromeTableViewControllerTest::
     CheckInfoButtonCellStatusWithIdAndTextWithId(int expected_status_text_id,
                                                  int expected_title_id,
                                                  int section,
@@ -224,7 +232,7 @@ void ChromeTableViewControllerTest::
       l10n_util::GetNSString(expected_title_id), section, item);
 }
 
-void ChromeTableViewControllerTest::CheckAccessoryType(
+void LegacyChromeTableViewControllerTest::CheckAccessoryType(
     UITableViewCellAccessoryType accessory_type,
     int section,
     int item) {
@@ -233,7 +241,7 @@ void ChromeTableViewControllerTest::CheckAccessoryType(
   EXPECT_EQ(accessory_type, [text_item accessoryType]);
 }
 
-void ChromeTableViewControllerTest::CheckTextButtonCellButtonText(
+void LegacyChromeTableViewControllerTest::CheckTextButtonCellButtonText(
     NSString* expected_button_text,
     int section,
     int item) {
@@ -242,7 +250,7 @@ void ChromeTableViewControllerTest::CheckTextButtonCellButtonText(
   EXPECT_NSEQ(expected_button_text, [text_button_item buttonText]);
 }
 
-void ChromeTableViewControllerTest::CheckTextButtonCellButtonTextWithId(
+void LegacyChromeTableViewControllerTest::CheckTextButtonCellButtonTextWithId(
     int expected_button_text_id,
     int section,
     int item) {
@@ -250,15 +258,15 @@ void ChromeTableViewControllerTest::CheckTextButtonCellButtonTextWithId(
                                 section, item);
 }
 
-void ChromeTableViewControllerTest::DeleteItem(
+void LegacyChromeTableViewControllerTest::DeleteItem(
     int section,
     int item,
     ProceduralBlock completion_block) {
   NSIndexPath* index_path = [NSIndexPath indexPathForItem:item
                                                 inSection:section];
-  __weak ChromeTableViewController* weak_controller = controller_;
+  __weak LegacyChromeTableViewController* weak_controller = controller_;
   void (^batch_updates)() = ^{
-    ChromeTableViewController* strong_controller = weak_controller;
+    LegacyChromeTableViewController* strong_controller = weak_controller;
     if (!strong_controller) {
       return;
     }

@@ -33,7 +33,7 @@ class SyncCreatePassphraseTableViewControllerTest
   SyncCreatePassphraseTableViewControllerTest() {}
 
  protected:
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     return [[SyncCreatePassphraseTableViewController alloc]
         initWithBrowser:browser_.get()];
   }

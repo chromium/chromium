@@ -150,7 +150,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                 itemsInSectionWithIdentifier:SectionIdentifierFields]];
 }
 
-#pragma mark - ChromeTableViewController
+#pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {
   [super loadModel];

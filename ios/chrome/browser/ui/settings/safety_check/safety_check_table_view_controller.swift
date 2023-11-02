@@ -95,7 +95,7 @@ class SafetyCheckTableViewController: SettingsRootTableViewController, SafetyChe
     safetyCheckFooterItem = item
   }
 
-  // MARK: ChromeTableViewController
+  // MARK: LegacyChromeTableViewController
 
   override func loadModel() {
     super.loadModel()

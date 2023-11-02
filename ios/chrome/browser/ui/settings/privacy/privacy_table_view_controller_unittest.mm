@@ -30,7 +30,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/features.h"
@@ -62,13 +62,13 @@ struct PrivacyTableViewControllerTestConfig {
 };
 
 class PrivacyTableViewControllerTest
-    : public ChromeTableViewControllerTest,
+    : public LegacyChromeTableViewControllerTest,
       public testing::WithParamInterface<PrivacyTableViewControllerTestConfig> {
  protected:
   PrivacyTableViewControllerTest() {}
 
   void SetUp() override {
-    ChromeTableViewControllerTest::SetUp();
+    LegacyChromeTableViewControllerTest::SetUp();
 
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
@@ -103,10 +103,10 @@ class PrivacyTableViewControllerTest
     }
     [base::apple::ObjCCastStrict<PrivacyTableViewController>(controller())
         settingsWillBeDismissed];
-    ChromeTableViewControllerTest::TearDown();
+    LegacyChromeTableViewControllerTest::TearDown();
   }
 
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     return [[PrivacyTableViewController alloc] initWithBrowser:browser_.get()
                                         reauthenticationModule:nil];
   }

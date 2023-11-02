@@ -7,7 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/platform_test.h"
@@ -16,18 +16,18 @@ namespace {
 
 // Tests the items shown in DefaultBrowserSettingTableViewController.
 class DefaultBrowserSettingsTableViewControllerTest
-    : public ChromeTableViewControllerTest {
+    : public LegacyChromeTableViewControllerTest {
  protected:
   DefaultBrowserSettingsTableViewControllerTest() {}
 
-  void SetUp() override { ChromeTableViewControllerTest::SetUp(); }
+  void SetUp() override { LegacyChromeTableViewControllerTest::SetUp(); }
 
   void TearDown() override {
     [base::apple::ObjCCastStrict<DefaultBrowserSettingsTableViewController>(
         controller()) settingsWillBeDismissed];
-    ChromeTableViewControllerTest::TearDown();
+    LegacyChromeTableViewControllerTest::TearDown();
   }
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     return [[DefaultBrowserSettingsTableViewController alloc] init];
   }
 };
