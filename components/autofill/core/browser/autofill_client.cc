@@ -195,6 +195,20 @@ void AutofillClient::ShowLocalCardMigrationResults(
   // This is overridden by platform subclasses.
 }
 
+void AutofillClient::ConfirmSaveIbanLocally(const Iban& iban,
+                                            bool should_show_prompt,
+                                            SaveIbanPromptCallback callback) {
+  // This is overridden by platform subclasses.
+}
+
+void AutofillClient::ConfirmUploadIbanToCloud(
+    const Iban& iban,
+    const LegalMessageLines& legal_message_lines,
+    bool should_show_prompt,
+    SaveIbanPromptCallback callback) {
+  // This is overridden by platform subclasses.
+}
+
 void AutofillClient::ShowWebauthnOfferDialog(
     WebauthnDialogCallback offer_dialog_callback) {
   // This is overridden by platform subclasses.
@@ -217,8 +231,7 @@ bool AutofillClient::CloseWebauthnDialog() {
 void AutofillClient::OfferVirtualCardOptions(
     const std::vector<CreditCard*>& candidates,
     base::OnceCallback<void(const std::string&)> callback) {
-  // This is overridden by platform subclasses. Currently only
-  // ChromeAutofillClient (Chrome Desktop) implements this.
+  // This is overridden by platform subclasses.
 }
 #else
 void AutofillClient::ConfirmAccountNameFixFlow(

@@ -635,7 +635,7 @@ class AutofillClient : public RiskDataLoader {
   // `should_show_prompt` is true; otherwise only shows the omnibox icon.
   virtual void ConfirmSaveIbanLocally(const Iban& iban,
                                       bool should_show_prompt,
-                                      SaveIbanPromptCallback callback) = 0;
+                                      SaveIbanPromptCallback callback);
 
   // Runs `callback` once the user makes a decision with respect to the
   // offer-to-upload prompt. On desktop, shows the offer-to-upload bubble if
@@ -644,7 +644,7 @@ class AutofillClient : public RiskDataLoader {
       const Iban& iban,
       const LegalMessageLines& legal_message_lines,
       bool should_show_prompt,
-      SaveIbanPromptCallback callback) = 0;
+      SaveIbanPromptCallback callback);
 
   // TODO(crbug.com/991037): Find a way to merge these two functions. Shouldn't
   // use WebauthnDialogState as that state is a purely UI state (should not be

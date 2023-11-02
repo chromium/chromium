@@ -139,19 +139,6 @@ class MockAutofillClient : public autofill::AutofillClient {
               (override));
   MOCK_METHOD(translate::TranslateDriver*, GetTranslateDriver, (), (override));
   MOCK_METHOD(void, ShowAutofillSettings, (autofill::PopupType), (override));
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  MOCK_METHOD(void,
-              ConfirmSaveIbanLocally,
-              (const autofill::Iban&, bool, SaveIbanPromptCallback),
-              (override));
-  MOCK_METHOD(void,
-              ConfirmUploadIbanToCloud,
-              (const autofill::Iban&,
-               const autofill::LegalMessageLines& legal_message_lines,
-               bool,
-               SaveIbanPromptCallback),
-              (override));
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   MOCK_METHOD(void,
               ConfirmCreditCardFillAssist,
               (const autofill::CreditCard&, base::OnceClosure),
