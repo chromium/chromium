@@ -10,19 +10,8 @@ namespace media {
 
 namespace {
 
-// 6.3.6 Inv recenter noneg syntax, inv_recenter_nonneg().
-int InvRecenterNonneg(int v, int m) {
-  DCHECK_LE(m, kVp9MaxProb / 2);
-  if (v > 2 * m)
-    return v;
-
-  if (v & 1)
-    return m - ((v + 1) >> 1);
-  return m + (v >> 1);
-}
-
 // 6.3.5 Inv remap prob syntax, inv_remap_prob().
-Vp9Prob InvRemapProb(uint8_t delta_prob, uint8_t prob, bool have_context) {
+Vp9Prob InvRemapProb(uint8_t delta_prob, uint8_t prob) {
   static const uint8_t inv_map_table[kVp9MaxProb] = {
       7,   20,  33,  46,  59,  72,  85,  98,  111, 124, 137, 150, 163, 176,
       189, 202, 215, 228, 241, 254, 1,   2,   3,   4,   5,   6,   8,   9,
@@ -45,18 +34,7 @@ Vp9Prob InvRemapProb(uint8_t delta_prob, uint8_t prob, bool have_context) {
       252, 253, 253};
   uint8_t v = delta_prob;
   DCHECK_LT(v, std::size(inv_map_table));
-  v = inv_map_table[v];
-  if (!have_context)
-    return v;
-
-  uint8_t m = prob;
-  DCHECK_LE(m, kVp9MaxProb);
-  DCHECK_GE(m, 1);
-  m--;
-  if ((m << 1) <= kVp9MaxProb) {
-    return 1 + InvRecenterNonneg(v, m);
-  }
-  return kVp9MaxProb - InvRecenterNonneg(v, kVp9MaxProb - 1 - m);
+  return inv_map_table[v];
 }
 
 }  // namespace
@@ -64,17 +42,9 @@ Vp9Prob InvRemapProb(uint8_t delta_prob, uint8_t prob, bool have_context) {
 Vp9CompressedHeaderParser::Vp9CompressedHeaderParser() = default;
 
 // 6.3 Compressed header syntax
-bool Vp9CompressedHeaderParser::Parse(const uint8_t* stream,
-                                      off_t frame_size,
-                                      Vp9FrameHeader* fhdr) {
-  have_frame_context_ = true;
-  return ParseInternal(stream, frame_size, fhdr);
-}
-
 bool Vp9CompressedHeaderParser::ParseNoContext(const uint8_t* stream,
                                                off_t frame_size,
                                                Vp9FrameHeader* fhdr) {
-  have_frame_context_ = false;
   memset(&fhdr->frame_context, 0, sizeof(fhdr->frame_context));
   return ParseInternal(stream, frame_size, fhdr);
 }
@@ -116,7 +86,7 @@ void Vp9CompressedHeaderParser::DiffUpdateProb(Vp9Prob* prob) {
     return;
 
   uint8_t delta_prob = DecodeTermSubexp();
-  *prob = InvRemapProb(delta_prob, *prob, have_frame_context_);
+  *prob = InvRemapProb(delta_prob, *prob);
 }
 
 // Helper function to DiffUpdateProb an array of probs.
