@@ -215,7 +215,7 @@ SavedDeskItemView* GetItemViewFromSavedDeskGrid(size_t grid_item_index) {
   return item_view;
 }
 
-const views::Button* GetZeroStateLibraryButton() {
+const views::Button* GetLibraryButton() {
   const auto* overview_grid = GetPrimaryOverviewGrid();
   if (!overview_grid)
     return nullptr;
@@ -226,32 +226,7 @@ const views::Button* GetZeroStateLibraryButton() {
     return nullptr;
   }
 
-  // In post-Jellyroll, we only have the one library button so always return it
-  // for tests.
-  return !chromeos::features::IsJellyrollEnabled()
-             ? static_cast<views::Button*>(
-                   desks_bar_view->zero_state_library_button())
-             : desks_bar_view->library_button();
-}
-
-const views::Button* GetExpandedStateLibraryButton() {
-  const auto* overview_grid = GetPrimaryOverviewGrid();
-  if (!overview_grid)
-    return nullptr;
-
-  // May be null in tablet mode.
-  const auto* desks_bar_view = overview_grid->desks_bar_view();
-  if (!desks_bar_view) {
-    return nullptr;
-  }
-
-  // In post-Jellyroll, we only have the one library button so always return it
-  // for tests.
-  return !chromeos::features::IsJellyrollEnabled()
-             ? static_cast<views::Button*>(
-                   desks_bar_view->expanded_state_library_button()
-                       ->GetInnerButton())
-             : desks_bar_view->library_button();
+  return desks_bar_view->library_button();
 }
 
 const views::Button* GetSaveDeskAsTemplateButton() {

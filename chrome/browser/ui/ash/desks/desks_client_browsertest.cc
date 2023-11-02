@@ -40,8 +40,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/containers/contains.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -80,17 +78,13 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/chromeos/ash_browser_test_starter.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/crosapi/mojom/desk.mojom-shared.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 #include "components/account_id/account_id.h"
@@ -102,7 +96,6 @@
 #include "components/app_restore/window_properties.h"
 #include "components/desks_storage/core/admin_template_service.h"
 #include "components/desks_storage/core/desk_model.h"
-#include "components/desks_storage/core/desk_template_util.h"
 #include "components/desks_storage/core/saved_desk_builder.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -116,17 +109,14 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/common/constants.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
-#include "ui/aura/client/focus_client.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/range/range.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/button/label_button.h"
 #include "url/gurl.h"
 
 using ::testing::_;
@@ -357,18 +347,10 @@ void ClickSaveDeskForLaterButton() {
   ClickButton(save_desk_for_later_button);
 }
 
-void ClickZeroStateTemplatesButton() {
-  const views::Button* zero_state_templates_button =
-      ash::GetZeroStateLibraryButton();
+void ClickLibraryButton() {
+  const views::Button* zero_state_templates_button = ash::GetLibraryButton();
   ASSERT_TRUE(zero_state_templates_button);
   ClickButton(zero_state_templates_button);
-}
-
-void ClickExpandedStateTemplatesButton() {
-  const views::Button* expanded_state_templates_button =
-      ash::GetExpandedStateLibraryButton();
-  ASSERT_TRUE(expanded_state_templates_button);
-  ClickButton(expanded_state_templates_button);
 }
 
 void ClickFirstTemplateItem() {
@@ -514,8 +496,7 @@ class ScopedDesksTemplatesAppLaunchHandlerSetter {
   int launch_id_;
 };
 
-class DesksClientTest : public extensions::PlatformAppBrowserTest,
-                        public testing::WithParamInterface<bool> {
+class DesksClientTest : public extensions::PlatformAppBrowserTest {
  public:
   DesksClientTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
@@ -523,11 +504,6 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest,
     std::vector<base::test::FeatureRef> disabled_features = {
         ash::features::kDeskTemplateSync,
         ash::features::kFasterSplitScreenSetup};
-    if (GetParam()) {
-      enabled_features.push_back(chromeos::features::kJelly);
-    } else {
-      disabled_features.push_back(chromeos::features::kJelly);
-    }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
     // Suppress the multitask menu nudge as we'll be checking the stacking order
@@ -538,7 +514,7 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest,
   }
   DesksClientTest(const DesksClientTest&) = delete;
   DesksClientTest& operator=(const DesksClientTest&) = delete;
-  ~DesksClientTest() {
+  ~DesksClientTest() override {
     OsUrlHandlerSystemWebAppDelegate::EnableDelegateForTesting(false);
   }
 
@@ -660,10 +636,8 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, DesksClientTest, testing::Bool());
-
 // Tests that a browser's urls can be captured correctly in the desk template.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, CaptureBrowserUrlsTest) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserUrlsTest) {
   // Create a new browser and add a few tabs to it.
   Browser* browser = CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
   aura::Window* window = browser->window()->GetNativeWindow();
@@ -685,7 +659,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, CaptureBrowserUrlsTest) {
 }
 
 // Tests that a browser's tab groups can be captured correctly in a saved desk.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, CaptureBrowserTabGroupsTest) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserTabGroupsTest) {
   std::vector<GURL> tabs = {GURL(kExampleUrl1), GURL(kExampleUrl2)};
   std::vector<tab_groups::TabGroupInfo> expected_tab_groups =
       MakeExpectedTabGroupsBasedOnTabVector(tabs);
@@ -720,7 +694,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, CaptureBrowserTabGroupsTest) {
 }
 
 // Tests that a browser's pinned tabs can be captured correctly in a saved desk.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, CaptureBrowserWithPinnedTabs) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserWithPinnedTabs) {
   std::vector<GURL> tabs = {GURL(kExampleUrl1), GURL(kExampleUrl2)};
   int expected_number_of_pinned_tabs = 1;
 
@@ -756,7 +730,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, CaptureBrowserWithPinnedTabs) {
 
 // Tests that incognito browser windows will NOT be captured in the desk
 // template.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, CaptureIncognitoBrowserTest) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureIncognitoBrowserTest) {
   Browser* incognito_browser = CreateIncognitoBrowser();
   chrome::AddTabAt(incognito_browser, GURL(kExampleUrl1), /*index=*/-1,
                    /*foreground=*/true);
@@ -786,7 +760,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, CaptureIncognitoBrowserTest) {
 
 // Tests that browsers and chrome apps can be captured correctly in the desk
 // template.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, CaptureActiveDeskAsTemplateTest) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureActiveDeskAsTemplateTest) {
   // Test that Singleton was properly initialized.
   ASSERT_TRUE(DesksClient::Get());
 
@@ -861,7 +835,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, CaptureActiveDeskAsTemplateTest) {
 
 // Tests that launching the same desk template multiple times creates desks with
 // different/incremented names.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchMultipleDeskTemplates) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchMultipleDeskTemplates) {
   const base::Uuid kDeskUuid = base::Uuid::GenerateRandomV4();
   const std::u16string kDeskName(u"Test Desk Name");
 
@@ -911,7 +885,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchMultipleDeskTemplates) {
 
 // Tests that launching a template that contains a system web app works as
 // expected.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchTemplateWithSystemApp) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemApp) {
   ASSERT_TRUE(DesksClient::Get());
 
   // Create the settings app, which is a system web app.
@@ -958,7 +932,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchTemplateWithSystemApp) {
 
 // Tests that launching a template that contains a system web app will move the
 // existing instance of the system web app to the current desk.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchTemplateWithSystemAppExisting) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemAppExisting) {
   ASSERT_TRUE(DesksClient::Get());
   Profile* profile = browser()->profile();
 
@@ -1003,7 +977,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchTemplateWithSystemAppExisting) {
 }
 
 // Tests that launching a template that contains a chrome app works as expected.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchTemplateWithChromeApp) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithChromeApp) {
   DesksClient* desks_client = DesksClient::Get();
   ASSERT_TRUE(desks_client);
 
@@ -1058,7 +1032,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchTemplateWithChromeApp) {
 
 // Tests that launching a template that contains a browser window works as
 // expected.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchTemplateWithBrowserWindow) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithBrowserWindow) {
   ASSERT_TRUE(DesksClient::Get());
 
   // Create a new browser and add a few tabs to it, and specify the active tab
@@ -1105,7 +1079,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchTemplateWithBrowserWindow) {
 
 // Tests that launching a template that contains a floated browser window works
 // as expected.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchTemplateWithFloatedWindow) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithFloatedWindow) {
   // Test that Singleton was properly initialized.
   ASSERT_TRUE(DesksClient::Get());
 
@@ -1152,7 +1126,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchTemplateWithFloatedWindow) {
 
 // Tests that launching a template that contains a browser window with tab
 // groups works as expected.
-IN_PROC_BROWSER_TEST_P(DesksClientTest,
+IN_PROC_BROWSER_TEST_F(DesksClientTest,
                        LaunchTemplateWithBrowserWindowTabGroups) {
   ASSERT_TRUE(DesksClient::Get());
 
@@ -1200,7 +1174,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest,
 }
 
 // Tests that a browser's pinned tabs can be launched correctly in a saved desk.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchBrowserWithPinnedTabs) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchBrowserWithPinnedTabs) {
   ASSERT_TRUE(DesksClient::Get());
 
   // create expected values.
@@ -1239,7 +1213,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchBrowserWithPinnedTabs) {
 
 // Tests that browser session restore isn't triggered when we launch a template
 // that contains a browser window.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, PreventBrowserSessionRestoreTest) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, PreventBrowserSessionRestoreTest) {
   ASSERT_TRUE(DesksClient::Get());
 
   // Do not exit from test or delete the Profile* when last browser is closed.
@@ -1279,7 +1253,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, PreventBrowserSessionRestoreTest) {
 
 // Tests that browser windows created from a template have the correct bounds
 // and window state.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, BrowserWindowRestorationTest) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, BrowserWindowRestorationTest) {
   ASSERT_TRUE(DesksClient::Get());
 
   // Create a new browser and set its bounds.
@@ -1336,7 +1310,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, BrowserWindowRestorationTest) {
 
 // Tests that saving and launching a template that contains a PWA works as
 // expected.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchTemplateWithPWA) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithPWA) {
   ASSERT_TRUE(DesksClient::Get());
 
   Browser* pwa_browser =
@@ -1384,7 +1358,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchTemplateWithPWA) {
 
 // Tests that launching a template that contains a PWA on a device that does not
 // contain the PWA does not open the PWA.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchTemplateWithMissingPWA) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithMissingPWA) {
   ASSERT_TRUE(DesksClient::Get());
 
   Browser* pwa_browser =
@@ -1430,7 +1404,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchTemplateWithMissingPWA) {
 
 // Tests that PWAs with out of scope urls are saved and launched correctly.
 // Regression test for b/248645623.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchTemplateWithOutOfScopeURL) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithOutOfScopeURL) {
   ASSERT_TRUE(DesksClient::Get());
 
   Browser* pwa_browser =
@@ -1467,7 +1441,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchTemplateWithOutOfScopeURL) {
 
 // Tests that saving and launching a template that contains a PWA in a browser
 // window works as expected.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchTemplateWithPWAInBrowser) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithPWAInBrowser) {
   ASSERT_TRUE(DesksClient::Get());
 
   Browser* pwa_browser =
@@ -1490,7 +1464,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchTemplateWithPWAInBrowser) {
 }
 
 // Tests that captured desk templates can be recalled as a JSON string.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, GetDeskTemplateJson) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, GetDeskTemplateJson) {
   // Test that Singleton was properly initialized.
   ASSERT_TRUE(DesksClient::Get());
 
@@ -1528,7 +1502,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, GetDeskTemplateJson) {
 // TODO(crbug.com/1286515): Remove the SystemUI prefix from these tests. Remove
 // the tests that do not have the SystemUI prefix other than GetDeskTemplateJson
 // once the extension is deprecated.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUIBasic) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUIBasic) {
   auto* desk_model = DesksClient::Get()->GetDeskModel();
   ASSERT_EQ(0u, desk_model->GetEntryCount());
 
@@ -1537,10 +1511,9 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUIBasic) {
 
   // Tests that since we have no saved desk right now, so the library button is
   // hidden.
-  const views::Button* zero_state_templates_button =
-      ash::GetZeroStateLibraryButton();
-  ASSERT_TRUE(zero_state_templates_button);
-  EXPECT_FALSE(zero_state_templates_button->GetVisible());
+  const views::Button* library_button = ash::GetLibraryButton();
+  ASSERT_TRUE(library_button);
+  EXPECT_FALSE(library_button->GetVisible());
 
   // Note that this button needs at least one window to show up. Browser tests
   // have an existing browser window, so no new window needs to be created.
@@ -1555,16 +1528,15 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUIBasic) {
 
   // Tests that since we have one template right now, so that the expanded state
   // library button is shown, and the saved desk grid has one item.
-  auto* expanded_state_templates_button = ash::GetExpandedStateLibraryButton();
-  ASSERT_TRUE(expanded_state_templates_button);
-  EXPECT_TRUE(expanded_state_templates_button->GetVisible());
+  ASSERT_TRUE(library_button);
+  EXPECT_TRUE(library_button->GetVisible());
 
   const views::Button* template_item = ash::GetSavedDeskItemButton(/*index=*/0);
   EXPECT_TRUE(template_item);
 }
 
 // Tests launching a template with a browser window.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUILaunchBrowser) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchBrowser) {
   // Create a new browser and add a few tabs to it, and specify the active tab
   // index.
   const size_t browser_active_index = 1;
@@ -1618,7 +1590,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUILaunchBrowser) {
 }
 
 // Tests that a browser's urls can be captured correctly in the desk template.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUICaptureBrowserUrlsTest) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUICaptureBrowserUrlsTest) {
   // Create a new browser and add a few tabs to it.
   Browser* browser = CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
   aura::Window* window = browser->window()->GetNativeWindow();
@@ -1645,7 +1617,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUICaptureBrowserUrlsTest) {
 
 // Tests that snapped window's snap ratio/percentage is maintained when
 // launching a desk template.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUILaunchSnappedWindow) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchSnappedWindow) {
   const int shelf_height = ash::ShelfConfig::Get()->shelf_size();
   display::test::DisplayManagerTestApi display_manager_test_api(
       ash::Shell::Get()->display_manager());
@@ -1696,7 +1668,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUILaunchSnappedWindow) {
     // Enter overview and launch the same template.
     ash::ToggleOverview();
     ash::WaitForOverviewEnterAnimation();
-    ClickZeroStateTemplatesButton();
+    ClickLibraryButton();
     ClickFirstTemplateItem();
     ash::ToggleOverview();
     ash::WaitForOverviewExitAnimation();
@@ -1751,7 +1723,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUILaunchSnappedWindow) {
 
 // Tests that incognito browser windows will NOT be captured in the desk
 // template.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUICaptureIncognitoBrowserTest) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUICaptureIncognitoBrowserTest) {
   Browser* incognito_browser = CreateIncognitoBrowser();
   chrome::AddTabAt(incognito_browser, GURL(kExampleUrl1), /*index=*/-1,
                    /*foreground=*/true);
@@ -1805,7 +1777,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUICaptureIncognitoBrowserTest) {
 
 // Tests that launching a template that contains a system web app works as
 // expected.
-IN_PROC_BROWSER_TEST_P(DesksClientTest,
+IN_PROC_BROWSER_TEST_F(DesksClientTest,
                        SystemUILaunchTemplateWithSystemWebApp) {
   // Create the settings and help apps, which are system web apps.
   CreateSettingsSystemWebApp(browser()->profile());
@@ -1843,7 +1815,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest,
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
 
-  ClickZeroStateTemplatesButton();
+  ClickLibraryButton();
 
   BrowsersAddedObserver browsers_added(/*num_browser_expected=*/3);
   ClickFirstTemplateItem();
@@ -1874,13 +1846,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest,
 
 // Tests that launching a template that contains a system web app will move the
 // existing instance of the system web app to the current desk.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUILaunchTemplateWithSWAExisting) {
-  if (!GetParam()) {
-    // Test fails with jelly disabled, which is OK as non jelly is being
-    // removed.
-    return;
-  }
-
+IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithSWAExisting) {
   Profile* profile = browser()->profile();
 
   // Create the settings and help apps, which are system web apps.
@@ -1933,7 +1899,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUILaunchTemplateWithSWAExisting) {
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
 
-  ClickZeroStateTemplatesButton();
+  ClickLibraryButton();
   ClickFirstTemplateItem();
 
   // Wait for the tabs to load.
@@ -1985,7 +1951,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUILaunchTemplateWithSWAExisting) {
 
 // Tests that when restoring the OsUrlHandler SWA, the override URL is restored
 // as expected. Regression test for crbug.com/1466634.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, OsUrlHandlerSWARestoreTest) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, OsUrlHandlerSWARestoreTest) {
   // Do not exit from test or delete the Profile* when last browser is closed.
   ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
                              KeepAliveRestartOption::DISABLED);
@@ -2021,7 +1987,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, OsUrlHandlerSWARestoreTest) {
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
 
-  ClickZeroStateTemplatesButton();
+  ClickLibraryButton();
 
   BrowsersAddedObserver browsers_added(/*num_browser_expected=*/2);
   ClickFirstTemplateItem();
@@ -2050,7 +2016,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, OsUrlHandlerSWARestoreTest) {
 
 // Tests that browser windows created from a template have the correct bounds
 // and window state.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUIBrowserWindowRestorationTest) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUIBrowserWindowRestorationTest) {
   // Create a new browser and set its bounds.
   std::vector<GURL> browser_urls_1 = {GURL(kExampleUrl1), GURL(kExampleUrl2)};
   Browser* browser_1 = CreateBrowser(browser_urls_1);
@@ -2108,7 +2074,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUIBrowserWindowRestorationTest) {
 
 // Tests that saving and launching a template that contains a PWA works as
 // expected.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUILaunchTemplateWithPWA) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithPWA) {
   Browser* pwa_browser =
       InstallAndLaunchPWA(GURL(kExampleUrl1), /*launch_in_browser=*/false);
   ASSERT_TRUE(pwa_browser->is_type_app());
@@ -2158,7 +2124,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUILaunchTemplateWithPWA) {
 
 // Tests that saving and launching a template that contains a PWA in a browser
 // window works as expected.
-IN_PROC_BROWSER_TEST_P(DesksClientTest,
+IN_PROC_BROWSER_TEST_F(DesksClientTest,
                        SystemUILaunchTemplateWithPWAInBrowser) {
   Browser* pwa_browser =
       InstallAndLaunchPWA(GURL(kYoutubeUrl), /*launch_in_browser=*/true);
@@ -2186,7 +2152,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest,
 }
 
 // Tests that browsers and SWAs can be captured correctly in the desk template.
-IN_PROC_BROWSER_TEST_P(DesksClientTest,
+IN_PROC_BROWSER_TEST_F(DesksClientTest,
                        SystemUICaptureActiveDeskAsTemplateTest) {
   // Change `browser`'s bounds.
   const gfx::Rect browser_bounds(800, 200);
@@ -2269,7 +2235,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest,
 }
 
 // Tests that launching a template that contains a chrome app works as expected.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUILaunchTemplateWithChromeApp) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithChromeApp) {
   // Create a chrome app.
   const extensions::Extension* extension =
       LoadAndLaunchPlatformApp("launch", "Launched");
@@ -2321,7 +2287,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUILaunchTemplateWithChromeApp) {
 }
 
 // Tests that the windows and tabs count histogram is recorded properly.
-IN_PROC_BROWSER_TEST_P(DesksClientTest,
+IN_PROC_BROWSER_TEST_F(DesksClientTest,
                        SystemUIDeskTemplateWindowAndTabCountHistogram) {
   base::HistogramTester histogram_tester;
 
@@ -2351,7 +2317,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest,
 }
 
 // Tests that the template count histogram is recorded properly.
-IN_PROC_BROWSER_TEST_P(DesksClientTest,
+IN_PROC_BROWSER_TEST_F(DesksClientTest,
                        SystemUIDeskTemplateUserTemplateCountHistogram) {
   base::HistogramTester histogram_tester;
 
@@ -2419,7 +2385,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest,
 // Tests that browser session restore isn't triggered when we launch a template
 // that contains a browser window.
 
-IN_PROC_BROWSER_TEST_P(DesksClientTest,
+IN_PROC_BROWSER_TEST_F(DesksClientTest,
                        SystemUIPreventBrowserSessionRestoreTest) {
   // Do not exit from test or delete the Profile* when last browser is closed.
   ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
@@ -2457,7 +2423,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest,
   // Reenter overview and launch the template we saved.
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
-  ClickZeroStateTemplatesButton();
+  ClickLibraryButton();
   ClickFirstTemplateItem();
   content::RunAllTasksUntilIdle();
 
@@ -2471,7 +2437,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest,
 
 // Tests that launching the same desk template multiple times creates desks with
 // different/incremented names.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUILaunchMultipleDeskTemplates) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchMultipleDeskTemplates) {
   const base::Uuid kDeskUuid = base::Uuid::GenerateRandomV4();
   const std::u16string kDeskName(u"Test Desk Name");
 
@@ -2495,7 +2461,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUILaunchMultipleDeskTemplates) {
         SCOPED_TRACE(desk_name);
 
         if (!first_run) {
-          ClickExpandedStateTemplatesButton();
+          ClickLibraryButton();
         }
 
         ClickFirstTemplateItem();
@@ -2530,15 +2496,8 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUILaunchMultipleDeskTemplates) {
 }
 
 // Tests that the launch from template histogram is recorded properly.
-IN_PROC_BROWSER_TEST_P(DesksClientTest,
+IN_PROC_BROWSER_TEST_F(DesksClientTest,
                        SystemUIDeskTemplateLaunchFromTemplateHistogram) {
-  if (GetParam()) {
-    // TODO(b/289258836): Skip this test while Jelly is enabled so the rest of
-    // the suite can land.
-    SUCCEED();
-    return;
-  }
-
   base::HistogramTester histogram_tester;
 
   // Create a new browser.
@@ -2552,7 +2511,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest,
   const int launches = 5;
   for (int i = 0; i < launches; i++) {
     ClickFirstTemplateItem();
-    ClickExpandedStateTemplatesButton();
+    ClickLibraryButton();
   }
 
   histogram_tester.ExpectTotalCount(ash::kLaunchTemplateHistogramName,
@@ -2561,7 +2520,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest,
 
 // Tests that launching a desk template records the appropriate performance
 // metric.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchTemplateRecordsLoadTimeMetric) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateRecordsLoadTimeMetric) {
   base::HistogramTester histogram_tester;
 
   // Create the settings app, which is a system web app.
@@ -2582,7 +2541,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchTemplateRecordsLoadTimeMetric) {
 
 // Tests launch a template to a new desk and clean up desk. Number of windows
 // closed should be properly recorded.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchTemplateAndCleanUpDesk) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateAndCleanUpDesk) {
   auto* desks_controller = ash::DesksController::Get();
   // Should have 1 default active desk.
   EXPECT_EQ(1u, desks_controller->desks().size());
@@ -2628,7 +2587,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchTemplateAndCleanUpDesk) {
 // Tests that if we've been in the library, then switched to a different desk,
 // and then save the desk, that the desk is closed. Regression test for
 // https://crbug.com/1329350.
-IN_PROC_BROWSER_TEST_P(DesksClientTest,
+IN_PROC_BROWSER_TEST_F(DesksClientTest,
                        // TODO(crbug.com/1369348): Re-enable this test
                        DISABLED_SystemUIReEnterLibraryAndSaveDesk) {
   // Create a template that has a window because the "Save desk for later"
@@ -2673,7 +2632,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest,
 }
 
 // Tests trying to remove an invalid desk Id should return error.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, RemoveWithInvalidDeskId) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, RemoveWithInvalidDeskId) {
   auto* desks_controller = ash::DesksController::Get();
   // Should have 1 default desk.
   EXPECT_EQ(1u, desks_controller->desks().size());
@@ -2687,7 +2646,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, RemoveWithInvalidDeskId) {
 
 // Tests list all available desks. Remove desk should fail when there is only
 // one desk.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, GetAllDesksAndRemove) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, GetAllDesksAndRemove) {
   auto* desks_controller = ash::DesksController::Get();
   // Should have 1 default active desk.
   EXPECT_EQ(1u, desks_controller->desks().size());
@@ -2707,7 +2666,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, GetAllDesksAndRemove) {
 }
 
 // Tests launch an empty desk with `desk_name` provided.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchEmptyDeskWithProvidedName) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchEmptyDeskWithProvidedName) {
   auto* desks_controller = ash::DesksController::Get();
   // Should have 1 default active desk.
   EXPECT_EQ(1u, desks_controller->desks().size());
@@ -2728,7 +2687,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchEmptyDeskWithProvidedName) {
 }
 
 // Tests launch an empty desk with default name.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchEmptyDeskWithDefaultName) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchEmptyDeskWithDefaultName) {
   auto* desks_controller = ash::DesksController::Get();
   // Should have 1 default active desk.
   EXPECT_EQ(1u, desks_controller->desks().size());
@@ -2746,7 +2705,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchEmptyDeskWithDefaultName) {
   waiter.Wait();
 }
 
-IN_PROC_BROWSER_TEST_P(DesksClientTest, UndoLaunchedDesk) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, UndoLaunchedDesk) {
   auto* desks_controller = ash::DesksController::Get();
 
   // Launch a new desk
@@ -2765,7 +2724,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, UndoLaunchedDesk) {
 }
 
 // Tests setting first window to show on all desk and then unset it.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, SetWindowProperties) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, SetWindowProperties) {
   // Create a new browser window.
   CreateBrowser({});
 
@@ -2794,7 +2753,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, SetWindowProperties) {
 }
 
 // Tests immediate desk action should be throttled.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, ThrottleImmediateDeskAction) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, ThrottleImmediateDeskAction) {
   base::Uuid new_desk_id;
   ash::DeskSwitchAnimationWaiter waiter;
   auto result = DesksClient::Get()->LaunchEmptyDesk();
@@ -2816,7 +2775,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, ThrottleImmediateDeskAction) {
 }
 
 // Tests save an empty desk should fail.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, SaveEmptyDesk) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, SaveEmptyDesk) {
   // Create a new browser and add a few tabs to it.
   Browser* browser = CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
   aura::Window* window = browser->window()->GetNativeWindow();
@@ -2844,7 +2803,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, SaveEmptyDesk) {
 }
 
 // Tests save an active desk to library and remove it from desk list.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, SaveActiveDesk) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, SaveActiveDesk) {
   // Create a new browser and add a few tabs to it.
   Browser* browser = CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
   aura::Window* window = browser->window()->GetNativeWindow();
@@ -2872,7 +2831,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, SaveActiveDesk) {
 }
 
 // Tests delete a saved desk from library.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, DeleteSavedDesk) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, DeleteSavedDesk) {
   auto* desk_model = DesksClient::Get()->GetDeskModel();
 
   // Create a new browser and add a few tabs to it.
@@ -2888,7 +2847,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, DeleteSavedDesk) {
 }
 
 // Tests recall a saved desk from library.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, RecallSavedDesk) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, RecallSavedDesk) {
   auto* desk_model = DesksClient::Get()->GetDeskModel();
   EXPECT_EQ(ash::DesksController::Get()->GetNumberOfDesks(), 1);
 
@@ -2918,7 +2877,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, RecallSavedDesk) {
 }
 
 // Tests switch to current desk should be no ops.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, SwitchToCurrentDesk) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, SwitchToCurrentDesk) {
   base::Uuid current_desk_uuid;
   current_desk_uuid = DesksClient::Get()->GetActiveDesk();
 
@@ -2930,14 +2889,14 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, SwitchToCurrentDesk) {
 }
 
 // Tests switch to invalid desk should return error.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, SwitchToInvalidDesk) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, SwitchToInvalidDesk) {
   EXPECT_THAT(
       DesksClient::Get()->SwitchDesk({}),
       testing::Optional(DesksClient::DeskActionError::kResourceNotFoundError));
 }
 
 // Tests switch to different desk should be trigger desk animation.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, SwitchToDifferentDesk) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, SwitchToDifferentDesk) {
   base::Uuid desk_uuid = DesksClient::Get()->GetActiveDesk();
 
   // Launches a new desk.
@@ -2959,7 +2918,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, SwitchToDifferentDesk) {
 }
 
 // Tests retrieve an existing desk.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, GetDeskByValidDeskId) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, GetDeskByValidDeskId) {
   base::Uuid desk_uuid = DesksClient::Get()->GetActiveDesk();
   auto result = DesksClient::Get()->GetDeskByID(desk_uuid);
 
@@ -2968,7 +2927,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, GetDeskByValidDeskId) {
 }
 
 // Tests retrieve an non-exist desk should return error.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, GetDeskByInvalidDeskId) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, GetDeskByInvalidDeskId) {
   auto result = DesksClient::Get()->GetDeskByID(base::Uuid::GenerateRandomV4());
 
   ASSERT_FALSE(result.has_value());
@@ -2978,7 +2937,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, GetDeskByInvalidDeskId) {
 
 // Tests that floating workspace templates do not count towards template counts
 // for saved desks functionality.
-IN_PROC_BROWSER_TEST_P(DesksClientTest, FloatingWorkspaceOnSavedDesksUI) {
+IN_PROC_BROWSER_TEST_F(DesksClientTest, FloatingWorkspaceOnSavedDesksUI) {
   // Create a new browser and add a few tabs to it.
   CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
   std::unique_ptr<ash::DeskTemplate> desk_template =
@@ -2995,13 +2954,12 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, FloatingWorkspaceOnSavedDesksUI) {
 
   // Tests that since we have no saved desk right now, so the library button is
   // hidden.
-  const views::Button* zero_state_templates_button =
-      ash::GetZeroStateLibraryButton();
-  ASSERT_TRUE(zero_state_templates_button);
-  EXPECT_FALSE(zero_state_templates_button->GetVisible());
+  const views::Button* library_button = ash::GetLibraryButton();
+  ASSERT_TRUE(library_button);
+  EXPECT_FALSE(library_button->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_P(DesksClientTest,
+IN_PROC_BROWSER_TEST_F(DesksClientTest,
                        DisplaysAppUnavailableToastForUnavailableBrowserApp) {
   // Build a saved desk with an unsupoorted browser app.
   std::unique_ptr<ash::DeskTemplate> unsupported_template =
@@ -3034,7 +2992,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest,
   // Enter overview and launch template
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
-  ClickZeroStateTemplatesButton();
+  ClickLibraryButton();
   ClickFirstTemplateItem();
 
   // Spin in case we need to wait for the toast to appear.
@@ -3044,7 +3002,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest,
           chrome_desks_util::kAppNotAvailableTemplateToastName));
 }
 
-IN_PROC_BROWSER_TEST_P(DesksClientTest,
+IN_PROC_BROWSER_TEST_F(DesksClientTest,
                        DisplaysAppUnavailableToastForUnavailableGenericApp) {
   // Build a saved desk with an unsupoorted generic app.
   std::unique_ptr<ash::DeskTemplate> unsupported_template =
@@ -3065,7 +3023,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest,
       std::make_unique<apps::App>(apps::AppType::kArc, kUnknownTestAppId));
   apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
       ->OnApps(std::move(deltas), apps::AppType::kArc,
-               /*should_notify_initializied=*/false);
+               /*should_notify_initialized=*/false);
 
   // Programmatically add to storage, we do this because you cannot capture
   // an unsupported app.
@@ -3084,7 +3042,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest,
   // Enter overview and launch template
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
-  ClickZeroStateTemplatesButton();
+  ClickLibraryButton();
   ClickFirstTemplateItem();
 
   // Spin in case we need to wait for the toast to appear.
@@ -3286,9 +3244,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientLacrosTest,
 
 using SaveAndRecallBrowserTest = DesksClientTest;
 
-INSTANTIATE_TEST_SUITE_P(All, SaveAndRecallBrowserTest, testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(SaveAndRecallBrowserTest,
+IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
                        SystemUIBlockingDialogAccepted) {
   SetupBrowserToConfirmClose(browser());
 
@@ -3320,7 +3276,7 @@ IN_PROC_BROWSER_TEST_P(SaveAndRecallBrowserTest,
   EXPECT_EQ(1u, templates.size());
 }
 
-IN_PROC_BROWSER_TEST_P(SaveAndRecallBrowserTest,
+IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
                        SystemUIBlockingDialogRejected) {
   SetupBrowserToConfirmClose(browser());
 
@@ -3345,19 +3301,13 @@ IN_PROC_BROWSER_TEST_P(SaveAndRecallBrowserTest,
 }
 // TODO(crbug.com/1333965): Add some tests to launch LaCros browser.
 
-class DesksTemplatesClientArcTest : public InProcessBrowserTest,
-                                    public testing::WithParamInterface<bool> {
+class DesksTemplatesClientArcTest : public InProcessBrowserTest {
  public:
   DesksTemplatesClientArcTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
         ash::features::kDesksTemplates};
     std::vector<base::test::FeatureRef> disabled_features = {
         ash::features::kDeskTemplateSync};
-    if (GetParam()) {
-      enabled_features.push_back(chromeos::features::kJelly);
-    } else {
-      disabled_features.push_back(chromeos::features::kJelly);
-    }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
   DesksTemplatesClientArcTest(const DesksTemplatesClientArcTest&) = delete;
@@ -3388,10 +3338,8 @@ class DesksTemplatesClientArcTest : public InProcessBrowserTest,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, DesksTemplatesClientArcTest, testing::Bool());
-
 // Tests that launching a template that contains an ARC app works as expected.
-IN_PROC_BROWSER_TEST_P(DesksTemplatesClientArcTest,
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientArcTest,
                        SystemUILaunchTemplateWithArcApp) {
   auto* desk_model = DesksClient::Get()->GetDeskModel();
   ASSERT_EQ(0u, desk_model->GetEntryCount());
@@ -3435,7 +3383,7 @@ IN_PROC_BROWSER_TEST_P(DesksTemplatesClientArcTest,
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
 
-  ClickZeroStateTemplatesButton();
+  ClickLibraryButton();
   ClickFirstTemplateItem();
 
   ash::ToggleOverview();
@@ -3540,7 +3488,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientPolicyWithFeatureDisabledTest,
 
 class DesksTemplatesClientMultiProfileTest : public ash::LoginManagerTest {
  public:
-  DesksTemplatesClientMultiProfileTest() : ash::LoginManagerTest() {
+  DesksTemplatesClientMultiProfileTest() {
     login_mixin_.AppendRegularUsers(2);
     account_id1_ = login_mixin_.users()[0].account_id;
     account_id2_ = login_mixin_.users()[1].account_id;

@@ -189,8 +189,7 @@ std::vector<SavedDeskItemView*> GetItemViewsFromDeskLibrary(
 SavedDeskItemView* GetItemViewFromSavedDeskGrid(size_t grid_item_index);
 
 // These buttons are the ones on the primary root window.
-const views::Button* GetZeroStateLibraryButton();
-const views::Button* GetExpandedStateLibraryButton();
+const views::Button* GetLibraryButton();
 const views::Button* GetSaveDeskAsTemplateButton();
 const views::Button* GetSaveDeskForLaterButton();
 const views::Button* GetSavedDeskItemButton(int index);

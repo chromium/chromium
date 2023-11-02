@@ -10,7 +10,6 @@
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
-#include "ash/public/cpp/rounded_image_view.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/test/test_saved_desk_delegate.h"
 #include "ash/shelf/shelf.h"
@@ -18,7 +17,6 @@
 #include "ash/shell.h"
 #include "ash/style/close_button.h"
 #include "ash/style/icon_button.h"
-#include "ash/style/pill_button.h"
 #include "ash/wm/desks/desk_action_view.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
@@ -42,7 +40,6 @@
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/mru_window_tracker.h"
-#include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_focus_cycler.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -55,7 +52,6 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -65,7 +61,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
-#include "cc/test/pixel_comparator.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
@@ -80,9 +75,7 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/canvas.h"
-#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "ui/wm/core/cursor_manager.h"
@@ -182,39 +175,18 @@ class SavedDeskTest : public OverviewTestBase {
     return nullptr;
   }
 
-  const views::Button* GetZeroStateLibraryButtonForRoot(
+  const CrOSNextDeskIconButton* GetLibraryButtonForRoot(
       aura::Window* root_window) {
     if (auto* desks_bar_view = GetDesksBarViewForRoot(root_window)) {
-      return chromeos::features::IsJellyrollEnabled()
-                 ? desks_bar_view->library_button()
-                 : static_cast<views::Button*>(
-                       desks_bar_view->zero_state_library_button());
-    }
-    return nullptr;
-  }
-
-  const views::View* GetExpandedStateLibraryButtonForRoot(
-      aura::Window* root_window) {
-    if (auto* desks_bar_view = GetDesksBarViewForRoot(root_window)) {
-      return chromeos::features::IsJellyrollEnabled()
-                 ? desks_bar_view->library_button()
-                 : static_cast<views::View*>(
-                       desks_bar_view->expanded_state_library_button());
+      return desks_bar_view->library_button();
     }
     return nullptr;
   }
 
   bool GetNewDeskButtonEnabledState(aura::Window* root_window) {
-    if (chromeos::features::IsJellyrollEnabled()) {
-      auto* desks_bar_view = GetDesksBarViewForRoot(root_window);
-      CHECK(desks_bar_view);
-      return desks_bar_view->new_desk_button()->GetEnabled();
-    } else {
-      return GetPrimaryRootDesksBarView()
-          ->expanded_state_new_desk_button()
-          ->GetInnerButton()
-          ->GetEnabled();
-    }
+    auto* desks_bar_view = GetDesksBarViewForRoot(root_window);
+    CHECK(desks_bar_view);
+    return desks_bar_view->new_desk_button()->GetEnabled();
   }
 
   SavedDeskSaveDeskButton* GetSaveDeskAsTemplateButtonForRoot(
@@ -253,16 +225,10 @@ class SavedDeskTest : public OverviewTestBase {
   // be visible and clickable.
   void ShowSavedDeskLibrary() {
     auto* root_window = Shell::GetPrimaryRootWindow();
-    auto* zero_button = GetZeroStateLibraryButtonForRoot(root_window);
-    auto* expanded_button = GetExpandedStateLibraryButtonForRoot(root_window);
-    ASSERT_TRUE(zero_button);
-    ASSERT_TRUE(expanded_button);
-    ASSERT_TRUE(zero_button->GetVisible() || expanded_button->GetVisible());
-
-    if (zero_button->GetVisible())
-      LeftClickOn(zero_button);
-    else
-      LeftClickOn(expanded_button);
+    auto* library_button = GetLibraryButtonForRoot(root_window);
+    ASSERT_TRUE(library_button);
+    ASSERT_TRUE(library_button->GetVisible());
+    LeftClickOn(library_button);
   }
 
   // Helper function for attempting to delete a saved desk entry based on its
@@ -308,16 +274,8 @@ class SavedDeskTest : public OverviewTestBase {
 
     // Click the delete button on the delete dialog. Show delete dialog and
     // select accept.
-    auto* dialog_controller = saved_desk_util::GetSavedDeskDialogController();
-    if (!chromeos::features::IsJellyEnabled()) {
-      auto* dialog_delegate = dialog_controller->dialog_widget()
-                                  ->widget_delegate()
-                                  ->AsDialogDelegate();
-      dialog_delegate->AcceptDialog();
-    } else {
-      const auto* dialog_accept_button = ash::GetSavedDeskDialogAcceptButton();
-      LeftClickOn(dialog_accept_button);
-    }
+    const auto* dialog_accept_button = GetSavedDeskDialogAcceptButton();
+    LeftClickOn(dialog_accept_button);
 
     // Wait for the dialog to close.
     base::RunLoop().RunUntilIdle();
@@ -452,12 +410,7 @@ class SavedDeskTest : public OverviewTestBase {
 
   // OverviewTestBase:
   void SetUp() override {
-    // TOOD(b/292156927): Remove Jelly from disabled features until system
-    // dialog exit issue is fixed. Test impacted:
-    // DeskSaveAndRecallTest.ExitOverviewDeskItemFocusCrash
-    // SavedDeskTest.DialogSystemModal
-    scoped_feature_list_.InitWithFeatures({features::kDesksTemplates},
-                                          {chromeos::features::kJelly});
+    scoped_feature_list_.InitWithFeatures({features::kDesksTemplates}, {});
     OverviewTestBase::SetUp();
 
     // The `FullRestoreSaveHandler` isn't setup during tests so every window we
@@ -513,39 +466,25 @@ TEST_F(SavedDeskTest, LibraryButtonsVisibilityClamshell) {
              bool active_state_shown, const std::string& trace_string) {
         SCOPED_TRACE(trace_string);
         for (auto* root_window : Shell::GetAllRootWindows()) {
-          // When Jelly is enabled there is just one library button with a state
-          // that is either zero, expanded, or active.
-          if (chromeos::features::IsJellyrollEnabled()) {
-            auto* desks_bar_view = GetDesksBarViewForRoot(root_window);
-            ASSERT_TRUE(desks_bar_view);
-            const CrOSNextDeskIconButton* library_button =
-                desks_bar_view->library_button();
-            ASSERT_TRUE(library_button);
-            EXPECT_EQ(zero_state_shown,
-                      library_button->GetVisible() &&
-                          library_button->state() ==
-                              CrOSNextDeskIconButton::State::kZero);
-            EXPECT_EQ(expanded_state_shown,
-                      library_button->GetVisible() &&
-                          library_button->state() ==
-                              CrOSNextDeskIconButton::State::kExpanded);
-            EXPECT_EQ(active_state_shown,
-                      library_button->GetVisible() &&
-                          library_button->state() ==
-                              CrOSNextDeskIconButton::State::kActive);
-          } else {
-            auto* zero_button = GetZeroStateLibraryButtonForRoot(root_window);
-            auto* expanded_button =
-                GetExpandedStateLibraryButtonForRoot(root_window);
-            ASSERT_TRUE(zero_button);
-            ASSERT_TRUE(expanded_button);
-            EXPECT_EQ(zero_state_shown, zero_button->GetVisible());
-
-            // If Jelly is not enabled there is no distinction between active
-            // and expanded state.
-            EXPECT_EQ(expanded_state_shown || active_state_shown,
-                      expanded_button->GetVisible());
-          }
+          // There is just one library button with a state that is either zero,
+          // expanded, or active.
+          auto* desks_bar_view = GetDesksBarViewForRoot(root_window);
+          ASSERT_TRUE(desks_bar_view);
+          const CrOSNextDeskIconButton* library_button =
+              desks_bar_view->library_button();
+          ASSERT_TRUE(library_button);
+          EXPECT_EQ(zero_state_shown,
+                    library_button->GetVisible() &&
+                        library_button->state() ==
+                            CrOSNextDeskIconButton::State::kZero);
+          EXPECT_EQ(expanded_state_shown,
+                    library_button->GetVisible() &&
+                        library_button->state() ==
+                            CrOSNextDeskIconButton::State::kExpanded);
+          EXPECT_EQ(active_state_shown,
+                    library_button->GetVisible() &&
+                        library_button->state() ==
+                            CrOSNextDeskIconButton::State::kActive);
         }
       };
 
@@ -576,7 +515,7 @@ TEST_F(SavedDeskTest, LibraryButtonsVisibilityClamshell) {
 
   // Click on the library button. It should expand the desks bar and the desk
   // bar should be active.
-  LeftClickOn(GetZeroStateLibraryButtonForRoot(Shell::GetPrimaryRootWindow()));
+  LeftClickOn(GetLibraryButtonForRoot(Shell::GetPrimaryRootWindow()));
   verify_button_visibilities(/*zero_state_shown=*/false,
                              /*expanded_state_shown=*/false,
                              /*active_state_shown=*/true,
@@ -870,7 +809,9 @@ TEST_F(SavedDeskTest, DialogSystemModal) {
   // Hit escape to delete the dialog. Tests that there are no more system modal
   // windows open, and that we are still in overview because the dialog takes
   // the escape event, not the overview session.
-  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_ESCAPE);
+  // TOOD(b/292156927): Use esc key to dismiss the dialog when this is fixed.
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_RETURN);
   EXPECT_FALSE(Shell::IsSystemModalWindowOpen());
   EXPECT_TRUE(GetOverviewSession());
 }
@@ -1000,15 +941,10 @@ TEST_F(SavedDeskTest, SaveDeskButtonContainerAligned) {
   verify_save_desk_widget_bounds();
 
   // Create a new desk to leave zero state and verify.
-  const LegacyDeskBarView* desks_bar_view = overview_grid->desks_bar_view();
+  const DeskBarViewBase* desks_bar_view = overview_grid->desks_bar_view();
   ASSERT_TRUE(desks_bar_view->IsZeroState());
-  if (chromeos::features::IsJellyrollEnabled()) {
-    auto* new_desk_button = desks_bar_view->new_desk_button();
-    LeftClickOn(new_desk_button);
-  } else {
-    auto* new_desk_button = desks_bar_view->zero_state_new_desk_button();
-    LeftClickOn(new_desk_button);
-  }
+  auto* new_desk_button = desks_bar_view->new_desk_button();
+  LeftClickOn(new_desk_button);
   ASSERT_FALSE(desks_bar_view->IsZeroState());
   verify_save_desk_widget_bounds();
 }
@@ -1899,10 +1835,8 @@ TEST_F(SavedDeskTest, EnteringInTabletMode) {
   // template button is not created.
   ToggleOverview();
   aura::Window* root = Shell::GetPrimaryRootWindow();
-  auto* zero_state = GetZeroStateLibraryButtonForRoot(root);
-  auto* expanded_state = GetExpandedStateLibraryButtonForRoot(root);
-  EXPECT_FALSE(zero_state->GetVisible());
-  EXPECT_FALSE(expanded_state->GetVisible());
+  auto* library_button = GetLibraryButtonForRoot(root);
+  EXPECT_FALSE(library_button->GetVisible());
   EXPECT_FALSE(GetSaveDeskButtonContainerForRoot(root));
 }
 
@@ -1919,21 +1853,11 @@ TEST_F(SavedDeskTest, ClamshellToTabletMode) {
   // the save template button are visible.
   ToggleOverview();
   aura::Window* root = Shell::GetPrimaryRootWindow();
-  auto* zero_state = GetZeroStateLibraryButtonForRoot(root);
-  auto* expanded_state = GetExpandedStateLibraryButtonForRoot(root);
-  // When Jelly is enabled there is just one library button with a state
-  // that is either zero, expanded, or active.
-  if (chromeos::features::IsJellyrollEnabled()) {
-    auto* desks_bar_view = GetDesksBarViewForRoot(root);
-    ASSERT_TRUE(desks_bar_view);
-    const CrOSNextDeskIconButton* library_button =
-        desks_bar_view->library_button();
-    EXPECT_TRUE(library_button->GetVisible());
-    EXPECT_EQ(CrOSNextDeskIconButton::State::kZero, library_button->state());
-  } else {
-    EXPECT_TRUE(zero_state->GetVisible());
-    EXPECT_FALSE(expanded_state->GetVisible());
-  }
+  auto* desks_bar_view = GetDesksBarViewForRoot(root);
+  ASSERT_TRUE(desks_bar_view);
+  auto* library_button = GetLibraryButtonForRoot(root);
+  EXPECT_TRUE(library_button->GetVisible());
+  EXPECT_EQ(CrOSNextDeskIconButton::State::kZero, library_button->state());
   EXPECT_TRUE(
       GetOverviewGridForRoot(root)->IsSaveDeskAsTemplateButtonVisible());
 
@@ -1941,8 +1865,7 @@ TEST_F(SavedDeskTest, ClamshellToTabletMode) {
   // buttons are invisible.
   EnterTabletMode();
   ASSERT_TRUE(GetOverviewSession());
-  EXPECT_FALSE(zero_state->GetVisible());
-  EXPECT_FALSE(expanded_state->GetVisible());
+  EXPECT_FALSE(library_button->GetVisible());
   EXPECT_FALSE(
       GetOverviewGridForRoot(root)->IsSaveDeskAsTemplateButtonVisible());
 }
@@ -1966,21 +1889,11 @@ TEST_F(SavedDeskTest, ShowingSavedDeskLibraryToTabletMode) {
 
   // Tests that the templates button is in expanded state when the grid is
   // showing, even with one desk.
-  auto* zero_state = GetZeroStateLibraryButtonForRoot(root_window);
-  auto* expanded_state = GetExpandedStateLibraryButtonForRoot(root_window);
-  // When Jelly is enabled there is just one library button with a state
-  // that is either zero, expanded, or active.
-  if (chromeos::features::IsJellyrollEnabled()) {
-    auto* desks_bar_view = GetDesksBarViewForRoot(root_window);
-    ASSERT_TRUE(desks_bar_view);
-    const CrOSNextDeskIconButton* library_button =
-        desks_bar_view->library_button();
-    EXPECT_TRUE(library_button->GetVisible());
-    EXPECT_EQ(CrOSNextDeskIconButton::State::kActive, library_button->state());
-  } else {
-    ASSERT_FALSE(zero_state->GetVisible());
-    ASSERT_TRUE(expanded_state->GetVisible());
-  }
+  auto* desks_bar_view = GetDesksBarViewForRoot(root_window);
+  ASSERT_TRUE(desks_bar_view);
+  auto* library_button = GetLibraryButtonForRoot(root_window);
+  EXPECT_TRUE(library_button->GetVisible());
+  EXPECT_EQ(CrOSNextDeskIconButton::State::kActive, library_button->state());
 
   // Tests that after transitioning, we remain in overview mode and the grid is
   // hidden.
@@ -1991,10 +1904,9 @@ TEST_F(SavedDeskTest, ShowingSavedDeskLibraryToTabletMode) {
                    ->saved_desk_library_widget()
                    ->IsVisible());
 
-  // Tests that the templates button is also hidden in tablet mode. Regression
+  // Tests that the library button is also hidden in tablet mode. Regression
   // test for https://crbug.com/1291777.
-  EXPECT_FALSE(zero_state->GetVisible());
-  EXPECT_FALSE(expanded_state->GetVisible());
+  EXPECT_FALSE(library_button->GetVisible());
 }
 
 // In certain cases there are activation issues when we enter tablet mode,
@@ -2049,8 +1961,7 @@ TEST_F(SavedDeskTest, TabbingInvisibleTemplatesButton) {
   // First test the case there are no templates.
   ToggleOverview();
 
-  auto* button =
-      GetZeroStateLibraryButtonForRoot(Shell::GetPrimaryRootWindow());
+  auto* button = GetLibraryButtonForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(button);
   ASSERT_FALSE(button->GetVisible());
 
@@ -2073,22 +1984,12 @@ TEST_F(SavedDeskTest, TabbingInvisibleTemplatesButton) {
   // widget is on a post task so flush that task.
   base::RunLoop().RunUntilIdle();
 
-  // The zero state library button should be hidden and the active state button
-  // should be shown instead because we had one item in the library when we
-  // opened overview.
-  if (chromeos::features::IsJellyrollEnabled()) {
-    auto* desks_bar_view =
-        GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
-    ASSERT_TRUE(desks_bar_view);
-    auto* library_button = desks_bar_view->library_button();
-    ASSERT_TRUE(library_button->GetVisible());
-    ASSERT_TRUE(library_button->state() ==
-                CrOSNextDeskIconButton::State::kActive);
-  } else {
-    button = GetZeroStateLibraryButtonForRoot(Shell::GetPrimaryRootWindow());
-    ASSERT_TRUE(button);
-    ASSERT_FALSE(button->GetVisible());
-  }
+  // The library button should be visible and active state.
+  auto* desks_bar_view = GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(desks_bar_view);
+  auto* library_button = desks_bar_view->library_button();
+  ASSERT_TRUE(library_button->GetVisible());
+  ASSERT_EQ(library_button->state(), CrOSNextDeskIconButton::State::kActive);
 
   // Test that we do not focus the templates button.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
@@ -2114,24 +2015,13 @@ TEST_F(SavedDeskTest, DesksBarDoesNotReturnToZeroState) {
   auto* mini_view = desks_bar_view->FindMiniViewForDesk(
       DesksController::Get()->active_desk());
   LeftClickOn(mini_view->desk_action_view()->close_all_button());
-  // When Jelly is enabled the zero state and expanded states aren't separate
-  // buttons, but states of the same button
-  if (chromeos::features::IsJellyrollEnabled()) {
-    EXPECT_EQ(CrOSNextDeskIconButton::State::kExpanded,
-              desks_bar_view->new_desk_button()->state());
-    // `OpenOverviewAndShowSavedDeskGrid` clicks on the library button, so it
-    // should be active.
-    EXPECT_EQ(CrOSNextDeskIconButton::State::kActive,
-              desks_bar_view->library_button()->state());
-  } else {
-    auto* expanded_new_desk_button =
-        desks_bar_view->expanded_state_new_desk_button();
-    auto* expanded_templates_button =
-        desks_bar_view->expanded_state_library_button();
-    EXPECT_TRUE(expanded_new_desk_button->GetVisible());
-    EXPECT_TRUE(expanded_templates_button->GetVisible());
-    EXPECT_FALSE(desks_bar_view->IsZeroState());
-  }
+  // The new desk button and the library button should be active state.
+  EXPECT_EQ(CrOSNextDeskIconButton::State::kExpanded,
+            desks_bar_view->new_desk_button()->state());
+  // `OpenOverviewAndShowSavedDeskGrid` clicks on the library button, so it
+  // should be active.
+  EXPECT_EQ(CrOSNextDeskIconButton::State::kActive,
+            desks_bar_view->library_button()->state());
 
   // Delete the one and only template, we should remain in the desk library.
   DeleteSavedDeskItem(uuid, /*expected_current_item_count=*/1);
@@ -2140,14 +2030,9 @@ TEST_F(SavedDeskTest, DesksBarDoesNotReturnToZeroState) {
                   ->saved_desk_library_widget()
                   ->IsVisible());
 
-  // Test that we are not in zero state.
-  if (chromeos::features::IsJellyrollEnabled()) {
-    EXPECT_EQ(CrOSNextDeskIconButton::State::kExpanded,
-              desks_bar_view->new_desk_button()->state());
-  } else {
-    auto* zero_new_desk_button = desks_bar_view->zero_state_new_desk_button();
-    EXPECT_FALSE(zero_new_desk_button->GetVisible());
-  }
+  // Test that the new desk button is expanded state.
+  EXPECT_EQ(CrOSNextDeskIconButton::State::kExpanded,
+            desks_bar_view->new_desk_button()->state());
   EXPECT_FALSE(desks_bar_view->IsZeroState());
 }
 
@@ -2174,17 +2059,9 @@ TEST_F(SavedDeskTest, UnsupportedAppsDialog) {
 
   // Decline the dialog. We should stay in overview and no template should have
   // been saved.
-  auto* dialog_controller = saved_desk_util::GetSavedDeskDialogController();
-  if (chromeos::features::IsJellyEnabled()) {
-    LeftClickOn(saved_desk_util::GetSavedDeskDialogController()
-                    ->GetSystemDialogViewForTesting()
-                    ->GetCancelButtonForTesting());
-  } else {
-    dialog_controller->dialog_widget()
-        ->widget_delegate()
-        ->AsDialogDelegate()
-        ->CancelDialog();
-  }
+  LeftClickOn(saved_desk_util::GetSavedDeskDialogController()
+                  ->GetSystemDialogViewForTesting()
+                  ->GetCancelButtonForTesting());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(Shell::IsSystemModalWindowOpen());
   EXPECT_TRUE(GetOverviewSession());
@@ -2196,15 +2073,7 @@ TEST_F(SavedDeskTest, UnsupportedAppsDialog) {
 
   // Accept the dialog. The template should have been saved and the saved desk
   // grid should now be shown.
-  dialog_controller = saved_desk_util::GetSavedDeskDialogController();
-  if (chromeos::features::IsJellyEnabled()) {
-    LeftClickOn(GetSavedDeskDialogAcceptButton());
-  } else {
-    dialog_controller->dialog_widget()
-        ->widget_delegate()
-        ->AsDialogDelegate()
-        ->AcceptDialog();
-  }
+  LeftClickOn(GetSavedDeskDialogAcceptButton());
   WaitForSavedDeskUI();
   EXPECT_TRUE(GetOverviewSession());
   EXPECT_TRUE(GetOverviewGridList()[0]->saved_desk_library_widget());
@@ -2428,57 +2297,31 @@ TEST_F(SavedDeskTest, DesksTemplatesButtonFocusColor) {
   ToggleOverview();
 
   auto* desks_bar_view = GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
-  if (chromeos::features::IsJellyEnabled()) {
-    const ui::ColorId active_color_id = cros_tokens::kCrosSysTertiary;
+  const ui::ColorId active_color_id = cros_tokens::kCrosSysTertiary;
 
-    const CrOSNextDeskIconButton* button = desks_bar_view->library_button();
-    ASSERT_TRUE(button);
+  const CrOSNextDeskIconButton* button = desks_bar_view->library_button();
+  ASSERT_TRUE(button);
 
-    // The library button starts of neither focused nor active.
-    EXPECT_EQ(CrOSNextDeskIconButton::State::kExpanded, button->state());
-    EXPECT_FALSE(button->GetFocusColorIdForTesting());
+  // The library button starts of neither focused nor active.
+  EXPECT_EQ(CrOSNextDeskIconButton::State::kExpanded, button->state());
+  EXPECT_FALSE(button->GetFocusColorIdForTesting());
 
-    // Tests that when we are viewing the saved desk grid, the button border is
-    // active.
-    LeftClickOn(button);
-    EXPECT_EQ(CrOSNextDeskIconButton::State::kActive, button->state());
-    EXPECT_EQ(active_color_id, *button->GetFocusColorIdForTesting());
+  // Tests that when we are viewing the saved desk grid, the button border is
+  // active.
+  LeftClickOn(button);
+  EXPECT_EQ(CrOSNextDeskIconButton::State::kActive, button->state());
+  EXPECT_EQ(active_color_id, *button->GetFocusColorIdForTesting());
 
-    // Tests that when focused, the library button border has a focused color.
-    SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-    EXPECT_EQ(CrOSNextDeskIconButton::State::kActive, button->state());
-    EXPECT_EQ(focused_color_id, *button->GetFocusColorIdForTesting());
+  // Tests that when focused, the library button border has a focused color.
+  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(CrOSNextDeskIconButton::State::kActive, button->state());
+  EXPECT_EQ(focused_color_id, *button->GetFocusColorIdForTesting());
 
-    // Shift focus away from the library button. The button border should be
-    // active.
-    SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-    EXPECT_EQ(CrOSNextDeskIconButton::State::kActive, button->state());
-    EXPECT_EQ(active_color_id, *button->GetFocusColorIdForTesting());
-
-  } else {
-    const ui::ColorId active_color_id = kColorAshCurrentDeskColor;
-
-    ExpandedDesksBarButton* button =
-        desks_bar_view->expanded_state_library_button();
-    ASSERT_TRUE(button);
-
-    // The library button starts of neither focused nor active.
-    EXPECT_FALSE(button->GetFocusColorIdForTesting());
-
-    // Tests that when we are viewing the saved desk grid, the button border is
-    // active.
-    LeftClickOn(button);
-    EXPECT_EQ(active_color_id, *button->GetFocusColorIdForTesting());
-
-    // Tests that when focused, the library button border has a focused color.
-    SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-    EXPECT_EQ(focused_color_id, *button->GetFocusColorIdForTesting());
-
-    // Shift focus away from the library button. The button border should be
-    // active.
-    SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-    EXPECT_EQ(active_color_id, *button->GetFocusColorIdForTesting());
-  }
+  // Shift focus away from the library button. The button border should be
+  // active.
+  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(CrOSNextDeskIconButton::State::kActive, button->state());
+  EXPECT_EQ(active_color_id, *button->GetFocusColorIdForTesting());
 }
 
 // Tests that if we save a template (and get dropped into the templates grid),
@@ -3354,14 +3197,7 @@ TEST_F(SavedDeskTest, ReplaceTemplateMetric) {
   ASSERT_TRUE(GetOverviewSession());
 
   // Accepting the dialog will record metrics.
-  if (chromeos::features::IsJellyEnabled()) {
-    LeftClickOn(GetSavedDeskDialogAcceptButton());
-  } else {
-    dialog_controller->dialog_widget()
-        ->widget_delegate()
-        ->AsDialogDelegate()
-        ->AcceptDialog();
-  }
+  LeftClickOn(GetSavedDeskDialogAcceptButton());
 
   WaitForSavedDeskUI();
 
@@ -3400,11 +3236,6 @@ TEST_F(SavedDeskTest, NoAnimationWhenRemovingDesk) {
   ASSERT_TRUE(desks_controller->BelongsToActiveDesk(test_window.get()));
 
   OpenOverviewAndShowSavedDeskGrid();
-
-  if (!chromeos::features::IsJellyrollEnabled()) {
-    ui::ScopedAnimationDurationScaleMode animation(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  }
 
   // Remove the active desk. Ensure that there are no animations on the overview
   // item, otherwise a flicker will be seen as they should be hidden when the
@@ -3943,7 +3774,7 @@ TEST_F(SavedDeskTest, NoDuplicateDisplayedName) {
       std::move(new_desk_template),
       base::BindLambdaForTesting(
           [&](desks_storage::DeskModel::AddOrUpdateEntryStatus status,
-              std::unique_ptr<ash::DeskTemplate> new_entry) {
+              std::unique_ptr<DeskTemplate> new_entry) {
             EXPECT_EQ(desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk,
                       status);
             loop.Quit();
@@ -3976,13 +3807,9 @@ TEST_F(SavedDeskTest, NoDuplicateDisplayedName) {
   EXPECT_TRUE(dialog_widget->IsActive());
 
   // Cancel on replace dialog will revert view name to template name.
-  if (chromeos::features::IsJellyEnabled()) {
-    LeftClickOn(saved_desk_util::GetSavedDeskDialogController()
-                    ->GetSystemDialogViewForTesting()
-                    ->GetCancelButtonForTesting());
-  } else {
-    dialog_widget->widget_delegate()->AsDialogDelegate()->CancelDialog();
-  }
+  LeftClickOn(saved_desk_util::GetSavedDeskDialogController()
+                  ->GetSystemDialogViewForTesting()
+                  ->GetCancelButtonForTesting());
   EXPECT_EQ(u"Desk 1", name_view->GetText());
 }
 
@@ -4545,7 +4372,7 @@ TEST_F(DeskSaveAndRecallTest, RecallSavedDesk) {
   // Assert that histogram metrics were recorded.
   histogram_tester.ExpectTotalCount(kLaunchSaveAndRecallHistogramName, 1);
   histogram_tester.ExpectBucketCount(
-      ash::kNewDeskHistogramName,
+      kNewDeskHistogramName,
       static_cast<int>(DesksCreationRemovalSource::kSaveAndRecall), 1);
 }
 
@@ -4666,7 +4493,10 @@ TEST_F(DeskSaveAndRecallTest, ExitOverviewDeskItemFocusCrash) {
   ASSERT_TRUE(Shell::IsSystemModalWindowOpen());
 
   // Exit the dialog and wait for it to close.
-  SendKey(ui::VKEY_ESCAPE);
+  // TOOD(b/292156927): Use esc key to dismiss the dialog when this is fixed.
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_RETURN);
+
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(Shell::IsSystemModalWindowOpen());
   ASSERT_TRUE(InOverviewSession());
