@@ -107,7 +107,7 @@ void MemoryMappedFile::CloseHandles() {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 
   if (data_ != nullptr) {
-    munmap(data_.ExtractAsDangling(), length_);
+    munmap(data_, length_);
   }
   file_.Close();
   length_ = 0;
