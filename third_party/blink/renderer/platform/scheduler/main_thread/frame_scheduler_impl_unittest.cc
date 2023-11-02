@@ -3127,6 +3127,206 @@ TEST_F(FrameSchedulerImplTest, PostMessageForwardingHasVeryHighPriority) {
   EXPECT_EQ(TaskPriority::kVeryHighPriority, task_queue->GetQueuePriority());
 }
 
+class FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest
+    : public FrameSchedulerImplTest {
+ public:
+  FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest()
+      : FrameSchedulerImplTest({features::kThrottleUnimportantFrameTimers},
+                               {}) {}
+};
+
+TEST_F(FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest,
+       VisibleSizeChange_CrossOrigin_ExplicitInit) {
+  LazyInitThrottleableTaskQueue();
+  EXPECT_FALSE(IsThrottled());
+  frame_scheduler_->SetFrameVisible(true);
+  frame_scheduler_->SetVisibleAreaLarge(true);
+  frame_scheduler_->SetCrossOriginToNearestMainFrame(true);
+  EXPECT_FALSE(IsThrottled());
+  frame_scheduler_->SetVisibleAreaLarge(false);
+  EXPECT_TRUE(IsThrottled());
+  frame_scheduler_->SetVisibleAreaLarge(true);
+  EXPECT_FALSE(IsThrottled());
+}
+
+TEST_F(FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest,
+       UserActivationChange_CrossOrigin_ExplicitInit) {
+  LazyInitThrottleableTaskQueue();
+  EXPECT_FALSE(IsThrottled());
+  frame_scheduler_->SetFrameVisible(true);
+  frame_scheduler_->SetVisibleAreaLarge(false);
+  frame_scheduler_->SetCrossOriginToNearestMainFrame(true);
+  frame_scheduler_->SetHadUserActivation(false);
+  EXPECT_TRUE(IsThrottled());
+  frame_scheduler_->SetHadUserActivation(true);
+  EXPECT_FALSE(IsThrottled());
+  frame_scheduler_->SetHadUserActivation(false);
+  EXPECT_TRUE(IsThrottled());
+}
+
+TEST_F(FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest,
+       UnimportantFrameThrottling) {
+  page_scheduler_->SetPageVisible(true);
+  frame_scheduler_->SetCrossOriginToNearestMainFrame(true);
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      frame_scheduler_->GetTaskRunner(
+          TaskType::kJavascriptTimerDelayedLowNesting);
+  frame_scheduler_->SetFrameVisible(true);
+  frame_scheduler_->SetVisibleAreaLarge(false);
+  frame_scheduler_->SetHadUserActivation(false);
+
+  // Snap the time to a multiple of 32ms.
+  FastForwardToAlignedTime(base::Milliseconds(32));
+  const base::TimeTicks start = base::TimeTicks::Now();
+
+  std::vector<base::TimeTicks> run_times;
+  for (int i = 0; i < 5; i++) {
+    task_runner->PostDelayedTask(FROM_HERE,
+                                 base::BindOnce(&RecordRunTime, &run_times),
+                                 base::Milliseconds(50) * i);
+  }
+
+  // Make posted tasks run.
+  task_environment_.FastForwardBy(base::Seconds(5));
+
+  EXPECT_THAT(run_times,
+              testing::ElementsAre(start, start + base::Milliseconds(64),
+                                   start + base::Milliseconds(128),
+                                   start + base::Milliseconds(160),
+                                   start + base::Milliseconds(224)));
+}
+
+TEST_F(FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest,
+       HiddenCrossOriginFrameThrottling) {
+  page_scheduler_->SetPageVisible(true);
+  frame_scheduler_->SetCrossOriginToNearestMainFrame(true);
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      frame_scheduler_->GetTaskRunner(
+          TaskType::kJavascriptTimerDelayedLowNesting);
+  frame_scheduler_->SetFrameVisible(false);
+  frame_scheduler_->SetVisibleAreaLarge(false);
+  frame_scheduler_->SetHadUserActivation(false);
+
+  // Snap the time to a multiple of 1 second.
+  FastForwardToAlignedTime(base::Seconds(1));
+  const base::TimeTicks start = base::TimeTicks::Now();
+
+  std::vector<base::TimeTicks> run_times;
+  for (int i = 0; i < 5; i++) {
+    task_runner->PostDelayedTask(FROM_HERE,
+                                 base::BindOnce(&RecordRunTime, &run_times),
+                                 base::Milliseconds(50) * i);
+  }
+
+  // Make posted tasks run.
+  task_environment_.FastForwardBy(base::Seconds(5));
+
+  EXPECT_THAT(run_times,
+              testing::ElementsAre(start, start + base::Milliseconds(1000),
+                                   start + base::Milliseconds(1000),
+                                   start + base::Milliseconds(1000),
+                                   start + base::Milliseconds(1000)));
+}
+
+TEST_F(FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest,
+       BackgroundPageTimerThrottling) {
+  page_scheduler_->SetPageVisible(false);
+
+  frame_scheduler_->SetCrossOriginToNearestMainFrame(false);
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      frame_scheduler_->GetTaskRunner(
+          TaskType::kJavascriptTimerDelayedLowNesting);
+  frame_scheduler_->SetFrameVisible(true);
+  frame_scheduler_->SetVisibleAreaLarge(true);
+  frame_scheduler_->SetHadUserActivation(false);
+
+  // Snap the time to a multiple of 1 second.
+  FastForwardToAlignedTime(base::Seconds(1));
+  const base::TimeTicks start = base::TimeTicks::Now();
+
+  std::vector<base::TimeTicks> run_times;
+  for (int i = 0; i < 5; i++) {
+    task_runner->PostDelayedTask(FROM_HERE,
+                                 base::BindOnce(&RecordRunTime, &run_times),
+                                 base::Milliseconds(50) * i);
+  }
+
+  // Make posted tasks run.
+  task_environment_.FastForwardBy(base::Seconds(5));
+
+  EXPECT_THAT(run_times,
+              testing::ElementsAre(start, start + base::Milliseconds(1000),
+                                   start + base::Milliseconds(1000),
+                                   start + base::Milliseconds(1000),
+                                   start + base::Milliseconds(1000)));
+}
+
+TEST_F(FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest,
+       LargeCrossOriginFrameNoThrottling) {
+  page_scheduler_->SetPageVisible(true);
+  frame_scheduler_->SetCrossOriginToNearestMainFrame(true);
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      frame_scheduler_->GetTaskRunner(
+          TaskType::kJavascriptTimerDelayedLowNesting);
+  frame_scheduler_->SetFrameVisible(true);
+  frame_scheduler_->SetVisibleAreaLarge(true);
+  frame_scheduler_->SetHadUserActivation(false);
+
+  // Snap the time to a multiple of 1 second.
+  FastForwardToAlignedTime(base::Seconds(1));
+  const base::TimeTicks start = base::TimeTicks::Now();
+
+  std::vector<base::TimeTicks> run_times;
+  for (int i = 0; i < 5; i++) {
+    task_runner->PostDelayedTask(FROM_HERE,
+                                 base::BindOnce(&RecordRunTime, &run_times),
+                                 base::Milliseconds(50) * i);
+  }
+
+  // Make posted tasks run.
+  task_environment_.FastForwardBy(base::Seconds(5));
+
+  // No throttling for tasks in large cross-origin frame.
+  EXPECT_THAT(run_times,
+              testing::ElementsAre(start, start + base::Milliseconds(50),
+                                   start + base::Milliseconds(100),
+                                   start + base::Milliseconds(150),
+                                   start + base::Milliseconds(200)));
+}
+
+TEST_F(FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest,
+       UserActivatedCrossOriginFrameNoThrottling) {
+  page_scheduler_->SetPageVisible(true);
+  frame_scheduler_->SetCrossOriginToNearestMainFrame(true);
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      frame_scheduler_->GetTaskRunner(
+          TaskType::kJavascriptTimerDelayedLowNesting);
+  frame_scheduler_->SetFrameVisible(true);
+  frame_scheduler_->SetVisibleAreaLarge(false);
+  frame_scheduler_->SetHadUserActivation(true);
+
+  // Snap the time to a multiple of 1 second.
+  FastForwardToAlignedTime(base::Seconds(1));
+  const base::TimeTicks start = base::TimeTicks::Now();
+
+  std::vector<base::TimeTicks> run_times;
+  for (int i = 0; i < 5; i++) {
+    task_runner->PostDelayedTask(FROM_HERE,
+                                 base::BindOnce(&RecordRunTime, &run_times),
+                                 base::Milliseconds(50) * i);
+  }
+
+  // Make posted tasks run.
+  task_environment_.FastForwardBy(base::Seconds(5));
+
+  // No throttling for tasks in cross-origin frame with user activation.
+  EXPECT_THAT(run_times,
+              testing::ElementsAre(start, start + base::Milliseconds(50),
+                                   start + base::Milliseconds(100),
+                                   start + base::Milliseconds(150),
+                                   start + base::Milliseconds(200)));
+}
+
 class FrameSchedulerImplDeleterTaskRunnerEnabledTest
     : public FrameSchedulerImplTest {
  public:

@@ -4310,6 +4310,25 @@ void LocalFrameView::CrossOriginToParentFrameChanged() {
   }
 }
 
+void LocalFrameView::SetViewportIntersection(
+    const mojom::blink::ViewportIntersectionState& intersection_state) {
+  if (!last_intersection_state_.Equals(intersection_state)) {
+    last_intersection_state_ = intersection_state;
+
+    int viewport_intersect_area =
+        intersection_state.viewport_intersection.size().GetArea();
+    int outermost_main_frame_area =
+        intersection_state.outermost_main_frame_size.GetArea();
+    float ratio = 1.0f * viewport_intersect_area / outermost_main_frame_area;
+
+    const float ratio_threshold =
+        1.0f * features::kLargeFrameSizePercentThreshold.Get() / 100;
+    if (FrameScheduler* frame_scheduler = frame_->GetFrameScheduler()) {
+      frame_scheduler->SetVisibleAreaLarge(ratio > ratio_threshold);
+    }
+  }
+}
+
 void LocalFrameView::VisibilityForThrottlingChanged() {
   if (FrameScheduler* frame_scheduler = frame_->GetFrameScheduler()) {
     // TODO(szager): Per crbug.com/994443, maybe this should be:

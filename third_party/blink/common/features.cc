@@ -1932,7 +1932,8 @@ BASE_FEATURE(kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes,
              "ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Throttles Javascript timer wake ups on foreground pages.
+// Throttles Javascript timer wake ups (both same origin and cross origin) on
+// foreground pages.
 BASE_FEATURE(kThrottleForegroundTimers,
              "ThrottleForegroundTimers",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1947,6 +1948,25 @@ BASE_FEATURE(kThrottleInstallingServiceWorker,
              base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int> kInstallingServiceWorkerOutstandingThrottledLimit{
     &kThrottleInstallingServiceWorker, "limit", 3};
+
+// Throttles Javascript timer wake ups of unimportant frames (cross origin
+// frames with small proportion of the page's visible area and no user
+// activation) on foreground pages.
+BASE_FEATURE(kThrottleUnimportantFrameTimers,
+             "ThrottleUnimportantFrameTimers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// Interval between Javascript timer wake ups for unimportant frames (small
+// cross origin frames with no user activation) when the
+// "ThrottleUnimportantFrameTimers" feature is enabled.
+const base::FeatureParam<int>
+    kUnimportantFrameTimersThrottledWakeUpIntervalMills{
+        &features::kThrottleUnimportantFrameTimers,
+        "unimportant_frame_timers_throttled_wake_up_interval_millis", 32};
+// The percentage of the page's visible area below which a frame is considered
+// small. Only small frames can be throttled by ThrottleUnimportantFrameTimers.
+const base::FeatureParam<int> kLargeFrameSizePercentThreshold{
+    &features::kThrottleUnimportantFrameTimers,
+    "large_frame_size_percent_threshold", 75};
 
 BASE_FEATURE(kTimedHTMLParserBudget,
              "TimedHTMLParserBudget",

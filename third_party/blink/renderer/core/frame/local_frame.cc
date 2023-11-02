@@ -2234,6 +2234,23 @@ void LocalFrame::SetViewportIntersectionFromParent(
     Client()->OnMainFrameIntersectionChanged(rect);
   }
 
+  // Viewport intersection state needs to be updated when remote ancestor
+  // frames and their respective scroll positions, clips, etc change.
+  if (intersection_state_.viewport_intersection !=
+          intersection_state.viewport_intersection ||
+      intersection_state_.outermost_main_frame_size !=
+          intersection_state.outermost_main_frame_size) {
+    int viewport_intersect_area =
+        intersection_state.viewport_intersection.size().GetArea();
+    int outermost_main_frame_area =
+        intersection_state.outermost_main_frame_size.GetArea();
+    float ratio = 1.0f * viewport_intersect_area / outermost_main_frame_area;
+
+    const float ratio_threshold =
+        1.0f * features::kLargeFrameSizePercentThreshold.Get() / 100;
+    GetFrameScheduler()->SetVisibleAreaLarge(ratio > ratio_threshold);
+  }
+
   // We only schedule an update if the viewport intersection or occlusion state
   // has changed; neither the viewport offset nor the compositing bounds will
   // affect IntersectionObserver.
@@ -2595,6 +2612,16 @@ void LocalFrame::ConsumeHistoryUserActivation() {
       local_frame_node->history_user_activation_state_.Consume();
     }
   }
+}
+
+void LocalFrame::SetHadUserInteraction(bool had_user_interaction) {
+  if (had_user_interaction) {
+    history_user_activation_state_.Activate();
+  } else {
+    history_user_activation_state_.Clear();
+  }
+
+  GetFrameScheduler()->SetHadUserActivation(had_user_interaction);
 }
 
 namespace {

@@ -1286,6 +1286,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThrottleInstallingServiceWorker);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kInstallingServiceWorkerOutstandingThrottledLimit;
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThrottleUnimportantFrameTimers);
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kUnimportantFrameTimersThrottledWakeUpIntervalMills;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kLargeFrameSizePercentThreshold;
+
 // If enabled, the HTMLDocumentParser will use a budget based on elapsed time
 // rather than token count.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kTimedHTMLParserBudget);

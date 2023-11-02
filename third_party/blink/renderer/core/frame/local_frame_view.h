@@ -36,7 +36,7 @@
 #include "base/time/time.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
@@ -774,8 +774,11 @@ class CORE_EXPORT LocalFrameView final
   void SelfVisibleChanged() override;
   void ParentVisibleChanged() override;
   void NotifyFrameRectsChangedIfNeeded();
+
+  // Updates viewport intersection state when LocalFrame's scroll positions,
+  // clips, etc have any change.
   void SetViewportIntersection(const mojom::blink::ViewportIntersectionState&
-                                   intersection_state) override {}
+                                   intersection_state) override;
   void VisibilityForThrottlingChanged() override;
   bool LifecycleUpdatesThrottled() const override {
     return lifecycle_updates_throttled_;
@@ -1109,6 +1112,8 @@ class CORE_EXPORT LocalFrameView final
   IntersectionObservationState intersection_observation_state_;
   gfx::Vector2dF min_scroll_delta_to_update_intersection_;
   gfx::Vector2dF accumulated_scroll_delta_since_last_intersection_update_;
+
+  mojom::blink::ViewportIntersectionState last_intersection_state_;
 
   bool needs_focus_on_fragment_;
 

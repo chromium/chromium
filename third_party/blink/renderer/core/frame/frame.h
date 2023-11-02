@@ -489,10 +489,6 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
 
   void RenderFallbackContent();
 
-  // Only implemented for LocalFrames.
-  virtual void ActivateHistoryUserActivationState() {}
-  virtual void ClearHistoryUserActivationState() {}
-
   mutable FrameTree tree_node_;
 
   Member<Page> page_;

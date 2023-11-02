@@ -345,6 +345,10 @@ class CORE_EXPORT LocalFrame final
   }
   void ConsumeHistoryUserActivation();
 
+  // Activates or clears history user activation state and also notifies frame
+  // scheduler of the state change.
+  void SetHadUserInteraction(bool had_user_interaction);
+
   // Registers an observer that will be notified if a VK occludes
   // the content when it raises/dismisses. The observer is a HeapHashSet
   // data structure that doesn't allow duplicates.
@@ -917,14 +921,6 @@ class CORE_EXPORT LocalFrame final
   // already LocalFrame.
   bool IsLocalFrame() const override { return true; }
   bool IsRemoteFrame() const override { return false; }
-
-  void ActivateHistoryUserActivationState() override {
-    history_user_activation_state_.Activate();
-  }
-
-  void ClearHistoryUserActivationState() override {
-    history_user_activation_state_.Clear();
-  }
 
   void EnableNavigation() { --navigation_disable_count_; }
   void DisableNavigation() { ++navigation_disable_count_; }
