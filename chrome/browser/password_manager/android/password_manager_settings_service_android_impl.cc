@@ -219,8 +219,6 @@ void PasswordManagerSettingsServiceAndroidImpl::Init() {
       base::BindRepeating(&PasswordManagerSettingsServiceAndroidImpl::
                               OnUnenrollmentPreferenceChanged,
                           weak_ptr_factory_.GetWeakPtr()));
-
-  RequestSettingsFromBackend();
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded() {

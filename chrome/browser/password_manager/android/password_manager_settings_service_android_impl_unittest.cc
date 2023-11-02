@@ -225,19 +225,24 @@ class PasswordManagerSettingsServiceAndroidImplTest
     : public PasswordManagerSettingsServiceAndroidImplBaseTest {};
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
-       RequestsSettingsOnServiceCreation) {
+       DoesntRequestSettingsOnServiceCreation) {
   std::unique_ptr<MockPasswordSettingsUpdaterBridgeHelper> bridge_helper =
       std::make_unique<MockPasswordSettingsUpdaterBridgeHelper>();
 
   ASSERT_NE(bridge_helper, nullptr);
 
+  // The settings shouldn't be requested upon creating the service, which
+  // happens on startup, because Chrome also gets foregrounded and settings are
+  // requested on Chrome foregrounding.
   EXPECT_CALL(*bridge_helper,
               GetPasswordSettingValue(
                   Eq(SyncingAccount(kTestAccount)),
-                  Eq(PasswordManagerSetting::kOfferToSavePasswords)));
+                  Eq(PasswordManagerSetting::kOfferToSavePasswords)))
+      .Times(0);
   EXPECT_CALL(*bridge_helper,
               GetPasswordSettingValue(Eq(SyncingAccount(kTestAccount)),
-                                      Eq(PasswordManagerSetting::kAutoSignIn)));
+                                      Eq(PasswordManagerSetting::kAutoSignIn)))
+      .Times(0);
 
   SetPasswordsSync(true);
   CreateNewService(std::move(bridge_helper));
@@ -1424,4 +1429,28 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       password_manager::prefs::kCredentialsEnableAutosignin));
   EXPECT_FALSE(pref_service()->GetBoolean(
       password_manager::prefs::kAutoSignInEnabledGMS));
+}
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+       DoesntRequestSettingsOnServiceCreation) {
+  std::unique_ptr<MockPasswordSettingsUpdaterBridgeHelper> bridge_helper =
+      std::make_unique<MockPasswordSettingsUpdaterBridgeHelper>();
+
+  ASSERT_NE(bridge_helper, nullptr);
+
+  // The settings shouldn't be requested upon creating the service, which
+  // happens on startup, because Chrome also gets foregrounded and settings are
+  // requested on Chrome foregrounding.
+  EXPECT_CALL(*bridge_helper,
+              GetPasswordSettingValue(
+                  Eq(SyncingAccount(kTestAccount)),
+                  Eq(PasswordManagerSetting::kOfferToSavePasswords)))
+      .Times(0);
+  EXPECT_CALL(*bridge_helper,
+              GetPasswordSettingValue(Eq(SyncingAccount(kTestAccount)),
+                                      Eq(PasswordManagerSetting::kAutoSignIn)))
+      .Times(0);
+
+  SetPasswordsSync(false);
+  CreateNewService(std::move(bridge_helper));
 }
