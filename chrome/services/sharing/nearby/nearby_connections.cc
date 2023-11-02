@@ -673,6 +673,17 @@ void NearbyConnections::RejectConnectionV3(
           ResultCallbackFromMojom(std::move(callback)));
 }
 
+void NearbyConnections::DisconnectFromDeviceV3(
+    const std::string& service_id,
+    ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
+    DisconnectFromDeviceV3Callback callback) {
+  GetCore(service_id)
+      ->DisconnectFromDeviceV3(
+          presence::PresenceDevice(ash::nearby::presence::MetadataFromMojom(
+              remote_device->metadata.get())),
+          ResultCallbackFromMojom(std::move(callback)));
+}
+
 base::File NearbyConnections::ExtractInputFile(int64_t payload_id) {
   base::AutoLock al(input_file_lock_);
   auto file_it = input_file_map_.find(payload_id);

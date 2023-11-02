@@ -1645,4 +1645,46 @@ TEST_F(NearbyConnectionsTest, RejectConnectionV3) {
   RejectConnectionV3(std::move(presence_device_mojom));
 }
 
+TEST_F(NearbyConnectionsTest, DisconnectFromDeviceV3) {
+  nearby::presence::PresenceDevice presence_device(CreateMetadata());
+  PresenceDevicePtr presence_device_mojom =
+      ash::nearby::presence::BuildPresenceMojomDevice(presence_device);
+  EXPECT_EQ(presence_device_mojom->endpoint_id,
+            presence_device.GetEndpointId());
+
+  FakeConnectionListenerV3 fake_connection_listener_v3;
+  RequestConnectionV3(fake_connection_listener_v3,
+                      presence_device_mojom.Clone());
+
+  presence_device_mojom =
+      ash::nearby::presence::BuildPresenceMojomDevice(presence_device);
+  EXPECT_EQ(presence_device_mojom->endpoint_id,
+            presence_device.GetEndpointId());
+  FakePayloadListenerV3 fake_payload_listener_v3;
+  ClientProxy* client_proxy = AcceptConnectionV3(fake_payload_listener_v3,
+                                                 presence_device_mojom.Clone());
+
+  EXPECT_CALL(*service_controller_router_ptr_, DisconnectFromDeviceV3)
+      .WillOnce([&client_proxy](ClientProxy* client,
+                                const NearbyDevice& nearby_device,
+                                ResultCallback callback) {
+        client_proxy = client;
+
+        client_proxy->CancelEndpoint(nearby_device.GetEndpointId());
+        EXPECT_TRUE(callback);
+        callback({Status::kSuccess});
+      });
+
+  presence_device_mojom =
+      ash::nearby::presence::BuildPresenceMojomDevice(presence_device);
+  base::RunLoop disconnect_run_loop;
+  nearby_connections_->DisconnectFromDeviceV3(
+      kServiceId, std::move(presence_device_mojom),
+      base::BindLambdaForTesting([&](mojom::Status status) {
+        EXPECT_EQ(mojom::Status::kSuccess, status);
+        disconnect_run_loop.Quit();
+      }));
+  disconnect_run_loop.Run();
+}
+
 }  // namespace nearby::connections

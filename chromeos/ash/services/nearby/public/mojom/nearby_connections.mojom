@@ -444,4 +444,20 @@ interface NearbyConnections {
   RejectConnectionV3(string service_id,
                      ash.nearby.presence.mojom.PresenceDevice remote_device)
       => (Status status);
+
+  // Disconnects from a remote device. Payloads can no longer be sent to or
+  // received from the device after this function is called.
+  //
+  // service_id    - Service ID used to discover the device.
+  // remote_device - The remote device to disconnect from.
+  // Possible status codes include:
+  //   Status::kSuccess upon successful disconnection.
+  //
+  // TODO(b/306188252): This API will initially only be used by Nearby Presence
+  // client applications, and therefore uses a PresenceDevice type for its
+  // `remote_device` argument. This will eventually be replaced with the
+  // NearbyDevice type to allow use by Nearby Connections/non-Presence clients.
+  DisconnectFromDeviceV3(string service_id,
+                         ash.nearby.presence.mojom.PresenceDevice remote_device)
+      => (Status status);
 };
