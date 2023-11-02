@@ -5,6 +5,40 @@
   "chromium.linux": {
     "Deterministic Linux (dbg)": "ci/Deterministic Linux (dbg)/gn-args.json"
   },
+  "chromium.reclient.fyi": {
+    "Comparison Linux (reclient vs reclient remote links)": "reclient/Comparison Linux (reclient vs reclient remote links)/gn-args.json",
+    "Linux Builder (canonical wd) (reclient compare)": "reclient/Linux Builder (canonical wd) (reclient compare)/gn-args.json",
+    "Linux Builder reclient staging": "reclient/Linux Builder reclient staging/gn-args.json",
+    "Linux Builder reclient staging untrusted": "reclient/Linux Builder reclient staging untrusted/gn-args.json",
+    "Linux Builder reclient test": "reclient/Linux Builder reclient test/gn-args.json",
+    "Linux Builder reclient test (casng)": "reclient/Linux Builder reclient test (casng)/gn-args.json",
+    "Linux Builder reclient test (casng) untrusted": "reclient/Linux Builder reclient test (casng) untrusted/gn-args.json",
+    "Linux Builder reclient test (unified uploads)": "reclient/Linux Builder reclient test (unified uploads)/gn-args.json",
+    "Linux Builder reclient test (unified uploads) untrusted": "reclient/Linux Builder reclient test (unified uploads) untrusted/gn-args.json",
+    "Linux Builder reclient test untrusted": "reclient/Linux Builder reclient test untrusted/gn-args.json",
+    "Mac Builder reclient staging": "reclient/Mac Builder reclient staging/gn-args.json",
+    "Mac Builder reclient staging untrusted": "reclient/Mac Builder reclient staging untrusted/gn-args.json",
+    "Mac Builder reclient test": "reclient/Mac Builder reclient test/gn-args.json",
+    "Mac Builder reclient test untrusted": "reclient/Mac Builder reclient test untrusted/gn-args.json",
+    "Simple Chrome Builder reclient staging": "reclient/Simple Chrome Builder reclient staging/gn-args.json",
+    "Simple Chrome Builder reclient staging untrusted": "reclient/Simple Chrome Builder reclient staging untrusted/gn-args.json",
+    "Simple Chrome Builder reclient test": "reclient/Simple Chrome Builder reclient test/gn-args.json",
+    "Simple Chrome Builder reclient test untrusted": "reclient/Simple Chrome Builder reclient test untrusted/gn-args.json",
+    "Win x64 Builder reclient staging": "reclient/Win x64 Builder reclient staging/gn-args.json",
+    "Win x64 Builder reclient staging untrusted": "reclient/Win x64 Builder reclient staging untrusted/gn-args.json",
+    "Win x64 Builder reclient test": "reclient/Win x64 Builder reclient test/gn-args.json",
+    "Win x64 Builder reclient test untrusted": "reclient/Win x64 Builder reclient test untrusted/gn-args.json",
+    "Win x64 Cross Builder (reclient compare)": "reclient/Win x64 Cross Builder (reclient compare)/gn-args.json",
+    "Windows Cross deterministic": "reclient/Windows Cross deterministic/gn-args.json",
+    "ios-simulator reclient staging": "reclient/ios-simulator reclient staging/gn-args.json",
+    "ios-simulator reclient staging untrusted": "reclient/ios-simulator reclient staging untrusted/gn-args.json",
+    "ios-simulator reclient test": "reclient/ios-simulator reclient test/gn-args.json",
+    "ios-simulator reclient test untrusted": "reclient/ios-simulator reclient test untrusted/gn-args.json",
+    "mac-arm64-rel reclient staging": "reclient/mac-arm64-rel reclient staging/gn-args.json",
+    "mac-arm64-rel reclient staging untrusted": "reclient/mac-arm64-rel reclient staging untrusted/gn-args.json",
+    "mac-arm64-rel reclient test": "reclient/mac-arm64-rel reclient test/gn-args.json",
+    "mac-arm64-rel reclient test untrusted": "reclient/mac-arm64-rel reclient test untrusted/gn-args.json"
+  },
   "tryserver.chromium": {
     "linux-official": "try/linux-official/gn-args.json"
   }

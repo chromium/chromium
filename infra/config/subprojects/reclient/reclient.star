@@ -6,6 +6,7 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "builders", "cpu", "os", "reclient", "xcode")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 load("//lib/structs.star", "structs")
 load("//console-header.star", "HEADER")
 
@@ -152,6 +153,9 @@ fyi_reclient_staging_builder(
     ),
     os = os.LINUX_DEFAULT,
     console_view_category = "linux",
+    gn_args = gn_args.config(
+        configs = ["gpu_tests", "release_builder", "reclient"],
+    ),
 )
 
 fyi_reclient_test_builder(
@@ -171,6 +175,9 @@ fyi_reclient_test_builder(
     ),
     os = os.LINUX_DEFAULT,
     console_view_category = "linux",
+    gn_args = gn_args.config(
+        configs = ["gpu_tests", "release_builder", "reclient"],
+    ),
 )
 
 fyi_reclient_test_builder(
@@ -190,6 +197,7 @@ fyi_reclient_test_builder(
     ),
     os = os.LINUX_DEFAULT,
     console_view_category = "linux",
+    gn_args = "reclient/Linux Builder reclient test",
     reclient_bootstrap_env = {
         "GLOG_use_unified_uploads": "true",
     },
@@ -215,6 +223,7 @@ fyi_reclient_test_builder(
     ),
     os = os.LINUX_DEFAULT,
     console_view_category = "linux",
+    gn_args = "reclient/Linux Builder reclient test",
     reclient_bootstrap_env = {
         "RBE_use_casng": "true",
     },
@@ -239,6 +248,9 @@ fyi_reclient_staging_builder(
     cores = 12,
     os = os.MAC_DEFAULT,
     console_view_category = "mac",
+    gn_args = gn_args.config(
+        configs = ["gpu_tests", "release_builder", "reclient", "minimal_symbols"],
+    ),
     priority = 35,
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
@@ -264,6 +276,9 @@ fyi_reclient_test_builder(
     cores = None,
     os = os.MAC_DEFAULT,
     console_view_category = "mac",
+    gn_args = gn_args.config(
+        configs = ["gpu_tests", "release_builder", "reclient", "minimal_symbols"],
+    ),
     priority = 35,
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
@@ -291,6 +306,9 @@ fyi_reclient_staging_builder(
     os = os.WINDOWS_ANY,
     console_view_category = "win",
     execution_timeout = 5 * time.hour,
+    gn_args = gn_args.config(
+        configs = ["gpu_tests", "release_builder", "reclient", "minimal_symbols"],
+    ),
 )
 
 fyi_reclient_test_builder(
@@ -313,6 +331,9 @@ fyi_reclient_test_builder(
     os = os.WINDOWS_ANY,
     console_view_category = "win",
     execution_timeout = 5 * time.hour,
+    gn_args = gn_args.config(
+        configs = ["gpu_tests", "release_builder", "reclient", "minimal_symbols"],
+    ),
 )
 
 fyi_reclient_staging_builder(
@@ -335,6 +356,7 @@ fyi_reclient_staging_builder(
     ),
     os = os.LINUX_DEFAULT,
     console_view_category = "linux",
+    gn_args = "reclient/Simple Chrome Builder reclient test",
 )
 
 fyi_reclient_test_builder(
@@ -358,6 +380,17 @@ fyi_reclient_test_builder(
     os = os.LINUX_DEFAULT,
     console_view_category = "linux",
     execution_timeout = 4 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "chromeos_device",
+            "dcheck_off",
+            "reclient",
+            "amd64-generic-vm",
+            "ozone_headless",
+            "use_fake_dbus_clients",
+            "also_build_lacros_chrome_for_architecture_amd64",
+        ],
+    ),
 )
 
 fyi_reclient_test_builder(
@@ -379,6 +412,17 @@ fyi_reclient_test_builder(
     cores = 12,
     os = os.MAC_DEFAULT,
     console_view_category = "ios",
+    gn_args = gn_args.config(
+        configs = [
+            "debug",
+            "static",
+            "minimal_symbols",
+            "reclient",
+            "ios_simulator",
+            "x64",
+            "xctest",
+        ],
+    ),
     priority = 35,
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
@@ -405,6 +449,17 @@ fyi_reclient_staging_builder(
     cores = 12,
     os = os.MAC_DEFAULT,
     console_view_category = "ios",
+    gn_args = gn_args.config(
+        configs = [
+            "debug",
+            "static",
+            "minimal_symbols",
+            "reclient",
+            "ios_simulator",
+            "x64",
+            "xctest",
+        ],
+    ),
     priority = 35,
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
@@ -431,6 +486,16 @@ fyi_reclient_staging_builder(
     cores = 12,
     os = os.MAC_DEFAULT,
     console_view_category = "mac",
+    gn_args = gn_args.config(
+        configs = [
+            "arm64",
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "disable_nacl",
+        ],
+    ),
     priority = 35,
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
@@ -456,6 +521,16 @@ fyi_reclient_test_builder(
     cores = 12,
     os = os.MAC_DEFAULT,
     console_view_category = "mac",
+    gn_args = gn_args.config(
+        configs = [
+            "arm64",
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "disable_nacl",
+        ],
+    ),
     priority = 35,
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
@@ -471,6 +546,14 @@ ci.builder(
         short_name = "cmp",
     ),
     execution_timeout = 6 * time.hour,
+    gn_args = {
+        "build1": gn_args.config(
+            configs = ["gpu_tests", "release_builder", "reclient"],
+        ),
+        "build2": gn_args.config(
+            configs = ["gpu_tests", "release_builder", "reclient_with_remoteexec_links"],
+        ),
+    },
     reclient_bootstrap_env = {
         "GOMA_DEPS_CACHE_TABLE_THRESHOLD": "40000",
         "RBE_ip_reset_min_delay": "-1s",
@@ -498,6 +581,14 @@ ci.builder(
         short_name = "detcross",
     ),
     execution_timeout = 12 * time.hour,
+    gn_args = {
+        "local": gn_args.config(
+            configs = ["release_builder", "x86", "minimal_symbols"],
+        ),
+        "reclient": gn_args.config(
+            configs = ["release_builder", "reclient", "x86", "minimal_symbols"],
+        ),
+    },
     reclient_bootstrap_env = {
         "GOMA_DEPS_CACHE_TABLE_THRESHOLD": "40000",
         "RBE_fast_log_collection": "true",
@@ -530,6 +621,9 @@ ci.builder(
         short_name = "compcross",
     ),
     execution_timeout = 12 * time.hour,
+    gn_args = gn_args.config(
+        configs = ["gpu_tests", "release_builder", "reclient", "minimal_symbols"],
+    ),
     reclient_bootstrap_env = {
         "GOMA_DEPS_CACHE_TABLE_THRESHOLD": "40000",
         "RBE_fast_log_collection": "true",
@@ -568,6 +662,9 @@ ci.builder(
         short_name = "compwd",
     ),
     execution_timeout = 14 * time.hour,
+    gn_args = gn_args.config(
+        configs = ["gpu_tests", "debug_build", "reclient"],
+    ),
     reclient_bootstrap_env = {
         "GOMA_DEPS_CACHE_TABLE_THRESHOLD": "40000",
         "RBE_fast_log_collection": "true",
