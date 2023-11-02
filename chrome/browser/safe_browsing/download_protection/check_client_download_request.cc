@@ -368,6 +368,12 @@ bool CheckClientDownloadRequest::ShouldPromptForLocalDecryption(
     return false;
   }
 
+  // While this isn't a "deep" scan, enterprise customers may have similar
+  // reactions to it, so we use the same policy to control it.
+  if (!AreDeepScansAllowedByPolicy(*profile->GetPrefs())) {
+    return false;
+  }
+
   if (GetSafeBrowsingState(*profile->GetPrefs()) !=
       SafeBrowsingState::STANDARD_PROTECTION) {
     return false;
