@@ -223,7 +223,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   using ParseJsonCallback =
       base::OnceCallback<void(FetchStatus,
                               data_decoder::DataDecoder::ValueOrError)>;
-  using RevokeCallback = base::OnceCallback<void(RevokeResponse)>;
+  using RevokeCallback =
+      base::OnceCallback<void(FetchStatus, const std::string&)>;
   using TokenRequestCallback =
       base::OnceCallback<void(FetchStatus, TokenResult)>;
   using ContinueOnCallback = base::OnceCallback<void(FetchStatus, const GURL&)>;
@@ -295,9 +296,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
 
   // Send a revoke request to the IDP.
   virtual void SendRevokeRequest(const GURL& revoke_url,
-                                 const std::string& account_id,
-                                 const url::Origin& top_frame_origin,
-                                 const url::Origin& relying_party,
+                                 const std::string& account_hint,
+                                 const std::string& client_id,
                                  RevokeCallback callback);
 
  private:
@@ -307,14 +307,16 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
       std::unique_ptr<network::ResourceRequest> resource_request,
       absl::optional<std::string> url_encoded_post_data,
       ParseJsonCallback parse_json_callback,
-      size_t max_download_size);
+      size_t max_download_size,
+      bool allow_http_error_results = false);
 
   // Starts download result using `url_loader`. Calls `download_callback` when
   // the download completes.
   void DownloadUrl(std::unique_ptr<network::ResourceRequest> resource_request,
                    absl::optional<std::string> url_encoded_post_data,
                    DownloadCallback download_callback,
-                   size_t max_download_size);
+                   size_t max_download_size,
+                   bool allow_http_error_results = false);
 
   // Called when download initiated by DownloadUrl() completes.
   void OnDownloadedUrl(std::unique_ptr<network::SimpleURLLoader> url_loader,

@@ -68,6 +68,7 @@ constexpr char kProviderUrlListKey[] = "provider_urls";
 constexpr char kIdAssertionEndpoint[] = "id_assertion_endpoint";
 constexpr char kClientMetadataEndpointKey[] = "client_metadata_endpoint";
 constexpr char kMetricsEndpoint[] = "metrics_endpoint";
+constexpr char kRevocationEndpoint[] = "revocation_endpoint";
 
 // Shared between the well-known files and config files
 constexpr char kAccountsEndpointKey[] = "accounts_endpoint";
@@ -125,6 +126,9 @@ constexpr char kUnauthorizedClient[] = "unauthorized_client";
 constexpr char kAccessDenied[] = "access_denied";
 constexpr char kTemporarilyUnavailable[] = "temporarily_unavailable";
 constexpr char kServerError[] = "server_error";
+
+// Revoke response keys.
+constexpr char kRevokeAccountId[] = "account_id";
 
 // 1 MiB is an arbitrary upper bound that should account for any reasonable
 // response size that is a part of this protocol.
@@ -515,6 +519,7 @@ void OnConfigParsed(const GURL& provider,
   endpoints.client_metadata =
       ExtractEndpoint(provider, response, kClientMetadataEndpointKey);
   endpoints.metrics = ExtractEndpoint(provider, response, kMetricsEndpoint);
+  endpoints.revoke = ExtractEndpoint(provider, response, kRevocationEndpoint);
 
   const base::Value::Dict* idp_metadata_value =
       response.FindDict(kIdpBrandingKey);
@@ -676,6 +681,10 @@ TokenResponseType GetTokenResponseType(const std::string* token,
   return TokenResponseType::kTokenNotReceivedAndErrorNotReceived;
 }
 
+bool IsOkResponseCode(int response_code) {
+  return response_code / 100 == 2;
+}
+
 void OnTokenRequestParsed(
     IdpNetworkRequestManager::TokenRequestCallback callback,
     IdpNetworkRequestManager::ContinueOnCallback continue_on_callback,
@@ -699,7 +708,7 @@ void OnTokenRequestParsed(
   }
 
   const base::Value::Dict& response = result->GetDict();
-  const std::string* token = fetch_status.response_code / 100 == 2
+  const std::string* token = IsOkResponseCode(fetch_status.response_code)
                                  ? response.FindString(kTokenKey)
                                  : nullptr;
   const std::string* continue_on = response.FindString(kContinueOnKey);
@@ -757,6 +766,27 @@ void OnLogoutCompleted(IdpNetworkRequestManager::LogoutCallback callback,
                        int response_code,
                        const std::string& mime_type) {
   std::move(callback).Run();
+}
+
+void OnRevokeResponseParsed(IdpNetworkRequestManager::RevokeCallback callback,
+                            FetchStatus fetch_status,
+                            data_decoder::DataDecoder::ValueOrError result) {
+  if (fetch_status.parse_status != ParseStatus::kSuccess) {
+    std::move(callback).Run(fetch_status, /*account_id=*/"");
+    return;
+  }
+
+  const base::Value::Dict& response = result->GetDict();
+  const std::string* account_id = response.FindString(kRevokeAccountId);
+
+  if (account_id && !account_id->empty()) {
+    std::move(callback).Run(fetch_status, *account_id);
+    return;
+  }
+
+  std::move(callback).Run(
+      {ParseStatus::kInvalidResponseError, fetch_status.response_code},
+      /*account_id=*/"");
 }
 
 }  // namespace
@@ -905,7 +935,11 @@ void IdpNetworkRequestManager::SendTokenRequest(
       base::BindOnce(&OnTokenRequestParsed, std::move(callback),
                      std::move(continue_on),
                      std::move(record_error_metrics_callback), token_url),
-      maxResponseSizeInKiB * 1024);
+      maxResponseSizeInKiB * 1024,
+      // We should parse the response body for the ID assertion endpoint request
+      // even if the response code is non-2xx because the server may include the
+      // error details with the Error API.
+      IsFedCmErrorEnabled());
 }
 
 void IdpNetworkRequestManager::SendSuccessfulTokenRequestMetrics(
@@ -965,29 +999,36 @@ void IdpNetworkRequestManager::SendLogout(const GURL& logout_url,
 
 void IdpNetworkRequestManager::SendRevokeRequest(
     const GURL& revoke_url,
-    const std::string& account_id,
-    const url::Origin& top_frame_origin,
-    const url::Origin& relying_party,
+    const std::string& account_hint,
+    const std::string& client_id,
     RevokeCallback callback) {
-  // TODO(crbug.com/1473134): implement this method properly.
-  std::move(callback).Run(RevokeResponse::kSuccess);
+  auto resource_request = CreateCredentialedResourceRequest(
+      revoke_url, CredentialedResourceRequestType::kOriginWithCORS);
+  std::string url_encoded_post_data =
+      "client_id=" + client_id + "&account_hint=" + account_hint;
+  DownloadJsonAndParse(
+      std::move(resource_request), url_encoded_post_data,
+      base::BindOnce(&OnRevokeResponseParsed, std::move(callback)),
+      maxResponseSizeInKiB * 1024);
 }
 
 void IdpNetworkRequestManager::DownloadJsonAndParse(
     std::unique_ptr<network::ResourceRequest> resource_request,
     absl::optional<std::string> url_encoded_post_data,
     ParseJsonCallback parse_json_callback,
-    size_t max_download_size) {
+    size_t max_download_size,
+    bool allow_http_error_results) {
   DownloadUrl(std::move(resource_request), std::move(url_encoded_post_data),
               base::BindOnce(&OnDownloadedJson, std::move(parse_json_callback)),
-              max_download_size);
+              max_download_size, allow_http_error_results);
 }
 
 void IdpNetworkRequestManager::DownloadUrl(
     std::unique_ptr<network::ResourceRequest> resource_request,
     absl::optional<std::string> url_encoded_post_data,
     DownloadCallback callback,
-    size_t max_download_size) {
+    size_t max_download_size,
+    bool allow_http_error_results) {
   if (url_encoded_post_data) {
     resource_request->method = net::HttpRequestHeaders::kPostMethod;
     resource_request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
@@ -999,10 +1040,7 @@ void IdpNetworkRequestManager::DownloadUrl(
   if (url_encoded_post_data) {
     url_loader->AttachStringForUpload(*url_encoded_post_data,
                                       kUrlEncodedContentType);
-    // We should parse the response body for the ID assertion endpoint request
-    // even if the response code is non-2xx because the server may include the
-    // error details with the Error API.
-    if (IsFedCmErrorEnabled()) {
+    if (allow_http_error_results) {
       url_loader->SetAllowHttpErrorResults(true);
     }
   }

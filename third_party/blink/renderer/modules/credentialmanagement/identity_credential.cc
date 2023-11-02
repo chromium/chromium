@@ -111,6 +111,7 @@ bool IdentityCredential::IsIdentityCredential() const {
   return true;
 }
 
+// static
 ScriptPromise IdentityCredential::logoutRPs(
     ScriptState* script_state,
     const HeapVector<Member<IdentityCredentialLogoutRPsRequest>>&
@@ -169,6 +170,7 @@ ScriptPromise IdentityCredential::logoutRPs(
   return promise;
 }
 
+// static
 ScriptPromise IdentityCredential::revoke(
     ScriptState* script_state,
     const blink::IdentityCredentialRevokeOptions* options,

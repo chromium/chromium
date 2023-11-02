@@ -54,19 +54,21 @@ namespace content {
 namespace {
 
 // Values for testing. Real minimum and ideal sizes are different.
-const int kTestIdpBrandIconMinimumSize = 16;
-const int kTestIdpBrandIconIdealSize = 32;
+constexpr int kTestIdpBrandIconMinimumSize = 16;
+constexpr int kTestIdpBrandIconIdealSize = 32;
 
-const char kTestIdpUrl[] = "https://idp.test";
-const char kTestRpUrl[] = "https://rp.test";
-const char kTestWellKnownUrl[] = "https://idp.test/.well-known/web-identity";
-const char kTestConfigUrl[] = "https://idp.test/fedcm.json";
-const char kTestAccountsEndpoint[] = "https://idp.test/accounts_endpoint";
-const char kTestTokenEndpoint[] = "https://idp.test/token_endpoint";
-const char kTestClientMetadataEndpoint[] =
+constexpr char kTestIdpUrl[] = "https://idp.test";
+constexpr char kTestRpUrl[] = "https://rp.test";
+constexpr char kTestWellKnownUrl[] =
+    "https://idp.test/.well-known/web-identity";
+constexpr char kTestConfigUrl[] = "https://idp.test/fedcm.json";
+constexpr char kTestAccountsEndpoint[] = "https://idp.test/accounts_endpoint";
+constexpr char kTestTokenEndpoint[] = "https://idp.test/token_endpoint";
+constexpr char kTestClientMetadataEndpoint[] =
     "https://idp.test/client_metadata_endpoint";
+constexpr char kTestRevokeEndpoint[] = "https://idp.test/revocation_endpoint";
 
-const char kSingleAccountEndpointValidJson[] = R"({
+constexpr char kSingleAccountEndpointValidJson[] = R"({
   "accounts" : [
     {
       "id" : "1234",
@@ -1514,6 +1516,64 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponseWithTokenAndHttpError) {
   EXPECT_TRUE(error_dialog_type());
   EXPECT_EQ(ErrorDialogType::kGenericEmptyWithoutUrl, *error_dialog_type());
   EXPECT_FALSE(error_url_type());
+}
+
+TEST_F(IdpNetworkRequestManagerTest, RevokeRequest) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmRevoke);
+
+  bool called = false;
+  auto interceptor =
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        called = true;
+        EXPECT_EQ(GURL(kTestRevokeEndpoint), request.url);
+        EXPECT_FALSE(request.referrer.is_valid());
+        url::Origin rpOrigin = url::Origin::Create(GURL(kTestRpUrl));
+        EXPECT_EQ(GetOriginHeader(request), rpOrigin);
+
+        // Check that the request body is correct.
+        ASSERT_NE(request.request_body, nullptr);
+        ASSERT_EQ(1ul, request.request_body->elements()->size());
+        const network::DataElement& elem =
+            request.request_body->elements()->at(0);
+        ASSERT_EQ(network::DataElement::Tag::kBytes, elem.type());
+        const network::DataElementBytes& byte_elem =
+            elem.As<network::DataElementBytes>();
+        EXPECT_EQ("client_id=clientId&account_hint=hint",
+                  byte_elem.AsStringPiece());
+        ASSERT_EQ(request.mode, network::mojom::RequestMode::kCors);
+        ASSERT_EQ(request.request_initiator, rpOrigin);
+      });
+  test_url_loader_factory().SetInterceptor(interceptor);
+
+  const char test_revoke_json[] = R"({
+  "account_id" : "accountId"
+  })";
+
+  GURL revoke_endpoint(kTestRevokeEndpoint);
+  AddResponse(revoke_endpoint, net::HTTP_OK, "application/json",
+              test_revoke_json);
+
+  base::RunLoop run_loop;
+  FetchStatus revoke_response;
+  absl::optional<std::string> revoke_account_id;
+  auto callback = base::BindLambdaForTesting(
+      [&](FetchStatus response, const std::string& account_id) {
+        revoke_response = response;
+        revoke_account_id = account_id;
+        run_loop.Quit();
+      });
+
+  std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+  manager->SendRevokeRequest(revoke_endpoint, "hint", "clientId",
+                             std::move(callback));
+  run_loop.Run();
+
+  EXPECT_TRUE(called);
+  EXPECT_EQ(ParseStatus::kSuccess, revoke_response.parse_status);
+  EXPECT_EQ(net::HTTP_OK, revoke_response.response_code);
+  ASSERT_TRUE(revoke_account_id.has_value());
+  EXPECT_EQ(*revoke_account_id, "accountId");
 }
 
 }  // namespace

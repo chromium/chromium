@@ -1726,6 +1726,7 @@
       name: "FedCmRevoke",
       depends_on: ["FedCm"],
       base_feature: "none",
+      status: "test",
       public: true,
     },
     {

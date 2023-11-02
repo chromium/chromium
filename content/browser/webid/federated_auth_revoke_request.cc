@@ -216,18 +216,25 @@ void FederatedAuthRevokeRequest::OnAllConfigAndWellKnownFetched(
              /*should_delay_callback=*/false);
     return;
   }
-  std::string account_hint = options_->account_hint;
-
   network_manager_->SendRevokeRequest(
-      fetch_result.endpoints.revoke, account_hint, embedding_origin_, origin_,
+      fetch_result.endpoints.revoke, options_->account_hint,
+      options_->config->client_id,
       base::BindOnce(&FederatedAuthRevokeRequest::OnRevokeResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FederatedAuthRevokeRequest::OnRevokeResponse(
-    IdpNetworkRequestManager::RevokeResponse response) {
-  // TODO(crbug.com/1473134): implement this method.
+    IdpNetworkRequestManager::FetchStatus fetch_status,
+    const std::string& account_id) {
   CHECK(callback_);
+  if (fetch_status.parse_status !=
+      IdpNetworkRequestManager::ParseStatus::kSuccess) {
+    Complete(RevokeStatus::kError,
+             RevokeStatusForMetrics::kRevocationFailedOnServer,
+             /*should_delay_callback=*/false);
+    return;
+  }
+  // TODO(crbug.com/1473134): revoke relevant permissions.
   Complete(RevokeStatus::kSuccess, RevokeStatusForMetrics::kSuccess,
            /*should_delay_callback=*/false);
 }

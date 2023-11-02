@@ -64,7 +64,7 @@ struct AccountConfig {
 struct Config {
   std::vector<AccountConfig> accounts;
   FetchStatus config_fetch_status;
-  FetchStatus accounts_fetch_status;
+  FetchStatus revoke_fetch_status;
   std::string config_url;
 };
 
@@ -73,7 +73,7 @@ Config kValidConfig = {
     {{"account1", /*login_state=*/absl::nullopt,
       /*was_granted_sharing_permission=*/true}},
     /*config_fetch_status=*/{ParseStatus::kSuccess, net::HTTP_OK},
-    /*accounts_fetch_status=*/{ParseStatus::kSuccess, net::HTTP_OK},
+    /*revoke_fetch_status=*/{ParseStatus::kSuccess, net::HTTP_OK},
     kProviderUrl};
 
 // Helper class for receiving the Revoke method callback.
@@ -153,13 +153,19 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
                        endpoints, idp_metadata));
   }
 
-  bool DidFetchAnyEndpoint() {
-    return has_fetched_well_known_ || has_fetched_config_;
+  void SendRevokeRequest(const GURL& revoke_url,
+                         const std::string& account_hint,
+                         const std::string& client_id,
+                         RevokeCallback callback) override {
+    has_fetched_revoke_ = true;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  config_.revoke_fetch_status, account_hint));
   }
 
- protected:
   bool has_fetched_well_known_{false};
   bool has_fetched_config_{false};
+  bool has_fetched_revoke_{false};
 
  private:
   const Config config_;
@@ -209,6 +215,11 @@ class FederatedAuthRevokeRequestTest : public RenderViewHostImplTestHarness {
         ->NavigateAndCommit(GURL(kRpUrl), ui::PAGE_TRANSITION_LINK);
   }
 
+  void TearDown() override {
+    network_manager_ = nullptr;
+    RenderViewHostImplTestHarness::TearDown();
+  }
+
   void RunRevokeTest(const Config& config,
                      RevokeStatus expected_revoke_status) {
     auto network_manager =
@@ -238,8 +249,6 @@ class FederatedAuthRevokeRequestTest : public RenderViewHostImplTestHarness {
     EXPECT_EQ(expected_revoke_status, callback_helper.status());
   }
 
-  bool DidFetchAnyEndpoint() { return network_manager_->DidFetchAnyEndpoint(); }
-
   void ExpectRevokeStatusUKM(RevokeStatusForMetrics status,
                              const char* entry_name) {
     auto entries = ukm_recorder()->GetEntriesByName(entry_name);
@@ -266,11 +275,17 @@ class FederatedAuthRevokeRequestTest : public RenderViewHostImplTestHarness {
         << "No Status.Revoke2 entry was found in " << entry_name;
   }
 
+  bool DidFetchAnyEndpoint() {
+    return network_manager_->has_fetched_well_known_ ||
+           network_manager_->has_fetched_config_ ||
+           network_manager_->has_fetched_revoke_;
+  }
+
   ukm::TestAutoSetUkmRecorder* ukm_recorder() { return ukm_recorder_.get(); }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<TestIdpNetworkRequestManager, DanglingUntriaged> network_manager_;
+  raw_ptr<TestIdpNetworkRequestManager> network_manager_;
   std::unique_ptr<TestApiPermissionDelegate> api_permission_delegate_;
   std::unique_ptr<TestPermissionDelegate> permission_delegate_;
   std::unique_ptr<FedCmMetrics> metrics_;
@@ -282,6 +297,9 @@ class FederatedAuthRevokeRequestTest : public RenderViewHostImplTestHarness {
 TEST_F(FederatedAuthRevokeRequestTest, Success) {
   Config config = kValidConfig;
   RunRevokeTest(config, RevokeStatus::kSuccess);
+  EXPECT_TRUE(network_manager_->has_fetched_well_known_);
+  EXPECT_TRUE(network_manager_->has_fetched_config_);
+  EXPECT_TRUE(network_manager_->has_fetched_revoke_);
 
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.Revoke2",
                                        RevokeStatusForMetrics::kSuccess, 1);
@@ -293,6 +311,7 @@ TEST_F(FederatedAuthRevokeRequestTest, NotTrustworthyIdP) {
   Config config = kValidConfig;
   config.config_url = "http://idp.example/fedcm.json";
   RunRevokeTest(config, RevokeStatus::kError);
+  EXPECT_FALSE(DidFetchAnyEndpoint());
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.Status.Revoke2",

@@ -54,9 +54,8 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
       MetricsEndpointErrorCode error_code) override;
   void SendLogout(const GURL& logout_url, LogoutCallback callback) override;
   void SendRevokeRequest(const GURL& revoke_url,
-                         const std::string& account_id,
-                         const url::Origin& top_frame_origin,
-                         const url::Origin& relying_party,
+                         const std::string& account_hint,
+                         const std::string& client_id,
                          RevokeCallback callback) override;
 
  private:

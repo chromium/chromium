@@ -40,9 +40,9 @@ class MODULES_EXPORT IdentityCredential final : public Credential {
       ScriptState*,
       const HeapVector<Member<IdentityCredentialLogoutRPsRequest>>&);
 
-  ScriptPromise revoke(ScriptState*,
-                       const IdentityCredentialRevokeOptions* options,
-                       ExceptionState&);
+  static ScriptPromise revoke(ScriptState*,
+                              const IdentityCredentialRevokeOptions* options,
+                              ExceptionState&);
 
  private:
   const String token_;

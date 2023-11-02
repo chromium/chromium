@@ -59,7 +59,8 @@ class CONTENT_EXPORT FederatedAuthRevokeRequest {
   void OnAllConfigAndWellKnownFetched(
       std::vector<FederatedProviderFetcher::FetchResult> fetch_results);
 
-  void OnRevokeResponse(IdpNetworkRequestManager::RevokeResponse response);
+  void OnRevokeResponse(IdpNetworkRequestManager::FetchStatus fetch_status,
+                        const std::string& account_id);
 
   // `should_delay_callback` represents whether we should call the callback
   // with some delay or immediately. For some failures we choose to reject
