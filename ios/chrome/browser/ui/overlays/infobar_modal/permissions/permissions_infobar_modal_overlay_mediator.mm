@@ -72,11 +72,7 @@
 }
 
 - (void)disconnect {
-  if (_webState && _observer) {
-    _webState->RemoveObserver(_observer.get());
-    _observer.reset();
-    _webState = nullptr;
-  }
+  [self detachFromWebState];
 }
 
 #pragma mark - Accessors
@@ -102,6 +98,10 @@
   permissionsDescription.state =
       self.webState->GetStateForPermission(permission);
   [self.consumer permissionStateChanged:permissionsDescription];
+}
+
+- (void)webStateDestroyed:(web::WebState*)webState {
+  [self detachFromWebState];
 }
 
 #pragma mark - PermissionsDelegate
@@ -136,6 +136,14 @@
     }
   }
   [self.consumer setPermissionsInfo:permissionsinfo];
+}
+
+- (void)detachFromWebState {
+  if (_webState && _observer) {
+    _webState->RemoveObserver(_observer.get());
+    _observer.reset();
+    _webState = nullptr;
+  }
 }
 
 @end

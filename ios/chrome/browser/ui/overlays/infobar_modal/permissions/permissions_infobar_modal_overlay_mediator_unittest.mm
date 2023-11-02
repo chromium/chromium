@@ -167,3 +167,31 @@ TEST_F(PermissionsInfobarModalOverlayMediatorTest,
     EXPECT_EQ(web::PermissionStateAllowed, consumer.microphoneInfo.state);
   }
 }
+
+// Tests that a PermissionsInfobarModalOverlayMediator correctly removes itself
+// as a WebStateObserver when the WebState is destroyed.
+TEST_F(PermissionsInfobarModalOverlayMediatorTest, WebStateObserverRemoved) {
+  std::unique_ptr<web::FakeNavigationManager> navigation_manager =
+      std::make_unique<web::FakeNavigationManager>();
+  navigation_manager->SetVisibleItem(item_.get());
+  std::unique_ptr<web::FakeWebState> web_state =
+      std::make_unique<web::FakeWebState>();
+  web_state->SetNavigationManager(std::move(navigation_manager));
+  std::unique_ptr<PermissionsInfobarDelegate> delegate =
+      std::make_unique<PermissionsInfobarDelegate>([NSArray array],
+                                                   web_state.get());
+  std::unique_ptr<InfoBarIOS> infobar = std::make_unique<InfoBarIOS>(
+      InfobarType::kInfobarTypePermissions, std::move(delegate));
+  std::unique_ptr<OverlayRequest> request =
+      OverlayRequest::CreateWithConfig<DefaultInfobarOverlayRequestConfig>(
+          infobar.get(), InfobarOverlayType::kModal);
+  PermissionsInfobarModalOverlayMediator* mediator =
+      [[PermissionsInfobarModalOverlayMediator alloc]
+          initWithRequest:request.get()];
+  FakePermissionsConsumer* consumer = [[FakePermissionsConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  // Destroy the WebState. If `mediator_` doesn't remove itself as an observer,
+  // the WebState's observer list will hit a DCHECK on destruction.
+  web_state.reset();
+}
