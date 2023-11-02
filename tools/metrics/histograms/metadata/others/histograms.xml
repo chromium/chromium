@@ -13718,6 +13718,38 @@ features through Chrome Labs. -->
   </summary>
 </histogram>
 
+<histogram name="UpdateClient.BackgroundDownloaderWin.ExistingJobUsed"
+    enum="Boolean" expires_after="2024-05-01">
+  <owner>noahrose@google.com</owner>
+  <owner>sorin@chromium.org</owner>
+  <owner>waffles@chromium.org</owner>
+  <summary>
+    Whether an existing BITS task was reused or created when a download was
+    requested.
+  </summary>
+</histogram>
+
+<histogram name="UpdateClient.BackgroundDownloaderWin.StaleDownloadAge"
+    units="hours" expires_after="2024-05-01">
+  <owner>noahrose@google.com</owner>
+  <owner>sorin@chromium.org</owner>
+  <owner>waffles@chromium.org</owner>
+  <summary>
+    The age of unclaimed downloads when they were removed from the cache.
+  </summary>
+</histogram>
+
+<histogram name="UpdateClient.BackgroundDownloaderWin.StaleJobsCleaned"
+    units="count" expires_after="2024-05-01">
+  <owner>noahrose@google.com</owner>
+  <owner>sorin@chromium.org</owner>
+  <owner>waffles@chromium.org</owner>
+  <summary>
+    Counts the number of stale jobs that were cleaned each time a new download
+    starts.
+  </summary>
+</histogram>
+
 <histogram name="UpgradeDetector.DaysBeforeUpgrade" units="days"
     expires_after="2024-05-01">
   <owner>emshack@chromium.org</owner>

@@ -5,7 +5,10 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_UPDATE_CLIENT_METRICS_H_
 #define COMPONENTS_UPDATE_CLIENT_UPDATE_CLIENT_METRICS_H_
 
+#include <cstddef>
+
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 
 namespace update_client::metrics {
 
@@ -23,6 +26,12 @@ enum class BDMStartDownloadOutcome {
 void RecordBDMStartDownloadOutcome(BDMStartDownloadOutcome outcome);
 
 void RecordBDMResultRequestorKnown(bool requestor_known);
+
+void RecordBDWNumJobsCleaned(size_t num_jobs_cleaned);
+
+void RecordBDWStaleDownloadAge(base::TimeDelta download_age);
+
+void RecordBDWExistingJobUsed(bool existing_job_used);
 
 }  // namespace update_client::metrics
 

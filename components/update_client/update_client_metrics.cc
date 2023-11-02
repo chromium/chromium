@@ -4,7 +4,10 @@
 
 #include "components/update_client/update_client_metrics.h"
 
+#include <cstddef>
+
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 
 namespace update_client::metrics {
 
@@ -17,6 +20,24 @@ void RecordBDMResultRequestorKnown(bool requestor_known) {
   base::UmaHistogramBoolean(
       "UpdateClient.BackgroundDownloaderMac.DownloadResultRequestorKnown",
       requestor_known);
+}
+
+void RecordBDWNumJobsCleaned(size_t num_jobs_cleaned) {
+  base::UmaHistogramCounts100(
+      "UpdateClient.BackgroundDownloaderWin.StaleJobsCleaned",
+      num_jobs_cleaned);
+}
+
+void RecordBDWStaleDownloadAge(base::TimeDelta download_age) {
+  base::UmaHistogramCustomCounts(
+      "UpdateClient.BackgroundDownloaderWin.StaleDownloadAge",
+      download_age.InHours(), 0, base::Days(30).InHours(), 50);
+}
+
+void RecordBDWExistingJobUsed(bool existing_job_used) {
+  base::UmaHistogramBoolean(
+      "UpdateClient.BackgroundDownloaderWin.ExistingJobUsed",
+      existing_job_used);
 }
 
 }  // namespace update_client::metrics

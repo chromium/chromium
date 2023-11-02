@@ -37,6 +37,7 @@
 #include "base/win/scoped_co_mem.h"
 #include "components/update_client/task_traits.h"
 #include "components/update_client/update_client_errors.h"
+#include "components/update_client/update_client_metrics.h"
 #include "components/update_client/utils.h"
 #include "url/gurl.h"
 
@@ -741,6 +742,7 @@ HRESULT BackgroundDownloader::CreateOrOpenJob(
       },
       bits_manager_, &jobs);
   if (SUCCEEDED(hr) && !jobs.empty()) {
+    metrics::RecordBDWExistingJobUsed(true);
     *job = jobs.front();
     return S_FALSE;
   }
@@ -761,6 +763,7 @@ HRESULT BackgroundDownloader::CreateOrOpenJob(
     return hr;
   }
 
+  metrics::RecordBDWExistingJobUsed(false);
   *job = local_job;
   return S_OK;
 }
@@ -892,6 +895,7 @@ void BackgroundDownloader::CleanupStaleJobs() {
       },
       bits_manager_, &jobs);
 
+  metrics::RecordBDWNumJobsCleaned(jobs.size());
   for (const auto& job : jobs) {
     CleanupJob(job);
   }
@@ -903,10 +907,11 @@ void BackgroundDownloader::CleanupStaleDownloads() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
   EnumerateDownloadDirs(
       kDownloadDirectoryPrefixMatcher, [](const base::FilePath& dir) {
+        const base::Time now = base::Time::Now();
         base::File::Info info;
         if (base::GetFileInfo(dir, &info) &&
-            info.creation_time + base::Days(kPurgeStaleJobsAfterDays) <
-                base::Time::Now()) {
+            info.creation_time + base::Days(kPurgeStaleJobsAfterDays) < now) {
+          metrics::RecordBDWStaleDownloadAge(now - info.creation_time);
           base::DeletePathRecursively(dir);
         }
       });
