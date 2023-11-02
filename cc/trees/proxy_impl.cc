@@ -812,11 +812,10 @@ void ProxyImpl::ScheduledActionCommit() {
     data_for_commit_->commit_timestamps->finish = finish_time;
   data_for_commit_->commit_completion_event->SetFinishTime(finish_time);
 
-  recordreplay::CommandDiagnosticTrace(
-    "[RUN-2110-2761] ProxyImpl::ScheduledActionCommit %d",
-    commit_state->commit_waits_for_activation);
-
   if (commit_state->commit_waits_for_activation) {
+    recordreplay::CommandDiagnosticTrace(
+      "[RUN-2110-2761] ProxyImpl::ScheduledActionCommit 1");
+
     // For some layer types in impl-side painting, the commit is held until the
     // sync tree is activated.  It's also possible that the sync tree has
     // already activated if there was no work to be done.
