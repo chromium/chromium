@@ -32,6 +32,7 @@ expat \
 fontconfig \
 freetype \
 gdk-pixbuf \
+git \
 glib2.0 \
 gnome-common \
 gnome-keyring \

@@ -13,6 +13,7 @@ group("locally_built") {
     ":brltty",
     ":dee",
     ":freetype",
+    ":guest-oslogin",
     ":harfbuzz",
     ":libappindicator3-1",
     ":libasound2",
@@ -160,6 +161,18 @@ template("instrumented_library") {
     if (defined(invoker.extra_configure_flags)) {
       args += [ "--extra-configure-flags=${invoker.extra_configure_flags}" ]
     }
+
+    if (defined(invoker.git_url)) {
+      args += [ "--git-url=${invoker.git_url}" ]
+    }
+
+    if (defined(invoker.git_revision)) {
+      args += [ "--git-revision=${invoker.git_revision}" ]
+    }
+
+    if (defined(invoker.no_configure) && invoker.no_configure) {
+      args += [ "--no-configure" ]
+    }
   }
 }
 
@@ -201,6 +214,15 @@ instrumented_library("dee") {
 
 instrumented_library("freetype") {
   extra_configure_flags = [ "--disable-static" ]
+}
+
+instrumented_library("guest-oslogin") {
+  git_url = "https://github.com/GoogleCloudPlatform/guest-oslogin.git"
+  git_revision = "f59b7f38c21b4794282ddf12fd4a6083cd99e1e4"
+  # guest-oslogin is built only with `make`.
+  no_configure = true
+  # Work around an issue where header files are passed to the linker.
+  patches = [ "patches/guest-oslogin.diff" ]
 }
 
 instrumented_library("harfbuzz") {
