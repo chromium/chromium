@@ -1656,6 +1656,7 @@ if (!is_android) {
       "//chrome/browser/policy:browser_tests",
       "//chrome/browser/policy:test_support",
       "//chrome/browser/preloading/prerender:browser_tests",
+      "//chrome/browser/preloading/preview:browser_tests",
       "//chrome/browser/privacy_budget:browser_tests",
       "//chrome/browser/profiling_host:profiling_browsertests",
       "//chrome/browser/resource_coordinator:mojo_bindings",

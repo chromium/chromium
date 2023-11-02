@@ -45,8 +45,17 @@ PreviewTestHelper::PreviewTestHelper(const content::WebContents::Getter& fn)
 
 PreviewTestHelper::~PreviewTestHelper() = default;
 
+base::WeakPtr<content::WebContents>
+PreviewTestHelper::GetWebContentsForPreviewTab() {
+  return GetManager().GetWebContentsForPreviewTab();
+}
+
 void PreviewTestHelper::InitiatePreview(const GURL& url) {
   GetManager().InitiatePreview(url);
+}
+
+void PreviewTestHelper::PromoteToNewTab() {
+  GetManager().PromoteToNewTab();
 }
 
 void PreviewTestHelper::WaitUntilLoadFinished() {

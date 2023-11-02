@@ -19,6 +19,8 @@
 #include "components/page_load_metrics/browser/observers/shared_storage_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace page_load_metrics {
@@ -32,7 +34,14 @@ PageLoadMetricsEmbedderBase::~PageLoadMetricsEmbedderBase() = default;
 void PageLoadMetricsEmbedderBase::RegisterObservers(PageLoadTracker* tracker) {
   // Register observers used by all embedders
 #if DCHECK_IS_ON()
-  tracker->AddObserver(std::make_unique<AssertPageLoadMetricsObserver>());
+  // Link Preview doesn't emit activation event yet and assertion of event
+  // orders fail.
+  //
+  // TODO(b:302999778): Reenable it.
+  if (!tracker->GetWebContents()->GetDelegate() ||
+      !tracker->GetWebContents()->GetDelegate()->IsInPreviewMode()) {
+    tracker->AddObserver(std::make_unique<AssertPageLoadMetricsObserver>());
+  }
 #endif
 
   if (!IsNoStatePrefetch(web_contents()) && !IsSidePanel(web_contents())) {

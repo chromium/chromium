@@ -17,7 +17,18 @@ PreviewManager::~PreviewManager() = default;
 
 void PreviewManager::InitiatePreview(const GURL& url) {
   // TODO(b:292184832): Pass more load params.
-  tab_ = std::make_unique<PreviewTab>(GetWebContents(), url);
+  tab_ = std::make_unique<PreviewTab>(this, GetWebContents(), url);
+}
+
+void PreviewManager::PromoteToNewTab() {
+  if (!tab_) {
+    return;
+  }
+
+  tab_->PromoteToNewTab(GetWebContents());
+  // Delete `tab_` asynchronously so that we can call this inside PreviewTab.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::DoNothingWithBoundArgs(std::move(tab_)));
 }
 
 base::WeakPtr<content::WebContents>

@@ -23,6 +23,8 @@ class PreviewManager final
   ~PreviewManager() override;
 
   void InitiatePreview(const GURL& url);
+  void PromoteToNewTab();
+
   base::WeakPtr<content::WebContents> GetWebContentsForPreviewTab();
 
  private:

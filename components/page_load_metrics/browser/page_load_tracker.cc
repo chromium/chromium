@@ -982,8 +982,15 @@ void PageLoadTracker::OnTimingChanged() {
 
   if (new_timing.activation_start &&
       !last_dispatched_merged_page_timing_->activation_start) {
-    DCHECK(prerendering_state_ ==
-           PrerenderingState::kActivatedNoActivationStart);
+    // Link Preview doesn't emit activation event yet and assertion of event
+    // orders fail.
+    //
+    // TODO(b:302999778): Reenable it.
+    if (!base::FeatureList::IsEnabled(
+            blink::features::kLinkPreviewNavigation)) {
+      DCHECK(prerendering_state_ ==
+             PrerenderingState::kActivatedNoActivationStart);
+    }
     prerendering_state_ = PrerenderingState::kActivated;
     activation_start_ = new_timing.activation_start;
   }

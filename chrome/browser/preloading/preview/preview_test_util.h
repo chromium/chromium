@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PRELOADING_PREVIEW_PREVIEW_TEST_UTIL_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -31,7 +32,9 @@ class PreviewTestHelper {
   explicit PreviewTestHelper(const content::WebContents::Getter& fn);
   ~PreviewTestHelper();
 
+  base::WeakPtr<content::WebContents> GetWebContentsForPreviewTab();
   void InitiatePreview(const GURL& url);
+  void PromoteToNewTab();
   void WaitUntilLoadFinished();
 
  private:
