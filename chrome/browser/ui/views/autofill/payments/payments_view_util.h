@@ -93,12 +93,12 @@ class LegalMessageView : public views::BoxLayoutView {
 
   using LinkClickedCallback = base::RepeatingCallback<void(const GURL&)>;
 
-  // Along with the legal message lines and link callbacks, we are sending the
-  // user email and avatar as optional params. These will be displayed at the
-  // bottom line of this view if they have value.
+  // Along with the legal message lines and link callbacks, user email and
+  // avatar will be displayed at the bottom line of this view if both
+  // `user_email` and `user_avatar` are present.
   LegalMessageView(const LegalMessageLines& legal_message_lines,
-                   absl::optional<std::u16string> optional_user_email,
-                   absl::optional<ui::ImageModel> optional_user_avatar,
+                   const std::u16string& user_email,
+                   const ui::ImageModel& user_avatar,
                    LinkClickedCallback callback);
   ~LegalMessageView() override;
 };

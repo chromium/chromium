@@ -289,9 +289,9 @@ SaveCardOfferBubbleViews::CreateLegalMessageView() {
         LegalMessageCallBack));
   }
 
-  return (std::make_unique<LegalMessageView>(
-      message_lines, /*user_email=*/absl::nullopt,
-      /*user_avatar=*/absl::nullopt, LegalMessageCallBack));
+  return std::make_unique<LegalMessageView>(
+      message_lines, /*user_email=*/std::u16string(),
+      /*user_avatar=*/ui::ImageModel(), LegalMessageCallBack);
 }
 
 std::unique_ptr<views::View>
