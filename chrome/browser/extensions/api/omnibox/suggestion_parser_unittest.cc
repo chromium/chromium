@@ -19,11 +19,11 @@ namespace extensions {
 namespace {
 
 constexpr api::omnibox::DescriptionStyleType kMatch =
-    api::omnibox::DESCRIPTION_STYLE_TYPE_MATCH;
+    api::omnibox::DescriptionStyleType::kMatch;
 constexpr api::omnibox::DescriptionStyleType kDim =
-    api::omnibox::DESCRIPTION_STYLE_TYPE_DIM;
+    api::omnibox::DescriptionStyleType::kDim;
 constexpr api::omnibox::DescriptionStyleType kUrl =
-    api::omnibox::DESCRIPTION_STYLE_TYPE_URL;
+    api::omnibox::DescriptionStyleType::kUrl;
 
 // A custom matcher for an omnibox::MatchClassification.
 testing::Matcher<api::omnibox::MatchClassification> GetStyleMatcher(
