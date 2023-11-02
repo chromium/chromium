@@ -166,4 +166,5 @@ tools/metrics/histograms/metadata/webapps/histograms.xml
 tools/metrics/histograms/metadata/webauthn/enums.xml
 tools/metrics/histograms/metadata/webauthn/histograms.xml
 tools/metrics/histograms/metadata/windows/histograms.xml
+tools/metrics/histograms/metadata/xr/enums.xml
 tools/metrics/histograms/metadata/xr/histograms.xml

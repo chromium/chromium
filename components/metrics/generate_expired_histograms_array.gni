@@ -200,6 +200,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/webauthn/enums.xml",
       "//tools/metrics/histograms/metadata/webauthn/histograms.xml",
       "//tools/metrics/histograms/metadata/windows/histograms.xml",
+      "//tools/metrics/histograms/metadata/xr/enums.xml",
       "//tools/metrics/histograms/metadata/xr/histograms.xml",
       "//tools/metrics/histograms/enums.xml",
     ]
