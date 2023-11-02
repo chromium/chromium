@@ -15120,6 +15120,7 @@ regressions. -->
     <variant name="ShowKaleidoscope"/>
     <variant name="ShowPasswordManager"/>
     <variant name="ShowPaymentMethods"/>
+    <variant name="ShowPerformanceSettings"/>
     <variant name="ShowSearchCompanion"/>
     <variant name="ShowSigninWhenPaused"/>
     <variant name="ShowSyncSettings"/>

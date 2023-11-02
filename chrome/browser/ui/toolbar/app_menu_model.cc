@@ -1366,6 +1366,13 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_SHOW_ADDRESSES);
       break;
+    case IDC_PERFORMANCE:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES(
+            "WrenchMenu.TimeToAction.ShowPerformanceSettings", delta);
+      }
+      LogMenuAction(MENU_ACTION_SHOW_PERFORMANCE_SETTINGS);
+      break;
     default: {
       if (IsOtherProfileCommand(command_id)) {
         if (!uma_action_recorded_) {
