@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/bubble/bubble_utils.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/system_tray_client.h"
@@ -562,6 +563,8 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
       FROM_HERE, kCheckUpcomingEventsDelay,
       base::BindRepeating(&CalendarView::MaybeShowUpNextView,
                           base::Unretained(this)));
+
+  SetProperty(views::kElementIdentifierKey, kCalendarViewElementId);
 }
 
 CalendarView::~CalendarView() {

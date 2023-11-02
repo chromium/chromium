@@ -11,6 +11,7 @@ namespace ash {
 // Please keep this list alphabetized.
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kAppListBubbleViewElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kBluetoothFeatureTileToggleElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kCalendarViewElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kEnterpriseManagedView);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kExploreAppElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kHoldingSpaceTrayElementId);

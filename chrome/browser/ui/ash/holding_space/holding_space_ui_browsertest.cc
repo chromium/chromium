@@ -243,7 +243,7 @@ void MouseDrag(const views::View* from,
 }
 
 // Moves mouse to `view` over `count` number of events.
-void MoveMouseTo(const views::View* view, size_t count = 1u) {
+void MoveMouseToView(const views::View* view, size_t count = 1u) {
   auto* root_window = HoldingSpaceBrowserTestBase::GetRootWindowForNewWindows();
   ui::test::EventGenerator event_generator(root_window);
   event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint(), count);
@@ -1328,7 +1328,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, UnpinItem) {
   // so move the mouse and wait for the pin button to be drawn. Note that the
   // mouse is moved over multiple events to ensure that the appropriate mouse
   // enter event is also generated.
-  MoveMouseTo(pinned_file_chip, /*count=*/10);
+  MoveMouseToView(pinned_file_chip, /*count=*/10);
   auto* pin_btn = pinned_file_chip->GetViewByID(kHoldingSpaceItemPinButtonId);
   ViewDrawnWaiter().Wait(pin_btn);
 
@@ -2613,7 +2613,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
 
   // Hover over the `completed_download_chip`. Because the underlying download
   // is completed, the chip should contain a visible primary action for "Pin".
-  MoveMouseTo(completed_download_chip, /*count=*/10);
+  MoveMouseToView(completed_download_chip, /*count=*/10);
   auto* primary_action_container = completed_download_chip->GetViewByID(
       kHoldingSpaceItemPrimaryActionContainerId);
   auto* primary_action_cancel =
@@ -2627,7 +2627,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   // Hover over the `in_progress_download_chip`. Because the underlying download
   // is in-progress, the chip should contain a visible primary action for
   // "Cancel".
-  MoveMouseTo(in_progress_download_chip, /*count=*/10);
+  MoveMouseToView(in_progress_download_chip, /*count=*/10);
   primary_action_container = in_progress_download_chip->GetViewByID(
       kHoldingSpaceItemPrimaryActionContainerId);
   primary_action_cancel =
@@ -2982,7 +2982,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiPauseOrResumeBrowserTest,
 
   // Hover over the `completed_download_chip`. Because the underlying download
   // is completed, the chip should not contain a visible secondary action.
-  MoveMouseTo(completed_download_chip, /*count=*/10);
+  MoveMouseToView(completed_download_chip, /*count=*/10);
   ASSERT_FALSE(completed_download_chip
                    ->GetViewByID(kHoldingSpaceItemSecondaryActionContainerId)
                    ->GetVisible());
@@ -2990,7 +2990,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiPauseOrResumeBrowserTest,
   // Hover over the `in_progress_download_chip`. Because the underlying download
   // is in-progress, the chip should contain a visible secondary action for
   // either "Pause" or "Resume", depending on test parameterization.
-  MoveMouseTo(in_progress_download_chip, /*count=*/10);
+  MoveMouseToView(in_progress_download_chip, /*count=*/10);
   auto* secondary_action_container = in_progress_download_chip->GetViewByID(
       kHoldingSpaceItemSecondaryActionContainerId);
   auto* secondary_action_pause =

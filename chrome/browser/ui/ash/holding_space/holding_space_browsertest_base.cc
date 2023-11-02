@@ -95,7 +95,7 @@ void HoldingSpaceBrowserTestBase::SetUpInProcessBrowserTestFixture() {
 }
 
 void HoldingSpaceBrowserTestBase::SetUpOnMainThread() {
-  InProcessBrowserTest::SetUpOnMainThread();
+  SystemWebAppBrowserTestBase::SetUpOnMainThread();
   test_api_ = std::make_unique<HoldingSpaceTestApi>();
 }
 
