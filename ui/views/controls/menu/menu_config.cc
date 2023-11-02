@@ -61,6 +61,7 @@ void MenuConfig::InitCR2023() {
   submenu_horizontal_overlap = 0;
   item_vertical_margin = 6;
   item_horizontal_border_padding = 12;
+  arrow_size = 16;
   separator_height = 17;
   separator_spacing_height = 4;
   use_outer_border = false;
