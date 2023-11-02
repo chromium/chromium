@@ -34,7 +34,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::base::EqualsProto;
+using ::base::test::EqualsProto;
 using base::test::RunOnceCallback;
 using testing::_;
 using ComposeCallback = base::OnceCallback<void(const std::u16string&)>;

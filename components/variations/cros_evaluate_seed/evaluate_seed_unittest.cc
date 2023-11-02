@@ -16,7 +16,7 @@
 
 namespace variations::cros_early_boot::evaluate_seed {
 
-using ::base::EqualsProto;
+using ::base::test::EqualsProto;
 
 TEST(VariationsCrosEvaluateSeed, GetClientFilterable_Enrolled) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv(

@@ -34,7 +34,7 @@ namespace ash {
 
 namespace {
 
-using ::base::EqualsProto;
+using ::base::test::EqualsProto;
 using local_discovery::ServiceDescription;
 using ::testing::ElementsAreArray;
 using ::testing::UnorderedElementsAreArray;

@@ -42,7 +42,7 @@ CreateInvalidBoundSessionParams() {
 }
 
 MATCHER(TupleEqualsProto, "") {
-  return testing::ExplainMatchResult(base::EqualsProto(std::get<1>(arg)),
+  return testing::ExplainMatchResult(base::test::EqualsProto(std::get<1>(arg)),
                                      std::get<0>(arg), result_listener);
 }
 

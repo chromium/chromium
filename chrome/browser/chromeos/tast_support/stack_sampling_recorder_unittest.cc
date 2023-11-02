@@ -89,8 +89,8 @@ TEST_F(StackSamplingRecorderTest, ProducesValidFile) {
   StackSampledMetricsStatus result;
   EXPECT_TRUE(result.ParseFromFileDescriptor(result_file.GetPlatformFile()));
 
-  // base::EqualsProto doesn't work well on MessageLite's. Validate |result|
-  // manually.
+  // base::test::EqualsProto() doesn't work well on MessageLite's. Validate
+  // `result` manually.
   EXPECT_EQ(result.process_type_to_thread_count_map().size(), 3UL);
 
   ASSERT_TRUE(result.process_type_to_thread_count_map().contains(
@@ -198,8 +198,8 @@ TEST_F(StackSamplingRecorderTest, TruncatesExistingFileWithLessData) {
   StackSampledMetricsStatus result;
   EXPECT_TRUE(result.ParseFromFileDescriptor(result_file.GetPlatformFile()));
 
-  // base::EqualsProto doesn't work well on MessageLite's. Validate |result|
-  // manually.
+  // base::test::EqualsProto() doesn't work well on MessageLite's. Validate
+  // `result` manually.
   EXPECT_EQ(result.process_type_to_thread_count_map().size(), 2UL);
 
   ASSERT_TRUE(
@@ -307,8 +307,8 @@ TEST_F(StackSamplingRecorderTest, DoesNotWriteToLockedFile) {
   StackSampledMetricsStatus result;
   EXPECT_TRUE(result.ParseFromFileDescriptor(result_file.GetPlatformFile()));
 
-  // base::EqualsProto doesn't work well on MessageLite's. Validate |result|
-  // manually.
+  // base::test::EqualsProto() doesn't work well on MessageLite's. Validate
+  // `result` manually.
   EXPECT_EQ(result.process_type_to_thread_count_map().size(), 2UL);
 
   ASSERT_TRUE(

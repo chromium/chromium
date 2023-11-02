@@ -42,7 +42,7 @@
 namespace variations {
 namespace {
 
-using ::base::EqualsProto;
+using ::base::test::EqualsProto;
 
 // The sentinel value that may be stored as the latest variations seed value in
 // prefs to indicate that the latest seed is identical to the safe seed.

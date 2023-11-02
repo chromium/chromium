@@ -34,7 +34,7 @@
 #include "third_party/cros_system_api/dbus/lorgnette/dbus-constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-using ::base::EqualsProto;
+using ::base::test::EqualsProto;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;

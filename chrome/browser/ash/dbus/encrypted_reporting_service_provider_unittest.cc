@@ -37,7 +37,7 @@ using EncryptionKeyAttachedCallback =
 
 using UploadProvider = ::reporting::EncryptedReportingUploadProvider;
 
-using ::base::EqualsProto;
+using ::base::test::EqualsProto;
 using ::testing::_;
 using ::testing::Eq;
 

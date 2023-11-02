@@ -18,7 +18,7 @@
 #include "components/reporting/util/test_support_callbacks.h"
 #include "content/public/test/browser_task_environment.h"
 
-using ::base::EqualsProto;
+using ::base::test::EqualsProto;
 using ::testing::HasSubstr;
 
 namespace reporting {

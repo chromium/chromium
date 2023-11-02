@@ -62,7 +62,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-using ::base::EqualsProto;
+using ::base::test::EqualsProto;
 using blink::mojom::FileSystemFileInfo;
 using blink::mojom::NativeFileInfo;
 using storage::FileSystemURL;

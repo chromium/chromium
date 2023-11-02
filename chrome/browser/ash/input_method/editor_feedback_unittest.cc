@@ -168,7 +168,7 @@ TEST(EditorFeedback, SendFeedbackOnlyContainsNecessaryInformation) {
   *expected_feedback_data.mutable_web_data()->add_product_specific_data() =
       chromeos_version_data;
 
-  EXPECT_THAT(feedback_data, base::EqualsProto(expected_feedback_data));
+  EXPECT_THAT(feedback_data, base::test::EqualsProto(expected_feedback_data));
 }
 
 }  // namespace

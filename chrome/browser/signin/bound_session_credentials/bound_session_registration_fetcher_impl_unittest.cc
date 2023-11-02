@@ -86,7 +86,7 @@ constexpr std::string_view kChallenge = "test_challenge";
 // Checks equality of the two protos in an std::tuple. Useful for matching two
 // two protos using ::testing::Pointwise or ::testing::UnorderedPointwise.
 MATCHER(TupleEqualsProto, "") {
-  return testing::ExplainMatchResult(base::EqualsProto(std::get<1>(arg)),
+  return testing::ExplainMatchResult(base::test::EqualsProto(std::get<1>(arg)),
                                      std::get<0>(arg), result_listener);
 }
 
@@ -249,7 +249,7 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, ValidInput) {
   ASSERT_TRUE(future.Get().has_value());
   ASSERT_TRUE(bound_session_credentials::AreParamsValid(*future.Get()));
   EXPECT_THAT(future.Get(),
-              testing::Optional(base::EqualsProto(
+              testing::Optional(base::test::EqualsProto(
                   CreateTestBoundSessionParams(future.Get()->wrapped_key()))));
 
   ExpectRecordedResultHistogram(RegistrationError::kNone);
@@ -284,7 +284,7 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, MissingXSSIPrefix) {
   EXPECT_TRUE(future.IsReady());
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_THAT(future.Get(),
-              testing::Optional(base::EqualsProto(
+              testing::Optional(base::test::EqualsProto(
                   CreateTestBoundSessionParams(future.Get()->wrapped_key()))));
 }
 
