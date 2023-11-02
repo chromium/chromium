@@ -210,15 +210,6 @@ void FileSystemAccessHandleBase::DoMove(
   DCHECK_EQ(GetWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
-  if (!base::FeatureList::IsEnabled(
-          features::kFileSystemAccessMoveLocalFiles)) {
-    if (url().type() != storage::FileSystemType::kFileSystemTypeTemporary) {
-      std::move(callback).Run(file_system_access_error::FromStatus(
-          blink::mojom::FileSystemAccessStatus::kNotSupportedError));
-      return;
-    }
-  }
-
   manager()->ResolveTransferToken(
       std::move(destination_directory),
       base::BindOnce(&FileSystemAccessHandleBase::DidResolveTokenToMove,
@@ -235,15 +226,6 @@ void FileSystemAccessHandleBase::DoRename(
   // the parent directory is not required for renames.
   DCHECK_EQ(GetWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
-
-  if (!base::FeatureList::IsEnabled(
-          features::kFileSystemAccessMoveLocalFiles)) {
-    if (url().type() != storage::FileSystemType::kFileSystemTypeTemporary) {
-      std::move(callback).Run(file_system_access_error::FromStatus(
-          blink::mojom::FileSystemAccessStatus::kNotSupportedError));
-      return;
-    }
-  }
 
   if (!FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
           url().type(), new_entry_name)) {
@@ -323,15 +305,6 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
   if (error != file_system_access_error::Ok()) {
     std::move(callback).Run(std::move(error));
     return;
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          features::kFileSystemAccessMoveLocalFiles)) {
-    if (dest_url.type() != storage::FileSystemType::kFileSystemTypeTemporary) {
-      std::move(callback).Run(file_system_access_error::FromStatus(
-          blink::mojom::FileSystemAccessStatus::kNotSupportedError));
-      return;
-    }
   }
 
   // Disallow moves either to or from a sandboxed file system.

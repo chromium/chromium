@@ -115,27 +115,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileHandleImplBrowserTest,
       << result.error;
 }
 
-class FileSystemAccessFileHandleMoveLocalBrowserTest
-    : public FileSystemAccessFileHandleImplBrowserTest {
- public:
-  FileSystemAccessFileHandleMoveLocalBrowserTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kFileSystemAccessMoveLocalFiles);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(FileSystemAccessFileHandleMoveLocalBrowserTest,
-                       RenameLocal) {
+IN_PROC_BROWSER_TEST_F(FileSystemAccessFileHandleImplBrowserTest, RenameLocal) {
   std::string file_contents = "move me";
   CreateTestFileInDirectory(temp_dir_.GetPath(), file_contents);
 
-  auto result = EvalJs(shell(),
-                       "(async () => {"
-                       "return await self.localFile.move('renamed.txt'); })()");
-  EXPECT_TRUE(base::Contains(result.error, "not support")) << result.error;
+  EXPECT_TRUE(ExecJs(shell(),
+                     "(async () => {"
+                     "return await self.localFile.move('renamed.txt'); })()"));
 }
 
 class FileSystemAccessFileHandleGetUniqueIdBrowserTest
