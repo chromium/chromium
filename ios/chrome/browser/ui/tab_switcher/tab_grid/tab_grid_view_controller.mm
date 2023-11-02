@@ -1137,6 +1137,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self configureButtonsForActiveAndCurrentPage];
 }
 
+// TODO(crbug.com/1457146): Remove this function when mediators will manage the
+// selection mode toolbar update.
+// TODO(crbug.com/1457146): Remove this function when mediators will match all
+// the toolbar update currently done by the UI.
 - (void)configureButtonsForActiveAndCurrentPage {
   self.bottomToolbar.page = self.currentPage;
   self.topToolbar.page = self.currentPage;
@@ -1220,6 +1224,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 // TODO(crbug.com/1457146): Remove this when incognito authentication is take
 // into account for button configuration.
+// TODO(crbug.com/1457146): Remove this function when mediators will match all
+// the toolbar update currently done by the UI.
 - (void)configureNewTabButtonBasedOnContentPermissions {
   BOOL isRecentTabPage = self.currentPage == TabGridPageRemoteTabs;
   BOOL allowedByContentAuthentication =
@@ -1229,6 +1235,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.bottomToolbar setNewTabButtonEnabled:allowNewTab];
 }
 
+// TODO(crbug.com/1457146): Remove this function when mediators will match all
+// the toolbar update currently done by the UI.
 - (void)configureDoneButtonBasedOnPage:(TabGridPage)page {
   const BOOL tabsPresent = [self tabsPresentForPage:page];
 
@@ -1264,12 +1272,16 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 // Disables the done button on bottom toolbar if a disabled tab view is
 // presented.
+// TODO(crbug.com/1457146): Remove this function when mediators will match all
+// the toolbar update currently done by the UI.
 - (void)configureDoneButtonOnDisabledPage {
   self.topToolbar.pageControl.userInteractionEnabled = YES;
   [self.bottomToolbar setDoneButtonEnabled:NO];
   [self.topToolbar setDoneButtonEnabled:NO];
 }
 
+// TODO(crbug.com/1457146): Remove this function when mediators will match all
+// the toolbar update currently done by the UI.
 - (void)configureCloseAllButtonForCurrentPageAndUndoAvailability {
   BOOL useUndo =
       self.undoCloseAllAvailable && self.currentPage == TabGridPageRegularTabs;
@@ -1286,7 +1298,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // inactive tabs.
   BOOL enabled =
       gridViewController && (![gridViewController isGridEmpty] ||
-                             ![gridViewController isInactiveGridEmpty]);
+                             ![gridViewController isContainedGridEmpty]);
   BOOL incognitoTabsNeedsAuth =
       (self.currentPage == TabGridPageIncognitoTabs &&
        self.incognitoTabsViewController.contentNeedsAuthentication);

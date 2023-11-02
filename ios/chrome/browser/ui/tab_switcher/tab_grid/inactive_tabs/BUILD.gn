@@ -42,6 +42,7 @@ source_set("inactive_tabs") {
     "//ios/chrome/browser/ui/tab_switcher:tab_utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_toolbars_configuration_provider",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular:regular_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
@@ -63,6 +64,7 @@ source_set("inactive_tabs_ui") {
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui_constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular:regular_ui",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]

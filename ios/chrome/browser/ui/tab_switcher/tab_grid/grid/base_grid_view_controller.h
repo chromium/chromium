@@ -12,12 +12,12 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_theme.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_info_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 
 @protocol TabContextMenuProvider;
 @protocol TabCollectionDragDropHandler;
 @protocol GridEmptyView;
+@class GridItemIdentifier;
 @protocol GridShareableItemsProvider;
 @class LegacyGridTransitionLayout;
 @class BaseGridViewController;
@@ -91,18 +91,17 @@ class WebStateID;
 @end
 
 // A view controller that contains a grid of items.
-@interface BaseGridViewController : UIViewController <InactiveTabsInfoConsumer,
-                                                      GridItemProvider,
-                                                      TabCollectionConsumer>
+@interface BaseGridViewController
+    : UIViewController <GridItemProvider, TabCollectionConsumer>
 // The gridView is accessible to manage the content inset behavior.
 @property(nonatomic, readonly) UIScrollView* gridView;
 // The view that is shown when there are no items.
 @property(nonatomic, strong) UIView<GridEmptyView>* emptyStateView;
 // Returns YES if the grid has no items.
 @property(nonatomic, readonly, getter=isGridEmpty) BOOL gridEmpty;
-// Returns YES if the inactive grid has no items.
-@property(nonatomic, readonly, getter=isInactiveGridEmpty)
-    BOOL inactiveGridEmpty;
+// Returns YES if contained grids have no items.
+@property(nonatomic, readonly, getter=isContainedGridEmpty)
+    BOOL containedGridEmpty;
 // The visual look of the grid.
 @property(nonatomic, assign) GridTheme theme;
 // The current mode for the grid.

@@ -5,9 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_REGULAR_REGULAR_GRID_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_REGULAR_REGULAR_GRID_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller+subclassing.h"
 
-@interface RegularGridViewController : BaseGridViewController
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_info_consumer.h"
+
+@interface RegularGridViewController
+    : BaseGridViewController <InactiveTabsInfoConsumer>
 
 @end
 
