@@ -19,6 +19,7 @@
 #include "content/browser/renderer_host/media/video_capture_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/global_routing_id.h"
 #include "media/capture/mojom/video_capture.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -26,7 +27,7 @@ namespace content {
 class MediaStreamManager;
 
 // VideoCaptureHost is the IO thread browser process communication endpoint
-// between a renderer process (which can initiate and receive a video capture
+// between a render frame (which can initiate and receive a video capture
 // stream) and a VideoCaptureController in the browser process (which provides
 // the stream from a video device). Every remote client is identified via a
 // unique |device_id|, and is paired with a single VideoCaptureController.
@@ -34,10 +35,10 @@ class CONTENT_EXPORT VideoCaptureHost
     : public VideoCaptureControllerEventHandler,
       public media::mojom::VideoCaptureHost {
  public:
-  VideoCaptureHost(uint32_t render_process_id,
+  VideoCaptureHost(GlobalRenderFrameHostId render_frame_host_id,
                    MediaStreamManager* media_stream_manager);
-  class RenderProcessHostDelegate;
-  VideoCaptureHost(std::unique_ptr<RenderProcessHostDelegate> delegate,
+  class RenderFrameHostDelegate;
+  VideoCaptureHost(std::unique_ptr<RenderFrameHostDelegate> delegate,
                    MediaStreamManager* media_stream_manager);
 
   VideoCaptureHost(const VideoCaptureHost&) = delete;
@@ -46,18 +47,18 @@ class CONTENT_EXPORT VideoCaptureHost
   ~VideoCaptureHost() override;
 
   static void Create(
-      uint32_t render_process_id,
+      GlobalRenderFrameHostId render_frame_host_id,
       MediaStreamManager* media_stream_manager,
       mojo::PendingReceiver<media::mojom::VideoCaptureHost> receiver);
 
-  // Interface for notifying RenderProcessHost instance about active video
+  // Interface for notifying RenderFrameHost instance about active video
   // capture stream changes and getting its ID.
-  class CONTENT_EXPORT RenderProcessHostDelegate {
+  class CONTENT_EXPORT RenderFrameHostDelegate {
    public:
-    virtual ~RenderProcessHostDelegate();
+    virtual ~RenderFrameHostDelegate();
     virtual void NotifyStreamAdded() = 0;
     virtual void NotifyStreamRemoved() = 0;
-    virtual uint32_t GetRenderProcessId() const = 0;
+    virtual GlobalRenderFrameHostId GetRenderFrameHostId() const = 0;
   };
 
  private:
@@ -139,8 +140,8 @@ class CONTENT_EXPORT VideoCaptureHost
                      VideoCaptureManager::DoneCB done_cb,
                      BrowserContext* browser_context);
 
-  class RenderProcessHostDelegateImpl;
-  std::unique_ptr<RenderProcessHostDelegate> render_process_host_delegate_;
+  class RenderFrameHostDelegateImpl;
+  std::unique_ptr<RenderFrameHostDelegate> render_frame_host_delegate_;
   uint32_t number_of_active_streams_ = 0;
 
   const raw_ptr<MediaStreamManager> media_stream_manager_;

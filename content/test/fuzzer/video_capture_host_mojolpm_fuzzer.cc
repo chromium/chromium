@@ -159,7 +159,9 @@ class VideoCaptureHostTestcase {
   // Create and bind a new instance for fuzzing. This needs to make sure that
   // the new instance has been created and bound on the correct sequence
   // before returning.
-  void AddVideoCaptureHost(uint32_t id, uint32_t render_process_id);
+  void AddVideoCaptureHost(uint32_t id,
+                           uint32_t render_process_id,
+                           uint32_t routing_id);
 
   // This wraps `HandleRemoteAction`, making the call for the correct device.
   // As it requires specifying the `render_process_id` and `device_index`.
@@ -282,7 +284,8 @@ void VideoCaptureHostTestcase::NextAction() {
         case Action::kNewVideoCaptureHost: {
           AddVideoCaptureHost(
               action.new_video_capture_host().id(),
-              action.new_video_capture_host().render_process_id());
+              action.new_video_capture_host().render_process_id(),
+              action.new_video_capture_host().routing_id());
         } break;
 
         case Action::kVideoCaptureHostDeviceRemoteAction: {
@@ -525,15 +528,18 @@ void VideoCaptureHostTestcase::OnDeviceOpened(
 }
 
 void VideoCaptureHostTestcase::AddVideoCaptureHost(uint32_t id,
-                                                   uint32_t render_process_id) {
+                                                   uint32_t render_process_id,
+                                                   uint32_t routing_id) {
   mojo::Remote<::media::mojom::VideoCaptureHost> remote;
   auto receiver = remote.BindNewPipeAndPassReceiver();
 
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   content::GetIOThreadTaskRunner({})->PostTaskAndReply(
       FROM_HERE,
-      base::BindOnce(&content::VideoCaptureHost::Create, render_process_id,
-                     media_stream_manager_.get(), std::move(receiver)),
+      base::BindOnce(
+          &content::VideoCaptureHost::Create,
+          content::GlobalRenderFrameHostId(render_process_id, routing_id),
+          media_stream_manager_.get(), std::move(receiver)),
       run_loop.QuitClosure());
   run_loop.Run();
 

@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 
 #include <cstdint>
+#include <limits>
 #include <memory>
 #include <tuple>
 #include <unordered_map>
@@ -1778,6 +1779,10 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
     OnAudibleStateChanged(false);
   }
 
+  while (video_stream_count_) {
+    OnVideoStreamRemoved();
+  }
+
   // Resetting `document_associated_data_` destroys live `DocumentService` and
   // `DocumentUserData` instances. It is important for them to be
   // destroyed before the body of the `RenderFrameHostImpl` destructor
@@ -3229,6 +3234,14 @@ void RenderFrameHostImpl::RenderProcessGone(
   if (is_audible_)
     OnAudibleStateChanged(false);
 
+  // During fast-shutdown, avoid cleanup as the VideoCaptureHost will still send
+  // removal notifications after this function ends.
+  if (!GetProcess()->FastShutdownStarted()) {
+    while (video_stream_count_) {
+      OnVideoStreamRemoved();
+    }
+  }
+
   ++renderer_exit_count_;
 
   if (base::FeatureList::IsEnabled(features::kCrashReporting))
@@ -3737,6 +3750,31 @@ void RenderFrameHostImpl::OnAudibleStateChanged(bool is_audible) {
   }
   is_audible_ = is_audible;
   delegate_->OnFrameAudioStateChanged(this, is_audible_);
+}
+
+void RenderFrameHostImpl::OnVideoStreamAdded() {
+  CHECK_NE(video_stream_count_, std::numeric_limits<int>::max());
+  ++video_stream_count_;
+
+  // Only notify on the first video stream, as both the RenderProcessHost and
+  // the delegate only care about the existence of at least 1 stream, but not
+  // the exact count.
+  if (video_stream_count_ == 1) {
+    GetProcess()->OnMediaStreamAdded();
+    delegate_->OnFrameIsCapturingVideoStreamChanged(this, true);
+  }
+}
+
+void RenderFrameHostImpl::OnVideoStreamRemoved() {
+  CHECK(video_stream_count_);
+  --video_stream_count_;
+
+  // Only notify the delegate if this is the last video stream that was removed
+  // to match the behavior in `OnVideoStreamAdded`.
+  if (video_stream_count_ == 0) {
+    GetProcess()->OnMediaStreamRemoved();
+    delegate_->OnFrameIsCapturingVideoStreamChanged(this, false);
+  }
 }
 
 void RenderFrameHostImpl::DidAddMessageToConsole(

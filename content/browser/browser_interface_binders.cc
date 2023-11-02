@@ -982,8 +982,7 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
         GetIOThreadTaskRunner({}));
 
     map->Add<media::mojom::VideoCaptureHost>(
-        base::BindRepeating(&VideoCaptureHost::Create,
-                            host->GetProcess()->GetID(),
+        base::BindRepeating(&VideoCaptureHost::Create, host->GetGlobalId(),
                             base::Unretained(media_stream_manager)),
         GetIOThreadTaskRunner({}));
   }

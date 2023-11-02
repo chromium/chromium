@@ -9769,6 +9769,14 @@ void WebContentsImpl::OnFrameVisibilityChanged(
                              host, visibility);
 }
 
+void WebContentsImpl::OnFrameIsCapturingVideoStreamChanged(
+    RenderFrameHostImpl* host,
+    bool is_capturing_video_stream) {
+  observers_.NotifyObservers(
+      &WebContentsObserver::OnFrameIsCapturingVideoStreamChanged, host,
+      is_capturing_video_stream);
+}
+
 media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
 WebContentsImpl::GetRecordAggregateWatchTimeCallback(
     const GURL& page_main_frame_last_committed_url) {

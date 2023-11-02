@@ -8,6 +8,7 @@ import "media/capture/mojom/video_capture.mojom.mojolpm.proto";
 message NewVideoCaptureHostAction {
   required uint32 id = 1;
   required uint32 render_process_id = 2;
+  required uint32 routing_id = 3;
 }
 
 // A wrapper message for all remote actions. It requires further specifying
