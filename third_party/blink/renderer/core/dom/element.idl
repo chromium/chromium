@@ -114,7 +114,7 @@ dictionary CheckVisibilityOptions {
     [Affects=Nothing, Measure, RuntimeCallStatsCounter=ElementGetBoundingClientRect] DOMRect getBoundingClientRect();
 
     // https://drafts.csswg.org/cssom-view/#dom-element-checkvisibility
-    [RuntimeEnabled=checkVisibility,MeasureAs=ElementCheckVisibility] boolean checkVisibility(optional CheckVisibilityOptions options = {});
+    [MeasureAs=ElementCheckVisibility] boolean checkVisibility(optional CheckVisibilityOptions options = {});
 
     // TODO(sunyunjia): Add default value for scrollIntoView() once
     // crbug.com/734599 is fixed.

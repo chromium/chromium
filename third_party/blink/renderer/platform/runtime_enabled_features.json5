@@ -601,11 +601,6 @@
       base_feature_status: "enabled",
     },
     {
-      name: "checkVisibility",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "ClickToCapturedPointer",
       status: "experimental",
       base_feature: "none",
