@@ -24,6 +24,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
@@ -174,6 +175,7 @@ public class StripLayoutHelperTest {
         if (mStripLayoutHelper != null) {
             mStripLayoutHelper.stopReorderModeForTesting();
             mStripLayoutHelper.setTabAtPositionForTesting(null);
+            mStripLayoutHelper.setRunningAnimatorForTesting(null);
         }
         mTabDragSource = null;
         mContextForDragDrop = null;
@@ -2309,6 +2311,23 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    public void testTabClosingClearsTabHoverState() {
+        initializeTabHoverTest();
+        var tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+
+        // Hover on tabs[2], and close it.
+        mStripLayoutHelper.updateLastHoveredTab(tabs[2]);
+        verify(mTabHoverCardView).show(any(), anyBoolean(), anyFloat(), anyFloat(), anyFloat());
+        mStripLayoutHelper.handleCloseButtonClick(tabs[2], TIMESTAMP);
+
+        // End the tab closure animation.
+        var runningAnimator = mStripLayoutHelper.getRunningAnimatorForTesting();
+        runningAnimator.end();
+
+        verify(mTabHoverCardView).hide();
+    }
+
+    @Test
     public void testFlingLeft() {
         // Arrange
         initializeTest(false, false, false, 11, 12);
@@ -2910,6 +2929,20 @@ public class StripLayoutHelperTest {
                 StripLayoutHelper.TAB_OPACITY_VISIBLE_FOREGROUND,
                 hoveredTab.getContainerOpacity(),
                 0.0);
+    }
+
+    @Test
+    public void testUpdateLastHoveredTab_animationRunning() {
+        initializeTabHoverTest();
+        var hoveredTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[1];
+
+        // Assume that animations are running.
+        var animator = mock(Animator.class);
+        when(animator.isRunning()).thenReturn(true);
+        mStripLayoutHelper.setRunningAnimatorForTesting(animator);
+        mStripLayoutHelper.updateLastHoveredTab(hoveredTab);
+        verify(mTabHoverCardView, never())
+                .show(any(), anyBoolean(), anyFloat(), anyFloat(), anyFloat());
     }
 
     @Test

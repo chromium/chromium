@@ -1193,58 +1193,6 @@ public class TabStripTest {
                 });
     }
 
-    /** Tests that the tab hover state is cleared when a down event is received on the tab strip. */
-    @Test
-    @LargeTest
-    @Feature({"TabStrip"})
-    @EnableFeatures({
-        ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP,
-        ChromeFeatureList.TAB_STRIP_REDESIGN
-    })
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
-    public void testTabHoverStateClearedOnDownEvent() throws Exception {
-        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(true);
-        // Open a new tab.
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
-
-        TabModel model = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
-        StripLayoutTab tab =
-                TabStripUtils.findStripLayoutTab(
-                        sActivityTestRule.getActivity(), false, model.getTabAt(1).getId());
-        assertTabVisibility(true, tab);
-
-        // Simulate a hover into the tab's close button.
-        StripLayoutHelperManager stripLayoutHelperManager =
-                TabStripUtils.getStripLayoutHelperManager(sActivityTestRule.getActivity());
-        float xEnter = tab.getCloseButton().getX();
-        float yEnter = tab.getCloseButton().getY();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        stripLayoutHelperManager.simulateHoverEventForTesting(
-                                MotionEvent.ACTION_HOVER_ENTER, xEnter, yEnter));
-
-        // Verify that the card is visible.
-        View hoverCardView =
-                stripLayoutHelperManager
-                        .getActiveStripLayoutHelper()
-                        .getTabHoverCardViewForTesting();
-        Assert.assertEquals(
-                "Hover card should be visible.", View.VISIBLE, hoverCardView.getVisibility());
-
-        // Simulate a down event on the tab's close button.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> stripLayoutHelperManager.simulateOnDownForTesting(xEnter, yEnter, true, 0));
-
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    Criteria.checkThat(
-                            "Hover card should be hidden.",
-                            hoverCardView.getVisibility(),
-                            Matchers.is(View.GONE));
-                });
-    }
-
     /**
      * Take a model index and figure out which index it will be in the TabStrip's view hierarchy.
      *
