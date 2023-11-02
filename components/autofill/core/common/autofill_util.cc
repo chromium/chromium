@@ -148,7 +148,7 @@ size_t LevenshteinDistance(std::u16string_view a,
   const size_t k = max_distance.value_or(b.size());
   // If the string's lengths differ by more than `k`, so does their
   // Levenshtein distance.
-  if (a.size() + k < b.size() || a.size() > b.size() + k) {
+  if (a.size() + k < b.size()) {
     return k + 1;
   }
   // The classical Levenshtein distance DP defines dp[i][j] as the minimum
@@ -170,9 +170,9 @@ size_t LevenshteinDistance(std::u16string_view a,
   const size_t kInfinity = k + 1;
   std::vector<size_t> dp(2 * k + 1, kInfinity);
   // Initially, `dp[d]` represents the Levenshtein distance of the empty prefix
-  // of `a` and the j = d - k characters of `b`. Their distance is j, since j
-  // removals are required. States with negative d are not reachable, since that
-  // corresponds to a negative index into `b`.
+  // of `a` and the first j = d - k characters of `b`. Their distance is j,
+  // since j removals are required. States with negative d are not reachable,
+  // since that corresponds to a negative index into `b`.
   std::iota(dp.begin() + static_cast<long>(k), dp.end(), 0);
   for (size_t i = 0; i < a.size(); i++) {
     // Right now, `dp` represents the Levenshtein distance when considering the
@@ -181,8 +181,9 @@ size_t LevenshteinDistance(std::u16string_view a,
     // `i+1` characters.
     for (size_t d = 0; d <= 2 * k; d++) {
       if (i + d < k || i + d >= b.size() + k) {
-        // `j = i + d - k` is out of range of `b`.
-        dp[d] = kInfinity;
+        // `j = i + d - k` is out of range of `b`. Since j == -1 corresponds to
+        // the empty prefix of `b`, the distance is i + 1 in this case.
+        dp[d] = i + d + 1 == k ? i + 1 : kInfinity;
         continue;
       }
       const size_t j = i + d - k;

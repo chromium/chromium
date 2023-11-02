@@ -152,6 +152,7 @@ TEST(LevenshteinDistanceTest, WithoutMaxDistance) {
   EXPECT_EQ(
       LevenshteinDistance(std::u16string(100, 'a'), std::u16string(200, 'a')),
       100u);
+  EXPECT_EQ(LevenshteinDistance(u"ananas", u"banana"), 2u);
 }
 
 TEST(LevenshteinDistanceTest, WithMaxDistance) {
