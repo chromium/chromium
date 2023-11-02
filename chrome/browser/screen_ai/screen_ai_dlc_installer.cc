@@ -105,6 +105,31 @@ void InstallInternal(InstallMetadata metadata) {
       base::BindRepeating(&OnInstallProgress));
 }
 
+void UninstallIfNotUsedAndAvailableOnDisk() {
+  // If ScreenAIInstallState is not `kNotDownloaded`, it means that a client has
+  // asked for this DLC and it should not be uninstalled.
+  // Note that "Not downloaded" does not necessarily mean that the DLC is not
+  // on disk, but just states that from ScreenAI point of view, no client
+  // requested downloading it.
+  if (screen_ai::ScreenAIInstallState::GetInstance()->get_state() !=
+      screen_ai::ScreenAIInstallState::State::kNotDownloaded) {
+    return;
+  }
+
+  // Checking if DLC exists on disk should be done on a non-UI thread, but
+  // actual uninstall should be done on the same thread that called this
+  // function.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&CheckIfDlcExistsOnNonUIThread),
+      base::BindOnce([](bool dlc_exists) {
+        if (dlc_exists) {
+          screen_ai::dlc_installer::Uninstall();
+        }
+      }));
+}
+
 }  // namespace
 
 namespace screen_ai::dlc_installer {
@@ -125,16 +150,9 @@ void Install() {
       }));
 }
 
-// This code is run on browser startup. The DLC uninstallation will be called
-// after a delay, so that if a feature relies on it and has not yet triggered
-// it, would have time to do it. This is specifically helpful for tests.
 void Uninstall() {
-  // If state is still `kNotDownloaded`, it means no client asked for it.
-  if (screen_ai::ScreenAIInstallState::GetInstance()->get_state() ==
-      screen_ai::ScreenAIInstallState::State::kNotDownloaded) {
-    ash::DlcserviceClient::Get()->Uninstall(
-        kScreenAIDlcName, base::BindOnce(&OnUninstallCompleted));
-  }
+  ash::DlcserviceClient::Get()->Uninstall(
+      kScreenAIDlcName, base::BindOnce(&OnUninstallCompleted));
 }
 
 void ManageInstallation(PrefService* local_state) {
@@ -143,14 +161,13 @@ void ManageInstallation(PrefService* local_state) {
     return;
   }
 
-  base::ThreadPool::PostDelayedTask(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce([] {
-        if (CheckIfDlcExistsOnNonUIThread()) {
-          Uninstall();
-        }
-      }),
+  // This function is run on browser startup. The DLC uninstallation will be
+  // called after a delay, so that if a feature relies on it and has not yet
+  // triggered it, it would have time to do it. This is specifically helpful for
+  // tests. Note that uninstall should happen on the same thread that runs this
+  // function.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(&UninstallIfNotUsedAndAvailableOnDisk),
       base::Seconds(kUninstallDelayInSeconds));
 }
 
