@@ -20,6 +20,10 @@
 
 class GoogleServiceAuthError;
 
+namespace ash::attestation {
+class AttestationFeatures;
+}  // namespace ash::attestation
+
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
@@ -196,6 +200,13 @@ class SecondDeviceAuthBroker : public GaiaAuthConsumer {
   // `GaiaAuthConsumer` overrides.
   void OnClientOAuthSuccess(const ClientOAuthResult& result) override;
   void OnClientOAuthFailure(const GoogleServiceAuthError& error) override;
+
+  // Same as `FetchAttestationCertificate` except that it is called with
+  // `attestation_features`.
+  void FetchAttestationCertificateInternal(
+      const std::string& fido_credential_id,
+      AttestationCertificateCallback certificate_callback,
+      const attestation::AttestationFeatures* attestation_features);
 
   // Must be between 0 (exclusive) and 64 (inclusive) characters.
   const std::string device_id_;
