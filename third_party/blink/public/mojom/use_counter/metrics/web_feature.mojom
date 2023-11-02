@@ -4048,6 +4048,7 @@ enum WebFeature {
   kRubyElementWithDisplayBlockAndRt = 4708,
   kCSSDeclarationAfterNestedRule = 4709,
   kThirdPartyCookieAdAccessBlockByExperiment = 4710,
+  kServiceWorkerStaticRouter_AddRoutes = 4711,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

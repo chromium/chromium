@@ -73,40 +73,103 @@ ScriptPromise InstallEvent::registerRouter(
                                          DOMExceptionCode::kInvalidStateError,
                                          "No ServiceWorkerGlobalScope."));
   }
-  if (did_register_router_) {
-    return ScriptPromise::Reject(
-        script_state, V8ThrowException::CreateTypeError(
-                          script_state->GetIsolate(),
-                          "registerRouter is called multiple times."));
+  switch (router_registration_method_) {
+    case RouterRegistrationMethod::Uninitialized:
+      break;
+    case RouterRegistrationMethod::RegisterRouter:
+      return ScriptPromise::Reject(
+          script_state, V8ThrowException::CreateTypeError(
+                            script_state->GetIsolate(),
+                            "registerRouter is called multiple times."));
+    case RouterRegistrationMethod::AddRoutes:
+      return ScriptPromise::Reject(
+          script_state,
+          V8ThrowDOMException::CreateOrDie(
+              script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
+              "Some routings are alraedy registered via addRoutes(). "
+              "registerRouter() and addRoutes() can not be called at the same "
+              "time."));
   }
 
   blink::ServiceWorkerRouterRules rules;
-  if (v8_rules->IsRouterRule()) {
-    auto r = ConvertV8RouterRuleToBlink(
-        v8_rules->GetAsRouterRule(), global_scope->BaseURL(), exception_state);
-    if (!r) {
-      CHECK(exception_state.HadException());
-      return ScriptPromise::Reject(script_state, exception_state);
-    }
-    rules.rules.emplace_back(*r);
-  } else {
-    CHECK(v8_rules->IsRouterRuleSequence());
-    for (const blink::RouterRule* rule : v8_rules->GetAsRouterRuleSequence()) {
-      auto r = ConvertV8RouterRuleToBlink(rule, global_scope->BaseURL(),
-                                          exception_state);
-      if (!r) {
-        CHECK(exception_state.HadException());
-        return ScriptPromise::Reject(script_state, exception_state);
-      }
-      rules.rules.emplace_back(*r);
-    }
+  ConvertServiceWorkerRouterRules(script_state, v8_rules, exception_state,
+                                  global_scope->BaseURL(), rules);
+  if (exception_state.HadException()) {
+    ScriptPromise::Reject(script_state, exception_state);
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   global_scope->GetServiceWorkerHost()->RegisterRouter(
       rules, WTF::BindOnce(&DidRegisterRouter, WrapPersistent(resolver)));
-  did_register_router_ = true;
+  router_registration_method_ = RouterRegistrationMethod::RegisterRouter;
   return resolver->Promise();
 }
 
+ScriptPromise InstallEvent::addRoutes(
+    ScriptState* script_state,
+    const V8UnionRouterRuleOrRouterRuleSequence* v8_rules,
+    ExceptionState& exception_state) {
+  ServiceWorkerGlobalScope* global_scope =
+      To<ServiceWorkerGlobalScope>(ExecutionContext::From(script_state));
+  if (!global_scope) {
+    return ScriptPromise::Reject(
+        script_state,
+        V8ThrowDOMException::CreateOrDie(script_state->GetIsolate(),
+                                         DOMExceptionCode::kInvalidStateError,
+                                         "No ServiceWorkerGlobalScope."));
+  }
+  switch (router_registration_method_) {
+    case RouterRegistrationMethod::RegisterRouter:
+      return ScriptPromise::Reject(
+          script_state,
+          V8ThrowDOMException::CreateOrDie(
+              script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
+              "Some routings are alraedy registered via registerRouter(). "
+              "registerRouter() and addRoutes() can not be called at the same "
+              "time."));
+    case RouterRegistrationMethod::Uninitialized:
+    case RouterRegistrationMethod::AddRoutes:
+      break;
+  }
+
+  blink::ServiceWorkerRouterRules rules;
+  ConvertServiceWorkerRouterRules(script_state, v8_rules, exception_state,
+                                  global_scope->BaseURL(), rules);
+  if (exception_state.HadException()) {
+    ScriptPromise::Reject(script_state, exception_state);
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  global_scope->GetServiceWorkerHost()->AddRoutes(
+      rules, WTF::BindOnce(&DidRegisterRouter, WrapPersistent(resolver)));
+  router_registration_method_ = RouterRegistrationMethod::AddRoutes;
+  return resolver->Promise();
+}
+
+void InstallEvent::ConvertServiceWorkerRouterRules(
+    ScriptState* script_state,
+    const V8UnionRouterRuleOrRouterRuleSequence* v8_rules,
+    ExceptionState& exception_state,
+    const KURL& base_url,
+    blink::ServiceWorkerRouterRules& rules) {
+  if (v8_rules->IsRouterRule()) {
+    auto r = ConvertV8RouterRuleToBlink(v8_rules->GetAsRouterRule(), base_url,
+                                        exception_state);
+    if (!r) {
+      CHECK(exception_state.HadException());
+      return;
+    }
+    rules.rules.emplace_back(*r);
+  } else {
+    CHECK(v8_rules->IsRouterRuleSequence());
+    for (const blink::RouterRule* rule : v8_rules->GetAsRouterRuleSequence()) {
+      auto r = ConvertV8RouterRuleToBlink(rule, base_url, exception_state);
+      if (!r) {
+        CHECK(exception_state.HadException());
+        return;
+      }
+      rules.rules.emplace_back(*r);
+    }
+  }
+}
 }  // namespace blink

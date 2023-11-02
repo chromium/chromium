@@ -40,6 +40,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
+#include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom.h"
@@ -1989,8 +1990,53 @@ TEST_F(ServiceWorkerVersionStaticRouterTest, SetRouterEvaluator) {
   // Set correct rules will make the router_evaluator() return non-null.
   {
     blink::ServiceWorkerRouterRules rules;
+    blink::ServiceWorkerRouterRule rule;
+    rule.condition = blink::ServiceWorkerRouterCondition::WithRunningStatus(
+        {blink::ServiceWorkerRouterRunningStatusCondition::RunningStatusEnum::
+             kRunning});
+    blink::ServiceWorkerRouterSource source;
+    source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
+    source.network_source = blink::ServiceWorkerRouterNetworkSource{};
+    rule.sources.emplace_back(source);
+    rules.rules.emplace_back(rule);
     EXPECT_TRUE(version->SetupRouterEvaluator(rules));
     EXPECT_TRUE(version->router_evaluator());
+  }
+
+  // SetupRouterEvaluator() will merge existing rules if router_evaluator()
+  // already exists.
+  {
+    EXPECT_TRUE(version->router_evaluator());
+    EXPECT_EQ(version->router_evaluator()->rules().rules.size(), 1UL);
+    blink::ServiceWorkerRouterRules rules;
+    blink::ServiceWorkerRouterRule rule;
+    rule.condition = blink::ServiceWorkerRouterCondition::WithRunningStatus(
+        {blink::ServiceWorkerRouterRunningStatusCondition::RunningStatusEnum::
+             kNotRunning});
+    blink::ServiceWorkerRouterSource source;
+    source.type = blink::ServiceWorkerRouterSource::Type::kFetchEvent;
+    source.fetch_event_source = blink::ServiceWorkerRouterFetchEventSource{};
+    rule.sources.emplace_back(source);
+    rules.rules.emplace_back(rule);
+    EXPECT_TRUE(version->SetupRouterEvaluator(rules));
+    EXPECT_TRUE(version->router_evaluator());
+    EXPECT_EQ(version->router_evaluator()->rules().rules.size(), 2UL);
+    auto first_rule = version->router_evaluator()->rules().rules[0];
+    auto second_rule = version->router_evaluator()->rules().rules[1];
+    auto&& [first_url_pattern, first_request, first_running_status,
+            first_or_condition] = first_rule.condition.get();
+    EXPECT_EQ(first_running_status->status,
+              blink::ServiceWorkerRouterRunningStatusCondition::
+                  RunningStatusEnum::kRunning);
+    EXPECT_EQ(first_rule.sources.begin()->type,
+              blink::ServiceWorkerRouterSource::Type::kNetwork);
+    auto&& [second_url_pattern, second_request, second_running_status,
+            second_or_condition] = second_rule.condition.get();
+    EXPECT_EQ(second_running_status->status,
+              blink::ServiceWorkerRouterRunningStatusCondition::
+                  RunningStatusEnum::kNotRunning);
+    EXPECT_EQ(second_rule.sources.begin()->type,
+              blink::ServiceWorkerRouterSource::Type::kFetchEvent);
   }
 }
 

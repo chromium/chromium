@@ -118,9 +118,41 @@ interface ServiceWorkerHost {
   // Experimental feature.
   // Registers the service worker router rules, which are evaluated before
   // the regular navigation path. i.e. evaluated before the service worker
-  // fetch handler is invoked. The method may only be called once.
+  // fetch handler is invoked.
   // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
+  //
+  // Both RegisterRouter() and AddRoutes() methods initializes the router and
+  // register router rules in the host. Both methods behave exactly same except
+  // for one difference whether multiple API calls are allowed or not.
+  // RegisterRouter() is designed to be called once, the calling process will be
+  // killed with a bad message when the router already exists in the host. On
+  // the other hand, AddRoutes() can be called multiple times, it will append
+  // given router rules into existing router rules.
+  //
+  // RegisterRouter() is going to be deprecated when we send Intent to Ship,
+  // but for now we keep the method as it is since some webistes already use
+  // RegisterRouter() in Origin Trial. (crbug.com/1371756).
+  //
+  // When these methods are called multiple times. Belows are possible cases and
+  // expected behaviors.
+  //
+  // RegisterRouter() -> RegisterRouter(): Reports a bad message.
+  // AddRoutes() -> AddRoutes(): Register rules twice.
+  //
+  // RegisterRouter() and AddRoutes() should be implemented as mutual exclusive,
+  // the calling process will be killded with a bad message when these two
+  // method calls are mixed.
   RegisterRouter(ServiceWorkerRouterRules rules) => ();
+  AddRoutes(ServiceWorkerRouterRules rules) => ();
+};
+
+// Enum to indicate which router registration method is used. This is used to
+// make RegisterRouter() and AddRoutes() mutual exclusive. When RegisterRouter()
+// is removed, this enum should also be removed (crbug.com/1371756).
+enum RouterRegistrationMethod {
+  Uninitialized,
+  RegisterRouter,
+  AddRoutes,
 };
 
 struct ExtendableMessageEvent {
