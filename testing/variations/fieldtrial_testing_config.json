@@ -2618,29 +2618,6 @@
             ]
         }
     ],
-    "BrowsingTopicsParameters": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "TaxonomyV2",
-                    "params": {
-                        "taxonomy_version": "2"
-                    },
-                    "enable_features": [
-                        "BrowsingTopicsParameters"
-                    ]
-                }
-            ]
-        }
-    ],
     "BubbleMetricsApi": [
         {
             "platforms": [
