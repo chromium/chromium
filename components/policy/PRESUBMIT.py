@@ -181,7 +181,8 @@ def _GetPolicyChangeList(input_api):
     policy_name = os.path.splitext(filename)[0]
     if (filename == '.group.details.yaml' or
         filename == 'policy_atomic_groups.yaml' or
-        filename == 'OWNERS'):
+        filename == 'OWNERS' or
+        filename == 'DIR_METADATA'):
       continue
     old_policy = None
     new_policy = None
