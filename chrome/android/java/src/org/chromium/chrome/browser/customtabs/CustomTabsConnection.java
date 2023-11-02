@@ -1675,23 +1675,24 @@ public class CustomTabsConnection {
         cancelSpeculation(null);
 
         if (useHiddenTab) {
-            launchUrlInHiddenTab(session, url, extras);
+            launchUrlInHiddenTab(session, profile, url, extras);
         } else {
             createSpareWebContents();
         }
         warmupManager.maybePreconnectUrlAndSubResources(profile, url);
     }
 
-    /**
-     * Creates a hidden tab and initiates a navigation.
-     */
+    /** Creates a hidden tab and initiates a navigation. */
     private void launchUrlInHiddenTab(
-            CustomTabsSessionToken session, String url, @Nullable Bundle extras) {
+            CustomTabsSessionToken session, Profile profile, String url, @Nullable Bundle extras) {
         ThreadUtils.assertOnUiThread();
         mHiddenTabHolder.launchUrlInHiddenTab(
-                (Tab tab)
-                        -> setClientDataHeaderForNewTab(session, tab.getWebContents()),
-                session, mClientManager, url, extras);
+                (Tab tab) -> setClientDataHeaderForNewTab(session, tab.getWebContents()),
+                session,
+                profile,
+                mClientManager,
+                url,
+                extras);
     }
 
     @VisibleForTesting

@@ -685,8 +685,9 @@ public class TabPersistentStore {
             RecordHistogram.recordEnumeratedHistogram(
                     "Tabs.TabRestoreMethod", tabRestoreMethod, TabRestoreMethod.NUM_ENTRIES);
             Tab tab =
-                    mTabCreatorManager.getTabCreator(isIncognito)
-                            .createFrozenTab(tabState, tabToRestore.id, isIncognito, restoredIndex);
+                    mTabCreatorManager
+                            .getTabCreator(isIncognito)
+                            .createFrozenTab(tabState, tabToRestore.id, restoredIndex);
         } else {
             if (!mSkipSavingNonActiveNtps && UrlUtilities.isNTPUrl(tabToRestore.url) && !setAsActive
                     && !tabToRestore.fromMerge) {

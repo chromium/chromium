@@ -106,7 +106,9 @@ public class TabUmaTest {
         return TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Tab bgTab =
-                            TabBuilder.createForLazyLoad(new LoadUrlParams(mTestUrl))
+                            TabBuilder.createForLazyLoad(
+                                            sActivityTestRule.getProfile(false),
+                                            new LoadUrlParams(mTestUrl))
                                     .setWindow(sActivityTestRule.getActivity().getWindowAndroid())
                                     .setLaunchType(TabLaunchType.FROM_LONGPRESS_BACKGROUND)
                                     .setDelegateFactory(createTabDelegateFactory())
@@ -121,7 +123,8 @@ public class TabUmaTest {
         return TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Tab tab =
-                            TabBuilder.createLiveTab(!foreground)
+                            TabBuilder.createLiveTab(
+                                            sActivityTestRule.getProfile(false), !foreground)
                                     .setWindow(sActivityTestRule.getActivity().getWindowAndroid())
                                     .setLaunchType(TabLaunchType.FROM_LONGPRESS_BACKGROUND)
                                     .setDelegateFactory(createTabDelegateFactory())
@@ -177,7 +180,7 @@ public class TabUmaTest {
         Tab tab =
                 TestThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            return new TabBuilder()
+                            return new TabBuilder(sActivityTestRule.getProfile(false))
                                     .setWindow(sActivityTestRule.getActivity().getWindowAndroid())
                                     .setDelegateFactory(createTabDelegateFactory())
                                     .setLaunchType(TabLaunchType.FROM_LONGPRESS_BACKGROUND)

@@ -19,6 +19,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
@@ -95,22 +96,28 @@ public class HiddenTabHolder {
      * Creates a hidden tab and initiates a navigation.
      *
      * @param tabCreatedCallback Callback run with the tab that is created. This is run before the
-     *        url is loaded.
+     *     url is loaded.
      * @param session The {@link CustomTabsSessionToken} for the Tab to be associated with.
+     * @param profile The Profile the tab is associated with.
      * @param clientManager The {@link ClientManager} to get referrer information and link
-     *                      PostMessage.
+     *     PostMessage.
      * @param url The URL to load into the Tab.
      * @param extras Extras to be passed that may contain referrer information.
      */
-    void launchUrlInHiddenTab(Callback<Tab> tabCreatedCallback, CustomTabsSessionToken session,
-            ClientManager clientManager, String url, @Nullable Bundle extras) {
+    void launchUrlInHiddenTab(
+            Callback<Tab> tabCreatedCallback,
+            CustomTabsSessionToken session,
+            Profile profile,
+            ClientManager clientManager,
+            String url,
+            @Nullable Bundle extras) {
         Intent extrasIntent = new Intent();
         if (extras != null) extrasIntent.putExtras(extras);
 
         // Ensures no Browser.EXTRA_HEADERS were in the Intent.
         if (IntentHandler.getExtraHeadersFromIntent(extrasIntent) != null) return;
 
-        Tab tab = buildDetachedTab();
+        Tab tab = buildDetachedTab(profile);
         tabCreatedCallback.onResult(tab);
 
         HiddenTabObserver observer = new HiddenTabObserver(tab.getWindowAndroid());
@@ -139,23 +146,23 @@ public class HiddenTabHolder {
     }
 
     /**
-     * Creates an instance of a {@link Tab} that is fully detached from any activity.
-     * Also performs general tab initialization as well as detached specifics.
+     * Creates an instance of a {@link Tab} that is fully detached from any activity. Also performs
+     * general tab initialization as well as detached specifics.
      *
-     * The current application context must allow the creation of a WindowAndroid.
+     * <p>The current application context must allow the creation of a WindowAndroid.
      *
+     * @param profile The Profile the tab is associated with.
      * @return The newly created and initialized tab.
      */
-    private static Tab buildDetachedTab() {
+    private static Tab buildDetachedTab(Profile profile) {
         Context context = ContextUtils.getApplicationContext();
-        // TODO(crbug.com/1190971): Set isIncognito flag here if hidden tabs are allowed for
-        // incognito mode.
-        Tab tab = new TabBuilder()
-                          .setWindow(new WindowAndroid(context))
-                          .setLaunchType(TabLaunchType.FROM_SPECULATIVE_BACKGROUND_CREATION)
-                          .setDelegateFactory(CustomTabDelegateFactory.createEmpty())
-                          .setInitiallyHidden(true)
-                          .build();
+        Tab tab =
+                new TabBuilder(profile)
+                        .setWindow(new WindowAndroid(context))
+                        .setLaunchType(TabLaunchType.FROM_SPECULATIVE_BACKGROUND_CREATION)
+                        .setDelegateFactory(CustomTabDelegateFactory.createEmpty())
+                        .setInitiallyHidden(true)
+                        .build();
 
         // Resize the webContent to avoid expensive post load resize when attaching the tab.
         Rect bounds = TabUtils.estimateContentSize(context);

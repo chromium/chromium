@@ -430,7 +430,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
         WebContents webContents = WebContentsFactory.createWebContents(profile, false, false);
         mTab =
-                new TabBuilder()
+                new TabBuilder(profile)
                         .setWindow(getWindowAndroid())
                         .setLaunchType(TabLaunchType.FROM_EXTERNAL_APP)
                         .setWebContents(webContents)

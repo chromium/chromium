@@ -59,7 +59,7 @@ public class MockTabCreator extends TabCreator {
     }
 
     @Override
-    public Tab createFrozenTab(TabState state, int id, boolean isIncognito, int index) {
+    public Tab createFrozenTab(TabState state, int id, int index) {
         Tab tab =
                 new MockTab(
                         id,

@@ -36,6 +36,8 @@ import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
@@ -374,6 +376,14 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
             intent.setData(Uri.parse(url));
         }
         return intent;
+    }
+
+    public Profile getProfile(boolean incognito) {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    return ProfileProvider.getOrCreateProfile(
+                            getActivity().getProfileProviderSupplier().get(), incognito);
+                });
     }
 
     /**

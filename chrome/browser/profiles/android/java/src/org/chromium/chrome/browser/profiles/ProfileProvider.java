@@ -25,4 +25,20 @@ public interface ProfileProvider {
 
     /** Return whether the OffTheRecord has been created. */
     boolean hasOffTheRecordProfile();
+
+    /**
+     * Utility for getting (and creating if necessary) the appropriate {@link Profile} from the
+     * given {@link ProfileProvider} based on the desired incognito state.
+     */
+    static Profile getOrCreateProfile(ProfileProvider profileProvider, boolean incognito) {
+        assert profileProvider != null;
+        Profile profile =
+                incognito
+                        ? profileProvider.getOffTheRecordProfile(true)
+                        : profileProvider.getOriginalProfile();
+        if (incognito != profile.isOffTheRecord()) {
+            throw new IllegalStateException("Incognito mismatch");
+        }
+        return profile;
+    }
 }
