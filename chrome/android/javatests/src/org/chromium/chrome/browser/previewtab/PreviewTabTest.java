@@ -213,7 +213,7 @@ public class PreviewTabTest {
                         mEphemeralTabCoordinator.requestOpenSheet(
                                 new GURL(mTestServer.getServer().getURL(PREVIEW_TAB)),
                                 "PreviewTab",
-                                false));
+                                mActivityTestRule.getProfile(false)));
         endAnimations();
         Assert.assertTrue("The Preview Tab did not open", mEphemeralTabCoordinator.isOpened());
         Assert.assertTrue("Contextual Search should be suppressed", csManager.isSuppressed());
@@ -238,7 +238,7 @@ public class PreviewTabTest {
                                 new GURL(mTestServer.getServer().getURL(PREVIEW_TAB)),
                                 null,
                                 "PreviewTab",
-                                false));
+                                mActivityTestRule.getProfile(false)));
         endAnimations();
 
         mEphemeralTabObserver.onToolbarCreatedCallback.waitForCallback(0, 1);

@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -125,12 +124,13 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
     /**
      * Entry point for ephemeral tab flow. This will create an ephemeral tab and show it in the
      * bottom sheet.
+     *
      * @param url The URL to be shown.
      * @param title The title to be shown.
-     * @param isIncognito Whether we are currently in incognito mode.
+     * @param profile Profile associated with the ephemeral tab.
      */
-    public void requestOpenSheet(GURL url, String title, boolean isIncognito) {
-        requestOpenSheetWithFullPageUrl(url, null, title, isIncognito);
+    public void requestOpenSheet(GURL url, String title, Profile profile) {
+        requestOpenSheetWithFullPageUrl(url, null, title, profile);
     }
 
     /**
@@ -153,15 +153,14 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
      *
      * @param url The URL to be shown in the bottomsheet.
      * @param fullPageUrl The URL that will be opened when the bottomsheet is transformed to a full
-     *         page.
+     *     page.
      * @param title The title to be shown.
-     * @param isIncognito Whether we are currently in incognito mode.
+     * @param profile Profile associated with the ephemeral tab.
      */
     public void requestOpenSheetWithFullPageUrl(
-            GURL url, GURL fullPageUrl, String title, boolean isIncognito) {
+            GURL url, GURL fullPageUrl, String title, Profile profile) {
         mUrl = url;
         mFullPageUrl = fullPageUrl;
-        Profile profile = getProfile(isIncognito);
         if (mWebContents == null) {
             assert mSheetContent == null;
             createWebContents(profile);
@@ -214,14 +213,6 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
 
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         if (tracker.isInitialized()) tracker.notifyEvent(EventConstants.EPHEMERAL_TAB_USED);
-    }
-
-    private Profile getProfile(boolean isIncognito) {
-        if (!isIncognito) return Profile.getLastUsedRegularProfile();
-        Profile otrProfile = IncognitoUtils.getNonPrimaryOTRProfileFromWindowAndroid(mWindow);
-        return (otrProfile == null)
-                ? Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(/*createIfNeeded=*/true)
-                : otrProfile;
     }
 
     private void createWebContents(Profile profile) {

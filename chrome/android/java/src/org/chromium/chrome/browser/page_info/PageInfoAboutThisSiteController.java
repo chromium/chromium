@@ -21,6 +21,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabObserver;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabSheetContent;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -90,7 +91,7 @@ public class PageInfoAboutThisSiteController {
             mEphemeralTabCoordinator.addObserver(mEphemeralTabObserver);
 
             mEphemeralTabCoordinator.requestOpenSheetWithFullPageUrl(
-                    bottomSheetUrl, fullPageUrl, getTitle(), /* isIncognito= */ false);
+                    bottomSheetUrl, fullPageUrl, getTitle(), Profile.fromWebContents(mWebContents));
 
             mMainController.dismiss();
         } else {
