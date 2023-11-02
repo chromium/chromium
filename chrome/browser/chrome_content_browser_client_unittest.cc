@@ -43,6 +43,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/services/storage/public/cpp/storage_prefs.h"
 #include "components/variations/variations_associated_data.h"
@@ -296,6 +297,21 @@ TEST_F(ChromeContentBrowserClientWindowTest, OverrideNavigationParams) {
                                   &initiator_origin);
   EXPECT_TRUE(
       ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_LINK, transition));
+}
+
+// Test that automatic beacon credentials (automatic beacons sent with cookie
+// data) are disallowed if the 3PCD preference is enabled.
+TEST_F(ChromeContentBrowserClientWindowTest, AutomaticBeaconCredentials) {
+  ChromeContentBrowserClient client;
+
+  EXPECT_TRUE(client.AreDeprecatedAutomaticBeaconCredentialsAllowed(
+      browser()->profile(), GURL("a.test"),
+      url::Origin::Create(GURL("c.test"))));
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kTrackingProtection3pcdEnabled, true);
+  EXPECT_FALSE(client.AreDeprecatedAutomaticBeaconCredentialsAllowed(
+      browser()->profile(), GURL("a.test"),
+      url::Origin::Create(GURL("c.test"))));
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -70,10 +70,14 @@ class CONTENT_EXPORT FencedFrameReporter
   //
   // `browser_context` is used to help notify Attribution Reporting API
   // for the beacons, and to check attestations before sending out the beacons.
+  //
+  // `main_frame_origin` is the main frame of the page where Shared Storage
+  // was called.
   static scoped_refptr<FencedFrameReporter> CreateForSharedStorage(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       BrowserContext* browser_context,
-      ReportingUrlMap reporting_url_map);
+      ReportingUrlMap reporting_url_map,
+      const url::Origin& main_frame_origin = url::Origin());
 
   // Creates a FencedFrameReporter that maps FLEDGE ReportingDestination types
   // (kBuyer, kSeller, kComponentSeller), but that initially considers all three
@@ -116,8 +120,8 @@ class CONTENT_EXPORT FencedFrameReporter
       PrivacySandboxInvokingAPI invoking_api,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       BrowserContext* browser_context,
+      const url::Origin& main_frame_origin,
       PrivateAggregationManager* private_aggregation_manager = nullptr,
-      const absl::optional<url::Origin>& main_frame_origin = absl::nullopt,
       const absl::optional<url::Origin>& winner_origin = absl::nullopt,
       const absl::optional<std::vector<url::Origin>>&
           allowed_reporting_origins = absl::nullopt);
@@ -358,15 +362,16 @@ class CONTENT_EXPORT FencedFrameReporter
   // it maps to the "ComponentSeller" destination.
   bool direct_seller_is_seller_ = false;
 
+  // The origin of the page's main frame. Used for:
+  // * Private aggregation (Protected Audience only)
+  // * 3rd party cookie permission check for credentialed automatic beacons
+  const url::Origin main_frame_origin_;
+
   // Bound to the lifetime of the browser context. Can be nullptr if:
   // * It's for non-FLEDGE reporter.
   // * In tests that does not trigger private aggregation reports.
   // * When feature `kPrivateAggregationApi` is not enabled.
   const raw_ptr<PrivateAggregationManager> private_aggregation_manager_;
-
-  // The main frame of the page where the auction is running. Set to
-  // absl::nullopt for non-FLEDGE reporter.
-  const absl::optional<url::Origin> main_frame_origin_;
 
   // The winning buyer's origin. Set to absl::nullopt for non-FLEDGE reporter.
   const absl::optional<url::Origin> winner_origin_;
