@@ -39,8 +39,8 @@ const char kUpdateUrl[] = "update_url";
 const char kBlockedExtensionPrefix[] = "[BLOCKED]";
 #endif
 // List of policies that are considered only if the user is part of a AD domain
-// on Windows or managed on the Mac. Please document any new additions in
-// policy_templates.json!
+// on Windows or managed on the Mac. Please document any new additions in the
+// policy definition file.
 // Please keep the list in alphabetical order!
 const char* kSensitivePolicies[] = {
     key::kDefaultSearchProviderEnabled,
@@ -48,12 +48,13 @@ const char* kSensitivePolicies[] = {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
     key::kAutoOpenFileTypes,
-    key::kSafeBrowsingAllowlistDomains,
     key::kHomepageIsNewTabPage,
     key::kPasswordProtectionChangePasswordURL,
     key::kPasswordProtectionLoginURLs,
     key::kRestoreOnStartup,
     key::kRestoreOnStartupURLs,
+    key::kSafeBrowsingAllowlistDomains,
+    key::kSiteSearchSettings,
 #endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     key::kCommandLineFlagSecurityWarningsEnabled,
