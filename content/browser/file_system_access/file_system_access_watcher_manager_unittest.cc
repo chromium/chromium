@@ -919,8 +919,9 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectoryRecursively) {
   EXPECT_TRUE(watcher_manager().HasSourceContainingScopeForTesting(
       accumulator.observation()->scope()));
 
-  // TODO(https://crbug.com/1432064): Ensure that no events are reported by this
-  // point.
+  // No events should be observed yet.
+  SpinEventLoopForABit();
+  EXPECT_THAT(accumulator.changes(), testing::IsEmpty());
 
   // Delete a file in the sub-directory. This should be reported to
   // `accumulator`.
@@ -941,7 +942,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectoryRecursively) {
   std::list<Change> expected_changes = {
       {expected_url, std::move(mojo_change_ptr), file_path_type}};
   EXPECT_TRUE(base::test::RunUntil([&]() {
-    return testing::Matches(testing::Not(testing::IsEmpty()))(
+    return testing::Matches(testing::ContainerEq(expected_changes))(
         accumulator.changes());
   }));
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
