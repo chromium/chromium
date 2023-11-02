@@ -153,8 +153,11 @@ public class TrackExitReasonsOfInterest {
             int state = jsonObj.optInt(LAST_STATE_KEY);
 
             return new ExitReasonData(exitInfoPid, timestampAtLastRecordingInMillis, state);
-        } catch (JSONException | IOException e) {
-            Log.e(TAG, "Failed to parse JSON from file.");
+        } catch (IOException e) {
+            // File does not exist or the file read fails here
+            return null;
+        } catch (JSONException e) {
+            Log.i(TAG, "Failed to parse JSON from file.");
         }
 
         return null;
