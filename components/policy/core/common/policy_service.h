@@ -135,6 +135,8 @@ class POLICY_EXPORT PolicyService {
   // Get the PolicyService JNI bridge instance.
   virtual android::PolicyServiceAndroid* GetPolicyServiceAndroid() = 0;
 #endif
+  virtual void UseLocalTestPolicyProvider(
+      ConfigurationPolicyProvider* provider) = 0;
 };
 
 // A registrar that only observes changes to particular policies within the

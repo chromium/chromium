@@ -256,6 +256,11 @@ void PolicyServiceImpl::UnthrottleInitialization() {
   MaybeNotifyPolicyDomainStatusChange(updated_domains);
 }
 
+void PolicyServiceImpl::UseLocalTestPolicyProvider(
+    ConfigurationPolicyProvider* provider) {
+  local_test_policy_provider_ = provider;
+}
+
 void PolicyServiceImpl::OnUpdatePolicy(ConfigurationPolicyProvider* provider) {
   DCHECK_EQ(1, base::ranges::count(providers_, provider));
   refresh_pending_.erase(provider);
@@ -344,8 +349,11 @@ void PolicyServiceImpl::NotifyPoliciesUpdated(const PolicyBundle& old_bundle) {
 
 void PolicyServiceImpl::MergeAndTriggerUpdates() {
   std::vector<const PolicyBundle*> policy_bundles;
-  for (auto* provider : providers_) {
-    if (provider->is_active()) {
+
+  if (local_test_policy_provider_) {
+    policy_bundles.push_back(&local_test_policy_provider_->policies());
+  } else {
+    for (auto* provider : providers_) {
       policy_bundles.push_back(&provider->policies());
     }
   }

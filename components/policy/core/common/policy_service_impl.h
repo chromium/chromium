@@ -83,6 +83,8 @@ class POLICY_EXPORT PolicyServiceImpl
   // notified yet because it was throttled, will notify observers synchronously.
   // Has no effect if initialization was not throttled.
   void UnthrottleInitialization();
+  void UseLocalTestPolicyProvider(
+      ConfigurationPolicyProvider* provider) override;
 
   // Precedence policies cannot be set at the user cloud level regardless of
   // affiliation status. This is done to prevent cloud users from potentially
@@ -144,6 +146,7 @@ class POLICY_EXPORT PolicyServiceImpl
 
   // The providers, in order of decreasing priority.
   Providers providers_;
+  raw_ptr<ConfigurationPolicyProvider> local_test_policy_provider_ = nullptr;
 
   Migrators migrators_;
 

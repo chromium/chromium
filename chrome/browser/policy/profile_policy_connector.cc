@@ -394,10 +394,7 @@ void ProfilePolicyConnector::Init(
     policy_providers_.push_back(connector->command_line_policy_provider());
 #endif
 
-  if (connector->local_test_policy_provider()) {
     local_test_policy_provider_ = connector->local_test_policy_provider();
-    policy_providers_.push_back(local_test_policy_provider_);
-  }
 
   if (configuration_policy_provider) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -692,13 +689,11 @@ std::string ProfilePolicyConnector::GetTimeToFirstPolicyLoadMetricSuffix()
 }
 
 void ProfilePolicyConnector::UseLocalTestPolicyProvider() {
-  for (auto* provider : policy_providers_) {
-    provider->set_active(false);
+  if (IsManaged()) {
+    return;
   }
-
-  if (local_test_policy_provider_) {
-    local_test_policy_provider_->set_active(true);
-  }
+  local_test_policy_provider_->set_active(true);
+  policy_service_->UseLocalTestPolicyProvider(local_test_policy_provider_);
   policy_service()->RefreshPolicies(base::DoNothing(),
                                     PolicyFetchReason::kTest);
   if (!local_test_infobar_visibility_manager_->infobar_active()) {
@@ -708,11 +703,8 @@ void ProfilePolicyConnector::UseLocalTestPolicyProvider() {
 }
 
 void ProfilePolicyConnector::RevertUseLocalTestPolicyProvider() {
-  for (auto* provider : policy_providers_) {
-    provider->set_active(true);
-  }
-
   local_test_policy_provider_->set_active(false);
+  policy_service_->UseLocalTestPolicyProvider(nullptr);
   static_cast<LocalTestPolicyProvider*>(local_test_policy_provider_)
       ->ClearPolicies();
   policy_service()->RefreshPolicies(base::DoNothing(),
