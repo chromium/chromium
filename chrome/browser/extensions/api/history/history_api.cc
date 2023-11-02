@@ -79,40 +79,40 @@ VisitItem GetVisitItem(const history::VisitRow& row) {
   visit_item.visit_time = row.visit_time.InMillisecondsFSinceUnixEpoch();
   visit_item.referring_visit_id = base::NumberToString(row.referring_visit);
 
-  api::history::TransitionType transition = api::history::TRANSITION_TYPE_LINK;
+  api::history::TransitionType transition = api::history::TransitionType::kLink;
   switch (row.transition & ui::PAGE_TRANSITION_CORE_MASK) {
     case ui::PAGE_TRANSITION_LINK:
-      transition = api::history::TRANSITION_TYPE_LINK;
+      transition = api::history::TransitionType::kLink;
       break;
     case ui::PAGE_TRANSITION_TYPED:
-      transition = api::history::TRANSITION_TYPE_TYPED;
+      transition = api::history::TransitionType::kTyped;
       break;
     case ui::PAGE_TRANSITION_AUTO_BOOKMARK:
-      transition = api::history::TRANSITION_TYPE_AUTO_BOOKMARK;
+      transition = api::history::TransitionType::kAutoBookmark;
       break;
     case ui::PAGE_TRANSITION_AUTO_SUBFRAME:
-      transition = api::history::TRANSITION_TYPE_AUTO_SUBFRAME;
+      transition = api::history::TransitionType::kAutoSubframe;
       break;
     case ui::PAGE_TRANSITION_MANUAL_SUBFRAME:
-      transition = api::history::TRANSITION_TYPE_MANUAL_SUBFRAME;
+      transition = api::history::TransitionType::kManualSubframe;
       break;
     case ui::PAGE_TRANSITION_GENERATED:
-      transition = api::history::TRANSITION_TYPE_GENERATED;
+      transition = api::history::TransitionType::kGenerated;
       break;
     case ui::PAGE_TRANSITION_AUTO_TOPLEVEL:
-      transition = api::history::TRANSITION_TYPE_AUTO_TOPLEVEL;
+      transition = api::history::TransitionType::kAutoToplevel;
       break;
     case ui::PAGE_TRANSITION_FORM_SUBMIT:
-      transition = api::history::TRANSITION_TYPE_FORM_SUBMIT;
+      transition = api::history::TransitionType::kFormSubmit;
       break;
     case ui::PAGE_TRANSITION_RELOAD:
-      transition = api::history::TRANSITION_TYPE_RELOAD;
+      transition = api::history::TransitionType::kReload;
       break;
     case ui::PAGE_TRANSITION_KEYWORD:
-      transition = api::history::TRANSITION_TYPE_KEYWORD;
+      transition = api::history::TransitionType::kKeyword;
       break;
     case ui::PAGE_TRANSITION_KEYWORD_GENERATED:
-      transition = api::history::TRANSITION_TYPE_KEYWORD_GENERATED;
+      transition = api::history::TransitionType::kKeywordGenerated;
       break;
     default:
       DCHECK(false);
