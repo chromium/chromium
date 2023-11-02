@@ -2436,6 +2436,7 @@
     "prefix": "deprecated-css-appearance-values-enabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
+      "css-parser/deprecated-css-appearance-values.html",
       "css-parser/deprecated-css-appearance-values-warning/appearance-warning-cssom-usecounter.html",
       "css-parser/deprecated-css-appearance-values-warning/appearance-warning-usecounter.html",
       "css-parser/deprecated-css-appearance-values-warning/webkit-appearance-warning-cssom-usecounter.html",

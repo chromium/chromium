@@ -310,14 +310,63 @@ inline CSSIdentifierValue::CSSIdentifierValue(ControlPart e)
 
 template <>
 inline ControlPart CSSIdentifierValue::ConvertTo() const {
-  if (value_id_ == CSSValueID::kNone) {
-    return kNoControlPart;
+  switch (value_id_) {
+    case CSSValueID::kNone:
+      return kNoControlPart;
+    case CSSValueID::kAuto:
+      return kAutoPart;
+    case CSSValueID::kCheckbox:
+      return kCheckboxPart;
+    case CSSValueID::kRadio:
+      return kRadioPart;
+    case CSSValueID::kPushButton:
+      return kPushButtonPart;
+    case CSSValueID::kSquareButton:
+      return kSquareButtonPart;
+    case CSSValueID::kButton:
+      return kButtonPart;
+    case CSSValueID::kInnerSpinButton:
+      return kInnerSpinButtonPart;
+    case CSSValueID::kListbox:
+      return kListboxPart;
+    case CSSValueID::kMediaSlider:
+      return kMediaSliderPart;
+    case CSSValueID::kMediaSliderthumb:
+      return kMediaSliderThumbPart;
+    case CSSValueID::kMediaVolumeSlider:
+      return kMediaVolumeSliderPart;
+    case CSSValueID::kMediaVolumeSliderthumb:
+      return kMediaVolumeSliderThumbPart;
+    case CSSValueID::kInternalMediaControl:
+      return kMediaControlPart;
+    case CSSValueID::kMenulist:
+      return kMenulistPart;
+    case CSSValueID::kMenulistButton:
+      return kMenulistButtonPart;
+    case CSSValueID::kMeter:
+      return kMeterPart;
+    case CSSValueID::kProgressBar:
+      return kProgressBarPart;
+    case CSSValueID::kSliderHorizontal:
+      return kSliderHorizontalPart;
+    case CSSValueID::kSliderVertical:
+      return kSliderVerticalPart;
+    case CSSValueID::kSliderthumbHorizontal:
+      return kSliderThumbHorizontalPart;
+    case CSSValueID::kSliderthumbVertical:
+      return kSliderThumbVerticalPart;
+    case CSSValueID::kSearchfield:
+      return kSearchFieldPart;
+    case CSSValueID::kSearchfieldCancelButton:
+      return kSearchFieldCancelButtonPart;
+    case CSSValueID::kTextfield:
+      return kTextFieldPart;
+    case CSSValueID::kTextarea:
+      return kTextAreaPart;
+    default:
+      NOTREACHED();
+      return kNoControlPart;
   }
-  if (value_id_ == CSSValueID::kAuto) {
-    return kAutoPart;
-  }
-  return ControlPart(static_cast<int>(value_id_) -
-                     static_cast<int>(CSSValueID::kCheckbox) + kCheckboxPart);
 }
 
 template <>

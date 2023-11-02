@@ -831,11 +831,6 @@
     "manual",
 
     // -webkit-appearance
-    // The order here must match the order in the ControlPart enum in
-    // theme_types.h.
-    // All appearance values that should be accepted by the parser should be
-    // listed between 'checkbox' and 'textarea'. This is checked in
-    // CSSParserFastPaths::IsValidKeywordPropertyAndValue.
     "checkbox",
     "radio",
     "button",
