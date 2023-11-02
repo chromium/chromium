@@ -2435,6 +2435,10 @@ are declared in tools/grit/grit_rule.gni.
                desc="In the download view, the 'Open' button when prompt for deep scan">
         Open anyway
       </message>
+      <message name="IDS_DOWNLOAD_LOCAL_PASSWORD_SCAN"
+        desc="On the downloads page, the label for the button to check a download for malware">
+        Check for malware
+      </message>
 
       <message name="IDS_DOWNLOAD_KEEP_DANGEROUS_FILE"
                desc="On the downloads page, the label for the button to download a dangerous file despite its danger.">

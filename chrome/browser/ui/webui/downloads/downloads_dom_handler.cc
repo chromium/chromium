@@ -464,17 +464,20 @@ void DownloadsDOMHandler::DeepScan(const std::string& id) {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kDeepScanningEncryptedArchives) &&
+  if ((base::FeatureList::IsEnabled(
+           safe_browsing::kDeepScanningEncryptedArchives) ||
+       base::FeatureList::IsEnabled(
+           safe_browsing::kEncryptedArchivesMetadata)) &&
       DownloadItemWarningData::IsEncryptedArchive(download)) {
     // For encrypted archives, we need a password from the user. We will request
     // this in the download bubble.
     PromptForScanningInBubble(GetWebUIWebContents(), download);
-  } else {
-    DownloadItemModel model(download);
-    DownloadCommands commands(model.GetWeakPtr());
-    commands.ExecuteCommand(DownloadCommands::DEEP_SCAN);
+    return;
   }
+
+  DownloadItemModel model(download);
+  DownloadCommands commands(model.GetWeakPtr());
+  commands.ExecuteCommand(DownloadCommands::DEEP_SCAN);
 }
 
 void DownloadsDOMHandler::BypassDeepScanRequiringGesture(

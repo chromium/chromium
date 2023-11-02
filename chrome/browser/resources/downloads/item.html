@@ -401,7 +401,7 @@
           <span role="gridcell">
             <cr-button on-click="onDeepScanClick_" id="deepScan"
                       class="action-button" focus-row-control focus-type="open">
-              $i18n{controlDeepScan}
+              [[computeDeepScanControlText_(data.state)]]
             </cr-button>
           </span>
           <span role="gridcell">
@@ -436,7 +436,7 @@
           <span role="gridcell">
             <cr-button on-click="onDeepScanClick_" id="deepScan"
                       class="action-button" focus-row-control focus-type="open">
-              $i18n{controlDeepScan}
+              [[computeDeepScanControlText_(data.state)]]
             </cr-button>
           </span>
         </template>

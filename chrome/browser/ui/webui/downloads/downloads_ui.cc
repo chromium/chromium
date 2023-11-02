@@ -110,9 +110,11 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"asyncScanningDownloadDesc", IDS_BLOCK_REASON_DEEP_SCANNING_UPDATED},
       {"asyncScanningDownloadDescSecond",
        IDS_BLOCK_REASON_DEEP_SCANNING_SECOND_UPDATED},
+      // TODO(crbug/1491184): Update this string for local decryption scans.
       {"promptForScanningDesc", IDS_BLOCK_REASON_PROMPT_FOR_SCANNING_UPDATED},
       {"controlDeepScan", IDS_DOWNLOAD_DEEP_SCAN_UPDATED},
       {"controlBypassDeepScan", IDS_DOWNLOAD_BYPASS_DEEP_SCAN_UPDATED},
+      {"controlLocalPasswordScan", IDS_DOWNLOAD_LOCAL_PASSWORD_SCAN},
 
       // Controls.
       {"controlPause", IDS_DOWNLOAD_LINK_PAUSE},

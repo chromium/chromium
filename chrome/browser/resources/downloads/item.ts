@@ -353,7 +353,8 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     }
 
     if (this.data.state === State.kAsyncScanning ||
-        this.data.state === State.kPromptForScanning) {
+        this.data.state === State.kPromptForScanning ||
+        this.data.state === State.kPromptForLocalPasswordScanning) {
       return DisplayType.SUSPICIOUS;
     }
 
@@ -392,6 +393,16 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     }
 
     return DisplayType.NORMAL;
+  }
+
+  private computeDeepScanControlText_(): string {
+    if (this.data.state === State.kPromptForScanning) {
+      return loadTimeData.getString('controlDeepScan');
+    } else if (this.data.state === State.kPromptForLocalPasswordScanning) {
+      return loadTimeData.getString('controlLocalPasswordScan');
+    }
+
+    return '';
   }
 
   private computeSaveDangerousLabel_(): string {
@@ -457,6 +468,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       case State.kAsyncScanning:
         return loadTimeData.getString('asyncScanningDownloadDesc');
       case State.kPromptForScanning:
+      case State.kPromptForLocalPasswordScanning:  // Fallthrough.
         return loadTimeData.getString('promptForScanningDesc');
       case State.kInProgress:
       case State.kPaused:  // Fallthrough.
@@ -546,11 +558,9 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         return 'cr:error';
       }
 
-      if (this.data.state === State.kAsyncScanning) {
-        return 'cr:warning';
-      }
-
-      if (this.data.state === State.kPromptForScanning) {
+      if (this.data.state === State.kAsyncScanning ||
+          this.data.state === State.kPromptForScanning ||
+          this.data.state === State.kPromptForLocalPasswordScanning) {
         return 'cr:warning';
       }
     }
@@ -587,7 +597,8 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       }
 
       if (this.data.state === State.kAsyncScanning ||
-          this.data.state === State.kPromptForScanning) {
+          this.data.state === State.kPromptForScanning ||
+          this.data.state === State.kPromptForLocalPasswordScanning) {
         return 'yellow';
       }
     }
@@ -686,11 +697,13 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       return true;
     }
     return this.showCancel_ && this.data.percent >= -1 &&
-        this.data.state !== State.kPromptForScanning;
+        this.data.state !== State.kPromptForScanning &&
+        this.data.state !== State.kPromptForLocalPasswordScanning;
   }
 
   private computeShowDeepScan_(): boolean {
-    return this.data.state === State.kPromptForScanning;
+    return this.data.state === State.kPromptForScanning ||
+        this.data.state === State.kPromptForLocalPasswordScanning;
   }
 
   private computeShowOpenAnyway_(): boolean {
@@ -762,10 +775,9 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       if (OVERRIDDEN_ICON_TYPES.includes(this.data.dangerType as DangerType)) {
         return false;
       }
-      if (this.data.state === State.kAsyncScanning) {
-        return false;
-      }
-      if (this.data.state === State.kPromptForScanning) {
+      if (this.data.state === State.kAsyncScanning ||
+          this.data.state === State.kPromptForScanning ||
+          this.data.state === State.kPromptForLocalPasswordScanning) {
         return false;
       }
       return true;

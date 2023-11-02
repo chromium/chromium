@@ -411,6 +411,28 @@ suite('item tests', function() {
         item.shadowRoot!.querySelector<HTMLElement>('#bypass-deep-scan')));
   });
 
+  test('local decryption scan icon and text', () => {
+    loadTimeData.overrideValues({'improvedDownloadWarningsUX': true});
+    const item = document.createElement('downloads-item');
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(item);
+    item.set('data', createDownload({
+               filePath: 'unique1',
+               hideDate: false,
+               state: State.kPromptForLocalPasswordScanning,
+             }));
+    flush();
+
+    const icon = item.shadowRoot!.querySelector(
+        'iron-icon[icon="cr:warning"][icon-color=grey]');
+    assertTrue(!!icon);
+
+    assertEquals(
+        loadTimeData.getString('controlLocalPasswordScan'),
+        item.shadowRoot!.querySelector<HTMLElement>(
+                            '#deepScan')!.textContent!.trim());
+  });
+
   test('open anyway dropdown button shown on failed deep scan', () => {
     loadTimeData.overrideValues({'improvedDownloadWarningsUX': true});
     const item = document.createElement('downloads-item');

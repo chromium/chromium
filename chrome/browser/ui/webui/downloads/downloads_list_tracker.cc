@@ -328,6 +328,10 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
           download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING) {
         state = downloads::mojom::State::kPromptForScanning;
       } else if (download_item->GetDangerType() ==
+                 download::
+                     DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING) {
+        state = downloads::mojom::State::kPromptForLocalPasswordScanning;
+      } else if (download_item->GetDangerType() ==
                  download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING) {
         state = downloads::mojom::State::kAsyncScanning;
       } else if (download_item->IsDangerous()) {
