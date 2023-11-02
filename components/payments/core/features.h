@@ -51,6 +51,10 @@ BASE_DECLARE_FEATURE(kSecurePaymentConfirmationUseCredentialStoreAPIs);
 // See https://crbug.com/1385136.
 BASE_DECLARE_FEATURE(kPaymentHandlerMinimalHeaderUX);
 
+// If enabled, the payment method manifest fetch for Payment Handler must go via
+// a Link header with rel="payment-method-manifest".
+BASE_DECLARE_FEATURE(kPaymentHandlerRequireLinkHeader);
+
 }  // namespace features
 }  // namespace payments
 

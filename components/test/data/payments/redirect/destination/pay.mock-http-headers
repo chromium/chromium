@@ -1,0 +1,4 @@
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Link: </redirect/destination/pay>; rel="payment-method-manifest"
