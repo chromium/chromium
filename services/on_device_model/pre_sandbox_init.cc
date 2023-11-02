@@ -6,7 +6,7 @@
 #include "services/on_device_model/on_device_model_service.h"
 
 #if defined(ENABLE_ML_INTERNAL)
-#include "services/on_device_model/chrome_ml_instance.h"
+#include "services/on_device_model/chrome_ml_instance.h"  // nogncheck
 #endif
 
 namespace on_device_model {
