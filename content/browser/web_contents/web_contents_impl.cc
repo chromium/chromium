@@ -10303,7 +10303,7 @@ void WebContentsImpl::NotifyPrimaryMainFrameProcessIsAlive() {
   // Restore the focus to the tab (otherwise the focus will be on the top
   // window).
   if (was_renderer_terminated && !FocusLocationBarByDefault()) {
-    if (!delegate_ || delegate_->ShouldFocusPageAfterCrash()) {
+    if (!delegate_ || delegate_->ShouldFocusPageAfterCrash(this)) {
       view_->Focus();
     }
   }

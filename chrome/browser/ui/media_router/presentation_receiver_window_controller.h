@@ -97,7 +97,7 @@ class PresentationReceiverWindowController final
   void CloseContents(content::WebContents* source) final;
   bool ShouldSuppressDialogs(content::WebContents* source) final;
   bool ShouldFocusLocationBarByDefault(content::WebContents* source) final;
-  bool ShouldFocusPageAfterCrash() final;
+  bool ShouldFocusPageAfterCrash(content::WebContents* source) final;
   void CanDownload(const GURL& url,
                    const std::string& request_method,
                    base::OnceCallback<void(bool)> callback) final;

@@ -249,7 +249,7 @@ class CONTENT_EXPORT WebContentsDelegate {
 
   // Returns whether the page should be focused when transitioning from crashed
   // to live. Default is true.
-  virtual bool ShouldFocusPageAfterCrash();
+  virtual bool ShouldFocusPageAfterCrash(WebContents* source);
 
   // Returns whether the page should resume accepting requests for the new
   // window. This is used when window creation is asynchronous
