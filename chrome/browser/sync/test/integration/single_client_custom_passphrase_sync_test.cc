@@ -294,9 +294,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
   EXPECT_TRUE(
       PasswordFormsChecker(/*index=*/0, /*expected_forms=*/{password_form})
           .Wait());
-  // TODO(crbug.com/1443466): Clean up after solving dangling ptrs when
-  // PasswordStatusCheckService::MaybeResetInfrastructureAsync is called.
-  base::RunLoop().RunUntilIdle();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

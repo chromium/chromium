@@ -44,7 +44,7 @@ class PasswordStatusCheckService
   size_t reused_credential_count() const { return reused_credential_count_; }
 
   bool is_update_credential_count_pending() const {
-    return running_update_credential_count_ > 0;
+    return is_update_credential_count_pending_;
   }
 
   bool is_password_check_running() const { return is_password_check_running_; }
@@ -111,7 +111,6 @@ class PasswordStatusCheckService
       password_manager::BulkLeakCheckService::State state) override;
   void OnCredentialDone(const password_manager::LeakCheckCredential& credential,
                         password_manager::IsLeaked is_leaked) override;
-  void OnBulkCheckServiceShutDown() override;
 
   // PasswordStoreInterface::Observer implementation.
   // Used to trigger an update of the password issue counts when passwords
@@ -195,14 +194,9 @@ class PasswordStatusCheckService
   // True when password stores are empty and there are no saved passwords.
   bool no_passwords_saved_ = true;
 
-  // Counter of running sync update credential count checks. Memory intensive
-  // objects will be reset after all have finished and
-  // is_password_check_running_ is false.
-  int running_update_credential_count_ = 0;
-
-  // Flag to indicate if password check is running. Memory intensive objects
-  // will be reset after the check is completed and
-  // running_update_credential_count_ is zero.
+  // Flags to indicate which async operations are currently ongoing. Memory
+  // intensive objects will be reset after all have finished.
+  bool is_update_credential_count_pending_ = false;
   bool is_password_check_running_ = false;
 
   // Timer to schedule the run of the password check after some time has passed.

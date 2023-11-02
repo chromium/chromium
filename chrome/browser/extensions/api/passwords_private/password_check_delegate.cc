@@ -401,13 +401,6 @@ PasswordCheckDelegate::GetInsecureCredentialsManager() {
   return &insecure_credentials_manager_;
 }
 
-void PasswordCheckDelegate::OnBulkCheckServiceShutDown() {
-  // Stop observing BulkLeakCheckService when the service shut down.
-  CHECK(observed_bulk_leak_check_service_.IsObservingSource(
-      BulkLeakCheckServiceFactory::GetForProfile(profile_)));
-  observed_bulk_leak_check_service_.Reset();
-}
-
 void PasswordCheckDelegate::OnSavedPasswordsChanged(
     const password_manager::PasswordStoreChangeList& changes) {
   // Getting the first notification about a change in saved passwords implies
