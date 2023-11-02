@@ -1377,7 +1377,17 @@ void AutofillAgent::HandleFocusChangeComplete(
     }
   }
 
-  if (focused_node_was_last_clicked && !focused_element.IsNull() &&
+  // TODO(crbug.com/1490372, b/308811729): This is not conditioned on
+  // `focused_node_was_last_clicked`. This has two advantages:
+  // - The AutofillDriverRouter is informed about the form and then can route
+  //   ExtractForm() messages to the right frame.
+  //   TODO(crbug.com/1490372, b/308811729): Check whether the context menu
+  //   event arrives after this one. (Probably it does, analogously to the IME.)
+  // - On click into a nested contenteditable `focused_node_was_last_clicked` is
+  //   false. The call comes from DidCompleteFocusChangeInFrame() which passes
+  //   false since at the preceding DidReceiveLeftMouseDownOrGestureTapInNode()
+  //   call `node.Focused()` was false.
+  if (!focused_element.IsNull() &&
       base::FeatureList::IsEnabled(features::kAutofillContentEditables)) {
     if (std::optional<FormData> form =
             form_util::FindFormForContentEditable(focused_element)) {
