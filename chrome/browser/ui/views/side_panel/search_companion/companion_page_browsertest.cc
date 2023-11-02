@@ -1028,6 +1028,32 @@ IN_PROC_BROWSER_TEST_F(CompanionPageSameTabBrowserTest,
             GetLastLinkOpenedMetadataFromPostMessage());
 }
 
+IN_PROC_BROWSER_TEST_F(CompanionPageSameTabBrowserTest,
+                       LinkClickOnImgresURLNotifiesViaPostMessage) {
+  const GURL clicked_url = GURL("https://www.google.com/imgres?imgurl=query");
+
+  // Load a page on the active tab.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+
+  // Open companion companion via toolbar entry point.
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  ClickUrlInCompanion(clicked_url, /*wait_for_navigation=*/false,
+                      /*wait_for_message=*/true);
+
+  // Ensure browser sent post message
+  EXPECT_EQ(clicked_url, GetLastLinkOpenedUrlFromPostMessage());
+  EXPECT_EQ(kExpectedClobberLinkMetadata,
+            GetLastLinkOpenedMetadataFromPostMessage());
+}
+
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, LinkClickOnCompanionPage) {
   EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/true, /*exps=*/true);
   ukm::TestAutoSetUkmRecorder ukm_recorder;

@@ -306,7 +306,8 @@ void CompanionSidePanelController::DidOpenRequestedURL(
 
   bool open_in_current_tab = companion::ShouldOpenLinksInCurrentTab();
   // Do not open search URLs as we will open them in the companion instead.
-  bool should_open_url = !google_util::IsGoogleSearchUrl(url);
+  bool should_open_url =
+      !(google_util::IsGoogleSearchUrl(url) && url.path_piece() == "/search");
   params.disposition = open_in_current_tab
                            ? WindowOpenDisposition::CURRENT_TAB
                            : WindowOpenDisposition::NEW_FOREGROUND_TAB;
