@@ -254,17 +254,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "win10_chromium_inverse_fieldtrials_x64_fyi_rel_ng",
-    mirrors = [
-        "ci/Win x64 Builder",
-        "ci/Win10 Tests x64",
-        "ci/GPU Win x64 Builder",
-        "ci/Win10 x64 Release (NVIDIA)",
-    ],
-    os = os.WINDOWS_10,
-)
-
-try_.builder(
     name = "win-fieldtrial-rel",
     mirrors = ["ci/win-fieldtrial-rel"],
     os = os.WINDOWS_DEFAULT,

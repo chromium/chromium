@@ -1124,25 +1124,6 @@
       "use_remoteexec": true
     }
   },
-  "android-inverse-fieldtrials-pie-x86-fyi-rel": {
-    "gn_args": {
-      "android_static_analysis": "off",
-      "dcheck_always_on": true,
-      "debuggable_apks": false,
-      "ffmpeg_branding": "Chrome",
-      "invert_fieldtrials": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "strip_debug_info": true,
-      "symbol_level": 0,
-      "system_webview_package_name": "com.google.android.webview",
-      "target_cpu": "x86",
-      "target_os": "android",
-      "use_dummy_lastchange": true,
-      "use_remoteexec": true
-    }
-  },
   "android-oreo-arm64-dbg": {
     "gn_args": {
       "debuggable_apks": false,

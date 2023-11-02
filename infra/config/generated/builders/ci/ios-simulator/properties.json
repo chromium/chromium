@@ -46,10 +46,6 @@
           "group": "tryserver.chromium.mac"
         },
         {
-          "builder": "ios-simulator-inverse-fieldtrials-fyi",
-          "group": "tryserver.chromium.mac"
-        },
-        {
           "builder": "ios-simulator-siso",
           "group": "tryserver.chromium.mac"
         }

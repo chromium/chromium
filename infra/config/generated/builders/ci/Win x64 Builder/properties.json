@@ -157,10 +157,6 @@
           "group": "tryserver.chromium.win"
         },
         {
-          "builder": "win10_chromium_inverse_fieldtrials_x64_fyi_rel_ng",
-          "group": "tryserver.chromium.win"
-        },
-        {
           "builder": "win11-x64-fyi-rel",
           "group": "tryserver.chromium.win"
         },

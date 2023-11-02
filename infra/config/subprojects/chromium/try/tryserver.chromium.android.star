@@ -500,11 +500,6 @@ try_.builder(
     mirrors = ["ci/android-fieldtrial-rel"],
 )
 
-try_.builder(
-    name = "android-inverse-fieldtrials-pie-x86-fyi-rel",
-    mirrors = builder_config.copy_from("try/android-pie-x86-rel"),
-)
-
 # TODO(crbug.com/1416662): Remove the builder after the experiment.
 try_.orchestrator_builder(
     name = "android-x86-dual-coverage-exp-rel",

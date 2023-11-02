@@ -42,10 +42,6 @@
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "linux-chromeos-inverse-fieldtrials-fyi-rel",
-          "group": "tryserver.chromium.chromiumos"
-        },
-        {
           "builder": "linux-chromeos-rel",
           "group": "tryserver.chromium.chromiumos"
         }

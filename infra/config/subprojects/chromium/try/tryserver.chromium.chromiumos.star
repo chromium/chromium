@@ -322,11 +322,6 @@ try_.builder(
     main_list_view = "try",
 )
 
-try_.builder(
-    name = "linux-chromeos-inverse-fieldtrials-fyi-rel",
-    mirrors = builder_config.copy_from("try/linux-chromeos-rel"),
-)
-
 try_.orchestrator_builder(
     name = "linux-chromeos-rel",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,

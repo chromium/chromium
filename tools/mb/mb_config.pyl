@@ -1088,7 +1088,6 @@
       'android-deterministic-dbg': 'android_debug_bot_reclient',
       'android-deterministic-rel': 'android_without_codecs_release_trybot_reclient',
       'android-fieldtrial-rel': 'android_release_trybot_x64_fastbuild_webview_trichrome_reclient',
-      'android-inverse-fieldtrials-pie-x86-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_google_invert_fieldtrials_reclient',
       'android-oreo-arm64-dbg': 'android_debug_trybot_arm64_reclient',
       'android-oreo-x86-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome_coverage_reclient',
       'android-perfetto-rel': 'perfetto_release_trybot_reclient_android',
@@ -1171,7 +1170,6 @@
       'linux-chromeos-annotator-rel': 'chromeos_with_codecs_release_trybot_code_coverage_reclient',
       'linux-chromeos-compile-dbg': 'chromeos_with_codecs_debug_trybot_reclient',
       'linux-chromeos-dbg': 'chromeos_with_codecs_debug_trybot_reclient',
-      'linux-chromeos-inverse-fieldtrials-fyi-rel': 'chromeos_with_codecs_release_trybot_invert_fieldtrials_reclient',
       'linux-chromeos-rel': 'chromeos_with_codecs_release_trybot_code_coverage_reclient',
       'linux-lacros-dbg': 'lacros_on_linux_debug_bot_reclient_with_cups',
       'linux-lacros-rel': 'lacros_on_linux_release_trybot_reclient_code_coverage_with_cups',
@@ -1290,7 +1288,6 @@
       'linux-fieldtrial-rel': 'release_bot_minimal_symbols_reclient',
       'linux-gcc-rel': 'release_bot_minimal_symbols_no_clang',
       'linux-headless-shell-rel': 'headless_shell_release_bot_reclient_use_dummy_lastchange',
-      'linux-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_invert_fieldtrials_reclient',
       'linux-js-code-coverage': 'js_coverage_reclient',
       'linux-js-coverage-rel':  'js_coverage_reclient_use_dummy_lastchange',
       'linux-lacros-asan-lsan-rel': 'asan_lsan_lacros_release_bot_dcheck_always_on_reclient',
@@ -1374,7 +1371,6 @@
       'ios-simulator-code-coverage': 'clang_code_coverage_ios_xctest_sim_reclient',
       'ios-simulator-cr-recipe': 'ios_simulator_debug_static_bot_xctest',
       'ios-simulator-full-configs': 'ios_simulator_code_coverage_partial_instrumentation_xctest_reclient',
-      'ios-simulator-inverse-fieldtrials-fyi': 'ios_simulator_debug_static_bot_invert_fieldtrials_xctest_reclient',
       'ios-simulator-multi-window': 'ios_simulator_debug_static_bot_xctest_reclient',
       'ios-simulator-noncq': 'ios_simulator_debug_static_bot_xctest_reclient_use_dummy_lastchange',
       'ios-simulator-siso': 'ios_simulator_code_coverage_partial_instrumentation_xctest_reclient',
@@ -1391,7 +1387,6 @@
       'mac-cr23-rel': 'release_trybot_minimal_symbols_reclient',
       'mac-fieldtrial-tester': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl_reclient',
       'mac-intel-on-arm64-rel': 'release_trybot_reclient_x64',
-      'mac-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_invert_fieldtrials_reclient',
       'mac-osxbeta-rel': 'gpu_tests_debug_trybot_reclient',
       'mac-perfetto-rel': 'perfetto_release_trybot_reclient',
       'mac-rel': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage_x64_reclient',
@@ -1508,7 +1503,6 @@
       'win10-code-coverage': 'clang_code_coverage_reclient',
       'win10-dbg': 'gpu_tests_debug_bot_reclient',
       'win10-wpt-content-shell-fyi-rel': 'release_bot_blink_minimal_symbols_reclient',
-      'win10_chromium_inverse_fieldtrials_x64_fyi_rel_ng': 'gpu_tests_release_trybot_resource_allowlisting_invert_fieldtrials',
       'win10_chromium_x64_rel_ng_exp': 'release_trybot',
       'win11-wpt-content-shell-fyi-rel': 'release_bot_blink_minimal_symbols_reclient',
       'win11-x64-fyi-rel': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
@@ -1919,11 +1913,6 @@
 
     'android_release_trybot_x64_reclient': [
       'android', 'release_trybot_reclient', 'strip_debug_info', 'x64',
-    ],
-
-    'android_release_trybot_x86_fastbuild_webview_google_invert_fieldtrials_reclient': [
-      'android', 'release_trybot_reclient', 'strip_debug_info', 'x86',
-      'android_fastbuild', 'webview_google', 'invert_fieldtrials'
     ],
 
     'android_release_trybot_x86_fastbuild_webview_monochrome': [
@@ -2504,10 +2493,6 @@
       'no_goma', 'no_reclient', 'siso',
     ],
 
-    'chromeos_with_codecs_release_trybot_invert_fieldtrials_reclient': [
-      'chromeos_with_codecs', 'release_trybot_reclient', 'no_symbols', 'use_cups', 'invert_fieldtrials',
-    ],
-
     'chromeos_with_codecs_release_trybot_reclient': [
       'chromeos_with_codecs', 'release_trybot_reclient', 'no_symbols',
     ],
@@ -2950,10 +2935,6 @@
       'gpu_tests', 'release_bot_reclient', 'x86', 'no_symbols',
     ],
 
-    'gpu_tests_release_trybot_invert_fieldtrials_reclient': [
-      'gpu_tests', 'release_trybot_reclient', 'invert_fieldtrials',
-    ],
-
     'gpu_tests_release_trybot_mbi_mode_per_render_process_host_reclient': [
       'gpu_tests', 'release_trybot_reclient', 'mbi_mode_per_render_process_host'
     ],
@@ -3007,11 +2988,6 @@
       "no_goma", "no_reclient", "siso",
     ],
 
-    'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_invert_fieldtrials_reclient': [
-      'gpu_tests', 'release_trybot_reclient', 'no_symbols', 'use_dummy_lastchange',
-      'invert_fieldtrials',
-    ],
-
     'gpu_tests_release_trybot_ptr_comp_reclient': [
       'gpu_tests', 'release_trybot_minimal_symbols_reclient', 'v8_pointer_compression',
     ],
@@ -3036,10 +3012,6 @@
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
       'enable_dangling_raw_ptr_feature_flag',
       'no_goma', 'no_reclient', 'siso',
-    ],
-
-    'gpu_tests_release_trybot_resource_allowlisting_invert_fieldtrials': [
-      'gpu_tests', 'release_trybot_reclient', 'resource_allowlisting', 'invert_fieldtrials',
     ],
 
     'gpu_tests_release_trybot_resource_allowlisting_reclient': [
@@ -3102,10 +3074,6 @@
 
     'ios_simulator_code_coverage_partial_instrumentation_xctest_reclient': [
       'use_clang_coverage', 'debug_static_bot_reclient', 'x64', 'ios', 'ios_simulator', 'partial_code_coverage_instrumentation', 'xctest', 'use_dummy_lastchange',
-    ],
-
-    'ios_simulator_debug_static_bot_invert_fieldtrials_xctest_reclient': [
-        'debug_static_bot_reclient', 'ios', 'ios_simulator', 'ios_cpu_x64', 'invert_fieldtrials', 'xctest',
     ],
 
     'ios_simulator_debug_static_bot_xctest': [
@@ -4473,10 +4441,6 @@
 
     'include_unwind_tables': {
       'gn_args': 'exclude_unwind_tables=false',
-    },
-
-    'invert_fieldtrials': {
-      'gn_args': 'invert_fieldtrials=true',
     },
 
     'ios': {

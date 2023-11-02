@@ -284,20 +284,6 @@
       "use_remoteexec": true
     }
   },
-  "win10_chromium_inverse_fieldtrials_x64_fyi_rel_ng": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "enable_resource_allowlist_generation": true,
-      "ffmpeg_branding": "Chrome",
-      "invert_fieldtrials": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 0,
-      "use_dummy_lastchange": true,
-      "use_remoteexec": true
-    }
-  },
   "win10_chromium_x64_rel_ng_exp": {
     "gn_args": {
       "dcheck_always_on": true,

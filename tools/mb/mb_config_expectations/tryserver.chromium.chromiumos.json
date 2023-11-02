@@ -331,21 +331,6 @@
       "use_remoteexec": true
     }
   },
-  "linux-chromeos-inverse-fieldtrials-fyi-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "ChromeOS",
-      "invert_fieldtrials": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 0,
-      "target_os": "chromeos",
-      "use_cups": true,
-      "use_dummy_lastchange": true,
-      "use_remoteexec": true
-    }
-  },
   "linux-chromeos-rel": {
     "gn_args": {
       "also_build_lacros_chrome": true,

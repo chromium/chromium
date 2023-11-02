@@ -79,19 +79,6 @@ try_.builder(
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
-# This trybot mirrors the trybot mac-rel
-try_.builder(
-    name = "mac-inverse-fieldtrials-fyi-rel",
-    mirrors = [
-        "ci/Mac Builder",
-        "ci/Mac13 Tests",
-        "ci/GPU Mac Builder",
-        "ci/Mac Release (Intel)",
-        "ci/Mac Retina Release (AMD)",
-    ],
-    os = os.MAC_DEFAULT,
-)
-
 try_.builder(
     name = "mac-intel-on-arm64-rel",
     mirrors = [
@@ -544,12 +531,6 @@ ios_builder(
         ],
     ),
     use_clang_coverage = True,
-)
-
-ios_builder(
-    name = "ios-simulator-inverse-fieldtrials-fyi",
-    mirrors = builder_config.copy_from("try/ios-simulator"),
-    cpu = cpu.ARM64,
 )
 
 ios_builder(
