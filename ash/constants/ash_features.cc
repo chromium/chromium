@@ -4026,10 +4026,11 @@ bool IsPrintPreviewDiscoveredPrintersEnabled() {
   return base::FeatureList::IsEnabled(kPrintPreviewDiscoveredPrinters);
 }
 
+// TODO(b/305749608): Remove this function and only use
+// `IsVideoConferenceEnabled()`.
 bool IsPrivacyIndicatorsEnabled() {
   // Privacy indicators should not be enabled when video conference is enabled.
-  return base::FeatureList::IsEnabled(kPrivacyIndicators) &&
-         !IsVideoConferenceEnabled();
+  return !IsVideoConferenceEnabled();
 }
 
 bool IsProductivityLauncherEnabled() {

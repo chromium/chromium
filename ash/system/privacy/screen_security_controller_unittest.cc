@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/notification_center/notification_center_tray.h"
@@ -17,7 +16,6 @@
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
-#include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
@@ -51,8 +49,7 @@ void ExpectPrivacyIndicatorsVisible(bool visible) {
 
 }  // namespace
 
-class ScreenSecurityControllerTest : public AshTestBase,
-                                     public testing::WithParamInterface<bool> {
+class ScreenSecurityControllerTest : public AshTestBase {
  public:
   ScreenSecurityControllerTest() = default;
   ScreenSecurityControllerTest(const ScreenSecurityControllerTest&) = delete;
@@ -62,25 +59,20 @@ class ScreenSecurityControllerTest : public AshTestBase,
 
   // AppAccessNotifierBaseTest:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kCameraEffectsSupportedByHardware, true},
-         {features::kPrivacyIndicators, IsPrivacyIndicatorsFeatureEnabled()}});
+    // This class is used only when video conference feature is not available.
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{features::kVideoConference,
+                               features::kCameraEffectsSupportedByHardware});
     AshTestBase::SetUp();
   }
-
-  bool IsPrivacyIndicatorsFeatureEnabled() const { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ScreenSecurityControllerTest,
-    /*IsPrivacyIndicatorsFeatureEnabled()=*/::testing::Bool());
-
 // Tests that `StopAllSessions()` is working properly with both params.
-TEST_P(ScreenSecurityControllerTest, StopAllSessions) {
+TEST_F(ScreenSecurityControllerTest, StopAllSessions) {
   bool stop_callback_called = false;
 
   auto stop_callback = base::BindRepeating(
@@ -106,7 +98,7 @@ TEST_P(ScreenSecurityControllerTest, StopAllSessions) {
   EXPECT_TRUE(stop_callback_called);
 }
 
-TEST_P(ScreenSecurityControllerTest, ShowScreenCaptureNotification) {
+TEST_F(ScreenSecurityControllerTest, ShowScreenCaptureNotification) {
   Shell::Get()->system_tray_notifier()->NotifyScreenAccessStart(
       base::DoNothing(), base::RepeatingClosure(), std::u16string());
   EXPECT_TRUE(FindNotification(kScreenAccessNotificationId));
@@ -116,7 +108,7 @@ TEST_P(ScreenSecurityControllerTest, ShowScreenCaptureNotification) {
   EXPECT_FALSE(FindNotification(kScreenAccessNotificationId));
 }
 
-TEST_P(ScreenSecurityControllerTest, ShowScreenShareNotification) {
+TEST_F(ScreenSecurityControllerTest, ShowScreenShareNotification) {
   Shell::Get()->system_tray_notifier()->NotifyRemotingScreenShareStart(
       base::DoNothing());
 
@@ -129,20 +121,24 @@ TEST_P(ScreenSecurityControllerTest, ShowScreenShareNotification) {
 
 // Tests that `NotifyRemotingScreenShareStop()` does not crash if called with no
 // notification with VideoConference enabled and disabled.
-TEST_P(ScreenSecurityControllerTest, NotifyScreenShareStopNoNotification) {
+TEST_F(ScreenSecurityControllerTest, NotifyScreenShareStopNoNotification) {
   Shell::Get()->system_tray_notifier()->NotifyRemotingScreenShareStop();
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kVideoConference);
+  scoped_feature_list.InitWithFeatures(
+      {features::kVideoConference, features::kCameraEffectsSupportedByHardware},
+      {});
   Shell::Get()->system_tray_notifier()->NotifyRemotingScreenShareStop();
 }
 
 // Tests that screen share notifications do not show when VideoConference is
 // enabled.
-TEST_P(ScreenSecurityControllerTest,
+TEST_F(ScreenSecurityControllerTest,
        NoScreenShareNotificationWithVideoConference) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kVideoConference);
+  scoped_feature_list.InitWithFeatures(
+      {features::kVideoConference, features::kCameraEffectsSupportedByHardware},
+      {});
 
   Shell::Get()->system_tray_notifier()->NotifyRemotingScreenShareStart(
       base::DoNothing());
@@ -152,20 +148,24 @@ TEST_P(ScreenSecurityControllerTest,
 
 // Tests that calling `NotifyScreenAccessStop()` does not crash if called with
 // no notification with VideoConference enabled and disabled.
-TEST_P(ScreenSecurityControllerTest, NotifyScreenCaptureStopNoNotification) {
+TEST_F(ScreenSecurityControllerTest, NotifyScreenCaptureStopNoNotification) {
   Shell::Get()->system_tray_notifier()->NotifyScreenAccessStop();
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kVideoConference);
+  scoped_feature_list.InitWithFeatures(
+      {features::kVideoConference, features::kCameraEffectsSupportedByHardware},
+      {});
   Shell::Get()->system_tray_notifier()->NotifyScreenAccessStop();
 }
 
 // Tests that screen capture notifications do not show with video conference
 // enabled.
-TEST_P(ScreenSecurityControllerTest,
+TEST_F(ScreenSecurityControllerTest,
        ScreenCaptureShowsNotificationWithVideoConference) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kVideoConference);
+  scoped_feature_list.InitWithFeatures(
+      {features::kVideoConference, features::kCameraEffectsSupportedByHardware},
+      {});
 
   Shell::Get()->system_tray_notifier()->NotifyScreenAccessStart(
       base::DoNothing(), base::RepeatingClosure(), std::u16string());
@@ -173,7 +173,7 @@ TEST_P(ScreenSecurityControllerTest,
   EXPECT_FALSE(FindNotification(kScreenAccessNotificationId));
 }
 
-TEST_P(ScreenSecurityControllerTest,
+TEST_F(ScreenSecurityControllerTest,
        DoNotShowScreenCaptureNotificationWhenCasting) {
   Shell::Get()->OnCastingSessionStartedOrStopped(true /* started */);
   Shell::Get()->system_tray_notifier()->NotifyScreenAccessStart(
@@ -185,43 +185,9 @@ TEST_P(ScreenSecurityControllerTest,
   EXPECT_FALSE(FindNotification(kScreenAccessNotificationId));
 }
 
-class PrivacyIndicatorsScreenSecurityTest
-    : public AshTestBase,
-      public testing::WithParamInterface<bool> {
- public:
-  PrivacyIndicatorsScreenSecurityTest() = default;
-  PrivacyIndicatorsScreenSecurityTest(
-      const PrivacyIndicatorsScreenSecurityTest&) = delete;
-  PrivacyIndicatorsScreenSecurityTest& operator=(
-      const PrivacyIndicatorsScreenSecurityTest&) = delete;
-  ~PrivacyIndicatorsScreenSecurityTest() override = default;
-
-  // AshTestBase:
-  void SetUp() override {
-    if (IsQsRevampEnabled()) {
-      scoped_feature_list_.InitWithFeatures(
-          {features::kPrivacyIndicators, features::kQsRevamp}, {});
-    } else {
-      scoped_feature_list_.InitAndEnableFeature(features::kPrivacyIndicators);
-    }
-
-    AshTestBase::SetUp();
-  }
-
-  // TODO(b/305075031) clean up after the flag is removed.
-  bool IsQsRevampEnabled() { return true; }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PrivacyIndicatorsScreenSecurityTest,
-                         testing::Bool());
-
 // Tests that the screen share notification is created with proper metadata when
 // the `SystemTrayNotifier` notifies observers of screen share start.
-TEST_P(PrivacyIndicatorsScreenSecurityTest, ScreenShareNotification) {
+TEST_F(ScreenSecurityControllerTest, ScreenShareNotification) {
   Shell::Get()->system_tray_notifier()->NotifyRemotingScreenShareStart(
       base::DoNothing());
 
@@ -236,7 +202,7 @@ TEST_P(PrivacyIndicatorsScreenSecurityTest, ScreenShareNotification) {
             notification->accent_color_id());
 }
 
-TEST_P(PrivacyIndicatorsScreenSecurityTest, ScreenShareTrayItemIndicator) {
+TEST_F(ScreenSecurityControllerTest, ScreenShareTrayItemIndicator) {
   // Make sure the indicator shows up on multiple displays.
   UpdateDisplay("400x300,400x300,400x300,400x300");
 
@@ -252,8 +218,7 @@ TEST_P(PrivacyIndicatorsScreenSecurityTest, ScreenShareTrayItemIndicator) {
 
 // Tests that the privacy indicator shows up on multiple displays, if they
 // displays exist before screen share starts.
-TEST_P(PrivacyIndicatorsScreenSecurityTest,
-       RemotingScreenShareTrayItemIndicator) {
+TEST_F(ScreenSecurityControllerTest, RemotingScreenShareTrayItemIndicator) {
   // Make sure the indicator shows up on multiple displays.
   UpdateDisplay("400x300,400x300,400x300,400x300");
 

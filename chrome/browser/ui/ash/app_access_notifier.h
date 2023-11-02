@@ -76,7 +76,7 @@ class AppAccessNotifier
   void CheckActiveUserChanged();
 
  private:
-  friend class AppAccessNotifierBaseTest;
+  friend class AppAccessNotifierTest;
 
   // Returns the AppCapabilityAccessCache associated with the active user's
   // account ID.
