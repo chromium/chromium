@@ -105,6 +105,7 @@ each histogram.
     PerformanceManager.PerformanceInterventions.CPU.* histograms: NonChrome =
     System - (TotalBackgroundCPU + TotalForegroundCPU).
   </summary>
+  <token key="Timing" variants="PerformanceInterventionsCPUTiming"/>
 </histogram>
 
 <histogram
@@ -117,6 +118,7 @@ each histogram.
     Recorded {Timing}, with the percentage of CPU used by all processes on the
     system over the past 2 minutes.
   </summary>
+  <token key="Timing" variants="PerformanceInterventionsCPUTiming"/>
 </histogram>
 
 <histogram
