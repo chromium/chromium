@@ -1,9 +1,11 @@
 <style>
   .controls {
+    display: flex;
+    flex-wrap: wrap;
     font-family: monospace;
     font-weight: bold;
-    padding-inline-end: 5px;
-    padding-inline-start: 3px;
+    gap: 10px;
+    padding: 20px;
   }
 
   .prefix {
@@ -87,6 +89,7 @@
 <div class="controls">
   <span class="prefix">History [[loggingStateToString(loggingState)]]</span>
   <cr-toggle checked="{{loggingState}}" on-change="onToggleChange"></cr-toggle>
+  <button on-click="onDownloadButtonClick">Download as CSV</button>
 </div>
 <table class="erp-history-table">
   <thead>

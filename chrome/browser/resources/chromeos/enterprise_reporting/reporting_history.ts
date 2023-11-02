@@ -54,6 +54,40 @@ export class ReportingHistoryElement extends PolymerElement {
     this.browserProxy.handler.recordDebugState(event.detail);
   }
 
+  onDownloadButtonClick(): void {
+    // Select the table and traverse through it.
+    const tableRows = this.$.body.querySelectorAll('.erp-history-table tr');
+    const csv: string[] = [];
+    tableRows.forEach(currentRow => {
+      const row: string[] = [];
+      const cols = currentRow.querySelectorAll('td, th');
+      cols.forEach(currentCol => {
+        let value: string = '';
+        // For the erp-parameters column we need to extract the information from
+        // the bullet lists, for all the other columns we just append the
+        // innerHTML directly.
+        if (currentCol.className == 'erp-parameters') {
+          currentCol.querySelectorAll('li').forEach(el => {
+            value += el.innerText + ' - ';
+          });
+        } else {
+          value = currentCol.innerHTML;
+        }
+        row.push(value);
+      });
+      csv.push(row.join(','));
+    });
+    // Create the file and download it. Format: reporting_logs_DATE.csv.
+    const csvFile = new Blob([csv.join('\n')], {type: 'text/csv'});
+    const url = URL.createObjectURL(csvFile);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `reporting_logs_${new Date().toISOString()}.csv`;
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
   override connectedCallback() {
     super.connectedCallback();
 
