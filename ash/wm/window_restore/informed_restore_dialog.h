@@ -21,12 +21,7 @@ class InformedRestoreDialog : public SystemDialogDelegateView {
  public:
   METADATA_HEADER(InformedRestoreDialog);
 
-  // Struct which contains the app data needed to display the dialog.
-  struct AppData {
-    std::u16string app_title;
-  };
-
-  using AppsData = std::vector<AppData>;
+  using AppIds = std::vector<std::string>;
 
   InformedRestoreDialog(const InformedRestoreDialog&) = delete;
   InformedRestoreDialog& operator=(const InformedRestoreDialog&) = delete;
@@ -35,7 +30,7 @@ class InformedRestoreDialog : public SystemDialogDelegateView {
   static std::unique_ptr<views::Widget> Create(aura::Window* root);
 
  private:
-  explicit InformedRestoreDialog(const AppsData& apps_data);
+  explicit InformedRestoreDialog(const AppIds& app_ids);
 };
 
 }  // namespace ash

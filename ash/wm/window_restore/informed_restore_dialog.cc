@@ -6,11 +6,15 @@
 
 #include <string>
 
+#include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
+#include "components/account_id/account_id.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -30,38 +34,49 @@ constexpr int kSettingsIconSize = 24;
 constexpr int kTableNumColumns = 3;
 constexpr int kTablePaddingDp = 8;
 
+constexpr int kAppIdImageSize = 64;
+
 }  // namespace
 
-// Represents an app that will be restored by full restore.
+// Represents an app that will be restored by full restore. Contains the app
+// title and app icon.
 // TODO(sammiequon|zxdan): Match specs.
 class InformedRestoreItemView : public views::BoxLayoutView {
  public:
   METADATA_HEADER(InformedRestoreItemView);
 
-  explicit InformedRestoreItemView(
-      const InformedRestoreDialog::AppData& app_data) {
+  explicit InformedRestoreItemView(const std::string& app_title) {
     SetBackground(views::CreateSolidBackground(SK_ColorBLACK));
     SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart);
     SetOrientation(views::BoxLayout::Orientation::kVertical);
     SetPreferredSize(kItemPreferredSize);
 
     AddChildView(views::Builder<views::ImageView>()
-                     .SetPreferredSize(kItemIconPreferredSize)
-                     .SetImage(gfx::CreateVectorIcon(
-                         kAutoclickScrollIcon, kItemIconPreferredSize.width(),
-                         SK_ColorWHITE))
+                     .CopyAddressTo(&image_view_)
+                     .SetImageSize(kItemIconPreferredSize)
                      .Build());
     AddChildView(views::Builder<views::Label>()
                      .SetEnabledColor(SK_ColorWHITE)
                      .SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL,
                                                 14, gfx::Font::Weight::NORMAL))
                      .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                     .SetText(app_data.app_title)
+                     .SetText(base::ASCIIToUTF16(app_title))
                      .Build());
   }
   InformedRestoreItemView(const InformedRestoreItemView&) = delete;
   InformedRestoreItemView& operator=(const InformedRestoreItemView&) = delete;
   ~InformedRestoreItemView() override = default;
+
+  views::ImageView* image_view() { return image_view_; }
+
+  base::WeakPtr<InformedRestoreItemView> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  raw_ptr<views::ImageView> image_view_;
+
+  base::WeakPtrFactory<InformedRestoreItemView> weak_ptr_factory_{this};
 };
 
 BEGIN_METADATA(InformedRestoreItemView, views::BoxLayoutView)
@@ -75,8 +90,8 @@ class InformedRestoreContentsView : public views::TableLayoutView {
   METADATA_HEADER(InformedRestoreContentsView);
 
   explicit InformedRestoreContentsView(
-      const InformedRestoreDialog::AppsData& apps_data) {
-    const int elements = static_cast<int>(apps_data.size());
+      const InformedRestoreDialog::AppIds& app_ids) {
+    const int elements = static_cast<int>(app_ids.size());
     CHECK_GT(elements, 0);
 
     for (int i = 0; i < kTableNumColumns; ++i) {
@@ -96,8 +111,33 @@ class InformedRestoreContentsView : public views::TableLayoutView {
       AddRows(/*n=*/1, views::TableLayout::kFixedSize);
     }
 
-    for (const InformedRestoreDialog::AppData& app_data : apps_data) {
-      AddChildView(std::make_unique<InformedRestoreItemView>(app_data));
+    // TODO: Handle case where the app is not ready or installed.
+    apps::AppRegistryCache* cache =
+        apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(
+            Shell::Get()->session_controller()->GetActiveAccountId());
+    auto* delegate = Shell::Get()->saved_desk_delegate();
+    for (const std::string& app_id : app_ids) {
+      std::string title;
+      cache->ForOneApp(app_id, [&title](const apps::AppUpdate& update) {
+        title = update.Name();
+      });
+
+      auto item_view = std::make_unique<InformedRestoreItemView>(title);
+      auto* item_view_ptr = item_view.get();
+      AddChildView(std::move(item_view));
+
+      // The callback may be called synchronously.
+      delegate->GetIconForAppId(
+          app_id, kAppIdImageSize,
+          base::BindOnce(
+              [](base::WeakPtr<InformedRestoreItemView> item_view,
+                 const gfx::ImageSkia& icon) {
+                if (item_view) {
+                  item_view->image_view()->SetImage(
+                      ui::ImageModel::FromImageSkia(icon));
+                }
+              },
+              item_view_ptr->GetWeakPtr()));
     }
   }
   InformedRestoreContentsView(const InformedRestoreContentsView&) = delete;
@@ -115,10 +155,12 @@ InformedRestoreDialog::~InformedRestoreDialog() = default;
 std::unique_ptr<views::Widget> InformedRestoreDialog::Create(
     aura::Window* root) {
   // TODO(sammiequon|zxdan): Remove this temporary data used for testing.
-  AppsData kTestingAppsData = {
-      {.app_title = u"Title 1"}, {.app_title = u"Title 2"},
-      {.app_title = u"Title 3"}, {.app_title = u"Title 4"},
-      {.app_title = u"Title 5"},
+  AppIds kTestingAppsData = {
+      "mgndgikekgjfcpckkfioiadnlibdjbkf",  // Chrome
+      "njfbnohfdkmbmnjapinfcopialeghnmh",  // Camera
+      "odknhmnlageboeamepcngndbggdpaobj",  // Settings
+      "fkiggjmkendpmbegkagpmagjepfkpmeb",  // Files
+      "nbljnnecbjbmifnoehiemkgefbnpoeak"   // Explore
   };
 
   views::Widget::InitParams params;
@@ -130,7 +172,7 @@ std::unique_ptr<views::Widget> InformedRestoreDialog::Create(
   return std::make_unique<views::Widget>(std::move(params));
 }
 
-InformedRestoreDialog::InformedRestoreDialog(const AppsData& apps_data) {
+InformedRestoreDialog::InformedRestoreDialog(const AppIds& app_ids) {
   // TODO(sammiequon|zxdan): Localize all these strings.
   views::Builder<SystemDialogDelegateView>(this)
       .SetAcceptButtonText(u"Restore")
@@ -146,8 +188,7 @@ InformedRestoreDialog::InformedRestoreDialog(const AppsData& apps_data) {
               .SetTooltipText(u"Settings"))
       .BuildChildren();
 
-  SetMiddleContentView(
-      std::make_unique<InformedRestoreContentsView>(apps_data));
+  SetMiddleContentView(std::make_unique<InformedRestoreContentsView>(app_ids));
 }
 
 BEGIN_METADATA(InformedRestoreDialog, SystemDialogDelegateView)

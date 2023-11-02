@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/wm/desks/templates/saved_desk_icon_view.h"
+
 #include <cstddef>
 #include <utility>
 
