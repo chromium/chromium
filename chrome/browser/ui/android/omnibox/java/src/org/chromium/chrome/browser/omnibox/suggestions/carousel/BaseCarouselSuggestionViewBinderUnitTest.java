@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -169,5 +170,31 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
 
         mModel.set(BaseCarouselSuggestionViewProperties.ITEM_WIDTH, 30);
         Assert.assertEquals(30, mView.getItemDecoration().getItemWidthForTesting());
+    }
+
+    @Test
+    public void bindContentDescription_nullDescription() {
+        mModel =
+                new PropertyModel.Builder(BaseCarouselSuggestionViewProperties.ALL_KEYS)
+                        .with(BaseCarouselSuggestionViewProperties.CONTENT_DESCRIPTION, null)
+                        .build();
+        mView = spy(new BaseCarouselSuggestionView(mContext, mAdapter));
+        PropertyModelChangeProcessor.create(mModel, mView, BaseCarouselSuggestionViewBinder::bind);
+
+        verify(mView).setContentDescription(null);
+    }
+
+    @Test
+    public void bindContentDescription_nonNullDescription() {
+        mModel =
+                new PropertyModel.Builder(BaseCarouselSuggestionViewProperties.ALL_KEYS)
+                        .with(
+                                BaseCarouselSuggestionViewProperties.CONTENT_DESCRIPTION,
+                                "description")
+                        .build();
+        mView = spy(new BaseCarouselSuggestionView(mContext, mAdapter));
+        PropertyModelChangeProcessor.create(mModel, mView, BaseCarouselSuggestionViewBinder::bind);
+
+        verify(mView).setContentDescription("description");
     }
 }

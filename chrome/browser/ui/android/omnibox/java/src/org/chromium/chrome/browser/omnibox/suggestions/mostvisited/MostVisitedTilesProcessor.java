@@ -82,6 +82,10 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     public PropertyModel createModel() {
         return new PropertyModel.Builder(BaseCarouselSuggestionViewProperties.ALL_KEYS)
                 .with(BaseCarouselSuggestionViewProperties.TILES, new ArrayList<>())
+                .with(
+                        BaseCarouselSuggestionViewProperties.CONTENT_DESCRIPTION,
+                        mContext.getResources()
+                                .getString(R.string.accessibility_omnibox_most_visited_list))
                 .build();
     }
 

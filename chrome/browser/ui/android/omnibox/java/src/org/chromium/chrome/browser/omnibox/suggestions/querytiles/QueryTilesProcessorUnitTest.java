@@ -242,4 +242,13 @@ public class QueryTilesProcessorUnitTest {
 
         verifyNoMoreInteractions(mImageSupplier, mSuggestionHost);
     }
+
+    @Test
+    public void createModel_checkContentDescription() {
+        var model = mProcessor.createModel();
+
+        assertEquals(
+                mContext.getResources().getString(R.string.accessibility_omnibox_query_tiles_list),
+                model.get(BaseCarouselSuggestionViewProperties.CONTENT_DESCRIPTION));
+    }
 }

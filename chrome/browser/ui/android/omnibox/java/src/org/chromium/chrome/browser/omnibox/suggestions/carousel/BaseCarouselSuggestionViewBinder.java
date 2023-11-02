@@ -28,6 +28,9 @@ public interface BaseCarouselSuggestionViewBinder {
         } else if (key == BaseCarouselSuggestionViewProperties.ITEM_WIDTH) {
             view.getItemDecoration()
                     .setItemWidth(model.get(BaseCarouselSuggestionViewProperties.ITEM_WIDTH));
+        } else if (key == BaseCarouselSuggestionViewProperties.CONTENT_DESCRIPTION) {
+            view.setContentDescription(
+                    model.get(BaseCarouselSuggestionViewProperties.CONTENT_DESCRIPTION));
         } else if (key == BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE) {
             view.setHorizontalFadingEdgeEnabled(
                     model.get(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE));

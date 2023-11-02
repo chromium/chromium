@@ -9,6 +9,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonPropertie
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -27,8 +28,12 @@ public @interface BaseCarouselSuggestionViewProperties {
     /** Specifies the width of a carousel element. */
     static final WritableIntPropertyKey ITEM_WIDTH = new WritableIntPropertyKey();
 
+    /** Specifies the audible description of the carousel type. */
+    public static final ReadableObjectPropertyKey<String> CONTENT_DESCRIPTION =
+            new ReadableObjectPropertyKey<>();
+
     static final PropertyKey[] ALL_UNIQUE_KEYS =
-            new PropertyKey[] {TILES, HORIZONTAL_FADE, ITEM_WIDTH};
+            new PropertyKey[] {TILES, HORIZONTAL_FADE, ITEM_WIDTH, CONTENT_DESCRIPTION};
 
     public static final PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(ALL_UNIQUE_KEYS, SuggestionCommonProperties.ALL_KEYS);

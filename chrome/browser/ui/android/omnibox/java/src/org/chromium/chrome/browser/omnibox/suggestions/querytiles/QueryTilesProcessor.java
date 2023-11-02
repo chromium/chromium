@@ -66,6 +66,10 @@ public class QueryTilesProcessor extends BaseCarouselSuggestionProcessor {
     public PropertyModel createModel() {
         return new PropertyModel.Builder(BaseCarouselSuggestionViewProperties.ALL_KEYS)
                 .with(BaseCarouselSuggestionViewProperties.TILES, new ArrayList<>())
+                .with(
+                        BaseCarouselSuggestionViewProperties.CONTENT_DESCRIPTION,
+                        mContext.getResources()
+                                .getString(R.string.accessibility_omnibox_query_tiles_list))
                 .build();
     }
 

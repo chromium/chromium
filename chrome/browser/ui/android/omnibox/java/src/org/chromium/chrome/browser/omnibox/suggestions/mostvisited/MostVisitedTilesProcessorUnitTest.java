@@ -511,4 +511,13 @@ public final class MostVisitedTilesProcessorUnitTest {
                 mContext.getResources().getDimensionPixelSize(R.dimen.tile_view_min_height),
                 mProcessor.getCarouselItemViewHeight());
     }
+
+    @Test
+    public void createModel_checkContentDescription() {
+        populateTilePropertiesForTiles(0, new SuggestTile("", SEARCH_URL, true));
+
+        assertEquals(
+                mContext.getResources().getString(R.string.accessibility_omnibox_most_visited_list),
+                mPropertyModel.get(BaseCarouselSuggestionViewProperties.CONTENT_DESCRIPTION));
+    }
 }
