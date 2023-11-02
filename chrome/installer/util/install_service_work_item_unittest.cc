@@ -4,6 +4,8 @@
 
 #include "chrome/installer/util/install_service_work_item.h"
 
+#include <shlobj.h>
+
 #include <memory>
 #include <vector>
 
@@ -215,6 +217,10 @@ TEST_F(InstallServiceWorkItemTest, Do_MultiSzToVector) {
 }
 
 TEST_F(InstallServiceWorkItemTest, Do_FreshInstall) {
+  if (!::IsUserAnAdmin()) {
+    // Calling ::OpenSCManager requires an admin user.
+    GTEST_SKIP() << "This test must be run by an admin user";
+  }
   base::CommandLine com_service_cmd_line_args(base::CommandLine::NO_PROGRAM);
   com_service_cmd_line_args.AppendArgNative(kComServiceCmdLineArgs);
 
@@ -237,6 +243,10 @@ TEST_F(InstallServiceWorkItemTest, Do_FreshInstall) {
 }
 
 TEST_F(InstallServiceWorkItemTest, Do_FreshInstallThenDeleteService) {
+  if (!::IsUserAnAdmin()) {
+    // Calling ::OpenSCManager requires an admin user.
+    GTEST_SKIP() << "This test must be run by an admin user";
+  }
   auto item = std::make_unique<InstallServiceWorkItem>(
       kServiceName, kServiceDisplayName, kServiceStartType,
       base::CommandLine(base::FilePath(kServiceProgramPath)),
@@ -255,6 +265,10 @@ TEST_F(InstallServiceWorkItemTest, Do_FreshInstallThenDeleteService) {
 }
 
 TEST_F(InstallServiceWorkItemTest, Do_UpgradeNoChanges) {
+  if (!::IsUserAnAdmin()) {
+    // Calling ::OpenSCManager requires an admin user.
+    GTEST_SKIP() << "This test must be run by an admin user";
+  }
   auto item = std::make_unique<InstallServiceWorkItem>(
       kServiceName, kServiceDisplayName, kServiceStartType,
       base::CommandLine(base::FilePath(kServiceProgramPath)),
@@ -294,6 +308,10 @@ TEST_F(InstallServiceWorkItemTest, Do_UpgradeNoChanges) {
 }
 
 TEST_F(InstallServiceWorkItemTest, Do_UpgradeChangedCmdLineStartTypeCOMArgs) {
+  if (!::IsUserAnAdmin()) {
+    // Calling ::OpenSCManager requires admin access.
+    GTEST_SKIP() << "This test must be run by an admin user";
+  }
   base::CommandLine com_service_cmd_line_args(base::CommandLine::NO_PROGRAM);
   com_service_cmd_line_args.AppendArgNative(kComServiceCmdLineArgs);
 
@@ -342,6 +360,10 @@ TEST_F(InstallServiceWorkItemTest, Do_UpgradeChangedCmdLineStartTypeCOMArgs) {
 }
 
 TEST_F(InstallServiceWorkItemTest, Do_ServiceName) {
+  if (!::IsUserAnAdmin()) {
+    // Writing to HKLM requires an admin user.
+    GTEST_SKIP() << "This test must be run by an admin user";
+  }
   auto item = std::make_unique<InstallServiceWorkItem>(
       kServiceName, kServiceDisplayName, kServiceStartType,
       base::CommandLine(base::CommandLine::NO_PROGRAM),
