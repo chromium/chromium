@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/field_info_manager.h"
 
 #include "base/i18n/case_conversion.h"
+#include "components/password_manager/core/browser/psl_matching_helper.h"
 
 using autofill::FieldRendererId;
 using autofill::FormSignature;
@@ -94,8 +95,9 @@ std::vector<FieldInfo> FieldInfoManager::GetFieldInfo(
     const std::string& signon_realm) {
   std::vector<FieldInfo> relevant_info;
   for (const auto& entry : field_info_cache_) {
-    // TODO(crbug/1468297): Consider eTLD+1 and affiliated matches.
-    if (entry.field_info.signon_realm == signon_realm) {
+    // TODO(crbug/1468297): Consider affiliated matches and PSL extension list.
+    if (IsPublicSuffixDomainMatch(entry.field_info.signon_realm,
+                                  signon_realm)) {
       relevant_info.push_back(entry.field_info);
     }
   }

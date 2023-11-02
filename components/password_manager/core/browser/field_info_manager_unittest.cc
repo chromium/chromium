@@ -175,4 +175,13 @@ TEST_F(FieldInfoManagerTest, ProcessServerPredictions) {
   EXPECT_EQ(field_info_cache[0].type, kTestFieldType);
 }
 
+TEST_F(FieldInfoManagerTest, InfoRetrievedForPSLMatchedDomain) {
+  FieldInfo info(kTestDriverId, kTestFieldId, "https://main.domain.com",
+                 u"value",
+                 /*is_likely_otp=*/false);
+  manager_->AddFieldInfo(info, /*predictions=*/absl::nullopt);
+  std::vector<FieldInfo> expected_info = {info};
+  EXPECT_EQ(manager_->GetFieldInfo("https://psl.domain.com"), expected_info);
+}
+
 }  // namespace password_manager
