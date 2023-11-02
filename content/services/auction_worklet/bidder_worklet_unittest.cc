@@ -9106,7 +9106,7 @@ class BidderWorkletAdMacroReportingEnabledTest : public BidderWorkletTest {
   BidderWorkletAdMacroReportingEnabledTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kAdAuctionReportingWithMacroApi,
-                              blink::features::kFencedFramesM119Features},
+                              blink::features::kFencedFramesM120FeaturesPart1},
         /*disabled_features=*/{});
   }
 

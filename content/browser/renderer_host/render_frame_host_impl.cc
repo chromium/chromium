@@ -8788,13 +8788,13 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
     return;
   }
 
-  // Before M119: Only destinations explicitly registered when calling
+  // Before M120: Only destinations explicitly registered when calling
   //              setReportEventDataForAutomaticBeacons() will have beacons sent
   //              to their endpoints.
-  // After M119: Any destination registered in a Protected Audience/Shared
+  // After M120: Any destination registered in a Protected Audience/Shared
   //             Storage worklet will have a beacon sent to its endpoint.
   if (base::FeatureList::IsEnabled(
-          blink::features::kFencedFramesM119Features)) {
+          blink::features::kFencedFramesM120FeaturesPart1)) {
     RecordAutomaticBeaconOutcome(blink::AutomaticBeaconOutcome::kSuccess);
 
     network::AttributionReportingRuntimeFeatures

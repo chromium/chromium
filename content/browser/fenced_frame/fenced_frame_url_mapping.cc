@@ -81,7 +81,7 @@ GURL SubstituteSizeIntoURL(const blink::AdDescriptor& ad_descriptor) {
   substitutions.emplace_back("{%AD_WIDTH%}", width);
   substitutions.emplace_back("{%AD_HEIGHT%}", height);
   if (base::FeatureList::IsEnabled(
-          blink::features::kFencedFramesM119Features)) {
+          blink::features::kFencedFramesM120FeaturesPart1)) {
     substitutions.emplace_back("${AD_WIDTH}", width);
     substitutions.emplace_back("${AD_HEIGHT}", height);
   }
@@ -233,7 +233,8 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
       !ad_descriptor.size.has_value(), VisibilityToEmbedder::kTransparent,
       VisibilityToContent::kOpaque);
   config.ad_auction_data_.emplace(
-      (base::FeatureList::IsEnabled(blink::features::kFencedFramesM120Features))
+      (base::FeatureList::IsEnabled(
+          blink::features::kFencedFramesM120FeaturesPart2))
           ? ad_auction_data
           : std::move(ad_auction_data),
       VisibilityToEmbedder::kOpaque, VisibilityToContent::kOpaque);
@@ -271,7 +272,7 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
           /*is_ad_component=*/true);
     }
     if (base::FeatureList::IsEnabled(
-            blink::features::kFencedFramesM120Features)) {
+            blink::features::kFencedFramesM120FeaturesPart2)) {
       // M120 and afterwards: The ad auction data is added to the nested configs
       // in order to enable leaveAdInterestGroup() for ad components.
       nested_configs.back().ad_auction_data_.emplace(
