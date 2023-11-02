@@ -227,7 +227,7 @@ std::unique_ptr<PopupRowView> PopupRowView::Create(PopupViewViews& popup_view,
 
   return std::make_unique<PopupRowView>(
       /*a11y_selection_delegate=*/popup_view, /*selection_delegate=*/popup_view,
-      controller, line_number, std::move(strategy),
+      controller, line_number, strategy->CreateContent(),
       std::move(new_badge_tracker));
 }
 
@@ -236,18 +236,17 @@ PopupRowView::PopupRowView(
     SelectionDelegate& selection_delegate,
     base::WeakPtr<AutofillPopupController> controller,
     int line_number,
-    std::unique_ptr<PopupRowStrategy> strategy,
+    std::unique_ptr<PopupCellView> content_view,
     std::optional<ScopedNewBadgeTrackerWithAcceptAction> new_badge_tracker)
     : a11y_selection_delegate_(a11y_selection_delegate),
       selection_delegate_(selection_delegate),
       controller_(controller),
       line_number_(line_number),
       new_badge_tracker_(std::move(new_badge_tracker)),
-      strategy_(std::move(strategy)),
       should_ignore_mouse_observed_outside_item_bounds_check_(
           controller &&
           controller->ShouldIgnoreMouseObservedOutsideItemBoundsCheck()) {
-  CHECK(strategy_);
+  CHECK(content_view);
   CHECK(controller_);
   CHECK_LT(line_number_, controller_->GetLineCount());
 
@@ -292,7 +291,7 @@ PopupRowView::PopupRowView(
     return handler;
   };
 
-  content_view_ = AddChildView(strategy_->CreateContent());
+  content_view_ = AddChildView(std::move(content_view));
   content_view_->SetFocusBehavior(FocusBehavior::ALWAYS);
   content_view_->AddObserver(this);
   content_view_->GetViewAccessibility().OverrideRole(

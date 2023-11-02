@@ -104,7 +104,7 @@ class PopupRowView : public views::View, public views::ViewObserver {
                SelectionDelegate& selection_delegate,
                base::WeakPtr<AutofillPopupController> controller,
                int line_number,
-               std::unique_ptr<PopupRowStrategy> strategy,
+               std::unique_ptr<PopupCellView> content_view,
                std::optional<ScopedNewBadgeTrackerWithAcceptAction>
                    new_badge_tracker = std::nullopt);
   PopupRowView(const PopupRowView&) = delete;
@@ -196,8 +196,6 @@ class PopupRowView : public views::View, public views::ViewObserver {
   // A tracker for "new" badges inside a cell. If set, it logs a performed
   // action on accepting the suggestion.
   std::optional<ScopedNewBadgeTrackerWithAcceptAction> new_badge_tracker_;
-  // The strategy from which the actual view content of this row is created.
-  const std::unique_ptr<PopupRowStrategy> strategy_;
 
   // Which (if any) cell of this row is currently selected.
   absl::optional<CellType> selected_cell_;

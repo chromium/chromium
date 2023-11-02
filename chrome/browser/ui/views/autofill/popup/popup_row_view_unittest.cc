@@ -129,7 +129,7 @@ class PopupRowViewTest : public ChromeViewsTestBase {
     row_view_ = widget_->SetContentsView(std::make_unique<PopupRowView>(
         mock_a11y_selection_delegate_, mock_selection_delegate_,
         mock_controller_.GetWeakPtr(), strategy->GetLineNumber(),
-        std::move(strategy)));
+        strategy->CreateContent()));
     ON_CALL(mock_selection_delegate_, SetSelectedCell)
         .WillByDefault([this](absl::optional<CellIndex> cell,
                               PopupCellSelectionSource) {
