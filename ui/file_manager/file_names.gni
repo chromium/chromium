@@ -370,7 +370,7 @@ ts_templates = [
 ]
 
 ts_test_files = [
-  "file_manager/foreground/js/directory_contents_unittest.ts",
+  "file_manager/foreground/elements/files_toast_unittest.ts",
 
   # Common.
   "file_manager/common/js/entry_utils_unittest.ts",
@@ -432,6 +432,7 @@ ts_test_files = [
   # Foreground:
   "file_manager/foreground/js/banner_controller_unittest.ts",
   "file_manager/foreground/js/banner_util_unittest.ts",
+  "file_manager/foreground/js/directory_contents_unittest.ts",
   "file_manager/foreground/js/file_tasks_unittest.ts",
   "file_manager/foreground/js/file_transfer_controller_unittest.ts",
   "file_manager/foreground/js/task_controller_unittest.ts",
@@ -519,7 +520,6 @@ unittest_files = [
 
   # Foreground:
   "file_manager/foreground/elements/files_xf_elements_unittest.js",
-  "file_manager/foreground/elements/files_toast_unittest.js",
   "file_manager/foreground/elements/files_tooltip_unittest.js",
   "file_manager/foreground/js/metadata/metadata_cache_item_unittest.js",
   "file_manager/foreground/js/metadata/exif_parser_unittest.js",
