@@ -5,6 +5,7 @@
 
   .content {
     margin: 16px 16px 8px;
+    position: relative;
   }
 
   customize-chrome-combobox {
@@ -14,19 +15,48 @@
     width: 220px;
   }
 
+  .category-item {
+    font-weight: 700;
+  }
+
+  .category-item,
+  .dropdown-item {
+    align-items: center;
+    box-sizing: border-box;
+    border: none;
+    display: flex;
+    height: 28px;
+    padding: 0 20px;
+  }
+
   .dropdown-item:hover {
     background-color: var(--color-combobox-ink-drop-hovered);
   }
 
-  .category {
-    font-weight: 700;
+  :host-context(.focus-outline-visible) .dropdown-item[highlighted] {
+    background: var(--color-button-background-pressed);
+  }
+
+  .dropdown-item iron-icon {
+    --iron-icon-height: 16px;
+    --iron-icon-width: 16px;
+    flex-shrink: 0;
+    visibility: hidden;
+    margin-inline-end: 8px;
+  }
+
+  .dropdown-item[selected] iron-icon {
+    visibility: visible;
+  }
+
+  .dropdown-item span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   #descriptorComboboxB .dropdown-item {
-    border: none;
-    display: flex;
     height: 48px;
-    padding: 4px 20px 4px 20px;
   }
 
   #descriptorComboboxB img {
@@ -36,10 +66,6 @@
   }
 
   #descriptorComboboxB span {
-    align-items: center;
-    display: flex;
-    height: 40px;
-    padding-top: 2px;
     padding-inline-start: 16px;
   }
 
@@ -153,12 +179,8 @@
   }
 
   /** Temporary CSS to style demo. */
-  [selected] {
+  #descriptorComboboxB [selected] {
     background: green;
-  }
-
-  [highlighted] {
-    background: var(--color-button-background-pressed);
   }
 </style>
 <div class="sp-card">
@@ -171,11 +193,12 @@
     <customize-chrome-combobox id="descriptorComboboxA" label="Descriptor A"
         value="{{selectedDescriptorA_}}">
       <template is="dom-repeat" items="[[descriptors_.descriptorA]]">
-        <div role="group">
-          <span class="category">[[item.category]]</span>
+        <div class="category" role="group">
+          <span class="category-item">[[item.category]]</span>
           <template is="dom-repeat" items="[[item.labels]]">
             <div class="dropdown-item" role="option" value="[[item]]">
-              [[item]]
+              <iron-icon icon="cr:check"></iron-icon>
+              <span>[[item]]</span>
             </div>
           </template>
         </div>
@@ -194,7 +217,8 @@
         value="{{selectedDescriptorC_}}">
       <template is="dom-repeat" items="[[descriptors_.descriptorC]]">
         <div class="dropdown-item" role="option" value="[[item]]">
-          [[item]]
+          <iron-icon icon="cr:check"></iron-icon>
+          <span>[[item]]</span>
         </div>
       </template>
     </customize-chrome-combobox>

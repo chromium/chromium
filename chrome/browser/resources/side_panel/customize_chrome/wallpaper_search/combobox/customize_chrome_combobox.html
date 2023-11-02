@@ -1,26 +1,53 @@
 <style include="md-select">
 :host {
   display: block;
-  position: relative;
+  cursor: default;
 }
 
 .md-select {
   text-align: start;
 }
 
-#dropdown {
+.md-select div {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#dropdownContainer {
+  overflow: hidden;
+  position: absolute;
+  border-radius: 12px;
+  box-shadow: var(--cr-elevation-3);
+  z-index: 999;
+  background: var(--color-side-panel-card-background);
+  width: 220px;
+}
+
+#dropdownContainer {
   display: none;
 }
 
-:host([expanded_]) #dropdown {
-  background: var(--color-side-panel-card-background);
-  border-radius: 12px;
-  box-shadow: var(--cr-elevation-3);
+:host([expanded_]) #dropdownContainer {
   display: block;
-  min-width: 100%;
-  overflow: hidden;
-  position: absolute;
-  z-index: 999;
+}
+
+#dropdown {
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: visible;
+  padding: 12px 0;
+  max-height: 456px;
+  width: 100%;
+}
+
+#dropdown::-webkit-scrollbar {
+  background: transparent;
+  width: 3px;
+}
+
+#dropdown::-webkit-scrollbar-thumb {
+  background: var(--color-side-panel-scrollbar-thumb);
 }
 </style>
 
@@ -32,9 +59,11 @@
     aria-activedescendant$="[[getAriaActiveDescendant_(highlightedElement_)]]"
     on-click="onInputClick_"
     on-focusout="onInputFocusout_">
-  [[getInputLabel_(label, selectedElement_)]]
+  <div>[[getInputLabel_(label, selectedElement_)]]</div>
 </button>
-<div id="dropdown" role="listbox" on-click="onDropdownClick_"
-    on-pointerdown="onDropdownPointerdown_">
-  <slot></slot>
+<div id="dropdownContainer">
+  <div id="dropdown" role="listbox" on-click="onDropdownClick_"
+      on-pointerdown="onDropdownPointerdown_">
+    <slot></slot>
+  </div>
 </div>
