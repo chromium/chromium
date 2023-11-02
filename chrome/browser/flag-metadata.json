@@ -2604,22 +2604,22 @@
   },
   {
     "name": "enable-family-link-extensions-permissions",
-    "owners": ["ljjlee@chromium.org", "chrome-kids-eng@google.com"],
+    "owners": ["ljjlee@google.com", "chrome-kids-eng@google.com"],
     "expiry_milestone": 126
   },
   {
     "name": "enable-family-link-managed-ui",
-    "owners": ["ljjlee@chromium.org", "chrome-kids-eng@google.com"],
+    "owners": ["ljjlee@google.com", "chrome-kids-eng@google.com"],
     "expiry_milestone": 123
   },
   {
     "name": "enable-family-link-prefs-controls",
-    "owners": ["ljjlee@chromium.org", "chrome-kids-eng@google.com"],
+    "owners": ["ljjlee@google.com", "chrome-kids-eng@google.com"],
     "expiry_milestone": 123
   },
   {
     "name": "enable-family-link-website-filtering",
-    "owners": ["ljjlee@chromium.org", "chrome-kids-eng@google.com"],
+    "owners": ["ljjlee@google.com", "chrome-kids-eng@google.com"],
     "expiry_milestone": 123
   },
   {
@@ -3488,7 +3488,7 @@
   {
     "name": "enable-supervised-users-remain-signed-in",
     "owners": [
-      "ljjlee@chromium.org",
+      "ljjlee@google.com",
       "chrome-kids-eng@google.com"
     ],
     "expiry_milestone": 123
@@ -3661,7 +3661,7 @@
   },
   {
     "name": "enable-variations-google-group-filtering",
-    "owners": [ "ljjlee@chromium.org", "chrome-metrics-team@google.com" ],
+    "owners": [ "ljjlee@google.com", "chrome-metrics-team@google.com" ],
     "expiry_milestone": 119
   },
   {
