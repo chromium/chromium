@@ -73,6 +73,9 @@ using password_manager_test_utils::DeleteCredential;
 using password_manager_test_utils::EditDoneButton;
 using password_manager_test_utils::EditPasswordConfirmationButton;
 using password_manager_test_utils::GetInteractionForPasswordIssueEntry;
+using password_manager_test_utils::kDefaultPassword;
+using password_manager_test_utils::kDefaultSite;
+using password_manager_test_utils::kDefaultUsername;
 using password_manager_test_utils::kPasswordStoreErrorMessage;
 using password_manager_test_utils::kScrollAmount;
 using password_manager_test_utils::NavigationBarEditButton;
@@ -359,8 +362,8 @@ void SaveExamplePasswordForms() {
 void SaveExamplePasswordFormWithNote() {
   GREYAssert(
       [PasswordSettingsAppInterface saveExampleNote:@"concrete note"
-                                           password:@"concrete password"
-                                           username:@"concrete username"
+                                           password:kDefaultPassword
+                                           username:kDefaultUsername
                                              origin:@"https://example.com"],
       kPasswordStoreErrorMessage);
 }
@@ -847,8 +850,8 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
       performAction:grey_tap()];
 
   // Ensure that password is shown.
-  [GetInteractionForPasswordDetailItem(grey_textFieldValue(
-      @"concrete password")) assertWithMatcher:grey_notNil()];
+  [GetInteractionForPasswordDetailItem(grey_textFieldValue(kDefaultPassword))
+      assertWithMatcher:grey_notNil()];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
@@ -894,7 +897,7 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
       performAction:grey_tap()];
 
   CopyPasswordDetailWithInteraction(GetInteractionForPasswordDetailItem(
-      [self matcherForPasswordDetailCellWithWebsites:@"https://example.com/"]));
+      [self matcherForPasswordDetailCellWithWebsites:kDefaultSite]));
 
   NSString* snackbarLabel =
       l10n_util::GetNSString(IDS_IOS_SETTINGS_SITES_WERE_COPIED_MESSAGE);
@@ -924,7 +927,7 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
       performAction:grey_tap()];
 
-  DeleteCredential(@"concrete username", @"https://example.com/");
+  DeleteCredential(kDefaultUsername, kDefaultSite);
 
   // Wait until the alert and the detail view are dismissed.
   [ChromeEarlGreyUI waitForAppToIdle];
@@ -970,13 +973,13 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
 
   // Edit password field.
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
-      assertWithMatcher:grey_textFieldValue(@"concrete password")];
+      assertWithMatcher:grey_textFieldValue(kDefaultPassword)];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
       performAction:grey_replaceText(@"")];
 
   // Delete password.
-  DeleteCredential(@"concrete username", @"https://example.com/");
+  DeleteCredential(kDefaultUsername, kDefaultSite);
 
   // Wait until the alert and the detail view are dismissed.
   [ChromeEarlGreyUI waitForAppToIdle];
@@ -1024,7 +1027,7 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
       performAction:grey_tap()];
 
-  DeleteCredential(@"concrete username", @"https://example.com/");
+  DeleteCredential(kDefaultUsername, kDefaultSite);
 
   // Wait until the alert and the detail view are dismissed.
   [ChromeEarlGreyUI waitForAppToIdle];
@@ -1064,8 +1067,8 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
   // Save duplicate of the previously saved form to be deleted at the same time.
   // This entry is considered duplicated because it maps to the same sort key
   // as the previous one.
-  SavePasswordForm(/*password=*/@"concrete password",
-                   /*username=*/@"concrete username",
+  SavePasswordForm(/*password=*/kDefaultPassword,
+                   /*username=*/kDefaultUsername,
                    /*origin=*/@"https://example.com/example");
 
   OpenPasswordManager();
@@ -1077,8 +1080,7 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:DeleteButtonForUsernameAndSites(
-                                          @"concrete username",
-                                          @"https://example.com/")]
+                                          kDefaultUsername, kDefaultSite)]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:BatchDeleteConfirmationButton()]
@@ -1228,8 +1230,7 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:DeleteButtonForUsernameAndSites(
-                                          @"concrete username",
-                                          @"https://example.com/")]
+                                          kDefaultUsername, kDefaultSite)]
       performAction:grey_tap()];
 
   // Close the dialog by tapping on Password Details screen cancel button.
@@ -1334,9 +1335,8 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
       performAction:grey_tap()];
 
   // Check that the Site and Username are present and correct.
-  [[EarlGrey
-      selectElementWithMatcher:[self matcherForPasswordDetailCellWithWebsites:
-                                         @"https://example.com/"]]
+  [[EarlGrey selectElementWithMatcher:
+                 [self matcherForPasswordDetailCellWithWebsites:kDefaultSite]]
       assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
       assertWithMatcher:grey_textFieldValue(@"federated username")];
@@ -1352,8 +1352,7 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
       performAction:grey_tap()];
   // Ensure delete button is present after entering editing mode.
   [[EarlGrey selectElementWithMatcher:DeleteButtonForUsernameAndSites(
-                                          @"federated username",
-                                          @"https://example.com/")]
+                                          @"federated username", kDefaultSite)]
       assertWithMatcher:grey_notNil()];
 
   [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
@@ -1376,12 +1375,11 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
   [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
-  [[EarlGrey
-      selectElementWithMatcher:[self matcherForPasswordDetailCellWithWebsites:
-                                         @"https://example.com/"]]
+  [[EarlGrey selectElementWithMatcher:
+                 [self matcherForPasswordDetailCellWithWebsites:kDefaultSite]]
       assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
-      assertWithMatcher:grey_textFieldValue(@"concrete username")];
+      assertWithMatcher:grey_textFieldValue(kDefaultUsername)];
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
       assertWithMatcher:grey_textFieldValue(kMaskedPassword)];
   [[EarlGrey selectElementWithMatcher:PasswordDetailNote()]
@@ -1390,10 +1388,10 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
   [[EarlGrey selectElementWithMatcher:PasswordDetailFederation()]
       assertWithMatcher:grey_nil()];
   [GetInteractionForPasswordDetailItem(PasswordDetailUsername())
-      assertWithMatcher:grey_layout(
-                            @[ Below() ],
-                            [self matcherForPasswordDetailCellWithWebsites:
-                                      @"https://example.com/"])];
+      assertWithMatcher:
+          grey_layout(
+              @[ Below() ],
+              [self matcherForPasswordDetailCellWithWebsites:kDefaultSite])];
   [GetInteractionForPasswordDetailItem(PasswordDetailPassword())
       assertWithMatcher:grey_layout(@[ Below() ], PasswordDetailUsername())];
 
@@ -1465,9 +1463,8 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
 
   [GetInteractionForPasswordEntry(@"example.com") performAction:grey_tap()];
 
-  [[EarlGrey
-      selectElementWithMatcher:[self matcherForPasswordDetailCellWithWebsites:
-                                         @"https://example.com/"]]
+  [[EarlGrey selectElementWithMatcher:
+                 [self matcherForPasswordDetailCellWithWebsites:kDefaultSite]]
       assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
       assertWithMatcher:grey_nil()];
@@ -1498,9 +1495,8 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
   [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
-  [[EarlGrey
-      selectElementWithMatcher:[self matcherForPasswordDetailCellWithWebsites:
-                                         @"https://example.com/"]]
+  [[EarlGrey selectElementWithMatcher:
+                 [self matcherForPasswordDetailCellWithWebsites:kDefaultSite]]
       assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
       assertWithMatcher:grey_textFieldValue(@"federated username")];
@@ -1510,10 +1506,10 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
       assertWithMatcher:grey_nil()];
 
   [GetInteractionForPasswordDetailItem(PasswordDetailUsername())
-      assertWithMatcher:grey_layout(
-                            @[ Below() ],
-                            [self matcherForPasswordDetailCellWithWebsites:
-                                      @"https://example.com/"])];
+      assertWithMatcher:
+          grey_layout(
+              @[ Below() ],
+              [self matcherForPasswordDetailCellWithWebsites:kDefaultSite])];
   [[EarlGrey selectElementWithMatcher:PasswordDetailFederation()]
       assertWithMatcher:grey_layout(@[ Below() ], PasswordDetailUsername())];
 
@@ -1992,7 +1988,7 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
   TapNavigationBarEditButton();
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
-      assertWithMatcher:grey_textFieldValue(@"concrete password")];
+      assertWithMatcher:grey_textFieldValue(kDefaultPassword)];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
       performAction:grey_replaceText(@"new password")];
@@ -2030,7 +2026,7 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
   TapNavigationBarEditButton();
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
-      assertWithMatcher:grey_textFieldValue(@"concrete password")];
+      assertWithMatcher:grey_textFieldValue(kDefaultPassword)];
 
   // Check that empty password is not allowed, and done button is disabled.
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
@@ -2076,7 +2072,7 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
   TapNavigationBarEditButton();
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
-      assertWithMatcher:grey_textFieldValue(@"concrete username")];
+      assertWithMatcher:grey_textFieldValue(kDefaultUsername)];
 
   // Empty username should work as well.
   [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
@@ -2114,10 +2110,10 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
 // Checks that attempts to edit a username to a value which is already used for
 // the same domain fails.
 - (void)testEditUsernameFails {
-  SavePasswordForm(/*password=*/@"concrete password",
+  SavePasswordForm(/*password=*/kDefaultPassword,
                    /*username=*/@"concrete username1");
 
-  SavePasswordForm(/*password=*/@"concrete password",
+  SavePasswordForm(/*password=*/kDefaultPassword,
                    /*username=*/@"concrete username2");
 
   OpenPasswordManager();
@@ -2128,19 +2124,16 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
   TapNavigationBarEditButton();
 
   [[EarlGrey selectElementWithMatcher:UsernameTextfieldForUsernameAndSites(
-                                          @"concrete username1",
-                                          @"https://example.com/")]
+                                          @"concrete username1", kDefaultSite)]
       assertWithMatcher:grey_textFieldValue(@"concrete username1")];
 
   // TODO(crbug.com/1454514): Revert to grey_clearText when fixed in EG.
   [[EarlGrey selectElementWithMatcher:UsernameTextfieldForUsernameAndSites(
-                                          @"concrete username1",
-                                          @"https://example.com/")]
+                                          @"concrete username1", kDefaultSite)]
       performAction:grey_replaceText(@"")];
 
   [[EarlGrey selectElementWithMatcher:UsernameTextfieldForUsernameAndSites(
-                                          @"concrete username1",
-                                          @"https://example.com/")]
+                                          @"concrete username1", kDefaultSite)]
       performAction:grey_replaceText(@"concrete username2")];
 
   [[EarlGrey selectElementWithMatcher:EditDoneButton()]
@@ -2181,7 +2174,7 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
-      assertWithMatcher:grey_textFieldValue(@"concrete password")];
+      assertWithMatcher:grey_textFieldValue(kDefaultPassword)];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
@@ -2276,7 +2269,7 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
 
   // Fill form.
   [[EarlGrey selectElementWithMatcher:AddPasswordWebsite()]
-      performAction:grey_replaceText(@"https://www.example.com")];
+      performAction:grey_replaceText(kDefaultSite)];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
       performAction:grey_replaceText(@"new username")];
@@ -2316,7 +2309,7 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
 
   // Fill form.
   [[EarlGrey selectElementWithMatcher:AddPasswordWebsite()]
-      performAction:grey_replaceText(@"https://example.com/")];
+      performAction:grey_replaceText(kDefaultSite)];
   [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
       performAction:grey_replaceText(@"new username")];
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
@@ -2416,7 +2409,7 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
       performAction:grey_replaceText(@"password")];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
-      performAction:grey_replaceText(@"concrete username")];
+      performAction:grey_replaceText(kDefaultUsername)];
 
   // Verify Save Button is not enabled.
   // The enabled state is set async after checking for credential duplication.
@@ -2492,7 +2485,7 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
   // Make sure that switching from invalid to valid note doesn't enable the save
   // button when password is invalid.
   [[EarlGrey selectElementWithMatcher:AddPasswordWebsite()]
-      performAction:grey_replaceText(@"https://example.com/")];
+      performAction:grey_replaceText(kDefaultSite)];
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
       performAction:grey_replaceText(@"")];
   [[EarlGrey selectElementWithMatcher:PasswordDetailNote()]
@@ -2515,7 +2508,7 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
   [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
       assertWithMatcher:grey_not(grey_enabled())];
   [[EarlGrey selectElementWithMatcher:AddPasswordWebsite()]
-      performAction:grey_replaceText(@"https://example.com/")];
+      performAction:grey_replaceText(kDefaultSite)];
   [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
       assertWithMatcher:grey_not(grey_enabled())];
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
@@ -2614,7 +2607,7 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
       performAction:grey_replaceText(@"password")];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
-      performAction:grey_replaceText(@"concrete username")];
+      performAction:grey_replaceText(kDefaultUsername)];
 
   [[EarlGrey selectElementWithMatcher:
                  grey_text(l10n_util::GetNSStringF(
@@ -2645,7 +2638,7 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
                                                            detailText])]
       performAction:grey_tap()];
 
-  [GetInteractionForPasswordIssueEntry(@"example.com", @"concrete username")
+  [GetInteractionForPasswordIssueEntry(@"example.com", kDefaultUsername)
       performAction:grey_tap()];
 
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
@@ -2654,7 +2647,7 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
       performAction:grey_tap()];
 
-  DeleteCredential(@"concrete username", @"https://example.com/");
+  DeleteCredential(kDefaultUsername, kDefaultSite);
 
   // Wait until the alert and the detail view are dismissed.
   [ChromeEarlGreyUI waitForAppToIdle];
@@ -2665,7 +2658,7 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
                                           PasswordIssuesTableView()]
       assertWithMatcher:grey_notNil()];
 
-  [GetInteractionForPasswordIssueEntry(@"example.com", @"concrete username")
+  [GetInteractionForPasswordIssueEntry(@"example.com", kDefaultUsername)
       assertWithMatcher:grey_nil()];
 
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
