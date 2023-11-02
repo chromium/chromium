@@ -59,6 +59,7 @@ component("ax_base") {
     "ax_bit_map.h",
     "ax_enum_util.cc",
     "ax_enum_util.h",
+    "ax_error_types.h",
     "ax_event.cc",
     "ax_event.h",
     "ax_event_intent.cc",

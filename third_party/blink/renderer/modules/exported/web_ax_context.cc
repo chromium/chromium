@@ -70,9 +70,11 @@ WebAXObject WebAXContext::GetPluginRoot() {
   return WebAXObject(private_->GetAXObjectCache().GetPluginRoot());
 }
 
-bool WebAXContext::SerializeEntireTree(size_t max_node_count,
-                                       base::TimeDelta timeout,
-                                       ui::AXTreeUpdate* response) {
+bool WebAXContext::SerializeEntireTree(
+    size_t max_node_count,
+    base::TimeDelta timeout,
+    ui::AXTreeUpdate* response,
+    std::set<ui::AXSerializationErrorFlag>* out_error) {
   CHECK(HasActiveDocument());
   CHECK(HasAXObjectCache());
   CHECK(private_->GetDocument()->ExistingAXObjectCache());
@@ -80,8 +82,8 @@ bool WebAXContext::SerializeEntireTree(size_t max_node_count,
   UpdateAXForAllDocuments();
 
   ScopedFreezeAXCache freeze(private_->GetAXObjectCache());
-  return private_->GetAXObjectCache().SerializeEntireTree(max_node_count,
-                                                          timeout, response);
+  return private_->GetAXObjectCache().SerializeEntireTree(
+      max_node_count, timeout, response, out_error);
 }
 
 void WebAXContext::SerializeDirtyObjectsAndEvents(

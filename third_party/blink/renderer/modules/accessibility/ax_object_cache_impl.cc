@@ -4419,9 +4419,11 @@ void AXObjectCacheImpl::SerializeLocationChanges(uint32_t reset_token) {
   }
 }
 
-bool AXObjectCacheImpl::SerializeEntireTree(size_t max_node_count,
-                                            base::TimeDelta timeout,
-                                            ui::AXTreeUpdate* response) {
+bool AXObjectCacheImpl::SerializeEntireTree(
+    size_t max_node_count,
+    base::TimeDelta timeout,
+    ui::AXTreeUpdate* response,
+    std::set<ui::AXSerializationErrorFlag>* out_error) {
   // Ensure that an initial tree exists.
   CHECK(IsFrozen());
   CHECK(!IsDirty());
@@ -4448,7 +4450,7 @@ bool AXObjectCacheImpl::SerializeEntireTree(size_t max_node_count,
   if (!timeout.is_zero())
     serializer.set_timeout(timeout);
 
-  bool success = serializer.SerializeChanges(Root(), response);
+  bool success = serializer.SerializeChanges(Root(), response, out_error);
   CHECK(success)
       << "Serializer failed. Should have hit DCHECK inside of serializer.";
 

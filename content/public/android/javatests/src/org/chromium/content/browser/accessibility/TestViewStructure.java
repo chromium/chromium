@@ -35,7 +35,6 @@ public class TestViewStructure extends ViewStructure {
     private HtmlInfo mHtmlInfo;
     private int mChildCount;
     private ArrayList<TestViewStructure> mChildren = new ArrayList<TestViewStructure>();
-    private boolean mDone = true;
     private float mTextSize;
     private int mFgColor;
     private int mBgColor;
@@ -44,16 +43,6 @@ public class TestViewStructure extends ViewStructure {
     private int mSelectionEnd;
 
     public TestViewStructure() {}
-
-    public boolean isDone() {
-        if (!mDone) return false;
-
-        for (TestViewStructure child : mChildren) {
-            if (!child.isDone()) return false;
-        }
-
-        return true;
-    }
 
     @Override
     public String toString() {
@@ -174,6 +163,14 @@ public class TestViewStructure extends ViewStructure {
         }
     }
 
+    public int getTotalDescendantCount() {
+        int totalChildren = mChildCount;
+        for (int i = 0; i < mChildCount; i++) {
+            totalChildren += getChild(i).getTotalDescendantCount();
+        }
+        return totalChildren;
+    }
+
     @Override
     public void setAlpha(float alpha) {}
 
@@ -260,16 +257,11 @@ public class TestViewStructure extends ViewStructure {
 
     @Override
     public ViewStructure asyncNewChild(int index) {
-        TestViewStructure result = (TestViewStructure) newChild(index);
-        result.mDone = false;
-        return result;
+        return newChild(index);
     }
 
     @Override
-    public void asyncCommit() {
-        assert !mDone;
-        mDone = true;
-    }
+    public void asyncCommit() {}
 
     @Override
     public AutofillId getAutofillId() {

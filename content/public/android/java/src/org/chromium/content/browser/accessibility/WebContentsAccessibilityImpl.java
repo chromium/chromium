@@ -171,6 +171,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     private int mCursorIndex;
     private String mSupportedHtmlElementTypes;
     private final AccessibilityNodeInfoBuilder mAccessibilityNodeInfoBuilder;
+    private boolean mHasFinishedLatestAccessibilitySnapshot;
 
     // Observer for WebContents, used to update state when |this| is shown/hidden.
     private WebContentsObserver mWebContentsObserver;
@@ -535,6 +536,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     public void forceRecordUsageUMAHistogramsForTesting() {
         mHistogramRecorder.recordAccessibilityUsageHistograms();
+    }
+
+    public boolean hasFinishedLatestAccessibilitySnapshotForTesting() {
+        return mHasFinishedLatestAccessibilitySnapshot;
     }
 
     @CalledByNative
@@ -1035,12 +1040,16 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             extras.putCharSequence(EXTRAS_KEY_URL, webContents.getVisibleUrl().getSpec());
         }
 
-        mDelegate.requestAccessibilitySnapshot(viewRoot, new Runnable() {
-            @Override
-            public void run() {
-                viewRoot.asyncCommit();
-            }
-        });
+        mHasFinishedLatestAccessibilitySnapshot = false;
+        mDelegate.requestAccessibilitySnapshot(
+                viewRoot,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        viewRoot.asyncCommit();
+                        mHasFinishedLatestAccessibilitySnapshot = true;
+                    }
+                });
     }
 
     @Override

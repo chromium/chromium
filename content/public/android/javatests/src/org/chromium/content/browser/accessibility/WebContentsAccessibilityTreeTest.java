@@ -190,7 +190,9 @@ public class WebContentsAccessibilityTreeTest {
         TestViewStructure testViewStructure = new TestViewStructure();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.mWcax.onProvideVirtualStructure(testViewStructure, false));
-        CriteriaHelper.pollUiThread(testViewStructure::isDone, "Failed to get AssistData.");
+        CriteriaHelper.pollUiThread(
+                mActivityTestRule.mWcax::hasFinishedLatestAccessibilitySnapshotForTesting,
+                "Failed to get AssistData.");
         return testViewStructure.toString();
     }
 

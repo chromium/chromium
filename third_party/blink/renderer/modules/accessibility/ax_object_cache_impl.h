@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/accessibility/ax_enums.mojom-blink-forward.h"
+#include "ui/accessibility/ax_error_types.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_tree_serializer.h"
 
@@ -497,9 +498,11 @@ class MODULES_EXPORT AXObjectCacheImpl
     return result;
   }
 
-  bool SerializeEntireTree(size_t max_node_count,
-                           base::TimeDelta timeout,
-                           ui::AXTreeUpdate*) override;
+  bool SerializeEntireTree(
+      size_t max_node_count,
+      base::TimeDelta timeout,
+      ui::AXTreeUpdate*,
+      std::set<ui::AXSerializationErrorFlag>* out_error = nullptr) override;
 
   void MarkAXObjectDirtyWithDetails(
       AXObject* obj,

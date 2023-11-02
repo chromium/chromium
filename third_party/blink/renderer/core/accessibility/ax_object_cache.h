@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/platform/wtf/hash_counted_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/accessibility/ax_error_types.h"
 
 namespace gfx {
 class Point;
@@ -229,9 +230,11 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual AXObject* GetPluginRoot() = 0;
 
   // Serialize entire tree, returning true if successful.
-  virtual bool SerializeEntireTree(size_t max_node_count,
-                                   base::TimeDelta timeout,
-                                   ui::AXTreeUpdate*) = 0;
+  virtual bool SerializeEntireTree(
+      size_t max_node_count,
+      base::TimeDelta timeout,
+      ui::AXTreeUpdate*,
+      std::set<ui::AXSerializationErrorFlag>* out_error = nullptr) = 0;
 
   // Recompute the entire tree and reserialize it.
   // This method is useful when something that potentially affects most of the

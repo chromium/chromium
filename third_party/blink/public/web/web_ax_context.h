@@ -8,6 +8,7 @@
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_document.h"
+#include "ui/accessibility/ax_error_types.h"
 #include "ui/accessibility/ax_event.h"
 
 namespace ui {
@@ -62,9 +63,11 @@ class BLINK_EXPORT WebAXContext {
   // Returns an empty WebAXObject if no root object is present.
   WebAXObject GetPluginRoot();
 
-  bool SerializeEntireTree(size_t max_node_count,
-                           base::TimeDelta timeout,
-                           ui::AXTreeUpdate* response);
+  bool SerializeEntireTree(
+      size_t max_node_count,
+      base::TimeDelta timeout,
+      ui::AXTreeUpdate* response,
+      std::set<ui::AXSerializationErrorFlag>* out_error = nullptr);
 
   // Serialize all AXObjects that are dirty (have changed their state since
   // the last serialization) into |updates|. (Heuristically) skips

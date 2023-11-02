@@ -61,6 +61,7 @@ include_rules = [
     "+third_party/blink/public/platform",
     "+third_party/blink/public/web",
     "+ui/accessibility/ax_enums.mojom-shared.h",
+    "+ui/accessibility/ax_error_types.h",
     "+ui/accessibility/ax_event.h",
     "+ui/accessibility/ax_event_intent.h",
     "+ui/accessibility/ax_mode.h",

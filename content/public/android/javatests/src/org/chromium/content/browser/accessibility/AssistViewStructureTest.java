@@ -56,7 +56,8 @@ public class AssistViewStructureTest {
                 () -> wcax.onProvideVirtualStructure(testViewStructure, false));
 
         CriteriaHelper.pollUiThread(
-                testViewStructure::isDone, "Timed out waiting for onProvideVirtualStructure");
+                wcax::hasFinishedLatestAccessibilitySnapshotForTesting,
+                "Timed out waiting for onProvideVirtualStructure");
         return testViewStructure;
     }
 
@@ -534,5 +535,34 @@ public class AssistViewStructureTest {
         Assert.assertTrue(unclippedTop > 0);
         Assert.assertTrue(unclippedWidth > 0);
         Assert.assertTrue(unclippedHeight > 0);
+    }
+
+    /** Test that pages with larger than the max node count result in a partial tree. */
+    @Test
+    @MediumTest
+    public void testMaxNodesLimit() throws Throwable {
+        // There is a max of 5000 nodes, add many nodes with some children. If the tree is flat
+        // then all nodes will end up serialized because the serializer will finish the current
+        // node and its children. The number of nodes returned may be more or less than 5000.
+        String addNodesScript =
+                "var body = document.getElementById('container');\n"
+                        + "for (i = 0; i < 600; i++) {\n"
+                        + "  var nextContainer = document.createElement('div');\n"
+                        + "  for (j = 0; j < 10; j++) {\n"
+                        + "    var paragraph = document.createElement('p');\n"
+                        + "    paragraph.innerHTML = \"Example Text\";\n"
+                        + "    nextContainer.appendChild(paragraph);\n"
+                        + "  }\n"
+                        + "  body.appendChild(nextContainer);\n"
+                        + "}\n";
+
+        TestViewStructure root =
+                getViewStructureFromHtml("<div id='container'></div>", addNodesScript).getChild(0);
+
+        // Recursively count child nodes. Allow for approximately 5000 nodes.
+        Assert.assertTrue(
+                String.format(
+                        "Too many nodes serialized, found %s", root.getTotalDescendantCount()),
+                5100 > root.getTotalDescendantCount());
     }
 }
