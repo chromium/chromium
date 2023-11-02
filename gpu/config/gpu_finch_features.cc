@@ -424,10 +424,16 @@ BASE_FEATURE(kUseGpuSchedulerDfs,
 
 // Use the ClientGmb interface to create GpuMemoryBuffers. This is supposed to
 // reduce number of IPCs happening while creating GpuMemoryBuffers by allowing
-// Renderers to do IPC directly to GPU process.
+// Renderers to do IPC directly to GPU process. This feature is now enabled by
+// default on all platforms except lacros.
 BASE_FEATURE(kUseClientGmbInterface,
              "UseClientGmbInterface",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 // When the application is in background, whether to perform immediate GPU
 // cleanup when executing deferred requests.
