@@ -6971,12 +6971,6 @@ static_library("browser") {
       ]
     }
     if (is_chromeos) {
-      sources += [
-        "printing/pdf_blob_data_flattener.cc",
-        "printing/pdf_blob_data_flattener.h",
-        "printing/print_job_controller.cc",
-        "printing/print_job_controller.h",
-      ]
       deps += [
         "//chrome/browser/chromeos/extensions/telemetry/api:keyed_service_factory",
         "//chromeos/crosapi/mojom",
@@ -7035,7 +7029,23 @@ static_library("browser") {
         "printing/printing_service.h",
         "printing/pwg_raster_converter.cc",
         "printing/pwg_raster_converter.h",
+        "printing/web_api/web_printing_service_binder.cc",
+        "printing/web_api/web_printing_service_binder.h",
       ]
+      if (is_chromeos) {
+        sources += [
+          "printing/pdf_blob_data_flattener.cc",
+          "printing/pdf_blob_data_flattener.h",
+          "printing/print_job_controller.cc",
+          "printing/print_job_controller.h",
+        ]
+        if (use_cups) {
+          sources += [
+            "printing/web_api/web_printing_service_chromeos.cc",
+            "printing/web_api/web_printing_service_chromeos.h",
+          ]
+        }
+      }
     } else {
       # Partial - only printing support.
       sources += [

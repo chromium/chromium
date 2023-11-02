@@ -459,6 +459,11 @@
 #include "components/compose/core/browser/compose_features.h"  // nogncheck crbug.com/1125897
 #endif
 
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#include "chrome/browser/printing/web_api/web_printing_service_binder.h"
+#include "third_party/blink/public/mojom/printing/web_printing.mojom.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void ash::SystemExtensionsInternalsUI::BindInterface(
     mojo::PendingReceiver<ash::mojom::system_extensions_internals::PageHandler>
@@ -478,8 +483,7 @@ void ash::SystemExtensionsInternalsUI::BindInterface(
 #include "chrome/browser/ui/webui/dlp_internals/dlp_internals_ui.h"
 #endif
 
-namespace chrome {
-namespace internal {
+namespace chrome::internal {
 
 using content::RegisterWebUIControllerInterfaceBinder;
 
@@ -1051,6 +1055,11 @@ void PopulateChromeFrameBinders(
 #if BUILDFLAG(IS_WIN)
   map->Add<media::mojom::MediaFoundationPreferences>(
       base::BindRepeating(&BindMediaFoundationPreferences));
+#endif
+
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+  map->Add<blink::mojom::WebPrintingService>(
+      base::BindRepeating(&printing::CreateWebPrintingServiceForFrame));
 #endif
 }
 
@@ -1835,5 +1844,4 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-}  // namespace internal
-}  // namespace chrome
+}  // namespace chrome::internal

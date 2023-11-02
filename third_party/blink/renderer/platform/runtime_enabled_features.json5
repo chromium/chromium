@@ -4373,6 +4373,10 @@
       status: "test",
     },
     {
+      name: "WebPrinting",
+      status: {"Android": "", "default": "test"},
+    },
+    {
       name: "WebSerialBluetooth",
       status: "stable",
       base_feature: "none",

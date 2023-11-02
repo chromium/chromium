@@ -339,6 +339,7 @@ mojom("mojom_platform") {
   } else {
     sources += [
       "direct_sockets/direct_sockets.mojom",
+      "printing/web_printing.mojom",
       "serial/serial.mojom",
     ]
   }

@@ -3074,6 +3074,19 @@ if (target_os != "android") {
   ]
 }
 
+# Printing
+# This uses target_os rather than current_os (which is what is_android is set
+# from) for the case of generating the v8 context snapshot for Android. When
+# generating the snapshot for Android, Blink is compiled with
+# current_os = "linux" and target_os = "android". Using target_os is necessary as
+# we need to compile in the same way as would happen when current_os = "android".
+if (target_os != "android") {
+  generated_interface_sources_in_modules += [
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_manager.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_manager.h",
+  ]
+}
+
 # Serial
 # This uses target_os rather than current_os (which is what is_android is set
 # from) for the case of generating the v8 context snapshot for android. When
