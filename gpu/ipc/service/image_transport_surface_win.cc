@@ -48,8 +48,7 @@ CreateDirectCompositionSurfaceSettings(
 scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
     gl::GLDisplay* display,
     base::WeakPtr<ImageTransportSurfaceDelegate> delegate,
-    SurfaceHandle surface_handle,
-    gl::GLSurfaceFormat format) {
+    SurfaceHandle surface_handle) {
   if (gl::DirectCompositionSupported() &&
       base::FeatureList::IsEnabled(features::kDCompPresenter)) {
     auto vsync_callback = delegate->GetGpuVSyncCallback();

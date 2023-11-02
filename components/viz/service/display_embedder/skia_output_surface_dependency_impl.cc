@@ -102,12 +102,11 @@ gpu::SurfaceHandle SkiaOutputSurfaceDependencyImpl::GetSurfaceHandle() {
 }
 
 scoped_refptr<gl::Presenter> SkiaOutputSurfaceDependencyImpl::CreatePresenter(
-    base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub,
-    gl::GLSurfaceFormat format) {
+    base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub) {
   DCHECK(!IsOffscreen());
 
   auto presenter = gpu::ImageTransportSurface::CreatePresenter(
-      GetSharedContextState()->display(), stub, surface_handle_, format);
+      GetSharedContextState()->display(), stub, surface_handle_);
   if (presenter &&
       GetGpuDriverBugWorkarounds().rely_on_implicit_sync_for_swap_buffers) {
     presenter->SetRelyOnImplicitSync();
@@ -118,13 +117,9 @@ scoped_refptr<gl::Presenter> SkiaOutputSurfaceDependencyImpl::CreatePresenter(
 scoped_refptr<gl::GLSurface> SkiaOutputSurfaceDependencyImpl::CreateGLSurface(
     base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub,
     gl::GLSurfaceFormat format) {
-  if (IsOffscreen()) {
-    return gl::init::CreateOffscreenGLSurfaceWithFormat(
-        GetSharedContextState()->display(), gfx::Size(), format);
-  } else {
-    return gpu::ImageTransportSurface::CreateNativeGLSurface(
-        GetSharedContextState()->display(), stub, surface_handle_, format);
-  }
+  CHECK(!IsOffscreen());
+  return gpu::ImageTransportSurface::CreateNativeGLSurface(
+      GetSharedContextState()->display(), stub, surface_handle_, format);
 }
 
 base::ScopedClosureRunner SkiaOutputSurfaceDependencyImpl::CachePresenter(

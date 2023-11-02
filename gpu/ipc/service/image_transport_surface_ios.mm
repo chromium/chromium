@@ -15,13 +15,11 @@ namespace gpu {
 scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
     gl::GLDisplay* display,
     base::WeakPtr<ImageTransportSurfaceDelegate> delegate,
-    SurfaceHandle surface_handle,
-    gl::GLSurfaceFormat format) {
+    SurfaceHandle surface_handle) {
   DCHECK_NE(surface_handle, kNullSurfaceHandle);
   if (gl::GetGLImplementation() == gl::kGLImplementationEGLGLES2 ||
       gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE) {
-    return base::WrapRefCounted<gl::Presenter>(
-        new ImageTransportSurfaceOverlayMacEGL(delegate));
+    return base::MakeRefCounted<ImageTransportSurfaceOverlayMacEGL>();
   }
 
   return nullptr;
