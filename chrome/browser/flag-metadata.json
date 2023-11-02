@@ -2600,27 +2600,27 @@
   {
     "name": "enable-family-link-controls",
     "owners": ["fernandex@chromium.org", "chrome-kids-eng@google.com"],
-    "expiry_milestone": 121
+    "expiry_milestone": 123
   },
   {
     "name": "enable-family-link-extensions-permissions",
     "owners": ["ljjlee@chromium.org", "chrome-kids-eng@google.com"],
-    "expiry_milestone": 120
+    "expiry_milestone": 126
   },
   {
     "name": "enable-family-link-managed-ui",
     "owners": ["ljjlee@chromium.org", "chrome-kids-eng@google.com"],
-    "expiry_milestone": 120
+    "expiry_milestone": 123
   },
   {
     "name": "enable-family-link-prefs-controls",
     "owners": ["ljjlee@chromium.org", "chrome-kids-eng@google.com"],
-    "expiry_milestone": 120
+    "expiry_milestone": 123
   },
   {
     "name": "enable-family-link-website-filtering",
     "owners": ["ljjlee@chromium.org", "chrome-kids-eng@google.com"],
-    "expiry_milestone": 120
+    "expiry_milestone": 123
   },
   {
     "name": "enable-fast-ink-for-software-cursor",
@@ -3491,7 +3491,7 @@
       "ljjlee@chromium.org",
       "chrome-kids-eng@google.com"
     ],
-    "expiry_milestone": 120
+    "expiry_milestone": 123
   },
   {
     "name": "enable-surface-control",
