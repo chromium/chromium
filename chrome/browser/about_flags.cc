@@ -11130,6 +11130,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kTheoraVideoCodec)},
 #endif
 
+#if BUILDFLAG(IS_MAC)
+    {"video-toolbox-av1-decoding",
+     flag_descriptions::kVideoToolboxAv1DecodingName,
+     flag_descriptions::kVideoToolboxAv1DecodingDescription, kOsMac,
+     FEATURE_VALUE_TYPE(media::kVideoToolboxAv1Decoding)},
+#endif
+
     {"sync-session-on-visibility-changed",
      flag_descriptions::kSyncSessionOnVisibilityChangedName,
      flag_descriptions::kSyncSessionOnVisibilityChangedDescription, kOsAll,

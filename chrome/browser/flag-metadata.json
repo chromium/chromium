@@ -8013,6 +8013,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "video-toolbox-av1-decoding",
+    "owners": [ "dalecurtis@chromium.org", "sandersd@chromium.org" ],
+    "expiry_milestone": 123
+  },
+  {
     "name": "view-transition",
     "owners": [ "khushalsagar@chromium.org", "vmpstr@chromium.org", "chrishtr@chromium.org" ],
     "expiry_milestone" : 118

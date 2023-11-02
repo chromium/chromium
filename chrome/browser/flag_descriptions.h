@@ -3077,6 +3077,9 @@ extern const char kSwapBackquoteKeysInISOKeyboardDescription[];
 extern const char kSystemColorChooserName[];
 extern const char kSystemColorChooserDescription[];
 
+extern const char kVideoToolboxAv1DecodingName[];
+extern const char kVideoToolboxAv1DecodingDescription[];
+
 #endif  // BUILDFLAG(IS_MAC)
 
 // Windows and Mac ------------------------------------------------------------

@@ -5324,6 +5324,10 @@ const char kSystemColorChooserName[] = "System Color Chooser";
 const char kSystemColorChooserDescription[] =
     "Enables a button that launches the macOS native color chooser.";
 
+const char kVideoToolboxAv1DecodingName[] = "VideoToolbox AV1 decoding support";
+const char kVideoToolboxAv1DecodingDescription[] =
+    "Controls support for accelerated AV1 decoding through VideoToolbox.";
+
 #endif
 
 // Windows and Mac -------------------------------------------------------------
