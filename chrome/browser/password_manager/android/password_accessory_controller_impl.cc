@@ -510,6 +510,11 @@ void PasswordAccessoryControllerImpl::UpdateCredManReentryUi(
   }
 }
 
+base::WeakPtr<PasswordAccessoryController>
+PasswordAccessoryControllerImpl::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 PasswordAccessoryControllerImpl::LastFocusedFieldInfo::LastFocusedFieldInfo(
     url::Origin focused_origin,
     FocusedFieldType focused_field,

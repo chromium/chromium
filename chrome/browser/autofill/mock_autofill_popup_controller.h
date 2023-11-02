@@ -24,9 +24,7 @@
 
 namespace autofill {
 
-class MockAutofillPopupController
-    : public AutofillPopupController,
-      public base::SupportsWeakPtr<MockAutofillPopupController> {
+class MockAutofillPopupController : public AutofillPopupController {
  public:
   MockAutofillPopupController();
   ~MockAutofillPopupController() override;

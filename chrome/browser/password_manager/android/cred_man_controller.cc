@@ -44,10 +44,10 @@ bool CredManController::Show(
   }
   visibility_controller_->SetVisible(std::move(frame_driver));
   filler_ = std::move(filler);
-  cred_man_delegate->SetRequestCompletionCallback(
-      base::BindRepeating(&CredManController::Dismiss, AsWeakPtr()));
+  cred_man_delegate->SetRequestCompletionCallback(base::BindRepeating(
+      &CredManController::Dismiss, weak_ptr_factory_.GetWeakPtr()));
   cred_man_delegate->SetFillingCallback(
-      base::BindOnce(&CredManController::Fill, AsWeakPtr()));
+      base::BindOnce(&CredManController::Fill, weak_ptr_factory_.GetWeakPtr()));
   cred_man_delegate->TriggerCredManUi(
       WebAuthnCredManDelegate::RequestPasswords(true));
   return true;

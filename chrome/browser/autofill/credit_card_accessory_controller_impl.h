@@ -38,6 +38,7 @@ class CreditCardAccessoryControllerImpl
 
   // CreditCardAccessoryController:
   void RefreshSuggestions() override;
+  base::WeakPtr<CreditCardAccessoryController> AsWeakPtr() override;
 
   // PersonalDataManagerObserver:
   void OnPersonalDataChanged() override;
@@ -104,6 +105,9 @@ class CreditCardAccessoryControllerImpl
   FieldGlobalId last_focused_field_id_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
+
+  base::WeakPtrFactory<CreditCardAccessoryControllerImpl> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace autofill

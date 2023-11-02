@@ -174,6 +174,11 @@ void AddressAccessoryControllerImpl::RefreshSuggestions() {
   }
 }
 
+base::WeakPtr<AddressAccessoryController>
+AddressAccessoryControllerImpl::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void AddressAccessoryControllerImpl::OnPersonalDataChanged() {
   RefreshSuggestions();
 }

@@ -329,6 +329,11 @@ void CreditCardAccessoryControllerImpl::RefreshSuggestions() {
   }
 }
 
+base::WeakPtr<CreditCardAccessoryController>
+CreditCardAccessoryControllerImpl::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void CreditCardAccessoryControllerImpl::OnPersonalDataChanged() {
   RefreshSuggestions();
 }
