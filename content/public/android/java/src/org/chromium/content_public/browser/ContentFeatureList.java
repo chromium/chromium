@@ -14,7 +14,7 @@ public class ContentFeatureList {
     // Features files, then remove the constants below.
 
     // Alphabetical:
-    public static final String ACCESSIIBILITY_INCLUDE_LONG_CLICK_ACTION =
+    public static final String ACCESSIBILITY_INCLUDE_LONG_CLICK_ACTION =
             "AccessibilityIncludeLongClickAction";
 
     public static final String ACCESSIBILITY_PAGE_ZOOM = "AccessibilityPageZoom";

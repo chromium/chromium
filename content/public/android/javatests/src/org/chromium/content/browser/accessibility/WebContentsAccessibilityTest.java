@@ -20,6 +20,7 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.Acces
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_COPY;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_CUT;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_FOCUS;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_LONG_CLICK;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_NEXT_AT_MOVEMENT_GRANULARITY;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_NEXT_HTML_ELEMENT;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_PAGE_UP;
@@ -179,6 +180,10 @@ public class WebContentsAccessibilityTest {
             Map.of(ContentFeatureList.AUTO_DISABLE_ACCESSIBILITY_V2, true);
     private static final Map<String, Boolean> PERF_TEST_OFF =
             Map.of(ContentFeatureList.ACCESSIBILITY_PERFORMANCE_TESTING, false);
+    private static final Map<String, Boolean> INCLUDE_LONG_CLICK_ENABLED =
+            Map.of(ContentFeatureList.ACCESSIBILITY_INCLUDE_LONG_CLICK_ACTION, true);
+    private static final Map<String, Boolean> INCLUDE_LONG_CLICK_DISABLED =
+            Map.of(ContentFeatureList.ACCESSIBILITY_INCLUDE_LONG_CLICK_ACTION, false);
 
     // Constant values for unit tests
     private static final int UNSUPPRESSED_EXPECTED_COUNT = 15;
@@ -1958,6 +1963,36 @@ public class WebContentsAccessibilityTest {
         Assert.assertTrue(
                 OFFSCREEN_BUNDLE_EXTRA_ERROR,
                 mNodeInfo3.getExtras().getBoolean(EXTRAS_KEY_OFFSCREEN));
+    }
+
+    /** Test that ACTION_LONG_CLICK is included when experiment is running. */
+    @Test
+    @SmallTest
+    public void testNodeInfo_Actions_longClickIncluded() throws Throwable {
+        setupTestWithHTML("<p id='id1'>Example</p>");
+
+        FeatureList.setTestFeatures(INCLUDE_LONG_CLICK_ENABLED);
+
+        int vvId = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
+        mNodeInfo = createAccessibilityNodeInfo(vvId);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
+
+        Assert.assertTrue(mNodeInfo.getActionList().contains(ACTION_LONG_CLICK));
+    }
+
+    /** Test that ACTION_LONG_CLICK is excluded when experiment is paused. */
+    @Test
+    @SmallTest
+    public void testNodeInfo_Actions_longClickExcluded() throws Throwable {
+        setupTestWithHTML("<p id='id1'>Example</p>");
+
+        FeatureList.setTestFeatures(INCLUDE_LONG_CLICK_DISABLED);
+
+        int vvId = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
+        mNodeInfo = createAccessibilityNodeInfo(vvId);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
+
+        Assert.assertFalse(mNodeInfo.getActionList().contains(ACTION_LONG_CLICK));
     }
 
     // ------------------ Tests of performAction method ------------------ //

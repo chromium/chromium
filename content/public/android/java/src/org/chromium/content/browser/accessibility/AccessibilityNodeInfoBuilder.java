@@ -15,6 +15,7 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.Acces
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_EXPAND;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_FOCUS;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_IME_ENTER;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_LONG_CLICK;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_NEXT_AT_MOVEMENT_GRANULARITY;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_NEXT_HTML_ELEMENT;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_PAGE_DOWN;
@@ -57,6 +58,9 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+
+import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 
 import java.util.Collections;
 import java.util.List;
@@ -224,7 +228,13 @@ public class AccessibilityNodeInfoBuilder {
         node.addAction(ACTION_PREVIOUS_HTML_ELEMENT);
         node.addAction(ACTION_SHOW_ON_SCREEN);
         node.addAction(ACTION_CONTEXT_CLICK);
-        // We choose to not add ACTION_LONG_CLICK to nodes to prevent verbose utterances.
+
+        // We choose to not add ACTION_LONG_CLICK to nodes to prevent verbose utterances, unless
+        // the relevant experiment is enabled.
+        if (ContentFeatureMap.isEnabled(
+                ContentFeatureList.ACCESSIBILITY_INCLUDE_LONG_CLICK_ACTION)) {
+            node.addAction(ACTION_LONG_CLICK);
+        }
 
         if (hasNonEmptyInnerText) {
             node.addAction(ACTION_NEXT_AT_MOVEMENT_GRANULARITY);
