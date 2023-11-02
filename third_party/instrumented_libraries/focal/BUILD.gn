@@ -834,4 +834,5 @@ instrumented_library("libudev1") {
 }
 
 instrumented_library("zlib1g") {
+  build_method = "custom_zlib"
 }

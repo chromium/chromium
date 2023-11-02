@@ -240,7 +240,7 @@ class InstrumentedPackageBuilder(object):
     """Invokes `make install'."""
     self.make(['install'] + args, **kwargs)
 
-  def build_and_install(self):
+  def build_and_install(self, targets=[]):
     """Builds and installs the DSOs.
 
     Builds the package with ./configure + make, installs it to a temporary
@@ -253,7 +253,7 @@ class InstrumentedPackageBuilder(object):
     # Some makefiles use BUILDROOT or INSTALL_ROOT instead of DESTDIR.
     args = ['DESTDIR', 'BUILDROOT', 'INSTALL_ROOT']
     make_args = ['%s=%s' % (name, self.temp_dir()) for name in args]
-    self.make(make_args)
+    self.make(make_args + targets)
 
     self.make_install(make_args)
 
@@ -522,6 +522,11 @@ class NSSBuilder(InstrumentedPackageBuilder):
           shutil.copy(full_path, self.dest_libdir())
 
 
+class ZlibBuilder(InstrumentedPackageBuilder):
+  def build_and_install(self):
+    super().build_and_install(['libz.so.1.2.11'])
+
+
 class StubBuilder(InstrumentedPackageBuilder):
   def download_build_install(self):
     self._touch(os.path.join(self._destdir, '%s.txt' % self._package))
@@ -580,6 +585,8 @@ def main():
     builder = LibcurlBuilder(args, clobber)
   elif args.build_method == 'custom_libpci3':
     builder = Libpci3Builder(args, clobber)
+  elif args.build_method == 'custom_zlib':
+    builder = ZlibBuilder(args, clobber)
   elif args.build_method == 'debian':
     builder = DebianBuilder(args, clobber)
   elif args.build_method == 'meson':
