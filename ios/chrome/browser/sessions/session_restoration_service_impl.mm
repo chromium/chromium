@@ -196,6 +196,7 @@ SessionRestorationServiceImpl::SessionRestorationServiceImpl(
 SessionRestorationServiceImpl::~SessionRestorationServiceImpl() {}
 
 void SessionRestorationServiceImpl::Shutdown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(infos_.empty()) << "Disconnect() must be called for all Browser";
 }
 
@@ -203,21 +204,25 @@ void SessionRestorationServiceImpl::Shutdown() {
 
 void SessionRestorationServiceImpl::AddObserver(
     SessionRestorationObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.AddObserver(observer);
 }
 
 void SessionRestorationServiceImpl::RemoveObserver(
     SessionRestorationObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.RemoveObserver(observer);
 }
 
 void SessionRestorationServiceImpl::SaveSessions() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SaveDirtySessions();
 }
 
 void SessionRestorationServiceImpl::SetSessionID(
     Browser* browser,
     const std::string& identifier) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   WebStateList* web_state_list = browser->GetWebStateList();
 
   auto iterator = infos_.find(web_state_list);
@@ -239,6 +244,7 @@ void SessionRestorationServiceImpl::SetSessionID(
 }
 
 void SessionRestorationServiceImpl::LoadSession(Browser* browser) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::Contains(infos_, browser->GetWebStateList()));
   WebStateListInfo& info = *infos_[browser->GetWebStateList()];
 
@@ -304,6 +310,7 @@ void SessionRestorationServiceImpl::LoadSession(Browser* browser) {
 }
 
 void SessionRestorationServiceImpl::Disconnect(Browser* browser) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SaveDirtySessions();
   DCHECK(dirty_web_state_lists_.empty());
 
@@ -321,6 +328,7 @@ std::unique_ptr<web::WebState>
 SessionRestorationServiceImpl::CreateUnrealizedWebState(
     Browser* browser,
     web::proto::WebStateStorage storage) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto iterator = infos_.find(browser->GetWebStateList());
   DCHECK(iterator != infos_.end());
 
@@ -368,6 +376,7 @@ SessionRestorationServiceImpl::CreateUnrealizedWebState(
 
 void SessionRestorationServiceImpl::MarkWebStateListDirty(
     WebStateList* web_state_list) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   dirty_web_state_lists_.insert(web_state_list);
   if (!timer_.IsRunning()) {
     timer_.Start(
@@ -378,6 +387,7 @@ void SessionRestorationServiceImpl::MarkWebStateListDirty(
 }
 
 void SessionRestorationServiceImpl::SaveDirtySessions() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (timer_.IsRunning()) {
     timer_.Stop();
   }

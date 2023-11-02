@@ -11,6 +11,7 @@
 #include "base/files/file.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -60,6 +61,9 @@ class SessionRestorationServiceImpl final : public SessionRestorationService {
 
   // Helper method that post a task to save state to storage.
   void SaveDirtySessions();
+
+  // Used to enforce use on the correct sequence.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Observer list.
   base::ObserverList<SessionRestorationObserver, true> observers_;
