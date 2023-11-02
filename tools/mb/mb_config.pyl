@@ -253,7 +253,6 @@
       'linux-chromeos-rel': 'chromeos_with_codecs_with_lacros_release_bot_reclient',
       'linux-lacros-builder-rel': 'lacros_on_linux_release_bot_reclient_with_cups',
       'linux-lacros-dbg': 'lacros_on_linux_debug_bot_reclient_with_cups',
-      'linux-lacros-tester-rel': 'lacros_on_linux_release_bot',
     },
 
     'chromium.clang': {
@@ -509,8 +508,6 @@
       'linux-lacros-builder-fyi-rel': 'lacros_on_linux_release_bot_reclient',
       'linux-lacros-builder-rel (reclient)': 'lacros_on_linux_release_bot_reclient',
       'linux-lacros-dbg-fyi': 'lacros_on_linux_debug_bot_reclient',
-      'linux-lacros-dbg-tests-fyi': 'lacros_on_linux_debug_bot',
-      'linux-lacros-tester-fyi-rel': 'lacros_on_linux_release_bot',
       'linux-lacros-version-skew-fyi': 'lacros_on_linux_release_not_build_ash_bot_reclient',
       'linux-network-sandbox-rel': 'release_bot_minimal_symbols_reclient',
       'linux-perfetto-rel': 'perfetto_release_bot_reclient',
@@ -3066,20 +3063,12 @@
       'lacros_on_linux', 'release_bot_reclient', 'also_build_ash_chrome', 'clang', 'use_clang_coverage', 'no_symbols',
     ],
 
-    'lacros_on_linux_debug_bot': [
-      'lacros_on_linux', 'debug_bot', 'also_build_ash_chrome',
-    ],
-
     'lacros_on_linux_debug_bot_reclient': [
       'lacros_on_linux', 'debug_bot_reclient', 'also_build_ash_chrome',
     ],
 
     'lacros_on_linux_debug_bot_reclient_with_cups': [
       'lacros_on_linux', 'debug_bot_reclient', 'also_build_ash_chrome', 'use_cups',
-    ],
-
-    'lacros_on_linux_release_bot': [
-      'lacros_on_linux', 'release_bot', 'also_build_ash_chrome',
     ],
 
     'lacros_on_linux_release_bot_reclient': [
