@@ -249,6 +249,9 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   // practice, the is the allow / block UI for auto-pip.
   bool IsOverlayViewShown() const;
 
+  // Removes the `overlay_view_` if it exists.
+  void RemoveOverlayViewIfExists();
+
   // Not owned; |controller_| owns |this|.
   raw_ptr<content::VideoPictureInPictureWindowController> controller_;
 

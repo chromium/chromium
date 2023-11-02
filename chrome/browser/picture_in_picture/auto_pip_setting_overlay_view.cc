@@ -106,8 +106,11 @@ bool AutoPipSettingOverlayView::WantsEvent(const gfx::Point& point) {
 
 AutoPipSettingOverlayView::~AutoPipSettingOverlayView() {
   if (widget_) {
+    // If we're being deleted and our widget still exists, then ensure that it
+    // closes.
     widget_->RemoveObserver(this);
-    widget_ = nullptr;
+    widget_.ExtractAsDangling()->CloseWithReason(
+        views::Widget::ClosedReason::kUnspecified);
   }
   background_ = nullptr;
   auto_pip_setting_view_ = nullptr;

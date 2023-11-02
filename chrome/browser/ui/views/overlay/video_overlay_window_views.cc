@@ -1226,12 +1226,7 @@ void VideoOverlayWindowViews::ShowInactive() {
 #endif
 
   // If there is an existing overlay view, remove it now.
-  if (overlay_view_) {
-    // Remove and delete the outgoing view.  Note the trailing `T` on the method
-    // name -- this removes `overlay_view_` and returns a unique_ptr to it which
-    // we then discard.  Without the `T`, it returns nothing and frees nothing.
-    GetContentsView()->RemoveChildViewT(overlay_view_.ExtractAsDangling());
-  }
+  RemoveOverlayViewIfExists();
 
   // TODO(crbug.com/1472386): Confirm whether the anchor should remain as FLOAT.
   auto overlay_view =
@@ -1256,6 +1251,8 @@ void VideoOverlayWindowViews::ShowInactive() {
 }
 
 void VideoOverlayWindowViews::Hide() {
+  // If there is an existing overlay view, remove it now.
+  RemoveOverlayViewIfExists();
   views::Widget::Hide();
   MaybeUnregisterFrameSinkHierarchy();
 }
@@ -1600,4 +1597,13 @@ void VideoOverlayWindowViews::MaybeUnregisterFrameSinkHierarchy() {
 
 bool VideoOverlayWindowViews::IsOverlayViewShown() const {
   return overlay_view_ && overlay_view_->GetVisible();
+}
+
+void VideoOverlayWindowViews::RemoveOverlayViewIfExists() {
+  if (overlay_view_) {
+    // Remove and delete the outgoing view.  Note the trailing `T` on the method
+    // name -- this removes `overlay_view_` and returns a unique_ptr to it which
+    // we then discard.  Without the `T`, it returns nothing and frees nothing.
+    GetContentsView()->RemoveChildViewT(overlay_view_.ExtractAsDangling());
+  }
 }
