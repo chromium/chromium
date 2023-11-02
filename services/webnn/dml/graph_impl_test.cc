@@ -452,6 +452,78 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
                               17, 0, 0, 44, 53, 62, 11, 0, 11, 17, 23, 0}}}
         .Test();
   }
+  // Test conv2d with NCHW layout, fusing with sigmoid activation.
+  {
+    Conv2dTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2, 1, 3, 3},
+                  .values = {0.7529087201709872, 0.7520291960017611,
+                             0.594952773514815, 0.21631854011984264,
+                             0.07589348976741683, 0.15106785419828572,
+                             0.12124850358598671, 0.5364335407319905,
+                             0.5937089927693522, 0.9910031422560608,
+                             0.36309423611370084, 0.9289673923363004,
+                             0.22727376737331384, 0.5414123970044269,
+                             0.0844534212564596, 0.6765284772046276,
+                             0.619325655574763, 0.39292160755260475}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {3, 1, 2, 2},
+                   .values = {0.14543837927656278, 0.9671129790291346,
+                              0.10836050336762582, 0.320230810822804,
+                              0.6952692250382182, 0.5070913293589028,
+                              0.0813970738017622, 0.5303338853508432,
+                              0.30721364807734, 0.4324123448833208,
+                              0.9849002194630809, 0.4281076188358701}},
+        .attributes = {.input_layout =
+                           mojom::InputOperandLayout::kChannelsFirst,
+                       .activation = mojom::Activation::Tag::kSigmoid},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 3, 2, 2},
+                   .values = {0.7077627182006836, 0.6772933602333069,
+                              0.5719422101974487, 0.5999819040298462,
+                              0.7236577272415161, 0.7131744623184204,
+                              0.618513286113739,  0.6196115612983704,
+                              0.690409243106842,  0.6519721746444702,
+                              0.6102449893951416, 0.704983651638031,
+                              0.6666978597640991, 0.7382584810256958,
+                              0.6959947943687439, 0.5874307155609131,
+                              0.7647256255149841, 0.6926159262657166,
+                              0.6934033632278442, 0.6633020043373108,
+                              0.7144469618797302, 0.7469926476478577,
+                              0.7747598886489868, 0.7273134589195251}}}
+        .Test();
+  }
+  // Test conv2d with NCHW layout, fusing with tanh activation.
+  {
+    Conv2dTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 5, 5},
+                  .values = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
+                             13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3},
+                   .values = std::vector<float>(9, 0.05)},
+        .attributes = {.padding = {1, 1, 1, 1},
+                       .input_layout =
+                           mojom::InputOperandLayout::kChannelsFirst,
+                       .activation = mojom::Activation::Tag::kTanh},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 5, 5},
+                   .values = {0.5370495669980353, 0.7818063576087741,
+                              0.874053287886007,  0.9288576214547277,
+                              0.8336546070121552, 0.9288576214547277,
+                              0.9910074536781176, 0.9963341221150144,
+                              0.9985079423323266, 0.9878803970168317,
+                              0.9963341221150144, 0.9998996556706324,
+                              0.9999592018254402, 0.9999834124992523,
+                              0.9993931059399421, 0.9998171682522957,
+                              0.9999988852198828, 0.9999995467640772,
+                              0.9999998157280003, 0.999969775809118,
+                              0.9985079423323266, 0.999969775809118,
+                              0.9999834124992523, 0.9999908965525104,
+                              0.9995503664595334}}}
+        .Test();
+  }
 }
 
 template <typename T>
@@ -1248,8 +1320,14 @@ struct UnaryOperatorTester {
       case mojom::Operation::Tag::kRelu:
         builder.BuildRelu(input_operand_id, output_operand_id);
         break;
+      case mojom::Operation::Tag::kSigmoid:
+        builder.BuildSigmoid(input_operand_id, output_operand_id);
+        break;
       case mojom::Operation::Tag::kSoftmax:
         builder.BuildSoftmax(input_operand_id, output_operand_id);
+        break;
+      case mojom::Operation::Tag::kTanh:
+        builder.BuildTanh(input_operand_id, output_operand_id);
         break;
       default:
         NOTREACHED();
@@ -1404,6 +1482,93 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorPad) {
                    //  [5 4 4 5 6 6 5]] with shape ( 4, 7)
                    .values = {2, 1, 1, 2, 3, 3, 2, 2, 1, 1, 2, 3, 3, 2,
                               5, 4, 4, 5, 6, 6, 5, 5, 4, 4, 5, 6, 6, 5}}}
+        .Test();
+  }
+}
+
+// Test building and computing a DML graph with single operator sigmoid.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorSigmoid) {
+  // Test sigmoid with a 1d input.
+  {
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kSigmoid,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {3},
+                  .values = {-1, 0, 1}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {3},
+                   .values = {0.26894143, 0.5, 0.7310586}}}
+        .Test();
+  }
+  // Test sigmoid with a 3d input.
+  {
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kSigmoid,
+        .input =
+            {.type = mojom::Operand::DataType::kFloat32,
+             .dimensions = {3, 4, 5},
+             .values = {-0.18371736, 0.4805392,   2.7183356,   0.03039639,
+                        0.04197176,  -1.1536852,  -2.0124357,  -0.885673,
+                        -0.25776535, 1.0151213,   -0.22013742, 0.13626824,
+                        0.8574488,   -0.15987602, 0.7025059,   -0.8209337,
+                        1.2621661,   0.4055987,   -0.65470445, 0.14290208,
+                        1.6874043,   -0.7997532,  -1.0582826,  1.0813274,
+                        -1.9656292,  -0.13285251, 0.87344545,  -0.07760263,
+                        1.0503976,   -0.23713546, 0.21536243,  0.59599924,
+                        -0.8221842,  0.10256762,  -0.67856175, 1.1891315,
+                        -0.6567207,  -0.2958169,  -1.9581499,  -0.9223802,
+                        -0.32011083, -0.31802705, 0.7264381,   1.0234208,
+                        0.673269,    0.96394795,  0.6152301,   -0.4362364,
+                        -1.2325221,  -0.11140272, -0.43866253, 0.5770897,
+                        0.42372307,  -0.33066413, -0.46210232, -0.6456375,
+                        2.0984166,   -1.2020895,  1.5637838,   -0.7114222}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {3, 4, 5},
+                   .values = {0.4541994,  0.61787516, 0.9381,     0.50759846,
+                              0.5104914,  0.23981662, 0.11790343, 0.29200357,
+                              0.43591312, 0.7340212,  0.44518682, 0.53401446,
+                              0.7021274,  0.4601159,  0.66874313, 0.3055655,
+                              0.77939874, 0.6000321,  0.34193018, 0.53566486,
+                              0.8438825,  0.31007832, 0.2576378,  0.7467451,
+                              0.12285913, 0.46683565, 0.70546216, 0.48060906,
+                              0.7408512,  0.44099236, 0.55363345, 0.64474046,
+                              0.3053002,  0.52561945, 0.33658236, 0.7665857,
+                              0.34147665, 0.4265804,  0.12366741, 0.28447315,
+                              0.42064875, 0.42115664, 0.67402315, 0.7356384,
+                              0.6622347,  0.7239115,  0.64913297, 0.39263815,
+                              0.2257403,  0.47217807, 0.39205968, 0.6403975,
+                              0.6043738,  0.41807905, 0.38648725, 0.34397328,
+                              0.89074916, 0.2311037,  0.8268956,  0.32928467}}}
+        .Test();
+  }
+}
+
+// Test building and computing a DML graph with single operator tanh.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorTanh) {
+  // Test tanh with a 1d input.
+  {
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kTanh,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {3},
+                  .values = {-1, 0, 1}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {3},
+                   .values = {-0.76159418, 0., 0.76159418}}}
+        .Test();
+  }
+  // Test tanh with a 3d input.
+  {
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kTanh,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3},
+                  .values = {-2, -1, 0, 1, 2, 3}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3},
+                   .values = {-0.9640275800758168, -0.7615941559557649, 0,
+                              0.7615941559557649, 0.9640275800758169,
+                              0.9950547536867305}}}
         .Test();
   }
 }

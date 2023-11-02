@@ -23,6 +23,7 @@
 #include "services/webnn/dml/tensor_desc.h"
 #include "services/webnn/dml/utils.h"
 #include "services/webnn/error.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gl/gl_angle_util_win.h"
 
 namespace webnn::dml {
@@ -331,6 +332,53 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConcat(
   return base::ok();
 }
 
+struct ActivationOperatorDesc {
+  absl::variant<DML_ACTIVATION_RELU_OPERATOR_DESC,
+                DML_ACTIVATION_SIGMOID_OPERATOR_DESC,
+                DML_ACTIVATION_TANH_OPERATOR_DESC>
+      desc;
+
+  DML_OPERATOR_DESC GetActivationDmlDesc() const {
+    if (absl::holds_alternative<DML_ACTIVATION_RELU_OPERATOR_DESC>(desc)) {
+      return {DML_OPERATOR_ACTIVATION_RELU,
+              &absl::get<DML_ACTIVATION_RELU_OPERATOR_DESC>(desc)};
+    } else if (absl::holds_alternative<DML_ACTIVATION_SIGMOID_OPERATOR_DESC>(
+                   desc)) {
+      return {DML_OPERATOR_ACTIVATION_SIGMOID,
+              &absl::get<DML_ACTIVATION_SIGMOID_OPERATOR_DESC>(desc)};
+    } else if (absl::holds_alternative<DML_ACTIVATION_TANH_OPERATOR_DESC>(
+                   desc)) {
+      return {DML_OPERATOR_ACTIVATION_TANH,
+              &absl::get<DML_ACTIVATION_TANH_OPERATOR_DESC>(desc)};
+    } else {
+      NOTREACHED_NORETURN() << "The activation type is not supported.";
+    }
+  }
+};
+
+// DML_OPERATOR_ELEMENT_WISE_CLIP will be supported after the DirectML version
+// upper than DML_FEATURE_LEVEL_6_0.
+// https://learn.microsoft.com/en-us/windows/ai/directml/dml-feature-level-history#dml_feature_level_6_0
+base::expected<ActivationOperatorDesc, mojom::ErrorPtr>
+CreateActivationOperatorDesc(const mojom::ActivationPtr& activation) {
+  CHECK(activation);
+  switch (activation->which()) {
+    case mojom::Activation::Tag::kRelu:
+      return ActivationOperatorDesc{.desc =
+                                        DML_ACTIVATION_RELU_OPERATOR_DESC{}};
+    case mojom::Activation::Tag::kSigmoid:
+      return ActivationOperatorDesc{.desc =
+                                        DML_ACTIVATION_SIGMOID_OPERATOR_DESC{}};
+    case mojom::Activation::Tag::kTanh:
+      return ActivationOperatorDesc{.desc =
+                                        DML_ACTIVATION_TANH_OPERATOR_DESC{}};
+    default:
+      return base::unexpected(
+          mojom::Error::New(mojom::Error::Code::kUnknownError,
+                            "The fused activation type is not supported."));
+  }
+}
+
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
     const IdToOperandMap& id_to_operand_map,
     const mojom::Conv2dPtr& conv2d,
@@ -407,32 +455,17 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
   // only used to disambiguate output shape when needed.
   std::array<uint32_t, 2> default_out_padding = {0, 0};
 
-  // Currently only DML_OPERATOR_ACTIVATION_RELU is supported as the fused
-  // activation. DML_OPERATOR_ELEMENT_WISE_CLIP will be supported after the
-  // DirectML version upper than DML_FEATURE_LEVEL_6_0.
-  // https://learn.microsoft.com/en-us/windows/ai/directml/dml-feature-level-history#dml_feature_level_6_0
-  //
-  // TODO(crbug.com/1486300): Use a union of all activation operator structures
-  // to support and simplify the creation of fused activation operators.
-  absl::optional<DML_ACTIVATION_RELU_OPERATOR_DESC> dml_relu_desc;
-  absl::optional<DML_OPERATOR_DESC> dml_activation_desc;
+  absl::optional<ActivationOperatorDesc> activation_operator_desc;
+  absl::optional<DML_OPERATOR_DESC> activation_dml_desc;
   if (conv2d->activation) {
-    switch (conv2d->activation->which()) {
-      case mojom::Activation::Tag::kRelu: {
-        dml_relu_desc = DML_ACTIVATION_RELU_OPERATOR_DESC{
-            .InputTensor = nullptr, .OutputTensor = nullptr};
-        dml_activation_desc =
-            DML_OPERATOR_DESC{.Type = DML_OPERATOR_ACTIVATION_RELU,
-                              .Desc = &dml_relu_desc.value()};
-        break;
-      }
-      default: {
-        DLOG(ERROR) << "This fusion type is not supported.";
-        return base::unexpected(
-            mojom::Error::New(mojom::Error::Code::kNotSupportedError,
-                              "This fusion type is not supported."));
-      }
+    auto create_activation_result =
+        CreateActivationOperatorDesc(conv2d->activation);
+    if (!create_activation_result.has_value()) {
+      return base::unexpected(std::move(create_activation_result.error()));
     }
+
+    activation_operator_desc = std::move(create_activation_result.value());
+    activation_dml_desc = activation_operator_desc->GetActivationDmlDesc();
   }
 
   DML_CONVOLUTION_OPERATOR_DESC conv2d_operator_desc{
@@ -453,9 +486,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
       .EndPadding = end_padding.data(),
       .OutputPadding = default_out_padding.data(),
       .GroupCount = conv2d->groups,
-      .FusedActivation = (dml_activation_desc.has_value())
-                             ? &dml_activation_desc.value()
-                             : nullptr};
+      .FusedActivation =
+          activation_dml_desc ? &activation_dml_desc.value() : nullptr};
 
   const OperatorNode* conv2d_node = graph_builder.CreateOperatorNode(
       DML_OPERATOR_CONVOLUTION, &conv2d_operator_desc, inputs);
@@ -1690,6 +1722,15 @@ void GraphImpl::CreateAndBuild(
                                    graph_builder, id_to_node_output_map);
         break;
       }
+      case Operation::Tag::kSigmoid: {
+        create_operator_result =
+            CreateOperatorNodeForUnary<DML_ACTIVATION_SIGMOID_OPERATOR_DESC,
+                                       DML_OPERATOR_ACTIVATION_SIGMOID>(
+                id_to_operand_map, operation->get_sigmoid(), graph_builder,
+                id_to_node_output_map);
+
+        break;
+      }
       case Operation::Tag::kSlice: {
         create_operator_result = CreateOperatorNodeForSlice(
             id_to_operand_map, operation->get_slice(), graph_builder,
@@ -1708,6 +1749,14 @@ void GraphImpl::CreateAndBuild(
         create_operator_result = CreateOperatorNodeForSplit(
             id_to_operand_map, operation->get_split(), graph_builder,
             id_to_node_output_map);
+        break;
+      }
+      case Operation::Tag::kTanh: {
+        create_operator_result =
+            CreateOperatorNodeForUnary<DML_ACTIVATION_TANH_OPERATOR_DESC,
+                                       DML_OPERATOR_ACTIVATION_TANH>(
+                id_to_operand_map, operation->get_tanh(), graph_builder,
+                id_to_node_output_map);
         break;
       }
       case Operation::Tag::kTranspose: {
