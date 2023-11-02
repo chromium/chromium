@@ -24,7 +24,7 @@ from blinkpy.tool.blink_tool import BlinkTool
 from blinkpy.w3c.local_wpt import LocalWPT
 from blinkpy.w3c.wpt_results_processor import WPTResultsProcessor
 from blinkpy.web_tests.controllers.web_test_finder import WebTestFinder
-from blinkpy.web_tests.port.base import Port
+from blinkpy.web_tests.models.test_expectations import TestExpectations
 from blinkpy.web_tests.port import factory
 from blinkpy.wpt_tests.product import make_product_registry
 
@@ -140,6 +140,7 @@ class WPTAdapter:
         self.paths = paths
         self.failure_threshold = 0
         self.crash_timeout_threshold = 0
+        self._expectations = TestExpectations(self.port)
 
     @classmethod
     def from_args(cls,
@@ -382,24 +383,6 @@ class WPTAdapter:
             # https://github.com/web-platform-tests/wpt/blob/9593290a/tools/wptrunner/wptrunner/wptcommandline.py#L190
             runner_options.debugger_args = ' '.join(self.options.wrapper[1:])
 
-    def _prepare_lists(self, test_names):
-        tests_to_skip = set()
-        for test in test_names:
-            if (self.port.virtual_test_skipped_due_to_platform_config(test)
-                    or self.port.skipped_due_to_exclusive_virtual_tests(test)):
-                tests_to_skip.add(test)
-                continue
-
-            if self.options.enable_sanitizer and Port.is_wpt_idlharness_test(
-                    test):
-                tests_to_skip.update({test})
-
-        tests_to_run = [
-            test for test in test_names if test not in tests_to_skip
-        ]
-
-        return tests_to_run, tests_to_skip
-
     def _collect_tests(self):
         finder = WebTestFinder(self.port, self.options)
 
@@ -424,8 +407,14 @@ class WPTAdapter:
 
         # sharding the tests the same way as in RWT
         test_names = finder.split_into_chunks(all_test_names)
-
-        tests_to_run, _ = self._prepare_lists(test_names)
+        # TODO(crbug.com/1426296): Actually log these tests as
+        # `test_{start,end}` in `mozlog` so that they're recorded in the results
+        # JSON (and shown in `results.html`).
+        tests_to_skip = finder.skip_tests(self.paths, test_names,
+                                          self._expectations)
+        tests_to_run = [
+            test for test in test_names if test not in tests_to_skip
+        ]
 
         if not tests_to_run and not self.options.zero_tests_executed_ok:
             logger.error('No tests to run.')
@@ -543,6 +532,9 @@ class WPTAdapter:
             self._create_extra_run_info(self.fs.join(tmp_dir, 'mozinfo.json'),
                                         tests_root)
 
+            # TODO(crbug.com/1482887): Once wdspec tests use baselines, call
+            # `TestLoader.install(...)` here to load expectations from
+            # `*-expected.txt` instead of from `*.ini` files.
             stack.enter_context(
                 self.process_and_upload_results(runner_options, tmp_dir))
             self.port.setup_test_run()  # Start Xvfb, if necessary.
@@ -739,6 +731,10 @@ def parse_arguments(argv):
     params = vars(parser.parse_args(argv))
     args = params.pop('tests')
     options = optparse.Values(params)
+    # Parameter needed by `WebTestFinder`. TODO(crbug.com/1426296): Port
+    # `--no-expectations` to `run_wpt_tests.py`, and skip reporting results when
+    # the flag is passed.
+    options.no_expectations = False
     # Directly tie Xvfb usage to headless mode. Xvfb can supercede a real X
     # server and therefore should never be started in `--no-headless` mode.
     # Conversely, the default headless mode should always start Xvfb.

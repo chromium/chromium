@@ -1094,6 +1094,7 @@ if (use_blink && !is_cronet_build) {
         "--zero-tests-executed-ok",
       ]
       data_deps = [
+        ":blink_web_tests_expectations",
         "//chrome:chrome",
         "//chrome/test/chromedriver:chromedriver_server",
         "//third_party/blink/tools:wpt_tests_isolate",
@@ -1112,6 +1113,7 @@ if (use_blink && !is_cronet_build) {
         "--zero-tests-executed-ok",
       ]
       data_deps = [
+        ":blink_web_tests_expectations",
         ":blink_web_tests_support_data",
         "//third_party/blink/tools:wpt_tests_isolate",
       ]
