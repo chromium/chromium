@@ -17,13 +17,14 @@ namespace blink {
 
 class StorageAccessHandleTest
     : public testing::TestWithParam<
-          testing::tuple<bool, bool, bool, bool, bool>> {
+          testing::tuple<bool, bool, bool, bool, bool, bool>> {
  public:
   bool all() { return std::get<0>(GetParam()); }
   bool session_storage() { return std::get<1>(GetParam()); }
   bool local_storage() { return std::get<2>(GetParam()); }
   bool indexed_db() { return std::get<3>(GetParam()); }
   bool locks() { return std::get<4>(GetParam()); }
+  bool caches() { return std::get<5>(GetParam()); }
 
   LocalDOMWindow* getLocalDOMWindow() {
     test::ScopedMockedURLLoad scoped_mocked_url_load_root(
@@ -48,6 +49,7 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
   storage_access_types->setLocalStorage(local_storage());
   storage_access_types->setIndexedDB(indexed_db());
   storage_access_types->setLocks(locks());
+  storage_access_types->setCaches(caches());
   StorageAccessHandle* storage_access_handle =
       MakeGarbageCollected<StorageAccessHandle>(*window, storage_access_types);
   EXPECT_TRUE(window->document()->IsUseCounted(
@@ -75,6 +77,11 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
                 WebFeature::
                     kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks),
             locks());
+  EXPECT_EQ(
+      window->document()->IsUseCounted(
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_caches),
+      caches());
   EXPECT_FALSE(window->document()->IsUseCounted(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage_Use));
@@ -87,6 +94,9 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
   EXPECT_FALSE(window->document()->IsUseCounted(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks_Use));
+  EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_caches_Use));
   {
     V8TestingScope scope;
     storage_access_handle->sessionStorage(scope.GetExceptionState());
@@ -130,6 +140,16 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
         scope.GetExceptionState().Message(),
         (all() || locks()) ? nullptr : StorageAccessHandle::kLocksNotRequested);
   }
+  {
+    V8TestingScope scope;
+    storage_access_handle->caches(scope.GetExceptionState());
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              (all() || caches()) ? DOMExceptionCode::kNoError
+                                  : DOMExceptionCode::kSecurityError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              (all() || caches()) ? nullptr
+                                  : StorageAccessHandle::kCachesNotRequested);
+  }
   EXPECT_EQ(
       window->document()->IsUseCounted(
           WebFeature::
@@ -150,11 +170,17 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks_Use),
       all() || locks());
+  EXPECT_EQ(
+      window->document()->IsUseCounted(
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_caches_Use),
+      all() || caches());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
                          StorageAccessHandleTest,
                          testing::Combine(testing::Bool(),
+                                          testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool(),

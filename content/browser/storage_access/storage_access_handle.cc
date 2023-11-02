@@ -4,6 +4,7 @@
 
 #include "content/browser/storage_access/storage_access_handle.h"
 
+#include "content/browser/network/cross_origin_embedder_policy_reporter.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/permission_controller.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -52,6 +53,23 @@ void StorageAccessHandle::BindLocks(
   render_frame_host().GetProcess()->CreateLockManager(
       blink::StorageKey::CreateFirstParty(
           render_frame_host().GetStorageKey().origin()),
+      std::move(receiver));
+}
+
+void StorageAccessHandle::BindCaches(
+    mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
+  RenderFrameHostImpl& host =
+      static_cast<RenderFrameHostImpl&>(render_frame_host());
+  mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+      coep_reporter_remote;
+  if (host.coep_reporter()) {
+    host.coep_reporter()->Clone(
+        coep_reporter_remote.InitWithNewPipeAndPassReceiver());
+  }
+  host.GetProcess()->BindCacheStorage(
+      host.cross_origin_embedder_policy(), std::move(coep_reporter_remote),
+      storage::BucketLocator::ForDefaultBucket(
+          blink::StorageKey::CreateFirstParty(host.GetStorageKey().origin())),
       std::move(receiver));
 }
 

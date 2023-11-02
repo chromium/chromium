@@ -338,6 +338,10 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks,
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks_Use,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_caches,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_caches_Use,
       }));
   return *opt_in_features;
 }

@@ -4049,6 +4049,8 @@ enum WebFeature {
   kCSSDeclarationAfterNestedRule = 4709,
   kThirdPartyCookieAdAccessBlockByExperiment = 4710,
   kServiceWorkerStaticRouter_AddRoutes = 4711,
+  kStorageAccessAPI_requestStorageAccess_BeyondCookies_caches = 4712,
+  kStorageAccessAPI_requestStorageAccess_BeyondCookies_caches_Use = 4713,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

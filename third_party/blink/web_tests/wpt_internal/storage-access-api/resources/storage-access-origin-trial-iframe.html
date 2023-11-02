@@ -19,6 +19,7 @@
     handle.localStorage.clear();
     await handle.indexedDB.databases();
     await handle.locks.query();
+    await handle.caches.keys();
   } catch (_) {
     message = "NoAccess";
   }

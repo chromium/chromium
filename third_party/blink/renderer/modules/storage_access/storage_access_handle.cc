@@ -31,6 +31,10 @@ const char StorageAccessHandle::kIndexedDBNotRequested[] =
 const char StorageAccessHandle::kLocksNotRequested[] =
     "Web Locks not requested when storage access handle was initialized.";
 
+// static
+const char StorageAccessHandle::kCachesNotRequested[] =
+    "Cache Storage not requested when storage access handle was initialized.";
+
 StorageAccessHandle::StorageAccessHandle(
     LocalDOMWindow& window,
     const StorageAccessTypes* storage_access_types)
@@ -62,6 +66,11 @@ StorageAccessHandle::StorageAccessHandle(
     window.CountUse(
         WebFeature::kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks);
   }
+  if (storage_access_types_->caches()) {
+    window.CountUse(
+        WebFeature::
+            kStorageAccessAPI_requestStorageAccess_BeyondCookies_caches);
+  }
   if (storage_access_types_->all() || storage_access_types_->sessionStorage()) {
     InitSessionStorage();
   }
@@ -74,6 +83,9 @@ StorageAccessHandle::StorageAccessHandle(
   if (storage_access_types_->all() || storage_access_types_->locks()) {
     InitLocks();
   }
+  if (storage_access_types_->all() || storage_access_types_->caches()) {
+    InitCaches();
+  }
 }
 
 void StorageAccessHandle::Trace(Visitor* visitor) const {
@@ -83,6 +95,7 @@ void StorageAccessHandle::Trace(Visitor* visitor) const {
   visitor->Trace(remote_);
   visitor->Trace(indexed_db_);
   visitor->Trace(locks_);
+  visitor->Trace(caches_);
   ScriptWrappable::Trace(visitor);
   Supplement<LocalDOMWindow>::Trace(visitor);
 }
@@ -155,6 +168,18 @@ LockManager* StorageAccessHandle::locks(ExceptionState& exception_state) const {
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks_Use);
   return locks_;
+}
+
+CacheStorage* StorageAccessHandle::caches(
+    ExceptionState& exception_state) const {
+  if (!storage_access_types_->all() && !storage_access_types_->caches()) {
+    exception_state.ThrowSecurityError(kCachesNotRequested);
+    return nullptr;
+  }
+  GetSupplementable()->CountUse(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_caches_Use);
+  return caches_;
 }
 
 void StorageAccessHandle::InitSessionStorage() {
@@ -236,6 +261,22 @@ void StorageAccessHandle::InitLocks() {
   remote->BindLocks(locks_remote.InitWithNewPipeAndPassReceiver());
   locks_->SetManager(std::move(locks_remote),
                      GetSupplementable()->GetExecutionContext());
+}
+
+void StorageAccessHandle::InitCaches() {
+  if (!GetSupplementable()->GetSecurityOrigin()->CanAccessCacheStorage()) {
+    return;
+  }
+  HeapMojoRemote<mojom::blink::StorageAccessHandle>& remote = GetRemote();
+  if (!remote) {
+    return;
+  }
+  mojo::PendingRemote<mojom::blink::CacheStorage> cache_remote;
+  remote_->BindCaches(cache_remote.InitWithNewPipeAndPassReceiver());
+  caches_ = MakeGarbageCollected<CacheStorage>(
+      GetSupplementable()->GetExecutionContext(),
+      GlobalFetch::ScopedFetcher::From(*GetSupplementable()),
+      std::move(cache_remote));
 }
 
 }  // namespace blink

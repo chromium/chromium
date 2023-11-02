@@ -8,8 +8,10 @@ dictionary StorageAccessTypes {
     boolean localStorage = false;
     boolean indexedDB = false;
     boolean locks = false;
-    // TODO(crbug.com/1484966): Add cache storage
+    boolean caches = false;
     // TODO(crbug.com/1484966): Add origin private file system
     // TODO(crbug.com/1484966): Add quota
-    // TODO(crbug.com/1484966): Add blob storage, broadcast channel, shared worker
+    // TODO(crbug.com/1484966): Add blob storage
+    // TODO(crbug.com/1484966): Add broadcast channel
+    // TODO(crbug.com/1484966): Add shared worker
 };

@@ -35726,6 +35726,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4709" label="CSSDeclarationAfterNestedRule"/>
   <int value="4710" label="ThirdPartyCookieAdAccessBlockByExperiment"/>
   <int value="4711" label="ServiceWorkerStaticRouter_AddRoutes"/>
+  <int value="4712"
+      label="StorageAccessAPI_requestStorageAccess_BeyondCookies_caches"/>
+  <int value="4713"
+      label="StorageAccessAPI_requestStorageAccess_BeyondCookies_caches_Use"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

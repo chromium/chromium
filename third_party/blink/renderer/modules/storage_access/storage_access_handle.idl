@@ -8,8 +8,10 @@ interface StorageAccessHandle {
     [LogActivity=GetterOnly, RaisesException=Getter] readonly attribute Storage localStorage;
     [LogActivity=GetterOnly, RaisesException=Getter] readonly attribute IDBFactory indexedDB;
     [LogActivity=GetterOnly, RaisesException=Getter] readonly attribute LockManager locks;
-    // TODO(crbug.com/1484966): Add cache storage
+    [LogActivity=GetterOnly, RaisesException=Getter] readonly attribute CacheStorage caches;
     // TODO(crbug.com/1484966): Add origin private file system
     // TODO(crbug.com/1484966): Add quota
-    // TODO(crbug.com/1484966): Add blob storage, broadcast channel, shared worker
+    // TODO(crbug.com/1484966): Add blob storage
+    // TODO(crbug.com/1484966): Add broadcast channel
+    // TODO(crbug.com/1484966): Add shared worker
 };

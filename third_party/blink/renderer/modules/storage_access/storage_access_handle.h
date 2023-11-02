@@ -9,6 +9,7 @@
 #include "third_party/blink/public/mojom/storage_access/storage_access_handle.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_access_types.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/modules/cache_storage/cache_storage.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_factory.h"
 #include "third_party/blink/renderer/modules/locks/lock_manager.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -33,6 +34,7 @@ class MODULES_EXPORT StorageAccessHandle final
   static const char kLocalStorageNotRequested[];
   static const char kIndexedDBNotRequested[];
   static const char kLocksNotRequested[];
+  static const char kCachesNotRequested[];
 
   explicit StorageAccessHandle(LocalDOMWindow& window,
                                const StorageAccessTypes* storage_access_types);
@@ -42,6 +44,7 @@ class MODULES_EXPORT StorageAccessHandle final
   StorageArea* localStorage(ExceptionState& exception_state) const;
   IDBFactory* indexedDB(ExceptionState& exception_state) const;
   LockManager* locks(ExceptionState& exception_state) const;
+  CacheStorage* caches(ExceptionState& exception_state) const;
 
  private:
   void InitSessionStorage();
@@ -49,6 +52,7 @@ class MODULES_EXPORT StorageAccessHandle final
   HeapMojoRemote<mojom::blink::StorageAccessHandle>& GetRemote();
   void InitIndexedDB();
   void InitLocks();
+  void InitCaches();
 
   Member<const StorageAccessTypes> storage_access_types_;
   Member<StorageArea> session_storage_;
@@ -56,6 +60,7 @@ class MODULES_EXPORT StorageAccessHandle final
   HeapMojoRemote<mojom::blink::StorageAccessHandle> remote_;
   Member<IDBFactory> indexed_db_;
   Member<LockManager> locks_;
+  Member<CacheStorage> caches_;
 };
 
 }  // namespace blink
