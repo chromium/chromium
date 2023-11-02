@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -467,6 +468,19 @@ void ToolbarView::Init() {
 #endif
   avatar_->SetVisible(show_avatar_toolbar_button);
 
+#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
+  auto new_tab_button = std::make_unique<ToolbarButton>(base::BindRepeating(
+      &ToolbarView::NewTabButtonPressed, base::Unretained(this)));
+  new_tab_button->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_TOOLTIP_NEW_TAB));
+  new_tab_button->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+  new_tab_button->SetVectorIcon(kNewTabToolbarButtonIcon);
+  new_tab_button->SetVisible(false);
+  new_tab_button->SetProperty(views::kElementIdentifierKey,
+                              kToolbarNewTabButtonElementId);
+  new_tab_button_ = container_view_->AddChildView(std::move(new_tab_button));
+#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
+
   if (base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
     overflow_button_ =
         container_view_->AddChildView(std::make_unique<OverflowButton>());
@@ -572,15 +586,20 @@ void ToolbarView::UpdateCustomTabBarVisibility(bool visible, bool animate) {
 
 void ToolbarView::UpdateForWebUITabStrip() {
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-  if (browser_view_->webui_tab_strip() && app_menu_button_) {
+  if (!new_tab_button_) {
+    return;
+  }
+  if (browser_view_->webui_tab_strip()) {
+    const int button_height = GetLayoutConstant(TOOLBAR_BUTTON_HEIGHT);
+    new_tab_button_->SetPreferredSize(gfx::Size(button_height, button_height));
+    new_tab_button_->SetVisible(true);
     const size_t insertion_index =
-        container_view_->GetIndexOf(app_menu_button_).value();
-    container_view_->AddChildViewAt(
-        browser_view_->webui_tab_strip()->CreateNewTabButton(),
-        insertion_index);
+        container_view_->GetIndexOf(new_tab_button_).value();
     container_view_->AddChildViewAt(
         browser_view_->webui_tab_strip()->CreateTabCounter(), insertion_index);
     LoadImages();
+  } else {
+    new_tab_button_->SetVisible(false);
   }
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 }
@@ -842,6 +861,13 @@ void ToolbarView::ActiveStateChanged() {
   background_view_right_->SchedulePaint();
 }
 
+void ToolbarView::NewTabButtonPressed(const ui::Event& event) {
+  chrome::ExecuteCommand(browser_view_->browser(), IDC_NEW_TAB);
+  UMA_HISTOGRAM_ENUMERATION("Tab.NewTab",
+                            NewTabTypes::NEW_TAB_BUTTON_IN_TOOLBAR_FOR_TOUCH,
+                            NewTabTypes::NEW_TAB_ENUM_COUNT);
+}
+
 bool ToolbarView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   const views::View* focused_view = focus_manager()->GetFocusedView();
   if (focused_view && (focused_view->GetID() == VIEW_ID_OMNIBOX))
@@ -943,9 +969,10 @@ void ToolbarView::InitLayout() {
     // TODO(crbug.com/1479588): Ignore containers till issue addressed.
     toolbar_controller_ = std::make_unique<ToolbarController>(
         std::vector<ui::ElementIdentifier>{
-            kToolbarAvatarButtonElementId, kToolbarForwardButtonElementId,
-            kToolbarDownloadButtonElementId, kToolbarMediaButtonElementId,
-            kToolbarHomeButtonElementId, kToolbarChromeLabsButtonElementId},
+            kToolbarAvatarButtonElementId, kToolbarNewTabButtonElementId,
+            kToolbarForwardButtonElementId, kToolbarDownloadButtonElementId,
+            kToolbarMediaButtonElementId, kToolbarHomeButtonElementId,
+            kToolbarChromeLabsButtonElementId},
         ToolbarController::GetDefaultElementInfoMap(), kToolbarFlexOrderStart,
         container_view_, overflow_button_);
 

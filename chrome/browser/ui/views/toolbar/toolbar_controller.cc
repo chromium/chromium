@@ -115,30 +115,31 @@ ToolbarController::~ToolbarController() = default;
 ToolbarController::ResponsiveElementInfoMap
 ToolbarController::GetDefaultElementInfoMap() {
   // TODO(crbug.com/1445573): Fill in observed identifier.
-  return ToolbarController::ResponsiveElementInfoMap({
-      {kToolbarExtensionsContainerElementId,
-       {IDS_OVERFLOW_MENU_ITEM_TEXT_EXTENSIONS,
-        kExtensionsMenuButtonElementId}},
-      {kToolbarSidePanelContainerElementId,
-       {IDS_OVERFLOW_MENU_ITEM_TEXT_SIDE_PANEL,
-        kToolbarSidePanelButtonElementId}},
-      {kToolbarHomeButtonElementId,
-       {IDS_OVERFLOW_MENU_ITEM_TEXT_HOME, kToolbarHomeButtonElementId}},
-      {kToolbarChromeLabsButtonElementId,
-       {IDS_OVERFLOW_MENU_ITEM_TEXT_LABS, kToolbarChromeLabsButtonElementId,
-        kToolbarChromeLabsBubbleElementId}},
-      {kToolbarMediaButtonElementId,
-       {IDS_OVERFLOW_MENU_ITEM_TEXT_MEDIA_CONTROLS,
-        kToolbarMediaButtonElementId, kToolbarMediaBubbleElementId}},
-      {kToolbarDownloadButtonElementId,
-       {IDS_OVERFLOW_MENU_ITEM_TEXT_DOWNLOADS, kToolbarDownloadButtonElementId,
-        kToolbarDownloadBubbleElementId}},
-      {kToolbarForwardButtonElementId,
-       {IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD, kToolbarForwardButtonElementId}},
-      {kToolbarAvatarButtonElementId,
-       {IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE, kToolbarAvatarButtonElementId,
-        kToolbarAvatarBubbleElementId}},
-  });
+  return ToolbarController::ResponsiveElementInfoMap(
+      {{kToolbarExtensionsContainerElementId,
+        {IDS_OVERFLOW_MENU_ITEM_TEXT_EXTENSIONS,
+         kExtensionsMenuButtonElementId}},
+       {kToolbarSidePanelContainerElementId,
+        {IDS_OVERFLOW_MENU_ITEM_TEXT_SIDE_PANEL,
+         kToolbarSidePanelButtonElementId}},
+       {kToolbarHomeButtonElementId,
+        {IDS_OVERFLOW_MENU_ITEM_TEXT_HOME, kToolbarHomeButtonElementId}},
+       {kToolbarChromeLabsButtonElementId,
+        {IDS_OVERFLOW_MENU_ITEM_TEXT_LABS, kToolbarChromeLabsButtonElementId,
+         kToolbarChromeLabsBubbleElementId}},
+       {kToolbarMediaButtonElementId,
+        {IDS_OVERFLOW_MENU_ITEM_TEXT_MEDIA_CONTROLS,
+         kToolbarMediaButtonElementId, kToolbarMediaBubbleElementId}},
+       {kToolbarDownloadButtonElementId,
+        {IDS_OVERFLOW_MENU_ITEM_TEXT_DOWNLOADS, kToolbarDownloadButtonElementId,
+         kToolbarDownloadBubbleElementId}},
+       {kToolbarForwardButtonElementId,
+        {IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD, kToolbarForwardButtonElementId}},
+       {kToolbarAvatarButtonElementId,
+        {IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE, kToolbarAvatarButtonElementId,
+         kToolbarAvatarBubbleElementId}},
+       {kToolbarNewTabButtonElementId,
+        {IDS_OVERFLOW_MENU_ITEM_TEXT_NEW_TAB, kToolbarNewTabButtonElementId}}});
 }
 
 bool ToolbarController::PopOut(ui::ElementIdentifier identifier) {
