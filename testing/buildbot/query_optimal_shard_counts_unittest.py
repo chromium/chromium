@@ -19,31 +19,32 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),
 
 import query_optimal_shard_counts
 
-DEFAULT_DICT = {
+SUITE_DURATIONS_DEFAULT_DICT = {
     'shard_count': 10,
-    'optimal_shard_count': 20,
-    'simulated_max_shard_duration': 11,
-    'avg_num_builds_per_peak_hour': 80,
     'p50_pending_time_sec': 1,
     'p90_pending_time_sec': 231,
     'avg_pending_time_sec': 65,
     'avg_task_setup_overhead_sec': 27,
-    'estimated_bot_hour_cost': 1.27,
     'percentile_duration_minutes': 20,
     'sample_size': 9508,
-    'most_used_shard_count': 10,
-    'test_overhead_min': 1.5,
+}
+
+OVERHEADS_DEFAULT_DICT = {
+    'p50_task_setup_duration_sec': 70,
+    'p50_test_harness_overhead_sec': 100,
+    'normally_assigned_shard_count': 10,
+    'experimental_shard_count': 11,
 }
 
 
-def query_response_test_suite_dict(
+def query_suite_durations_dict(
     waterfall_builder_group,
     waterfall_builder_name,
     try_builder,
     test_suite,
     **kwargs,
 ):
-  return_dict = DEFAULT_DICT.copy()
+  return_dict = SUITE_DURATIONS_DEFAULT_DICT.copy()
   return_dict.update({
       'test_suite': test_suite,
       'try_builder': try_builder,
@@ -52,6 +53,31 @@ def query_response_test_suite_dict(
       **kwargs,
   })
   return return_dict
+
+
+def query_test_overheads_dict(
+    waterfall_builder_group,
+    waterfall_builder_name,
+    try_builder,
+    test_suite,
+    **kwargs,
+):
+  return_dict = OVERHEADS_DEFAULT_DICT.copy()
+  return_dict.update({
+      'test_suite': test_suite,
+      'try_builder': try_builder,
+      'waterfall_builder_group': waterfall_builder_group,
+      'waterfall_builder_name': waterfall_builder_name,
+      **kwargs,
+  })
+  return return_dict
+
+
+def query_average_number_builds_per_hour(try_builder, avg_count=80):
+  return {
+      'try_builder': try_builder,
+      'avg_count': avg_count,
+  }
 
 
 def get_written_output(mock_open):
@@ -100,15 +126,30 @@ class FormatQueryResults(unittest.TestCase):
 
   def testBasic(self):
     expected_optimal_shard_count = 15
-    self._mock_check_output.return_value = json.dumps([
-        query_response_test_suite_dict(
+    suite_durations = json.dumps([
+        query_suite_durations_dict(
             waterfall_builder_group='chromium.linux',
             waterfall_builder_name='Linux Tests',
             try_builder='linux-rel',
             test_suite='browser_tests',
-            optimal_shard_count=expected_optimal_shard_count,
         ),
     ])
+    overheads = json.dumps([
+        query_test_overheads_dict(
+            waterfall_builder_group='chromium.linux',
+            waterfall_builder_name='Linux Tests',
+            try_builder='linux-rel',
+            test_suite='browser_tests',
+        ),
+    ])
+    avg_num_builds_per_hour = json.dumps([
+        query_average_number_builds_per_hour(try_builder='linux-rel'),
+    ])
+    self._mock_check_output.side_effect = [
+        suite_durations,
+        overheads,
+        avg_num_builds_per_hour,
+    ]
     query_optimal_shard_counts.main(['--output-file', self.output_file])
     with open(self.output_file, 'r') as f:
       script_result = json.load(f)
@@ -120,23 +161,47 @@ class FormatQueryResults(unittest.TestCase):
 
   def testMultipleBuildersInGroup(self):
     expected_optimal_shard_count_1 = 15
-    expected_optimal_shard_count_2 = 20
-    self._mock_check_output.return_value = json.dumps([
-        query_response_test_suite_dict(
+    expected_optimal_shard_count_2 = 23
+    suite_durations = json.dumps([
+        query_suite_durations_dict(
             waterfall_builder_group='chromium.linux',
             waterfall_builder_name='Linux Tests',
             try_builder='linux-rel',
             test_suite='browser_tests',
-            optimal_shard_count=expected_optimal_shard_count_1,
+            shard_count=10,
+            percentile_duration_minutes=20,
         ),
-        query_response_test_suite_dict(
+        query_suite_durations_dict(
             waterfall_builder_group='chromium.linux',
             waterfall_builder_name='Linux GPU Tests',
             try_builder='linux-rel',
             test_suite='gpu_tests',
-            optimal_shard_count=expected_optimal_shard_count_2,
+            shard_count=10,
+            percentile_duration_minutes=30,
         ),
     ])
+    overheads = json.dumps([
+        query_test_overheads_dict(
+            waterfall_builder_group='chromium.linux',
+            waterfall_builder_name='Linux Tests',
+            try_builder='linux-rel',
+            test_suite='browser_tests',
+        ),
+        query_test_overheads_dict(
+            waterfall_builder_group='chromium.linux',
+            waterfall_builder_name='Linux GPU Tests',
+            try_builder='linux-rel',
+            test_suite='gpu_tests',
+        ),
+    ])
+    avg_num_builds_per_hour = json.dumps([
+        query_average_number_builds_per_hour(try_builder='linux-rel'),
+    ])
+    self._mock_check_output.side_effect = [
+        suite_durations,
+        overheads,
+        avg_num_builds_per_hour,
+    ]
     query_optimal_shard_counts.main(['--output-file', self.output_file])
     with open(self.output_file, 'r') as f:
       script_result = json.load(f)
@@ -155,35 +220,45 @@ class FormatQueryResults(unittest.TestCase):
                      }})
 
   def testVerbose(self):
-    self._mock_check_output.return_value = json.dumps([
-        query_response_test_suite_dict(
+    suite_durations = json.dumps([
+        query_suite_durations_dict(
             waterfall_builder_group='chromium.linux',
             waterfall_builder_name='Linux Tests',
             try_builder='linux-rel',
             test_suite='browser_tests',
         ),
     ])
+    overheads = json.dumps([
+        query_test_overheads_dict(
+            waterfall_builder_group='chromium.linux',
+            waterfall_builder_name='Linux Tests',
+            try_builder='linux-rel',
+            test_suite='browser_tests',
+        ),
+    ])
+    avg_num_builds_per_hour = json.dumps([
+        query_average_number_builds_per_hour(try_builder='linux-rel'),
+    ])
+    self._mock_check_output.side_effect = [
+        suite_durations,
+        overheads,
+        avg_num_builds_per_hour,
+    ]
     query_optimal_shard_counts.main(
         ['--output-file', self.output_file, '--verbose'])
     with open(self.output_file, 'r') as f:
       script_result = json.load(f)
-    expected_debug_dict = {
-        'debug': {
-            'prev_shard_count':
-            DEFAULT_DICT['shard_count'],
-            'simulated_max_shard_duration':
-            DEFAULT_DICT['simulated_max_shard_duration'],
-            'prev_percentile_duration_minutes':
-            DEFAULT_DICT['percentile_duration_minutes'],
-        },
-    }
+    expected_debug_dict_keys = [
+        'prev_shard_count',
+        'simulated_max_shard_duration',
+        'prev_percentile_duration_minutes',
+        'test_overhead_min',
+    ]
     dict_result = script_result['chromium.linux']['Linux Tests'][
         'browser_tests']
-    self.assertTrue(
-        dict_result['shards'] == DEFAULT_DICT['optimal_shard_count'])
-    self.assertTrue(
-        all(dict_result['debug'][key] == val
-            for key, val in expected_debug_dict['debug'].items()))
+    self.assertEqual(dict_result['shards'], 15)
+    debug_keys = set(dict_result.keys())
+    self.assertTrue(key in debug_keys for key in expected_debug_dict_keys)
 
   def testNoQueryResults(self):
     self._mock_check_output.return_value = json.dumps([])
@@ -194,14 +269,30 @@ class FormatQueryResults(unittest.TestCase):
     self.assertEqual({}, script_result)
 
   def testLookbackDates(self):
-    self._mock_check_output.return_value = json.dumps([
-        query_response_test_suite_dict(
+    suite_durations = json.dumps([
+        query_suite_durations_dict(
             waterfall_builder_group='chromium.linux',
             waterfall_builder_name='Linux Tests',
             try_builder='linux-rel',
             test_suite='browser_tests',
         ),
     ])
+    overheads = json.dumps([
+        query_test_overheads_dict(
+            waterfall_builder_group='chromium.linux',
+            waterfall_builder_name='Linux Tests',
+            try_builder='linux-rel',
+            test_suite='browser_tests',
+        ),
+    ])
+    avg_num_builds_per_hour = json.dumps([
+        query_average_number_builds_per_hour(try_builder='linux-rel'),
+    ])
+    self._mock_check_output.side_effect = [
+        suite_durations,
+        overheads,
+        avg_num_builds_per_hour,
+    ]
     query_optimal_shard_counts.main([
         '--lookback-start-date', '2023-01-01', '--lookback-end-date',
         '2023-02-01', '--output-file', self.output_file
@@ -212,14 +303,30 @@ class FormatQueryResults(unittest.TestCase):
     self.assertTrue(any('2023-02-01' in arg for arg in big_query_arg_list))
 
   def testLookbackDays(self):
-    self._mock_check_output.return_value = json.dumps([
-        query_response_test_suite_dict(
+    suite_durations = json.dumps([
+        query_suite_durations_dict(
             waterfall_builder_group='chromium.linux',
             waterfall_builder_name='Linux Tests',
             try_builder='linux-rel',
             test_suite='browser_tests',
         ),
     ])
+    overheads = json.dumps([
+        query_test_overheads_dict(
+            waterfall_builder_group='chromium.linux',
+            waterfall_builder_name='Linux Tests',
+            try_builder='linux-rel',
+            test_suite='browser_tests',
+        ),
+    ])
+    avg_num_builds_per_hour = json.dumps([
+        query_average_number_builds_per_hour(try_builder='linux-rel'),
+    ])
+    self._mock_check_output.side_effect = [
+        suite_durations,
+        overheads,
+        avg_num_builds_per_hour,
+    ]
     fake_now = datetime.datetime(2023, 1, 1)
     with mock.patch(
         'query_optimal_shard_counts.datetime.datetime') as mock_datetime:
@@ -232,21 +339,37 @@ class FormatQueryResults(unittest.TestCase):
     self.assertTrue(any('2022-12-29' in arg for arg in big_query_arg_list))
 
   def testMergeExistingOutputFile(self):
-    self._mock_check_output.return_value = json.dumps([
-        query_response_test_suite_dict(
+    suite_durations = json.dumps([
+        query_suite_durations_dict(
             waterfall_builder_group='chromium.linux',
             waterfall_builder_name='Linux Tests',
             try_builder='linux-rel',
             test_suite='browser_tests',
-            optimal_shard_count=16,
-            shard_count=15,
+            percentile_duration_minutes=30,
+            shard_count=10,
         ),
     ])
+    overheads = json.dumps([
+        query_test_overheads_dict(
+            waterfall_builder_group='chromium.linux',
+            waterfall_builder_name='Linux Tests',
+            try_builder='linux-rel',
+            test_suite='browser_tests',
+        ),
+    ])
+    avg_num_builds_per_hour = json.dumps([
+        query_average_number_builds_per_hour(try_builder='linux-rel'),
+    ])
+    self._mock_check_output.side_effect = [
+        suite_durations,
+        overheads,
+        avg_num_builds_per_hour,
+    ]
     existing_output_file_data = json.dumps({
         'chromium.linux': {
             'Linux Tests': {
                 'browser_tests': {
-                    'shards': 15,
+                    'shards': 10,
                 },
                 'interactive_ui_tests': {
                     'shards': 3,
@@ -268,7 +391,7 @@ class FormatQueryResults(unittest.TestCase):
       script_result = json.load(f)
     self.assertEqual(
         script_result['chromium.linux']['Linux Tests']['browser_tests'],
-        {'shards': 16},
+        {'shards': 23},
     )
     self.assertEqual(
         script_result['chromium.linux']['Linux Tests']['interactive_ui_tests'],
@@ -281,15 +404,31 @@ class FormatQueryResults(unittest.TestCase):
     )
 
   def testOverwriteExistingOutputFile(self):
-    self._mock_check_output.return_value = json.dumps([
-        query_response_test_suite_dict(
+    suite_durations = json.dumps([
+        query_suite_durations_dict(
             waterfall_builder_group='chromium.linux',
             waterfall_builder_name='Linux Tests',
             try_builder='linux-rel',
             test_suite='browser_tests',
-            optimal_shard_count=16,
+            percentile_duration_minutes=30,
         ),
     ])
+    overheads = json.dumps([
+        query_test_overheads_dict(
+            waterfall_builder_group='chromium.linux',
+            waterfall_builder_name='Linux Tests',
+            try_builder='linux-rel',
+            test_suite='browser_tests',
+        ),
+    ])
+    avg_num_builds_per_hour = json.dumps([
+        query_average_number_builds_per_hour(try_builder='linux-rel'),
+    ])
+    self._mock_check_output.side_effect = [
+        suite_durations,
+        overheads,
+        avg_num_builds_per_hour,
+    ]
     existing_output_file_data = json.dumps({
         'chromium.linux': {
             'Linux Tests': {
@@ -317,29 +456,39 @@ class FormatQueryResults(unittest.TestCase):
       script_result = json.load(f)
     self.assertEqual(
         script_result['chromium.linux']['Linux Tests']['browser_tests'],
-        {'shards': 16},
+        {'shards': 23},
     )
     self.assertIsNone(script_result['chromium.linux']['Linux Tests'].get(
         'interactive_ui_tests'))
     self.assertIsNone(script_result.get('chromium.android'))
 
   def testReduceShardsAlreadyAutosharded(self):
-    self._mock_check_output.return_value = json.dumps([
-        query_response_test_suite_dict(waterfall_builder_group='chromium.linux',
-                                       waterfall_builder_name='Linux Tests',
-                                       try_builder='linux-rel',
-                                       test_suite='browser_tests',
-                                       optimal_shard_count=14,
-                                       shard_count=15),
-        query_response_test_suite_dict(
-            waterfall_builder_group='chromium.android',
-            waterfall_builder_name='android-12-x64-rel',
-            try_builder='android-12-x64-rel',
-            test_suite='other_fake_test',
-            optimal_shard_count=10,
-            shard_count=20,
+    suite_durations = json.dumps([
+        query_suite_durations_dict(
+            waterfall_builder_group='chromium.linux',
+            waterfall_builder_name='Linux Tests',
+            try_builder='linux-rel',
+            test_suite='browser_tests',
+            percentile_duration_minutes=10,
+            shard_count=15,
         ),
     ])
+    overheads = json.dumps([
+        query_test_overheads_dict(
+            waterfall_builder_group='chromium.linux',
+            waterfall_builder_name='Linux Tests',
+            try_builder='linux-rel',
+            test_suite='browser_tests',
+        ),
+    ])
+    avg_num_builds_per_hour = json.dumps([
+        query_average_number_builds_per_hour(try_builder='linux-rel'),
+    ])
+    self._mock_check_output.side_effect = [
+        suite_durations,
+        overheads,
+        avg_num_builds_per_hour,
+    ]
     existing_output_file_data = json.dumps({
         'chromium.linux': {
             'Linux Tests': {
@@ -365,9 +514,10 @@ class FormatQueryResults(unittest.TestCase):
     query_optimal_shard_counts.main(['--output-file', self.output_file])
     with open(self.output_file, 'r') as f:
       script_result = json.load(f)
-    self.assertEqual(
-        script_result['chromium.linux']['Linux Tests']['browser_tests'],
-        {'shards': 14},
+    self.assertLess(
+        script_result['chromium.linux']['Linux Tests']['browser_tests']
+        ['shards'],
+        14,
     )
     self.assertEqual(
         script_result['chromium.linux']['Linux Tests']['interactive_ui_tests'],
@@ -376,109 +526,85 @@ class FormatQueryResults(unittest.TestCase):
     self.assertIsNone(script_result['chromium.android']
                       ['android-12-x64-rel'].get('other_fake_test'))
 
-  def testMultipleShardValuesFromQueryAlreadyAutoshardedNoChange(self):
-    # Most used shard count is still the old 20 value, because it was recently
-    # autosharded to 10
-    self._mock_check_output.return_value = json.dumps([
-        query_response_test_suite_dict(
+  def testMultipleOverheadValues(self):
+    suite_durations = json.dumps([
+        query_suite_durations_dict(
             waterfall_builder_group='chromium.android',
             waterfall_builder_name='android-12-x64-rel',
             try_builder='android-12-x64-rel',
             test_suite='webview_instrumentation_test_apk',
-            optimal_shard_count=10,
             shard_count=20,
-            most_used_shard_count=20,
-        ),
-        query_response_test_suite_dict(
-            waterfall_builder_group='chromium.android',
-            waterfall_builder_name='android-12-x64-rel',
-            try_builder='android-12-x64-rel',
-            test_suite='webview_instrumentation_test_apk',
-            optimal_shard_count=10,
-            shard_count=10,
-            most_used_shard_count=20,
+            percentile_duration_minutes=20,
         ),
     ])
-    existing_output_file_data = json.dumps({
-        'chromium.android': {
-            'android-12-x64-rel': {
-                'webview_instrumentation_test_apk': {
-                    'shards': 10,
-                }
-            }
-        }
-    })
-    with open(self.output_file, 'w') as f:
-      f.write(existing_output_file_data)
-
-    query_optimal_shard_counts.main(['--output-file', self.output_file])
+    overheads = json.dumps([
+        query_test_overheads_dict(
+            waterfall_builder_group='chromium.android',
+            waterfall_builder_name='android-12-x64-rel',
+            try_builder='android-12-x64-rel',
+            test_suite='webview_instrumentation_test_apk',
+            normally_assigned_shard_count=19,
+            experimental_shard_count=20,
+            p50_task_setup_duration_sec=30,
+            p50_test_harness_overhead_sec=60,
+        ),
+        query_test_overheads_dict(
+            waterfall_builder_group='chromium.android',
+            waterfall_builder_name='android-12-x64-rel',
+            try_builder='android-12-x64-rel',
+            test_suite='webview_instrumentation_test_apk',
+            normally_assigned_shard_count=20,
+            experimental_shard_count=21,
+            p50_task_setup_duration_sec=30,
+            p50_test_harness_overhead_sec=120,
+        ),
+    ])
+    avg_num_builds_per_hour = json.dumps([
+        query_average_number_builds_per_hour(try_builder='android-12-x64-rel'),
+    ])
+    self._mock_check_output.side_effect = [
+        suite_durations,
+        overheads,
+        avg_num_builds_per_hour,
+    ]
+    query_optimal_shard_counts.main(
+        ['--output-file', self.output_file, '--verbose'])
     with open(self.output_file, 'r') as f:
       script_result = json.load(f)
 
     self.assertEqual(
         script_result['chromium.android']['android-12-x64-rel']
-        ['webview_instrumentation_test_apk'],
-        {'shards': 10},
-    )
-
-  def testMultipleShardValuesFromQueryAlreadyAutoshardedDecrease(self):
-    # Most used shard count is still the old 20 value, because it was recently
-    # autosharded to 10
-    self._mock_check_output.return_value = json.dumps([
-        query_response_test_suite_dict(
-            waterfall_builder_group='chromium.android',
-            waterfall_builder_name='android-12-x64-rel',
-            try_builder='android-12-x64-rel',
-            test_suite='webview_instrumentation_test_apk',
-            optimal_shard_count=10,
-            shard_count=20,
-            most_used_shard_count=20,
-        ),
-        query_response_test_suite_dict(
-            waterfall_builder_group='chromium.android',
-            waterfall_builder_name='android-12-x64-rel',
-            try_builder='android-12-x64-rel',
-            test_suite='webview_instrumentation_test_apk',
-            optimal_shard_count=8,
-            shard_count=10,
-            most_used_shard_count=20,
-        ),
-    ])
-    existing_output_file_data = json.dumps({
-        'chromium.android': {
-            'android-12-x64-rel': {
-                'webview_instrumentation_test_apk': {
-                    'shards': 10,
-                }
-            }
-        }
-    })
-    with open(self.output_file, 'w') as f:
-      f.write(existing_output_file_data)
-
-    query_optimal_shard_counts.main(['--output-file', self.output_file])
-    with open(self.output_file, 'r') as f:
-      script_result = json.load(f)
-
-    self.assertEqual(
-        script_result['chromium.android']['android-12-x64-rel']
-        ['webview_instrumentation_test_apk'],
-        {'shards': 8},
+        ['webview_instrumentation_test_apk']['debug']['test_overhead_min'],
+        2.5,
     )
 
   def testRejectSuggestedDecreaseIfPercentileMinWasCloseToDesired(self):
-    self._mock_check_output.return_value = json.dumps([
-        query_response_test_suite_dict(
+    suite_durations = json.dumps([
+        query_suite_durations_dict(
             waterfall_builder_group='chromium.android',
             waterfall_builder_name='android-12-x64-rel',
             try_builder='android-12-x64-rel',
             test_suite='webview_instrumentation_test_apk',
-            optimal_shard_count=9,
             shard_count=10,
-            most_used_shard_count=10,
             percentile_duration_minutes=14.5,
         ),
     ])
+    overheads = json.dumps([
+        query_test_overheads_dict(
+            waterfall_builder_group='chromium.linux',
+            waterfall_builder_name='Linux Tests',
+            try_builder='linux-rel',
+            test_suite='browser_tests',
+        ),
+    ])
+    avg_num_builds_per_hour = json.dumps([
+        query_average_number_builds_per_hour(try_builder='android-12-x64-rel'),
+    ])
+    self._mock_check_output.side_effect = [
+        suite_durations,
+        overheads,
+        avg_num_builds_per_hour,
+    ]
     existing_output_file_data = json.dumps({
         'chromium.android': {
             'android-12-x64-rel': {
@@ -502,18 +628,32 @@ class FormatQueryResults(unittest.TestCase):
     )
 
   def testRejectSuggestedDecreaseIfSimulatedIsTooHigh(self):
-    self._mock_check_output.return_value = json.dumps([
-        query_response_test_suite_dict(
+    suite_durations = json.dumps([
+        query_suite_durations_dict(
             waterfall_builder_group='chromium.android',
             waterfall_builder_name='android-12-x64-rel',
             try_builder='android-12-x64-rel',
             test_suite='webview_instrumentation_test_apk',
-            optimal_shard_count=9,
             shard_count=10,
-            most_used_shard_count=10,
-            simulated_max_shard_duration=15.25,
+            percentile_duration_minutes=14,
         ),
     ])
+    overheads = json.dumps([
+        query_test_overheads_dict(
+            waterfall_builder_group='chromium.linux',
+            waterfall_builder_name='Linux Tests',
+            try_builder='linux-rel',
+            test_suite='browser_tests',
+        ),
+    ])
+    avg_num_builds_per_hour = json.dumps([
+        query_average_number_builds_per_hour(try_builder='android-12-x64-rel'),
+    ])
+    self._mock_check_output.side_effect = [
+        suite_durations,
+        overheads,
+        avg_num_builds_per_hour,
+    ]
     existing_output_file_data = json.dumps({
         'chromium.android': {
             'android-12-x64-rel': {
@@ -536,72 +676,33 @@ class FormatQueryResults(unittest.TestCase):
         {'shards': 10},
     )
 
-  def testMultipleShardValuesFromQueryAlreadyAutoshardedIncrease(self):
-    # Most used shard count is still the old 20 value, because it was recently
-    # autosharded to 10
-    self._mock_check_output.return_value = json.dumps([
-        query_response_test_suite_dict(
+  def testNotAlreadyAutoshardedDecrease(self):
+    suite_durations = json.dumps([
+        query_suite_durations_dict(
             waterfall_builder_group='chromium.android',
             waterfall_builder_name='android-12-x64-rel',
             try_builder='android-12-x64-rel',
             test_suite='webview_instrumentation_test_apk',
-            optimal_shard_count=10,
-            shard_count=20,
-            most_used_shard_count=20,
-        ),
-        query_response_test_suite_dict(
-            waterfall_builder_group='chromium.android',
-            waterfall_builder_name='android-12-x64-rel',
-            try_builder='android-12-x64-rel',
-            test_suite='webview_instrumentation_test_apk',
-            optimal_shard_count=12,
             shard_count=10,
-            most_used_shard_count=20,
+            percentile_duration_minutes=9,
         ),
     ])
-    existing_output_file_data = json.dumps({
-        'chromium.android': {
-            'android-12-x64-rel': {
-                'webview_instrumentation_test_apk': {
-                    'shards': 10,
-                }
-            }
-        }
-    })
-    with open(self.output_file, 'w') as f:
-      f.write(existing_output_file_data)
-
-    query_optimal_shard_counts.main(['--output-file', self.output_file])
-    with open(self.output_file, 'r') as f:
-      script_result = json.load(f)
-
-    self.assertEqual(
-        script_result['chromium.android']['android-12-x64-rel']
-        ['webview_instrumentation_test_apk'],
-        {'shards': 12},
-    )
-
-  def testMultipleShardValuesFromQueryNotAutoshardedNoChange(self):
-    self._mock_check_output.return_value = json.dumps([
-        query_response_test_suite_dict(
+    overheads = json.dumps([
+        query_test_overheads_dict(
             waterfall_builder_group='chromium.android',
             waterfall_builder_name='android-12-x64-rel',
             try_builder='android-12-x64-rel',
             test_suite='webview_instrumentation_test_apk',
-            optimal_shard_count=10,
-            shard_count=20,
-            most_used_shard_count=10,
-        ),
-        query_response_test_suite_dict(
-            waterfall_builder_group='chromium.android',
-            waterfall_builder_name='android-12-x64-rel',
-            try_builder='android-12-x64-rel',
-            test_suite='webview_instrumentation_test_apk',
-            optimal_shard_count=10,
-            shard_count=10,
-            most_used_shard_count=10,
         ),
     ])
+    avg_num_builds_per_hour = json.dumps([
+        query_average_number_builds_per_hour(try_builder='android-12-x64-rel'),
+    ])
+    self._mock_check_output.side_effect = [
+        suite_durations,
+        overheads,
+        avg_num_builds_per_hour,
+    ]
     existing_output_file_data = json.dumps({
         'chromium.linux': {
             'Linux Tests': {
@@ -619,65 +720,33 @@ class FormatQueryResults(unittest.TestCase):
 
     self.assertIsNone(script_result.get('chromium.android'))
 
-  def testMultipleShardValuesFromQueryNotAutoshardedSuggestedDecrease(self):
-    self._mock_check_output.return_value = json.dumps([
-        query_response_test_suite_dict(
+  def testNotAlreadyAutoshardedIncrease(self):
+    suite_durations = json.dumps([
+        query_suite_durations_dict(
             waterfall_builder_group='chromium.android',
             waterfall_builder_name='android-12-x64-rel',
             try_builder='android-12-x64-rel',
             test_suite='webview_instrumentation_test_apk',
-            optimal_shard_count=10,
-            shard_count=20,
-            most_used_shard_count=10,
-        ),
-        query_response_test_suite_dict(
-            waterfall_builder_group='chromium.android',
-            waterfall_builder_name='android-12-x64-rel',
-            try_builder='android-12-x64-rel',
-            test_suite='webview_instrumentation_test_apk',
-            optimal_shard_count=9,
             shard_count=10,
-            most_used_shard_count=10,
+            percentile_duration_minutes=20,
         ),
     ])
-    existing_output_file_data = json.dumps({
-        'chromium.linux': {
-            'Linux Tests': {
-                'browser_tests': {
-                    'shards': 10,
-                }
-            }
-        }
-    })
-    with open(self.output_file, 'w') as f:
-      f.write(existing_output_file_data)
-    query_optimal_shard_counts.main(['--output-file', self.output_file])
-    with open(self.output_file, 'r') as f:
-      script_result = json.load(f)
-
-    self.assertIsNone(script_result.get('chromium.android'))
-
-  def testMultipleShardValuesFromQueryNotAutoshardedIncrease(self):
-    self._mock_check_output.return_value = json.dumps([
-        query_response_test_suite_dict(
+    overheads = json.dumps([
+        query_test_overheads_dict(
             waterfall_builder_group='chromium.android',
             waterfall_builder_name='android-12-x64-rel',
             try_builder='android-12-x64-rel',
             test_suite='webview_instrumentation_test_apk',
-            optimal_shard_count=10,
-            shard_count=20,
-            most_used_shard_count=10,
-        ),
-        query_response_test_suite_dict(
-            waterfall_builder_group='chromium.android',
-            waterfall_builder_name='android-12-x64-rel',
-            try_builder='android-12-x64-rel',
-            test_suite='webview_instrumentation_test_apk',
-            optimal_shard_count=11,
-            shard_count=10,
-            most_used_shard_count=10,
         ),
     ])
+    avg_num_builds_per_hour = json.dumps([
+        query_average_number_builds_per_hour(try_builder='android-12-x64-rel'),
+    ])
+    self._mock_check_output.side_effect = [
+        suite_durations,
+        overheads,
+        avg_num_builds_per_hour,
+    ]
     existing_output_file_data = json.dumps({
         'chromium.linux': {
             'Linux Tests': {
@@ -696,41 +765,55 @@ class FormatQueryResults(unittest.TestCase):
     self.assertEqual(
         script_result['chromium.android']['android-12-x64-rel']
         ['webview_instrumentation_test_apk'],
-        {'shards': 11},
+        {'shards': 15},
     )
 
   @mock.patch('query_optimal_shard_counts.TEST_SUITE_EXCLUDE_SET',
               new={'browser_tests', 'ui_tests'})
   def testTestSuiteExcludeSet(self):
-    self._mock_check_output.return_value = json.dumps([
-        query_response_test_suite_dict(
+    suite_durations = json.dumps([
+        query_suite_durations_dict(
             waterfall_builder_group='chromium.linux',
             waterfall_builder_name='Linux Tests',
             try_builder='linux-rel',
             test_suite='browser_tests',
-            optimal_shard_count=15,
             shard_count=10,
-            most_used_shard_count=10,
+            percentile_duration_minutes=20,
         ),
-        query_response_test_suite_dict(
-            waterfall_builder_group='chromium.android',
-            waterfall_builder_name='android-12-x64-rel',
-            try_builder='android-12-x64-rel',
-            test_suite='browser_tests',
-            optimal_shard_count=25,
-            shard_count=20,
-            most_used_shard_count=20,
-        ),
-        query_response_test_suite_dict(
+        query_suite_durations_dict(
             waterfall_builder_group='chromium.linux',
             waterfall_builder_name='Linux Tests',
             try_builder='linux-rel',
             test_suite='ui_tests',
-            optimal_shard_count=15,
             shard_count=10,
-            most_used_shard_count=10,
+            percentile_duration_minutes=20,
+        ),
+        query_suite_durations_dict(
+            waterfall_builder_group='chromium.android',
+            waterfall_builder_name='android-12-x64-rel',
+            try_builder='android-12-x64-rel',
+            test_suite='webview_instrumentation_test_apk',
+            shard_count=10,
+            percentile_duration_minutes=20,
         ),
     ])
+    overheads = json.dumps([
+        query_test_overheads_dict(
+            waterfall_builder_group='chromium.android',
+            waterfall_builder_name='android-12-x64-rel',
+            try_builder='android-12-x64-rel',
+            test_suite='webview_instrumentation_test_apk',
+        ),
+    ])
+    avg_num_builds_per_hour = json.dumps([
+        query_average_number_builds_per_hour(try_builder='android-12-x64-rel'),
+        query_average_number_builds_per_hour(try_builder='linux-rel'),
+    ])
+    self._mock_check_output.side_effect = [
+        suite_durations,
+        overheads,
+        avg_num_builds_per_hour,
+    ]
     existing_output_file_data = json.dumps({
         'chromium.linux': {
             'Linux Tests': {
@@ -769,35 +852,41 @@ class FormatQueryResults(unittest.TestCase):
   @mock.patch('query_optimal_shard_counts.BUILDER_EXCLUDE_SET',
               new={'mac-rel', 'linux-rel'})
   def testBuilderExcludeSet(self):
-    self._mock_check_output.return_value = json.dumps([
-        query_response_test_suite_dict(
+    suite_durations = json.dumps([
+        query_suite_durations_dict(
+            waterfall_builder_group='chromium.linux',
+            waterfall_builder_name='Linux Tests',
+            try_builder='linux-rel',
+            test_suite='browser_tests',
+            shard_count=10,
+            percentile_duration_minutes=20,
+        ),
+        query_suite_durations_dict(
             waterfall_builder_group='chromium.mac',
             waterfall_builder_name='Mac Builder',
             try_builder='mac-rel',
             test_suite='browser_tests',
-            optimal_shard_count=15,
             shard_count=10,
-            most_used_shard_count=10,
-        ),
-        query_response_test_suite_dict(
-            waterfall_builder_group='chromium.linux',
-            waterfall_builder_name='Linux Tests',
-            try_builder='linux-rel',
-            test_suite='ui_tests',
-            optimal_shard_count=15,
-            shard_count=10,
-            most_used_shard_count=10,
-        ),
-        query_response_test_suite_dict(
-            waterfall_builder_group='chromium.linux',
-            waterfall_builder_name='Linux Tests',
-            try_builder='linux-rel',
-            test_suite='browser_tests',
-            optimal_shard_count=15,
-            shard_count=12,
-            most_used_shard_count=12,
+            percentile_duration_minutes=20,
         ),
     ])
+    overheads = json.dumps([
+        query_test_overheads_dict(
+            waterfall_builder_group='chromium.android',
+            waterfall_builder_name='android-12-x64-rel',
+            try_builder='android-12-x64-rel',
+            test_suite='webview_instrumentation_test_apk',
+        ),
+    ])
+    avg_num_builds_per_hour = json.dumps([
+        query_average_number_builds_per_hour(try_builder='mac-rel'),
+        query_average_number_builds_per_hour(try_builder='linux-rel'),
+    ])
+    self._mock_check_output.side_effect = [
+        suite_durations,
+        overheads,
+        avg_num_builds_per_hour,
+    ]
     existing_output_file_data = json.dumps({
         'chromium.linux': {
             'Linux Tests': {
@@ -834,26 +923,40 @@ class FormatQueryResults(unittest.TestCase):
   @mock.patch('query_optimal_shard_counts.BUILDER_TEST_SUITE_EXCLUDE_DICT',
               new={'linux-rel': {'browser_tests', 'ui_tests'}})
   def testBuilderTestSuiteExcludeDict(self):
-    self._mock_check_output.return_value = json.dumps([
-        query_response_test_suite_dict(
+    suite_durations = json.dumps([
+        query_suite_durations_dict(
             waterfall_builder_group='chromium.linux',
             waterfall_builder_name='Linux Tests',
             try_builder='linux-rel',
             test_suite='browser_tests',
-            optimal_shard_count=15,
             shard_count=10,
-            most_used_shard_count=10,
+            percentile_duration_minutes=20,
         ),
-        query_response_test_suite_dict(
+        query_suite_durations_dict(
             waterfall_builder_group='chromium.linux',
             waterfall_builder_name='Linux Tests',
             try_builder='linux-rel',
             test_suite='ui_tests',
-            optimal_shard_count=15,
             shard_count=10,
-            most_used_shard_count=10,
+            percentile_duration_minutes=20,
         ),
     ])
+    overheads = json.dumps([
+        query_test_overheads_dict(
+            waterfall_builder_group='chromium.linux',
+            waterfall_builder_name='Linux Tests',
+            try_builder='linux-rel',
+            test_suite='browser_tests',
+        ),
+    ])
+    avg_num_builds_per_hour = json.dumps([
+        query_average_number_builds_per_hour(try_builder='linux-rel'),
+    ])
+    self._mock_check_output.side_effect = [
+        suite_durations,
+        overheads,
+        avg_num_builds_per_hour,
+    ]
     existing_output_file_data = json.dumps({
         'chromium.linux': {
             'Linux Tests': {

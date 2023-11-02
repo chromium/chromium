@@ -13,6 +13,7 @@ import argparse
 import datetime
 import json
 import os
+import math
 import subprocess
 import sys
 
@@ -65,29 +66,57 @@ If this is the first time you run the script, do the following steps:
 """
 
 
-def _run_query(lookback_start_date, lookback_end_date, desired_runtime,
-               percentile, min_sample_size):
+def _query_overheads(lookback_start_date, lookback_end_date):
+  query_file = os.path.join(os.path.dirname(__file__), 'autosharder_sql',
+                            'query_test_overheads.sql')
+  with open(query_file, 'r') as f:
+    query_str = f.read()
+  query = query_str.format(
+      lookback_start_date=lookback_start_date,
+      lookback_end_date=lookback_end_date,
+  )
+  return _run_query([
+      "bq", "query", "--project_id=" + _CLOUD_PROJECT_ID, "--format=json",
+      "--max_rows=100000", "--nouse_legacy_sql", query
+  ])
+
+
+def _query_suite_durations(lookback_start_date, lookback_end_date, percentile):
+  query_file = os.path.join(os.path.dirname(__file__), 'autosharder_sql',
+                            'query_suite_durations.sql')
+  with open(query_file, 'r') as f:
+    query_str = f.read()
+  query = query_str.format(
+      lookback_start_date=lookback_start_date,
+      lookback_end_date=lookback_end_date,
+      percentile=percentile,
+  )
+  return _run_query([
+      "bq", "query", "--project_id=" + _CLOUD_PROJECT_ID, "--format=json",
+      "--max_rows=100000", "--nouse_legacy_sql", query
+  ])
+
+
+def _query_avg_num_builds_per_hour(lookback_start_date, lookback_end_date):
+  query_file = os.path.join(os.path.dirname(__file__), 'autosharder_sql',
+                            'query_average_number_builds_per_hour.sql')
+  with open(query_file, 'r') as f:
+    query_str = f.read()
+  query = query_str.format(
+      lookback_start_date=lookback_start_date,
+      lookback_end_date=lookback_end_date,
+  )
+  return _run_query([
+      "bq", "query", "--project_id=" + _CLOUD_PROJECT_ID, "--format=json",
+      "--max_rows=100000", "--nouse_legacy_sql", query
+  ])
+
+
+def _run_query(args):
   try:
     subprocess.check_call(['which', 'bq'])
   except subprocess.CalledProcessError as e:
     raise RuntimeError(_BQ_SETUP_INSTRUCTION) from e
-  query_file = os.path.join(os.path.dirname(__file__),
-                            'query_optimal_shard_counts.sql')
-  with open(query_file, 'r') as f:
-    query_str = f.read()
-  query = query_str.format(
-      desired_runtime_min=desired_runtime,
-      default_overhead_sec=DEFAULT_OVERHEAD_SEC,
-      android_overhead_sec=ANDROID_OVERHEAD_SEC,
-      lookback_start_date=lookback_start_date,
-      lookback_end_date=lookback_end_date,
-      percentile=percentile,
-      min_sample_size=min_sample_size,
-  )
-  args = [
-      "bq", "query", "--project_id=" + _CLOUD_PROJECT_ID, "--format=json",
-      "--max_rows=100000", "--nouse_legacy_sql", query
-  ]
 
   try:
     output = subprocess.check_output(args)
@@ -95,6 +124,138 @@ def _run_query(lookback_start_date, lookback_end_date, desired_runtime,
     print(e.output)
     raise (e)
   return json.loads(output)
+
+
+def _get_overhead_dict(lookback_start_date, lookback_end_date):
+  overhead_results = _query_overheads(
+      lookback_start_date=lookback_start_date,
+      lookback_end_date=lookback_end_date,
+  )
+  overhead_dict = {}
+  for r in overhead_results:
+    try_builder = r['try_builder']
+    test_suite = r['test_suite']
+
+    overhead_info = {
+        int(r['normally_assigned_shard_count']):
+        (float(r['p50_task_setup_duration_sec']) +
+         float(r['p50_test_harness_overhead_sec'])) / 60
+    }
+    overhead_dict.setdefault(try_builder,
+                             {}).setdefault(test_suite,
+                                            {}).update(overhead_info)
+  return overhead_dict
+
+
+def _calculate_and_filter_optimal_shard_counts(overhead_dict, durations,
+                                               desired_runtime):
+  filtered_durations = []
+  for r in durations:
+    try_builder = r['try_builder']
+    test_suite = r['test_suite']
+    shard_count = int(r['shard_count'])
+
+    overhead = overhead_dict.get(try_builder, {}).get(test_suite,
+                                                      {}).get(shard_count)
+    if not overhead:
+      if 'android' in try_builder:
+        overhead = ANDROID_OVERHEAD_SEC / 60
+      else:
+        overhead = DEFAULT_OVERHEAD_SEC / 60
+    r['test_overhead_min'] = overhead
+
+    optimal_shard_count = math.ceil(
+        (float(r['percentile_duration_minutes']) * shard_count -
+         overhead * shard_count) / (desired_runtime - overhead))
+    if optimal_shard_count <= 0:
+      continue
+    r['optimal_shard_count'] = optimal_shard_count
+
+    simulated_max_shard_duration = round(
+        (float(r['percentile_duration_minutes']) * shard_count /
+         optimal_shard_count), 2)
+    r['simulated_max_shard_duration'] = simulated_max_shard_duration
+
+    filtered_durations.append(r)
+  return filtered_durations
+
+
+def _calculate_estimated_bot_hour_cost(durations, lookback_start_date,
+                                       lookback_end_date):
+  results = _query_avg_num_builds_per_hour(
+      lookback_start_date=lookback_start_date,
+      lookback_end_date=lookback_end_date,
+  )
+  avg_num_builds_per_hour = {
+      r['try_builder']: int(math.ceil(float(r['avg_count'])))
+      for r in results
+  }
+
+  updated_durations = []
+  # Add estimated_bot_hour_cost and avg_num_builds_per_peak_hour
+  for r in durations:
+    try_builder = r['try_builder']
+    shard_count = int(r['shard_count'])
+
+    r['estimated_bot_hour_cost'] = round(
+        (r['optimal_shard_count'] - shard_count) *
+        (r['test_overhead_min'] / 60) * avg_num_builds_per_hour[try_builder],2)
+    r['avg_num_builds_per_peak_hour'] = avg_num_builds_per_hour[try_builder]
+    updated_durations.append(r)
+  return updated_durations
+
+def _meets_optimal_shard_count_and_simulated_duration_requirements(
+    row, data, desired_runtime):
+  builder_group = row['waterfall_builder_group']
+  builder_name = row['waterfall_builder_name']
+  test_suite = row['test_suite']
+
+  current_autoshard_val = data.get(builder_group,
+                                   {}).get(builder_name,
+                                           {}).get(test_suite,
+                                                   {}).get('shards')
+
+  # No autosharding needed.
+  if int(row['optimal_shard_count']) == int(row['shard_count']):
+    return False
+
+  # Throw out any attempt to shard to 1. This will lock the test suite
+  # and prevent go/nplus1shardsproposal from running new shardings
+  if int(row['optimal_shard_count']) == 1:
+    return False
+
+  # Don't bother resharding if the simulated runtime is greater than the
+  # desired runtime.
+  if (float(row['simulated_max_shard_duration']) > desired_runtime):
+    return False
+
+  # Shard values may have changed over the lookback period, so the query
+  # results could have multiple rows for each builder+test_suite. Logic below
+  # skips the rows that are for outdated shard counts.
+
+  # First check if this suite has been autosharded before
+  # If it has been autosharded before, we should only look at the row
+  # containing a matching 'shard_count' with the current autoshard value.
+  if current_autoshard_val:
+    # If this row does not match, skip it. This row is for an old shard count
+    # that is no longer being used.
+    if int(current_autoshard_val) != int(row['shard_count']):
+      return False
+  else:
+    # Query suggests we should decrease shard count for suite that has
+    # never been autosharded
+    if int(row['optimal_shard_count']) < int(row['shard_count']):
+      # Only use lower shard count value if the suite was previously
+      # autosharded.
+      # This is because the suite could have been previously autosharded with
+      # more shards due to a test regression. If the regression is fixed, that
+      # suite should have those extra shards removed.
+      # There's many existing suites that already run pretty fast from
+      # previous manual shardings. Those technically can have fewer shards as
+      # well, but let's leave those alone until we have a good reason to
+      # change a bunch of suites at once.
+      return False
+  return True
 
 
 def main(args):
@@ -176,97 +337,68 @@ def main(args):
 
   print('Querying between {} and {}'.format(lookback_start_date,
                                             lookback_end_date))
-  results = _run_query(
+  durations = _query_suite_durations(
       lookback_start_date=lookback_start_date,
       lookback_end_date=lookback_end_date,
-      desired_runtime=opts.desired_runtime,
       percentile=opts.percentile,
-      min_sample_size=opts.min_sample_size,
   )
 
   data = {}
-  new_data = {}
   if not opts.overwrite_output_file and os.path.exists(opts.output_file):
     with open(opts.output_file, 'r') as existing_output_file:
       print('Output file already exists. Will merge query results with existing'
             ' output file.')
       data = json.load(existing_output_file)
 
-  for r in results:
+  filtered_durations = []
+  for d in durations:
+    # Filter out durations that don't meet sample size
+    if int(d['sample_size']) < opts.min_sample_size:
+      continue
+
+    builder_group = d['waterfall_builder_group']
+    builder_name = d['waterfall_builder_name']
+    test_suite = d['test_suite']
+
+    excluded_tests = BUILDER_TEST_SUITE_EXCLUDE_DICT.get(d['try_builder'])
+    if (test_suite in TEST_SUITE_EXCLUDE_SET
+        or (excluded_tests and test_suite in excluded_tests)
+        or d['try_builder'] in BUILDER_EXCLUDE_SET):
+      continue
+
+    # Don't bother resharding suites that are running < 1 minute faster
+    # than desired.
+    if abs(
+        float(d['percentile_duration_minutes']) -
+        float(opts.desired_runtime)) < 1:
+      continue
+    filtered_durations.append(d)
+
+  overhead_dict = _get_overhead_dict(
+      lookback_start_date=lookback_start_date,
+      lookback_end_date=lookback_end_date,
+  )
+
+  # Add optimal shard counts and filter out when the optimal shard count is 0
+  durations_with_optimal_shards = _calculate_and_filter_optimal_shard_counts(
+      overhead_dict, filtered_durations, opts.desired_runtime)
+
+  # Add estimated_bot_hour_cost and avg_num_builds_per_peak_hour
+  durations_with_optimal_shards_and_bot_hours = (
+      _calculate_estimated_bot_hour_cost(
+          durations=durations_with_optimal_shards,
+          lookback_start_date=lookback_start_date,
+          lookback_end_date=lookback_end_date,
+      ))
+
+  new_data = {}
+  for r in durations_with_optimal_shards_and_bot_hours:
     builder_group = r['waterfall_builder_group']
     builder_name = r['waterfall_builder_name']
     test_suite = r['test_suite']
-
-    excluded_tests = BUILDER_TEST_SUITE_EXCLUDE_DICT.get(r['try_builder'])
-    if (test_suite in TEST_SUITE_EXCLUDE_SET
-        or (excluded_tests and test_suite in excluded_tests)
-        or r['try_builder'] in BUILDER_EXCLUDE_SET):
+    if not _meets_optimal_shard_count_and_simulated_duration_requirements(
+        r, data, opts.desired_runtime):
       continue
-
-    current_autoshard_val = data.get(builder_group,
-                                     {}).get(builder_name,
-                                             {}).get(test_suite,
-                                                     {}).get('shards')
-
-    # No autosharding needed.
-    if int(r['optimal_shard_count']) == int(r['shard_count']):
-      continue
-
-    runtime_diff = abs(
-        float(opts.desired_runtime) - float(r['percentile_duration_minutes']))
-    # Don't bother resharding suites that are running < 1 minute faster
-    # than desired.
-    if runtime_diff < 1:
-      continue
-
-    # Throw out any attempt to shard to 1. This will lock the test suite
-    # and prevent go/nplus1shardsproposal from running new shardings
-    if int(r['optimal_shard_count']) == 1:
-      continue
-
-    # Don't bother resharding if the simulated runtime is greater than the
-    # desired runtime.
-    if (float(r['simulated_max_shard_duration']) > opts.desired_runtime):
-      continue
-
-    # Shard values may have changed over the lookback period, so the query
-    # results could have multiple rows for each builder+test_suite. Logic below
-    # skips the rows that are for outdated shard counts.
-
-    # First check if this suite has been autosharded before
-    # If it has been autosharded before, we should only look at the row
-    # containing a matching 'shard_count' with the current autoshard value.
-    if current_autoshard_val:
-      # If this row does not match, skip it. This row is for an old shard count
-      # that is no longer being used.
-      if int(current_autoshard_val) != int(r['shard_count']):
-        continue
-    else:
-      # If a suite is not already being auosharded, we don't know what shard
-      # it's actually using at this time if the shard count has been updated
-      # within the past lookback_days. So our best guess for which shard count
-      # is being used is 'most_usd_shard_count'.
-      # So, if it doesn't match, skip this row, which is for an old shard count
-      # that is no longer being used.
-      if int(r['shard_count']) != int(r['most_used_shard_count']):
-        continue
-
-      # Query suggests we should decrease shard count for suite that has
-      # never been autosharded
-      if int(r['optimal_shard_count']) < int(r['shard_count']):
-        # Only use lower shard count value if the suite was previously
-        # autosharded.
-        # This is because the suite could have been previously autosharded with
-        # more shards due to a test regression. If the regression is fixed, that
-        # suite should have those extra shards removed.
-        # There's many existing suites that already run pretty fast from
-        # previous manual shardings. Those technically can have fewer shards as
-        # well, but let's leave those alone until we have a good reason to
-        # change a bunch of suites at once.
-        if not data.get(builder_group, {}).get(builder_name, {}).get(
-            test_suite, {}):
-          continue
-
     shard_dict = {
         test_suite: {
             'shards': r['optimal_shard_count'],
@@ -274,16 +406,26 @@ def main(args):
     }
     if opts.verbose:
       debug_dict = {
-          'avg_num_builds_per_peak_hour': r['avg_num_builds_per_peak_hour'],
-          'estimated_bot_hour_delta': r['estimated_bot_hour_cost'],
-          'prev_avg_pending_time_sec': r['avg_pending_time_sec'],
-          'prev_p50_pending_time_sec': r['p50_pending_time_sec'],
-          'prev_p90_pending_time_sec': r['p90_pending_time_sec'],
-          'prev_percentile_duration_minutes': r['percentile_duration_minutes'],
-          'prev_shard_count': r['shard_count'],
-          'simulated_max_shard_duration': r['simulated_max_shard_duration'],
-          'try_builder': r['try_builder'],
-          'test_overhead_min': r['test_overhead_min'],
+          'avg_num_builds_per_peak_hour':
+          r['avg_num_builds_per_peak_hour'],
+          'estimated_bot_hour_delta':
+          r['estimated_bot_hour_cost'],
+          'prev_avg_pending_time_sec':
+          float(r['avg_pending_time_sec']),
+          'prev_p50_pending_time_sec':
+          float(r['p50_pending_time_sec']),
+          'prev_p90_pending_time_sec':
+          float(r['p90_pending_time_sec']),
+          'prev_percentile_duration_minutes':
+          float(r['percentile_duration_minutes']),
+          'prev_shard_count':
+          int(r['shard_count']),
+          'simulated_max_shard_duration':
+          r['simulated_max_shard_duration'],
+          'try_builder':
+          r['try_builder'],
+          'test_overhead_min':
+          r['test_overhead_min'],
       }
       shard_dict[r['test_suite']]['debug'] = debug_dict
     data.setdefault(builder_group, {}).setdefault(builder_name,
