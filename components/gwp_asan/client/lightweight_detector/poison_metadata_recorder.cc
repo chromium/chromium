@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/gwp_asan/client/lightweight_detector.h"
+#include "components/gwp_asan/client/lightweight_detector/poison_metadata_recorder.h"
 
 #include <algorithm>
 #include <random>
@@ -18,8 +18,8 @@
 
 namespace gwp_asan::internal {
 
-LightweightDetector::LightweightDetector(LightweightDetectorMode mode,
-                                         size_t num_metadata) {
+PoisonMetadataRecorder::PoisonMetadataRecorder(LightweightDetectorMode mode,
+                                               size_t num_metadata) {
   CHECK_NE(mode, LightweightDetectorMode::kOff);
   CHECK_LE(num_metadata, LightweightDetectorState::kMaxMetadata);
 
@@ -41,10 +41,9 @@ LightweightDetector::LightweightDetector(LightweightDetectorMode mode,
 #endif
 }
 
-LightweightDetector::~LightweightDetector() = default;
+PoisonMetadataRecorder::~PoisonMetadataRecorder() = default;
 
-void LightweightDetector::RecordLightweightDeallocation(void* ptr,
-                                                        size_t size) {
+void PoisonMetadataRecorder::RecordDeallocation(void* ptr, size_t size) {
   DCHECK(metadata_);
   DCHECK_GT(state_.num_metadata, 0u);
 
@@ -92,12 +91,12 @@ void LightweightDetector::RecordLightweightDeallocation(void* ptr,
               LightweightDetectorState::kMetadataRemainder);
 }
 
-std::string LightweightDetector::GetCrashKey() const {
+std::string PoisonMetadataRecorder::GetCrashKey() const {
   return base::StringPrintf("%zx", reinterpret_cast<uintptr_t>(&state_));
 }
 
 std::vector<std::pair<void*, size_t>>
-LightweightDetector::GetInternalMemoryRegions() {
+PoisonMetadataRecorder::GetInternalMemoryRegions() {
   std::vector<std::pair<void*, size_t>> regions;
   regions.emplace_back(&state_, sizeof(state_));
   regions.emplace_back(
@@ -106,10 +105,13 @@ LightweightDetector::GetInternalMemoryRegions() {
   return regions;
 }
 
-bool LightweightDetector::HasAllocationForTesting(uintptr_t address) {
+bool PoisonMetadataRecorder::HasAllocationForTesting(uintptr_t address) {
   return std::any_of(
       metadata_.get(), metadata_.get() + state_.num_metadata,
       [&](const auto& metadata) { return metadata.alloc_ptr == address; });
 }
+
+template class EXPORT_TEMPLATE_DEFINE(GWP_ASAN_EXPORT)
+    SharedState<PoisonMetadataRecorder>;
 
 }  // namespace gwp_asan::internal

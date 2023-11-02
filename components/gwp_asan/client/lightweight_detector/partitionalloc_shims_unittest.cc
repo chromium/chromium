@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/gwp_asan/client/lightweight_detector_shims.h"
+#include "components/gwp_asan/client/lightweight_detector/partitionalloc_shims.h"
 
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
 #include "base/logging.h"
@@ -10,7 +10,7 @@
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
 #include "components/crash/core/common/crash_key.h"
-#include "components/gwp_asan/client/lightweight_detector.h"
+#include "components/gwp_asan/client/lightweight_detector/poison_metadata_recorder.h"
 #include "components/gwp_asan/common/lightweight_detector_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
@@ -24,8 +24,6 @@
 // tests.
 
 namespace gwp_asan::internal {
-
-extern LightweightDetector& GetLightweightDetectorForTesting();
 
 namespace {
 
@@ -42,15 +40,7 @@ static void HandleOOM(size_t) {
 
 }  // namespace
 
-class LightweightDetectorShimsTest : public base::MultiProcessTest {
- public:
-  static void multiprocessTestSetup() {
-    crash_reporter::InitializeCrashKeys();
-    partition_alloc::PartitionAllocGlobalInit(HandleOOM);
-    InstallLightweightDetectorHooks(LightweightDetectorMode::kBrpQuarantine,
-                                    LightweightDetectorState::kMaxMetadata);
-  }
-
+class PartitionAllocShimsTest : public base::MultiProcessTest {
  protected:
   void runTest(const char* name) {
     base::Process process = SpawnChild(name);
@@ -61,9 +51,13 @@ class LightweightDetectorShimsTest : public base::MultiProcessTest {
   }
 };
 
-MULTIPROCESS_TEST_MAIN_WITH_SETUP(
-    BasicFunctionality,
-    LightweightDetectorShimsTest::multiprocessTestSetup) {
+MULTIPROCESS_TEST_MAIN(PartitionAllocShimsTest_Basic) {
+  crash_reporter::InitializeCrashKeys();
+  partition_alloc::PartitionAllocGlobalInit(HandleOOM);
+  PoisonMetadataRecorder::Init(LightweightDetectorMode::kBrpQuarantine,
+                               LightweightDetectorState::kMaxMetadata);
+  PartitionAllocShimSupport::InstallLightweightDetectorHooks();
+
   partition_alloc::PartitionAllocator allocator;
   allocator.init(kAllocatorOptions);
 
@@ -71,7 +65,7 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
       allocator.root()->Alloc(1);
   allocator.root()->Free(ptr);
 
-  if (GetLightweightDetectorForTesting().HasAllocationForTesting(
+  if (PoisonMetadataRecorder::Get()->HasAllocationForTesting(
           reinterpret_cast<uintptr_t>(ptr.get()))) {
     return kSuccess;
   }
@@ -79,8 +73,8 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
   return kFailure;
 }
 
-TEST_F(LightweightDetectorShimsTest, BasicFunctionality) {
-  runTest("BasicFunctionality");
+TEST_F(PartitionAllocShimsTest, Basic) {
+  runTest("PartitionAllocShimsTest_Basic");
 }
 
 }  // namespace gwp_asan::internal

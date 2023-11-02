@@ -20,8 +20,11 @@
 #include "base/numerics/safe_math.h"
 #include "base/rand_util.h"
 #include "build/build_config.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/gwp_asan/client/guarded_page_allocator.h"
 #include "components/gwp_asan/client/gwp_asan_features.h"
+#include "components/gwp_asan/client/lightweight_detector/poison_metadata_recorder.h"
+#include "components/gwp_asan/common/crash_key_name.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
@@ -29,7 +32,7 @@
 #endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC)
-#include "components/gwp_asan/client/lightweight_detector_shims.h"
+#include "components/gwp_asan/client/lightweight_detector/partitionalloc_shims.h"
 #include "components/gwp_asan/client/sampling_partitionalloc_shims.h"
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 
@@ -233,13 +236,6 @@ bool MaybeEnableLightweightDetectorInternal(bool boost_sampling,
     return false;
   }
 
-  // At the moment, BRP is the only client of the detector, and this extra
-  // check allows us to reduce the memory usage in BRP-disabled processes.
-  if (!base::allocator::PartitionAllocSupport::GetBrpConfiguration(process_type)
-           .enable_brp) {
-    return false;
-  }
-
   if (!SampleProcess(kLightweightUafDetector, boost_sampling)) {
     return false;
   }
@@ -258,9 +254,30 @@ bool MaybeEnableLightweightDetectorInternal(bool boost_sampling,
     return false;
   }
 
-  InstallLightweightDetectorHooks(kLightweightUafDetectorModeParam.Get(),
-                                  max_metadata);
-  return true;
+  switch (kLightweightUafDetectorModeParam.Get()) {
+#if BUILDFLAG(USE_PARTITION_ALLOC)
+    case LightweightDetectorMode::kBrpQuarantine: {
+      if (!base::allocator::PartitionAllocSupport::GetBrpConfiguration(
+               process_type)
+               .enable_brp) {
+        return false;
+      }
+
+      PoisonMetadataRecorder::Init(LightweightDetectorMode::kBrpQuarantine,
+                                   static_cast<size_t>(max_metadata));
+      static crash_reporter::CrashKeyString<24> crash_key(
+          kLightweightDetectorCrashKey);
+      crash_key.Set(PoisonMetadataRecorder::Get()->GetCrashKey());
+      PartitionAllocShimSupport::InstallLightweightDetectorHooks();
+      return true;
+    }
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC)
+
+    default: {
+      DLOG(ERROR) << "Unsupported Lightweight UAF Detector mode.";
+      return false;
+    }
+  }
 #else   // defined(ARCH_CPU_64_BITS)
   std::ignore = boost_sampling;
   std::ignore = process_type;
@@ -314,14 +331,9 @@ void EnableForPartitionAlloc(bool boost_sampling, const char* process_type) {
 
 void MaybeEnableLightweightDetector(bool boost_sampling,
                                     const char* process_type) {
-#if BUILDFLAG(USE_PARTITION_ALLOC)
   [[maybe_unused]] static bool init_once =
       internal::MaybeEnableLightweightDetectorInternal(boost_sampling,
                                                        process_type);
-#else
-  DLOG(WARNING)
-      << "PartitionAlloc hooks are unavailable for Lightweight UAF Detector.";
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 }
 
 }  // namespace gwp_asan

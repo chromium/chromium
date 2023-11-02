@@ -37,8 +37,9 @@ component("client") {
     "guarded_page_allocator.h",
     "gwp_asan.cc",
     "gwp_asan.h",
-    "lightweight_detector.cc",
-    "lightweight_detector.h",
+    "lightweight_detector/poison_metadata_recorder.cc",
+    "lightweight_detector/poison_metadata_recorder.h",
+    "lightweight_detector/shared_state.h",
     "sampling_state.h",
     "thread_local_random_bit_generator.h",
     "thread_local_state.h",
@@ -61,8 +62,8 @@ component("client") {
 
   if (use_partition_alloc) {
     sources += [
-      "lightweight_detector_shims.cc",
-      "lightweight_detector_shims.h",
+      "lightweight_detector/partitionalloc_shims.cc",
+      "lightweight_detector/partitionalloc_shims.h",
       "sampling_partitionalloc_shims.cc",
       "sampling_partitionalloc_shims.h",
     ]
@@ -90,7 +91,7 @@ source_set("unit_tests") {
   sources = [
     "guarded_page_allocator_unittest.cc",
     "gwp_asan_unittest.cc",
-    "lightweight_detector_unittest.cc",
+    "lightweight_detector/poison_metadata_recorder_unittest.cc",
   ]
 
   if (use_allocator_shim) {
@@ -99,7 +100,7 @@ source_set("unit_tests") {
 
   if (use_partition_alloc) {
     sources += [
-      "lightweight_detector_shims_unittest.cc",
+      "lightweight_detector/partitionalloc_shims_unittest.cc",
       "sampling_partitionalloc_shims_unittest.cc",
     ]
   }
