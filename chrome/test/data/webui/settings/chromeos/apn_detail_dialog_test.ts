@@ -420,12 +420,18 @@ suite('<apn-detail-dialog>', () => {
     assertTrue(apnInputField.invalid);
     assertTrue(actionButton.disabled);
     assertStringContains(apnInputField.value, 'μ');
+    assertEquals(
+        apnDetailDialog.i18n('apnDetailApnErrorInvalidChar'),
+        apnInputField.errorMessage);
 
     // Case : longer than 63 characters then removing one character
     apnInputField.value = 'a'.repeat(64);
     assertTrue(apnInputField.invalid);
     assertTrue(actionButton.disabled);
     assertEquals(63, apnInputField.value.length);
+    assertEquals(
+        apnDetailDialog.i18n('apnDetailApnErrorMaxChars', 63),
+        apnInputField.errorMessage);
     apnInputField.value = apnInputField.value.slice(0, -1);
     assertFalse(apnInputField.invalid);
     assertFalse(actionButton.disabled);
@@ -434,6 +440,9 @@ suite('<apn-detail-dialog>', () => {
     apnInputField.value = 'μ'.repeat(64);
     assertTrue(apnInputField.invalid);
     assertTrue(actionButton.disabled);
+    assertEquals(
+        apnDetailDialog.i18n('apnDetailApnErrorMaxChars', 63),
+        apnInputField.errorMessage);
   });
 
   test('Apn types are correctly validated in all modes', async () => {

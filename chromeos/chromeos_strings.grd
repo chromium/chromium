@@ -4481,6 +4481,12 @@
         <message name="IDS_SETTINGS_APN_INPUT_LABEL" desc="Label for the input field where the APN is specified, the asterisk indicates that this is required">
           APN*
         </message>
+        <message name="IDS_SETTINGS_APN_INPUT_LABEL_ERROR_MAX_CHARS" desc="Error for the APN input field when the maximum character limit is reached">
+          APN can’t have more than <ph name="CHAR_LIMIT">$1<ex>63</ex></ph> characters
+        </message>
+        <message name="IDS_SETTINGS_APN_INPUT_LABEL_ERROR_INVALID_CHAR" desc="Error for the APN input field when an invalid character is used">
+          Can’t use accented letters, non-Latin alphabet, or symbols
+        </message>
         <message name="IDS_SETTINGS_APN_DIALOG_ADVANCED_SETTING" desc="Title for the button which toggles the advanced settings section">
           Advanced settings
         </message>

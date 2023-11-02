@@ -357,11 +357,9 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
       return '';
     }
     if (this.isMaxApnInputLengthReached_) {
-      // TODO(b/162365553): Replace with real string when available
-      return `APN cannot have more than 63 characters`;
+      return this.i18n('apnDetailApnErrorMaxChars', MAX_APN_INPUT_LENGTH);
     }
-    // TODO(b/162365553): Replace with real string when available
-    return 'APN cannot have non-ASCII characters';
+    return this.i18n('apnDetailApnErrorInvalidChar');
   }
 
   /**
