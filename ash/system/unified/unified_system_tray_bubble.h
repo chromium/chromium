@@ -20,7 +20,6 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/widget/widget_observer.h"
-#include "ui/wm/public/activation_change_observer.h"
 
 namespace ui {
 class Event;
@@ -42,13 +41,11 @@ class QuickSettingsView;
 // Shows the bubble on the constructor, and closes the bubble on the destructor.
 // It is possible that the bubble widget is closed on deactivation. In such
 // case, this class calls UnifiedSystemTray::CloseBubble() to delete itself.
-class ASH_EXPORT UnifiedSystemTrayBubble
-    : public TrayBubbleBase,
-      public ScreenLayoutObserver,
-      public ShelfObserver,
-      public ::wm::ActivationChangeObserver,
-      public TimeToClickRecorder::Delegate,
-      public TabletModeObserver {
+class ASH_EXPORT UnifiedSystemTrayBubble : public TrayBubbleBase,
+                                           public ScreenLayoutObserver,
+                                           public ShelfObserver,
+                                           public TimeToClickRecorder::Delegate,
+                                           public TabletModeObserver {
  public:
   explicit UnifiedSystemTrayBubble(UnifiedSystemTray* tray);
 
@@ -131,11 +128,6 @@ class ASH_EXPORT UnifiedSystemTrayBubble
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
-
-  // ::wm::ActivationChangeObserver:
-  void OnWindowActivated(ActivationReason reason,
-                         aura::Window* gained_active,
-                         aura::Window* lost_active) override;
 
   // TimeToClickRecorder::Delegate:
   void RecordTimeToClick() override;

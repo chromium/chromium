@@ -136,10 +136,14 @@ void TrayEventFilter::OnWindowActivated(ActivationReason reason,
   auto* gained_active_widget =
       views::Widget::GetWidgetForNativeView(gained_active);
 
+  if (bubble_widget == gained_active_widget) {
+    return;
+  }
+
   // Don't close the bubble if a transient child is gaining or losing
-  // activation.
-  if (bubble_widget == gained_active_widget ||
-      ::wm::HasTransientAncestor(gained_active,
+  // activation (i.e. b/303382616: the network info bubble is a transcient child
+  // of the QS bubble and activating it should not close the QS bubble).
+  if (::wm::HasTransientAncestor(gained_active,
                                  bubble_widget->GetNativeWindow()) ||
       (lost_active && ::wm::HasTransientAncestor(
                           lost_active, bubble_widget->GetNativeWindow()))) {

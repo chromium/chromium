@@ -27,8 +27,6 @@
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
-#include "ui/wm/core/window_util.h"
-#include "ui/wm/public/activation_client.h"
 
 namespace ash {
 namespace {
@@ -106,7 +104,6 @@ UnifiedSystemTrayBubble::~UnifiedSystemTrayBubble() {
     unified_system_tray_->NotifyLeavingCalendarView();
   }
 
-  Shell::Get()->activation_client()->RemoveObserver(this);
   if (Shell::Get()->tablet_mode_controller()) {
     Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   }
@@ -135,7 +132,6 @@ UnifiedSystemTrayBubble::~UnifiedSystemTrayBubble() {
 void UnifiedSystemTrayBubble::InitializeObservers() {
   unified_system_tray_->shelf()->AddObserver(this);
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
-  Shell::Get()->activation_client()->AddObserver(this);
 
   CHECK(bubble_widget_);
   CHECK(bubble_view_);
@@ -321,44 +317,6 @@ void UnifiedSystemTrayBubble::OnWidgetDestroying(views::Widget* widget) {
   bubble_view_ = nullptr;
 
   // `unified_system_tray_->CloseBubble()` will delete `this`.
-  unified_system_tray_->CloseBubble();
-}
-
-void UnifiedSystemTrayBubble::OnWindowActivated(ActivationReason reason,
-                                                aura::Window* gained_active,
-                                                aura::Window* lost_active) {
-  // This function is needed when QsRevamp is disabled since the message center
-  // bubble is on top of this bubble, which we need to customize the window
-  // activation handling like below. When QsRevamp is enabled, we don't need
-  // this anymore since everything is handled in
-  // `TrayEventFilter::OnWindowActivated()`
-  if (features::IsQsRevampEnabled()) {
-    return;
-  }
-
-  if (!gained_active || !bubble_widget_) {
-    return;
-  }
-
-  // Check for the `CloseBubble()` lock.
-  if (!TrayBackgroundView::ShouldCloseBubbleOnWindowActivated()) {
-    return;
-  }
-
-  auto* gained_active_widget =
-      views::Widget::GetWidgetForNativeView(gained_active);
-
-  // Don't close the bubble if a transient child is gaining or losing
-  // activation.
-  if (bubble_widget_ == gained_active_widget ||
-      ::wm::HasTransientAncestor(gained_active,
-                                 bubble_widget_->GetNativeWindow()) ||
-      (lost_active && ::wm::HasTransientAncestor(
-                          lost_active, bubble_widget_->GetNativeWindow()))) {
-    return;
-  }
-
-  // Deletes this.
   unified_system_tray_->CloseBubble();
 }
 

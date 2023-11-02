@@ -14,6 +14,7 @@
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/message_center/ash_notification_expand_button.h"
 #include "ash/system/message_center/ash_notification_view.h"
+#include "ash/system/network/network_detailed_view.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
@@ -22,6 +23,7 @@
 #include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
+#include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/test/scoped_feature_list.h"
@@ -388,6 +390,30 @@ TEST_F(TrayEventFilterTest, CloseTrayBubbleWhenWindowActivated) {
 
   second_widget->Activate();
   EXPECT_FALSE(ime_menu->GetBubbleView());
+}
+
+TEST_F(TrayEventFilterTest, NotCloseTrayBubbleWhenTranscientChildActivated) {
+  UnifiedSystemTray* system_tray =
+      GetPrimaryShelf()->GetStatusAreaWidget()->unified_system_tray();
+
+  ShowQuickSettingsBubble();
+
+  auto* bubble = system_tray->bubble();
+
+  // Show the network detailed view.
+  bubble->unified_system_tray_controller()->ShowNetworkDetailedView(
+      /*force=*/true);
+
+  // Click on the info button in the network detailed view so that a transient
+  // bubble is opened.
+  auto* info_button = bubble->quick_settings_view()
+                          ->GetDetailedViewForTest<NetworkDetailedView>()
+                          ->info_button_for_testing();
+  LeftClickOn(info_button);
+
+  // Since a transcient child of the bubble is activated, the bubble should
+  // remain open.
+  EXPECT_TRUE(system_tray->bubble());
 }
 
 }  // namespace ash
