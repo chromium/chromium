@@ -9,9 +9,11 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/updater/configurator.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
@@ -101,6 +103,7 @@ struct UpdateServiceImplGetInstallerTextTestCase {
   const UpdateService::ErrorCategory error_category;
   const int error_code;
   const std::string expected_completion_message;
+  absl::optional<int> extra_code;
   absl::optional<bool> is_installer_error;
 };
 
@@ -389,15 +392,30 @@ INSTANTIATE_TEST_SUITE_P(
         // `update_client::InstallError::FINGERPRINT_WRITE_FAILED`, but since
         // this is coded as an "installer_error", the error will be interpreted
         // as the Windows error code for `ERROR_FILE_NOT_FOUND` instead.
-        {UpdateService::ErrorCategory::kInstall, 2,
+        {UpdateService::ErrorCategory::kInstall,
+         2,
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_INSTALL_ERROR_BASE,
              L"The system cannot find the file specified. ")),
+         {},
          true},
+        {UpdateService::ErrorCategory::kInstall,
+         GOOPDATEINSTALL_E_FILENAME_INVALID,
+         base::WideToUTF8(
+             GetLocalizedString(IDS_INVALID_INSTALLER_FILENAME_BASE)),
+         {},
+         true},
+        {UpdateService::ErrorCategory::kInstall,
+         GOOPDATEINSTALL_E_INSTALLER_FAILED_START,
+         base::WideToUTF8(base::StrCat(
+             {GetLocalizedString(IDS_INSTALLER_FAILED_TO_START_BASE), L"\n",
+              GetLocalizedStringF(IDS_EXTRA_CODE_BASE, L"0x2")})),
+         ERROR_FILE_NOT_FOUND, true},
     }));
 
 TEST_P(UpdateServiceImplGetInstallerTextTest, TestCases) {
   ASSERT_EQ(GetInstallerText(GetParam().error_category, GetParam().error_code,
+                             GetParam().extra_code.value_or(0),
                              GetParam().is_installer_error.value_or(false)),
             GetParam().expected_completion_message);
 }

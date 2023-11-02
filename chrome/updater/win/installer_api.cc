@@ -478,8 +478,7 @@ AppInstallerResult RunApplicationInstaller(
 
   if (!app_installer.MatchesExtension(L".exe") &&
       !app_installer.MatchesExtension(L".msi")) {
-    return AppInstallerResult(
-        update_client::InstallError::LAUNCH_PROCESS_FAILED, -1);
+    return AppInstallerResult(GOOPDATEINSTALL_E_FILENAME_INVALID);
   }
 
   DeleteInstallerOutput(app_info.scope, app_info.app_id);
@@ -503,9 +502,8 @@ AppInstallerResult RunApplicationInstaller(
 
   base::Process process = base::LaunchProcess(cmdline, options);
   if (!process.IsValid()) {
-    return AppInstallerResult(
-        update_client::InstallError::LAUNCH_PROCESS_FAILED,
-        HRESULTFromLastError());
+    return AppInstallerResult(GOOPDATEINSTALL_E_INSTALLER_FAILED_START,
+                              HRESULTFromLastError());
   }
 
   int exit_code = -1;

@@ -196,6 +196,13 @@ std::wstring GetTextForInstallerError(int error_code) {
     POLICY_ERROR_SWITCH_ENTRY(GOOPDATE_E_APP_INSTALL_DISABLED_BY_POLICY);
     POLICY_ERROR_SWITCH_ENTRY(GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY);
     POLICY_ERROR_SWITCH_ENTRY(GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL);
+
+    case GOOPDATEINSTALL_E_FILENAME_INVALID:
+      return GetLocalizedString(IDS_INVALID_INSTALLER_FILENAME_BASE);
+
+    case GOOPDATEINSTALL_E_INSTALLER_FAILED_START:
+      return GetLocalizedString(IDS_INSTALLER_FAILED_TO_START_BASE);
+
     default:
       return GetLocalizedStringF(IDS_GENERIC_INSTALL_ERROR_BASE,
                                  GetTextForSystemError(error_code));
@@ -364,29 +371,40 @@ std::wstring GetTextForUpdateCheckError(int error) {
 
 std::string GetInstallerText(UpdateService::ErrorCategory error_category,
                              int error_code,
+                             int extra_code,
                              bool is_installer_error) {
   if (!error_code) {
     return {};
   }
-  return base::WideToUTF8([&]() -> std::wstring {
-    switch (error_category) {
-      case UpdateService::ErrorCategory::kInstall:
-        return is_installer_error
-                   ? GetTextForInstallerError(error_code)
-                   : GetTextForUpdateClientInstallError(error_code);
-      case UpdateService::ErrorCategory::kDownload:
-        return GetTextForDownloadError(error_code);
-      case UpdateService::ErrorCategory::kUnpack:
-        return GetTextForUnpackError(error_code);
-      case UpdateService::ErrorCategory::kService:
-        return GetTextForServiceError(error_code);
-      case UpdateService::ErrorCategory::kUpdateCheck:
-        return GetTextForUpdateCheckError(error_code);
-      default:
-        LOG(ERROR) << "Unknown error category: " << error_category;
-        return {};
-    }
-  }());
+  return base::WideToUTF8(base::StrCat(
+      {[&]() -> std::wstring {
+         switch (error_category) {
+           case UpdateService::ErrorCategory::kInstall:
+             return is_installer_error
+                        ? GetTextForInstallerError(error_code)
+                        : GetTextForUpdateClientInstallError(error_code);
+           case UpdateService::ErrorCategory::kDownload:
+             return GetTextForDownloadError(error_code);
+           case UpdateService::ErrorCategory::kUnpack:
+             return GetTextForUnpackError(error_code);
+           case UpdateService::ErrorCategory::kService:
+             return GetTextForServiceError(error_code);
+           case UpdateService::ErrorCategory::kUpdateCheck:
+             return GetTextForUpdateCheckError(error_code);
+           default:
+             LOG(ERROR) << "Unknown error category: " << error_category;
+             return {};
+         }
+       }(),
+       [&]() -> std::wstring {
+         if (!extra_code) {
+           return {};
+         }
+         return base::StrCat(
+             {L"\n", GetLocalizedStringF(IDS_EXTRA_CODE_BASE,
+                                         base::ASCIIToWide(base::StringPrintf(
+                                             "%#x", extra_code)))});
+       }()}));
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -492,6 +510,7 @@ MakeUpdateClientCrxStateChangeCallback(
           if (update_state.installer_text.empty())
             update_state.installer_text = internal::GetInstallerText(
                 UpdateService::ErrorCategory::kInstall, update_state.error_code,
+                update_state.extra_code1,
                 /*is_installer_error=*/true);
 #endif  // BUILDFLAG(IS_WIN)
         }
@@ -504,7 +523,8 @@ MakeUpdateClientCrxStateChangeCallback(
 #if BUILDFLAG(IS_WIN)
           if (update_state.installer_text.empty())
             update_state.installer_text = internal::GetInstallerText(
-                update_state.error_category, update_state.error_code);
+                update_state.error_category, update_state.error_code,
+                update_state.extra_code1);
 #endif  // BUILDFLAG(IS_WIN)
 
           // If a new install encounters an error, the AppId registered in
@@ -989,7 +1009,7 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
 #if BUILDFLAG(IS_WIN)
             if (state.installer_text.empty())
               state.installer_text = internal::GetInstallerText(
-                  state.error_category, state.error_code,
+                  state.error_category, state.error_code, state.extra_code1,
                   /*is_installer_error=*/true);
 #endif  // BUILDFLAG(IS_WIN)
             state.installer_cmd_line = result.installer_cmd_line;
@@ -1071,6 +1091,7 @@ void UpdateServiceImpl::HandleUpdateDisabledByPolicy(
 #if BUILDFLAG(IS_WIN)
   update_state.installer_text = internal::GetInstallerText(
       update_state.error_category, update_state.error_code,
+      update_state.extra_code1,
       /*is_installer_error=*/true);
 #endif  // BUILDFLAG(IS_WIN)
 

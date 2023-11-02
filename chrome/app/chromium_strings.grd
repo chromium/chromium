@@ -1812,6 +1812,12 @@ Permissions you've already given to websites and apps may apply to this account.
           Installation complete.
         </message>
 
+        <!--extra code-->
+        <message name="IDS_EXTRA_CODE"
+                 desc="The optional extra code for any of the errors below">
+          Extra code: <ph name="EXTRA_CODE">$1<ex>0x80071234</ex></ph>.
+        </message>
+
         <!--Network errors.-->
         <message name="IDS_NO_NETWORK_PRESENT_ERROR"
                  desc="Error message displayed in the main dialog when the Updater is unable to connect to the network.">
@@ -1869,6 +1875,7 @@ Permissions you've already given to websites and apps may apply to this account.
                  desc="Error message displayed in the main dialog for runtime errors that occur in the update client service.">
           Service error: <ph name="SERVICE_ERROR">$1<ex>error-internal</ex></ph>.
         </message>
+
         <!--Install errors.-->
         <message name="IDS_GENERIC_INSTALL_ERROR"
                  desc="Error message displayed in the main dialog for runtime errors that occur while installing.">
@@ -1877,6 +1884,14 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_APP_INSTALL_DISABLED_BY_GROUP_POLICY"
                  desc="Error message displayed in the main dialog when an IT admin has disabled installation or update of this application using Windows Group Policy.">
           Your network administrator has applied a Group Policy that prevents installation: <ph name="INSTALL_ERROR">$1<ex>error-internal</ex></ph>
+        </message>
+        <message name="IDS_INVALID_INSTALLER_FILENAME"
+                 desc="Error message displayed in the main dialog when the application installer's filename extension is not recognized.">
+          Install error: The installer filename extension is unsupported.
+        </message>
+        <message name="IDS_INSTALLER_FAILED_TO_START"
+                 desc="Error message displayed in the main dialog when the application installer process fails to start.">
+          Install error: The installer process failed to start.
         </message>
       </if>
       <!-- High Efficiency Chip strings -->
