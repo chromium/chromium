@@ -1557,7 +1557,7 @@
   {
     "name": "default-browser-promo-trigger-criteria-experiment",
     "owners": [ "gayane@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 121
+    "expiry_milestone": 125
   },
   {  "name": "default-browser-video-in-settings",
      "owners": [ "gayane@google.com", "bling-flags@google.com" ],
@@ -4438,7 +4438,7 @@
   {
     "name": "fullscreen-promo-on-omnibox-copy-paste",
     "owners": [ "gayane@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 121
+    "expiry_milestone": 125
   },
   {
     "name": "fullscreen-promos-manager-skip-internal-limits",
