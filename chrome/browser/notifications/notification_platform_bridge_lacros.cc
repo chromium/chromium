@@ -19,6 +19,7 @@
 #include "chromeos/crosapi/mojom/notification.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -114,7 +115,15 @@ crosapi::mojom::NotificationPtr ToMojo(
   mojo_note->accessible_name = notification.accessible_name();
   mojo_note->fullscreen_visibility =
       ToMojo(notification.fullscreen_visibility());
-  mojo_note->accent_color = notification.accent_color();
+  if (notification.accent_color_id().has_value()) {
+    // Colors have to be resolved in lacros since color ids are not guaranteed
+    // to be stable across the process boundary.
+    mojo_note->accent_color =
+        color_provider->GetColor(*notification.accent_color_id());
+  } else {
+    // TODO(b/308208767): Remove when this isn't used anymore.
+    mojo_note->accent_color = notification.accent_color();
+  }
 
   mojo_note->notifier_id = crosapi::mojom::NotifierId::New();
   mojo_note->notifier_id->type = ToMojo(notification.notifier_id().type);

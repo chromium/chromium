@@ -12,14 +12,19 @@
 #include "chromeos/crosapi/mojom/notification.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
+#include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
 
 using base::ASCIIToUTF16;
@@ -298,6 +303,61 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationProgress) {
   ASSERT_TRUE(last_notification);
   EXPECT_EQ(66, last_notification->progress);
   EXPECT_EQ(u"status2", last_notification->progress_status);
+}
+
+TEST_F(NotificationPlatformBridgeLacrosTest, SerializationAccentColor) {
+  const SkColor kTestColor = SkColorSetRGB(0x01, 0x41, 0x33);
+
+  // Create a message_center notification.
+  message_center::RichNotificationData rich_data;
+
+  // Set the desired color.
+  rich_data.accent_color = kTestColor;
+
+  message_center::Notification ui_notification(
+      message_center::NOTIFICATION_TYPE_PROGRESS, "test_id", std::u16string(),
+      std::u16string(), ui::ImageModel(), std::u16string(), GURL(),
+      message_center::NotifierId(), rich_data, nullptr);
+
+  // Show the notification.
+  bridge_.Display(NotificationHandler::Type::TRANSIENT, /*profile=*/nullptr,
+                  ui_notification, /*metadata=*/nullptr);
+  message_center_remote_.FlushForTesting();
+
+  // Notification was shown with correct fields.
+  crosapi::mojom::Notification* last_notification =
+      test_message_center_.last_notification_.get();
+  ASSERT_TRUE(last_notification);
+  EXPECT_THAT(last_notification->accent_color, testing::Optional(kTestColor));
+}
+
+TEST_F(NotificationPlatformBridgeLacrosTest, SerializationAccentColorId) {
+  const SkColor kTestColor = SkColorSetRGB(0xDE, 0xAD, 0xBF);
+  // Setup color provider
+  ui::ColorProvider* color_provider =
+      ui::ColorProviderManager::GetForTesting().GetColorProviderFor(
+          ui::NativeTheme::GetInstanceForNativeUi()->GetColorProviderKey(
+              nullptr));
+  color_provider->SetColorForTesting(ui::kColorSysPrimary, kTestColor);
+
+  // Create a message_center notification.
+  message_center::RichNotificationData rich_data;
+  rich_data.accent_color_id = ui::kColorSysPrimary;
+  message_center::Notification ui_notification(
+      message_center::NOTIFICATION_TYPE_PROGRESS, "test_id", std::u16string(),
+      std::u16string(), ui::ImageModel(), std::u16string(), GURL(),
+      message_center::NotifierId(), rich_data, nullptr);
+
+  // Show the notification.
+  bridge_.Display(NotificationHandler::Type::TRANSIENT, /*profile=*/nullptr,
+                  ui_notification, /*metadata=*/nullptr);
+  message_center_remote_.FlushForTesting();
+
+  // Notification was shown with correct fields.
+  crosapi::mojom::Notification* last_notification =
+      test_message_center_.last_notification_.get();
+  ASSERT_TRUE(last_notification);
+  EXPECT_THAT(last_notification->accent_color, testing::Optional(kTestColor));
 }
 
 TEST_F(NotificationPlatformBridgeLacrosTest, UserActions) {
