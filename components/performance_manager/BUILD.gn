@@ -355,6 +355,7 @@ source_set("unit_tests") {
     "resource_attribution/process_context_unittest.cc",
     "resource_attribution/query_scheduler_unittest.cc",
     "resource_attribution/resource_contexts_unittest.cc",
+    "resource_attribution/type_helpers_unittest.cc",
     "resource_attribution/worker_context_unittest.cc",
     "test_support/mock_graphs_unittest.cc",
     "user_tuning/prefs_unittest.cc",

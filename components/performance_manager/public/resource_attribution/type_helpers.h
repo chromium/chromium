@@ -7,6 +7,7 @@
 
 #include <type_traits>
 
+#include "base/notreached.h"
 #include "base/types/optional_util.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
