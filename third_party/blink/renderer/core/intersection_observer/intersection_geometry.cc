@@ -226,7 +226,8 @@ IntersectionGeometry::IntersectionGeometry(
     flags_ |= kRootIsImplicit;
   }
 
-  RootAndTarget root_and_target(root_node, target_element);
+  RootAndTarget root_and_target(root_node, target_element,
+                                !scroll_margin.empty());
   UpdateShouldUseCachedRects(root_and_target, cached_rects);
   if (root_and_target.relationship == RootAndTarget::kInvalid) {
     return;
@@ -244,10 +245,11 @@ IntersectionGeometry::IntersectionGeometry(
 
 IntersectionGeometry::RootAndTarget::RootAndTarget(
     const Node* root_node,
-    const Element& target_element)
+    const Element& target_element,
+    bool has_scroll_margin)
     : target(GetTargetLayoutObject(target_element)),
       root(target ? GetRootLayoutObject(root_node) : nullptr) {
-  ComputeRelationship(!root_node);
+  ComputeRelationship(!root_node, has_scroll_margin);
 }
 
 // Validates the given target element and returns its LayoutObject
@@ -292,7 +294,8 @@ const LayoutObject* IntersectionGeometry::RootAndTarget::GetRootLayoutObject(
 }
 
 void IntersectionGeometry::RootAndTarget::ComputeRelationship(
-    bool root_is_implicit) {
+    bool root_is_implicit,
+    bool has_scroll_margin) {
   if (!root || !target || root == target) {
     relationship = kInvalid;
     return;
@@ -332,6 +335,10 @@ void IntersectionGeometry::RootAndTarget::ComputeRelationship(
         To<LayoutBox>(container)->HasLayoutOverflow()) {
       has_intermediate_clippers = true;
     }
+    if (container != root && has_scroll_margin &&
+        container->IsScrollContainer()) {
+      intermediate_scrollers.push_back(To<LayoutBox>(container));
+    }
   }
   if (has_intermediate_clippers) {
     relationship = kScrollableWithIntermediateClippers;
@@ -359,6 +366,13 @@ void IntersectionGeometry::UpdateShouldUseCachedRects(
   // TODO(wangxianzhu): Allow cached rects in IntersectionOptimization with
   // implicit root. For now this is blocked by some under-invalidation bugs.
   if (RootIsImplicit()) {
+    return;
+  }
+
+  if (!root_and_target.intermediate_scrollers.empty()) {
+    // This happens when there are scroll margins. We can't use cached rects
+    // because we need to call ApplyClip for each scroller to apply the
+    // scroll margins.
     return;
   }
 
@@ -438,7 +452,7 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
   root_rect_ = root_geometry.local_root_rect;
 
   bool does_intersect =
-      ClipToRoot(root, target, root_rect_, unclipped_intersection_rect_,
+      ClipToRoot(root_and_target, root_rect_, unclipped_intersection_rect_,
                  intersection_rect_, scroll_margin, cached_rects);
 
   // Map target_rect_ to absolute coordinates for target's document.
@@ -585,21 +599,58 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
   }
 }
 
-bool IntersectionGeometry::ClipToRoot(const LayoutObject* root,
-                                      const LayoutObject* target,
+bool IntersectionGeometry::ClipToRoot(const RootAndTarget& root_and_target,
                                       const PhysicalRect& root_rect,
                                       PhysicalRect& unclipped_intersection_rect,
                                       PhysicalRect& intersection_rect,
                                       const Vector<Length>& scroll_margin,
                                       CachedRects* cached_rects) {
+  const LayoutObject* target = root_and_target.target;
+  bool ignore_local_clip_path = false;
+  if (!scroll_margin.empty()) {
+    // Apply clip and scroll margin for each intermediate scroller.
+    // TODO(tcaptan): investigate iframe scenarios.
+    for (const LayoutBox* scroller : root_and_target.intermediate_scrollers) {
+      PhysicalRect scroller_rect = scroller->OverflowClipRect(PhysicalOffset());
+      if (absl::optional<gfx::RectF> clip_path_box =
+              ClipPathClipper::LocalClipPathBoundingBox(*scroller)) {
+        scroller_rect.Intersect(PhysicalRect::EnclosingRect(*clip_path_box));
+      }
+      if (!ApplyClip(scroller, target, scroller_rect,
+                     unclipped_intersection_rect, intersection_rect,
+                     scroll_margin, ignore_local_clip_path, cached_rects)) {
+        return false;
+      }
+      unclipped_intersection_rect = intersection_rect;
+      target = scroller;
+      // We have already applied clip-path on scroller (now target) above, so
+      // we don't need to apply clip-path on target in the next ApplyClip().
+      ignore_local_clip_path = true;
+    }
+  }
+  return ApplyClip(root_and_target.root, target, root_rect,
+                   unclipped_intersection_rect, intersection_rect,
+                   scroll_margin, ignore_local_clip_path, cached_rects);
+}
+
+bool IntersectionGeometry::ApplyClip(const LayoutObject* root,
+                                     const LayoutObject* target,
+                                     const PhysicalRect& root_rect,
+                                     PhysicalRect& unclipped_intersection_rect,
+                                     PhysicalRect& intersection_rect,
+                                     const Vector<Length>& scroll_margin,
+                                     bool ignore_local_clip_path,
+                                     CachedRects* cached_rects) {
+  // TODO(crbug.com/1456208): Support inline root.
   if (!root->IsBox()) {
     return false;
   }
   // Map and clip rect into root element coordinates.
   const LayoutBox* local_ancestor = nullptr;
   if (!RootIsImplicit() ||
-      root->GetDocument().GetFrame()->IsOutermostMainFrame())
+      root->GetDocument().GetFrame()->IsOutermostMainFrame()) {
     local_ancestor = To<LayoutBox>(root);
+  }
 
   unsigned flags = kDefaultVisualRectFlags | kEdgeInclusive |
                    kDontApplyMainFrameOverflowClip;
@@ -609,48 +660,13 @@ bool IntersectionGeometry::ClipToRoot(const LayoutObject* root,
   if (CanUseGeometryMapper(target)) {
     flags |= kUseGeometryMapper;
   }
+  if (ignore_local_clip_path) {
+    flags |= kIgnoreLocalClipPath;
+  }
 
   bool does_intersect = false;
 
-  if (!scroll_margin.empty()) {
-    flags |= kIgnoreLocalClipPath;
-
-    // TODO(tcaptan - http://crbug/1485750):
-    // Use IntersectionGeometry::RootAndTarget::ComputeRelationship() here
-    // to avoid potential problem of IsDescendantOf(), when being a descendant
-    // may not be equivalent to being contained (i.e. as a descendant in the
-    // containing block chain), and to lower cost.
-    const auto* scroller = target->ContainingScrollContainer();
-    // TODO(tcaptan): investigate iframe scenarios
-
-    if (scroller && scroller->IsDescendantOf(root) &&
-        !scroller->IsEffectiveRootScroller() && scroller != local_ancestor) {
-      absl::optional<gfx::RectF> scroller_bounding_box =
-          ClipPathClipper::LocalClipPathBoundingBox(*scroller);
-      PhysicalRect scroller_rect =
-          scroller_bounding_box.has_value()
-              ? PhysicalRect::EnclosingRect(scroller_bounding_box.value())
-              : scroller->LocalVisualRect();
-
-      // First clip the intersection_rect to it's containing scroller to inflate
-      // the scroller's clipping rect when doing it.
-      does_intersect = ClipToRoot(scroller, target, scroller_rect,
-                                  unclipped_intersection_rect,
-                                  intersection_rect, scroll_margin, nullptr);
-      if (does_intersect) {
-        // If intersection_rect intersects with the scroller, continue clipping
-        // it up to root.
-        unclipped_intersection_rect = intersection_rect;
-        return ClipToRoot(root, scroller, root_rect,
-                          unclipped_intersection_rect, intersection_rect,
-                          scroll_margin, nullptr);
-      }
-
-      return false;
-    }
-  }
-
-  if (ShouldUseCachedRects() && cached_rects) {
+  if (ShouldUseCachedRects()) {
     does_intersect = cached_rects->does_intersect;
   } else {
     does_intersect = target->MapToVisualRectInAncestorSpace(
