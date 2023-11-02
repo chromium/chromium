@@ -46,6 +46,8 @@ SYMBOLS_GROUPS = {
     'Currency': [
         # Currency Unicode Block.
         (0x20a0, 0x20bf),
+        # Currency from Latin-1 Supplement.
+        (0x00A2, 0x00A5),
     ],
     'Letterlike': [
         # Letterlike Symbols Unicode Block.
@@ -61,10 +63,16 @@ SYMBOLS_GROUPS = {
         # Mathematical Operators
         (0x2200, 0x2235),
         (0x2260, 0x228b),
+        # Fractions from Latin-1 Supplement
+        (0x00BC, 0x00BE),
     ],
     'Miscellaneous': [
         # Miscellaneous Symbols Unicode Block.
-        (0x2600, 0x26ff)
+        (0x2600, 0x26ff),
+        # Copyright
+        (0x00A9, 0x00A9),
+        # Registered
+        (0x00AE, 0x00AE),
     ],
 }
 
@@ -86,10 +94,22 @@ SEARCH_ONLY_SYMBOLS_GROUPS = {
         # Mathematical Operators
         (0x2236, 0x225f),
         (0x228c, 0x22df),
+        # Number Forms.
+        (0x2150, 0x218B),
     ],
     'Miscellaneous': [
         # Miscellaneous Symbols Unicode Block.
-        (0x2300, 0x23cf)
+        (0x2300, 0x23CF),
+        # Thaana.
+        (0x0780, 0x07B1),
+    ],
+    'Modifier Letter': [
+        # Spacing Modifier Letters.
+        (0x02B0, 0x02FF),
+    ],
+    'Phonetic': [
+        # Phonetic Extensions.
+        (0x1D00, 0x1D7F),
     ],
 }
 
