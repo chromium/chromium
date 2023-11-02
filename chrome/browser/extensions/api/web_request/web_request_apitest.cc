@@ -5408,6 +5408,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiPrerenderingTest, Load) {
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiPrerenderingTest, LoadIntoNewTab) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(RunExtensionTest(
+      "webrequest", {.extension_url = "test_prerendering_into_new_tab.html"}))
+      << message_;
+}
+
 // A clunky test suite class to allow for waiting for a message to be sent from
 // the extension's background context when it starts up. We need this because
 // we don't currently have a good way of waiting for a service worker context to
