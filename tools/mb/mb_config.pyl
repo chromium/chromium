@@ -1061,7 +1061,7 @@
       'android-webview-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
       'android-x64-cast': 'android_cast_debug_static_bot_compile_only_reclient',
       'android-x86-dual-coverage-exp-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome_dual_coverage_reclient',
-      'android-x86-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome_coverage_reclient',
+      'android-x86-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome_dual_coverage_reclient',
       'android_arm64_dbg_recipe': 'android_debug_trybot_compile_only_arm64_fastbuild_reclient',
       'android_blink_rel': 'android_release_trybot_x64_reclient',
       'android_compile_dbg': 'android_debug_trybot_compile_only_arm64_reclient',
