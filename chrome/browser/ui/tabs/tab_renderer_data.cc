@@ -31,7 +31,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // static
-TabRendererData TabRendererData::FromTabInModel(TabStripModel* model,
+TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
                                                 int index) {
   content::WebContents* const contents = model->GetWebContentsAt(index);
   // If the tab is showing a lookalike interstitial ("Did you mean example.com"

@@ -821,4 +821,38 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedSectionExpandedUserPref) {
   handler()->GetProfileData(std::move(callback2));
 }
 
+TEST_F(TabSearchPageHandlerTest, TabDataToMojo) {
+  AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
+  std::unique_ptr<TabData> tab_data = std::make_unique<TabData>(
+      browser1()->tab_strip_model(),
+      browser1()->tab_strip_model()->GetWebContentsAt(0));
+  tab_search::mojom::TabPtr mojo_tab_ptr =
+      handler()->GetMojoForTabData(tab_data.get());
+
+  EXPECT_EQ(mojo_tab_ptr->url, tab_data->web_contents()->GetLastCommittedURL());
+  int tab_id = extensions::ExtensionTabUtil::GetTabId(
+      browser1()->tab_strip_model()->GetWebContentsAt(0));
+  handler()->CloseTab(tab_id);
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
+}
+
+TEST_F(TabSearchPageHandlerTest, TabOrganizationToMojo) {
+  TabOrganization organization({}, {u"default_name"}, 0, absl::nullopt);
+  tab_search::mojom::TabOrganizationPtr mojo_tab_org_ptr =
+      handler()->GetMojoForTabOrganization(organization);
+
+  EXPECT_EQ(mojo_tab_org_ptr->name, organization.GetDisplayName());
+  EXPECT_EQ(mojo_tab_org_ptr->organization_id, organization.organization_id());
+}
+
+TEST_F(TabSearchPageHandlerTest, TabOrganizationSessionToMojo) {
+  std::unique_ptr<TabOrganizationSession> session =
+      std::make_unique<TabOrganizationSession>(
+          nullptr, std::make_unique<TabOrganizationRequest>());
+  tab_search::mojom::TabOrganizationSessionPtr mojo_session_ptr =
+      handler()->GetMojoForTabOrganizationSession(*session.get());
+
+  EXPECT_EQ(mojo_session_ptr->session_id, session->session_id());
+}
+
 }  // namespace

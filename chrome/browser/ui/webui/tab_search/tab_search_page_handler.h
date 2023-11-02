@@ -9,6 +9,9 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
+#include "chrome/browser/ui/tabs/organization/tab_data.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
@@ -95,6 +98,13 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   // (in either a fully visible or partially occluded state).
   bool IsWebContentsVisible();
 
+  // Convert TabOrganizations data to mojo serialized objects.
+  tab_search::mojom::TabPtr GetMojoForTabData(TabData* tab_data) const;
+  tab_search::mojom::TabOrganizationPtr GetMojoForTabOrganization(
+      const TabOrganization& organization) const;
+  tab_search::mojom::TabOrganizationSessionPtr GetMojoForTabOrganizationSession(
+      const TabOrganizationSession& session) const;
+
  protected:
   void SetTimerForTesting(std::unique_ptr<base::RetainingOneShotTimer> timer);
 
@@ -142,9 +152,9 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
       std::set<tab_groups::TabGroupId>& tab_group_ids,
       std::vector<tab_search::mojom::TabGroupPtr>& tab_groups);
 
-  tab_search::mojom::TabPtr GetTab(TabStripModel* tab_strip_model,
+  tab_search::mojom::TabPtr GetTab(const TabStripModel* tab_strip_model,
                                    content::WebContents* contents,
-                                   int index);
+                                   int index) const;
   tab_search::mojom::RecentlyClosedTabPtr GetRecentlyClosedTab(
       sessions::TabRestoreService::Tab* tab,
       const base::Time& close_time);
