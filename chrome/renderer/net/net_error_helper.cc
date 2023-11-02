@@ -230,7 +230,6 @@ LocalizedError::PageState NetErrorHelper::GenerateLocalizedErrorPage(
       alternative_error_page_info->alternative_error_page_params
           .FindBool(error_page::kOverrideErrorPage)
           .value_or(false)) {
-    DCHECK(base::FeatureList::IsEnabled(features::kPWAsDefaultOfflinePage));
     base::UmaHistogramSparse("Net.ErrorPageCounts.WebAppAlternativeErrorPage",
                              -error.reason());
     resource_id = alternative_error_page_info->resource_id;

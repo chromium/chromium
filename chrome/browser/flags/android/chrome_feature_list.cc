@@ -110,7 +110,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &download::features::kDownloadsMigrateToJobsAPI,
     &base::features::kCollectAndroidFrameTimelineMetrics,
     &download::features::kDownloadNotificationServiceUnifiedAPI,
-    &features::kPWAsDefaultOfflinePage,
     &features::kGenericSensorExtraClasses,
     &features::kBackForwardCache,
     &features::kBackForwardTransitions,

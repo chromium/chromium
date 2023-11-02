@@ -19,12 +19,10 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.OfflineTestUtil;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
@@ -44,7 +42,6 @@ public class WebappDefaultOfflineTest {
     @Test
     @SmallTest
     @Feature({"Webapps"})
-    @EnableFeatures(ChromeFeatureList.PWA_DEFAULT_OFFLINE_PAGE)
     public void testDefaultOffline() throws Exception {
         // Make sure the navigations to the test app result in a 404 error.
         final String testAppUrl =

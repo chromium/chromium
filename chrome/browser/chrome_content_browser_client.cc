@@ -7951,8 +7951,7 @@ ChromeContentBrowserClient::GetAlternativeErrorPageOverrideInfo(
   }
 #endif
 
-  if (base::FeatureList::IsEnabled(features::kPWAsDefaultOfflinePage) &&
-      error_code == net::ERR_INTERNET_DISCONNECTED) {
+  if (error_code == net::ERR_INTERNET_DISCONNECTED) {
     content::mojom::AlternativeErrorPageOverrideInfoPtr
         alternative_error_page_override_info = web_app::GetOfflinePageInfo(
             url, render_frame_host, browser_context);

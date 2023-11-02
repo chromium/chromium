@@ -29,8 +29,7 @@ class AlternativeErrorPageOverrideInfoBrowserTest
     : public web_app::WebAppControllerBrowserTest {
  public:
   AlternativeErrorPageOverrideInfoBrowserTest() {
-    feature_list_.InitWithFeatures({features::kPWAsDefaultOfflinePage,
-                                    blink::features::kWebAppEnableDarkMode},
+    feature_list_.InitWithFeatures({blink::features::kWebAppEnableDarkMode},
                                    {});
   }
 

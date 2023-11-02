@@ -121,18 +121,8 @@ class WebAppOfflineTest : public InProcessBrowserTest {
       override_registration_;
 };
 
-class WebAppOfflinePageTest
-    : public WebAppOfflineTest,
-      public ::testing::WithParamInterface<PageFlagParam> {
+class WebAppOfflinePageTest : public WebAppOfflineTest {
  public:
-  WebAppOfflinePageTest() {
-    if (GetParam() == PageFlagParam::kWithDefaultPageFlag) {
-      feature_list_.InitAndEnableFeature(features::kPWAsDefaultOfflinePage);
-    } else {
-      feature_list_.InitAndDisableFeature(features::kPWAsDefaultOfflinePage);
-    }
-  }
-
   void SyncHistograms() {
     content::FetchHistogramsFromChildProcesses();
     metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
@@ -148,7 +138,6 @@ class WebAppOfflinePageTest
   base::HistogramTester* histogram() { return &histogram_tester_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
 };
 
@@ -156,33 +145,23 @@ class WebAppOfflinePageTest
 // display the default offline page rather than the dino.
 // When the exact same conditions are applied with the feature flag disabled
 // expect that the default offline page is not shown.
-IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflinePageIsDisplayed) {
+IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest, WebAppOfflinePageIsDisplayed) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
   StartWebAppAndDisconnect(web_contents, "/banners/no-sw-with-colors.html");
 
-  if (GetParam() == PageFlagParam::kWithDefaultPageFlag) {
-    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 1);
-    // Expect that the default offline page is showing.
-    EXPECT_TRUE(
-        EvalJs(web_contents,
-               "document.getElementById('default-web-app-msg') !== null")
-            .ExtractBool());
-  } else {
-    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
-    // Expect that the default offline page is not showing.
-    EXPECT_TRUE(
-        EvalJs(web_contents,
-               "document.getElementById('default-web-app-msg') === null")
-            .ExtractBool());
-  }
+  ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 1);
+  // Expect that the default offline page is showing.
+  EXPECT_TRUE(EvalJs(web_contents,
+                     "document.getElementById('default-web-app-msg') !== null")
+                  .ExtractBool());
 }
 
 // When a web app with a manifest and service worker that doesn't handle being
 // offline it should display the default offline page rather than the dino.
-IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest,
+IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest,
                        WebAppOfflineWithEmptyServiceWorker) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
@@ -190,26 +169,16 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest,
   ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
   StartPwaAndDisconnect(web_contents, "/banners/background-color.html");
 
-  if (GetParam() == PageFlagParam::kWithDefaultPageFlag) {
-    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 1);
-    // Expect that the default offline page is showing.
-    EXPECT_TRUE(
-        EvalJs(web_contents,
-               "document.getElementById('default-web-app-msg') !== null")
-            .ExtractBool());
-  } else {
-    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
-    // Expect that the default offline page is not showing.
-    EXPECT_TRUE(
-        EvalJs(web_contents,
-               "document.getElementById('default-web-app-msg') === null")
-            .ExtractBool());
-  }
+  ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 1);
+  // Expect that the default offline page is showing.
+  EXPECT_TRUE(EvalJs(web_contents,
+                     "document.getElementById('default-web-app-msg') !== null")
+                  .ExtractBool());
 }
 
 // When a web app with a manifest and service worker that handles being offline
 // it should not display the default offline page.
-IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineWithServiceWorker) {
+IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest, WebAppOfflineWithServiceWorker) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -224,7 +193,7 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineWithServiceWorker) {
 }
 
 // Default offline page icon test.
-IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflinePageIconShowing) {
+IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest, WebAppOfflinePageIconShowing) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -332,7 +301,6 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflinePageIconShowing) {
       "CPScI9pwg2HOCYM8Jgj0nCPacINhzgmDPCYI9Jwj2nCDYc4JgzwmCPScI9pwg2HOCYM8Jgj0"
       "nCPacINhzgmDPCYI95/8B/D/AG3nStoAAAAAASUVORK5CYII=";
 
-  if (GetParam() == PageFlagParam::kWithDefaultPageFlag) {
     // Ensure that we don't proceed until the icon loading is finished.
     ASSERT_EQ(
         true,
@@ -377,16 +345,9 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflinePageIconShowing) {
               EvalJs(web_contents,
                      "document.getElementById('offlineIcon').style.display")
                   .ExtractString());
-  } else {
-    // Expect that the default offline page is not showing.
-    EXPECT_TRUE(
-        EvalJs(web_contents,
-               "document.getElementById('default-web-app-msg') === null")
-            .ExtractBool());
-  }
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineMetricsNavigation) {
+IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest, WebAppOfflineMetricsNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -397,41 +358,23 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineMetricsNavigation) {
   histogram()->ExpectTotalCount(kHistogramDurationShown, 0);
   histogram()->ExpectTotalCount(kHistogramClosingReason, 0);
 
-  if (GetParam() == PageFlagParam::kWithDefaultPageFlag) {
-    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 1);
-    // Expect that the default offline page is showing.
-    EXPECT_TRUE(
-        EvalJs(web_contents,
-               "document.getElementById('default-web-app-msg') !== null")
-            .ExtractBool());
+  ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 1);
+  // Expect that the default offline page is showing.
+  EXPECT_TRUE(EvalJs(web_contents,
+                     "document.getElementById('default-web-app-msg') !== null")
+                  .ExtractBool());
 
-    // Navigate somewhere else (anywhere else but the current page will do).
-    EXPECT_TRUE(NavigateToURL(web_contents, GURL("about:blank")));
+  // Navigate somewhere else (anywhere else but the current page will do).
+  EXPECT_TRUE(NavigateToURL(web_contents, GURL("about:blank")));
 
-    SyncHistograms();
-    histogram()->ExpectTotalCount(kHistogramDurationShown, 1);
-    histogram()->ExpectTotalCount(kHistogramClosingReason, 1);
-    EXPECT_THAT(histogram()->GetAllSamples(kHistogramClosingReason),
-                ElementsAre(base::Bucket(/* min= */ 1, /* count= */ 1)));
-  } else {
-    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
-    // Expect that the default offline page is not showing.
-    EXPECT_TRUE(
-        EvalJs(web_contents,
-               "document.getElementById('default-web-app-msg') === null")
-            .ExtractBool());
-
-    // Navigate somewhere else (anywhere else but the current page will do).
-    EXPECT_TRUE(NavigateToURL(web_contents, GURL("about:blank")));
-
-    // There should be no histograms still.
-    SyncHistograms();
-    histogram()->ExpectTotalCount(kHistogramDurationShown, 0);
-    histogram()->ExpectTotalCount(kHistogramClosingReason, 0);
-  }
+  SyncHistograms();
+  histogram()->ExpectTotalCount(kHistogramDurationShown, 1);
+  histogram()->ExpectTotalCount(kHistogramClosingReason, 1);
+  EXPECT_THAT(histogram()->GetAllSamples(kHistogramClosingReason),
+              ElementsAre(base::Bucket(/* min= */ 1, /* count= */ 1)));
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineMetricsBackOnline) {
+IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest, WebAppOfflineMetricsBackOnline) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -442,49 +385,29 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineMetricsBackOnline) {
   histogram()->ExpectTotalCount(kHistogramDurationShown, 0);
   histogram()->ExpectTotalCount(kHistogramClosingReason, 0);
 
-  if (GetParam() == PageFlagParam::kWithDefaultPageFlag) {
-    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 1);
-    // Expect that the default offline page is showing.
-    EXPECT_TRUE(
-        EvalJs(web_contents,
-               "document.getElementById('default-web-app-msg') !== null")
-            .ExtractBool());
+  ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 1);
+  // Expect that the default offline page is showing.
+  EXPECT_TRUE(EvalJs(web_contents,
+                     "document.getElementById('default-web-app-msg') !== null")
+                  .ExtractBool());
 
-    // The URL interceptor only blocks the first navigation. This one should
-    // go through.
-    ReloadWebContents(web_contents);
+  // The URL interceptor only blocks the first navigation. This one should
+  // go through.
+  ReloadWebContents(web_contents);
 
-    // Expect that the default offline page is not showing.
-    EXPECT_TRUE(
-        EvalJs(web_contents,
-               "document.getElementById('default-web-app-msg') === null")
-            .ExtractBool());
+  // Expect that the default offline page is not showing.
+  EXPECT_TRUE(EvalJs(web_contents,
+                     "document.getElementById('default-web-app-msg') === null")
+                  .ExtractBool());
 
-    SyncHistograms();
-    histogram()->ExpectTotalCount(kHistogramDurationShown, 1);
-    histogram()->ExpectTotalCount(kHistogramClosingReason, 1);
-    EXPECT_THAT(histogram()->GetAllSamples(kHistogramClosingReason),
-                ElementsAre(base::Bucket(/* min= */ 0, /* count= */ 1)));
-  } else {
-    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
-    // Expect that the default offline page is not showing.
-    EXPECT_TRUE(
-        EvalJs(web_contents,
-               "document.getElementById('default-web-app-msg') === null")
-            .ExtractBool());
-
-    // The URL interceptor only blocks the first navigation. This one should
-    // go through.
-    ReloadWebContents(web_contents);
-
-    // There should be no histograms still.
-    SyncHistograms();
-    histogram()->ExpectTotalCount(kHistogramDurationShown, 0);
-    histogram()->ExpectTotalCount(kHistogramClosingReason, 0);
-  }
+  SyncHistograms();
+  histogram()->ExpectTotalCount(kHistogramDurationShown, 1);
+  histogram()->ExpectTotalCount(kHistogramClosingReason, 1);
+  EXPECT_THAT(histogram()->GetAllSamples(kHistogramClosingReason),
+              ElementsAre(base::Bucket(/* min= */ 0, /* count= */ 1)));
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineMetricsPwaClosing) {
+IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest, WebAppOfflineMetricsPwaClosing) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -496,43 +419,20 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineMetricsPwaClosing) {
   histogram()->ExpectTotalCount(kHistogramDurationShown, 0);
   histogram()->ExpectTotalCount(kHistogramClosingReason, 0);
 
-  if (GetParam() == PageFlagParam::kWithDefaultPageFlag) {
-    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 1);
-    // Expect that the default offline page is showing.
-    EXPECT_TRUE(
-        EvalJs(web_contents,
-               "document.getElementById('default-web-app-msg') !== null")
-            .ExtractBool());
+  ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 1);
+  // Expect that the default offline page is showing.
+  EXPECT_TRUE(EvalJs(web_contents,
+                     "document.getElementById('default-web-app-msg') !== null")
+                  .ExtractBool());
 
-    CloseBrowser(web_contents);
+  CloseBrowser(web_contents);
 
-    SyncHistograms();
-    histogram()->ExpectTotalCount(kHistogramDurationShown, 1);
-    histogram()->ExpectTotalCount(kHistogramClosingReason, 1);
-    EXPECT_THAT(histogram()->GetAllSamples(kHistogramClosingReason),
-                ElementsAre(base::Bucket(/* min= */ 2, /* count= */ 1)));
-  } else {
-    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
-    // Expect that the default offline page is not showing.
-    EXPECT_TRUE(
-        EvalJs(web_contents,
-               "document.getElementById('default-web-app-msg') === null")
-            .ExtractBool());
-
-    CloseBrowser(web_contents);
-
-    // There should be no histograms still.
-    SyncHistograms();
-    histogram()->ExpectTotalCount(kHistogramDurationShown, 0);
-    histogram()->ExpectTotalCount(kHistogramClosingReason, 0);
-  }
+  SyncHistograms();
+  histogram()->ExpectTotalCount(kHistogramDurationShown, 1);
+  histogram()->ExpectTotalCount(kHistogramClosingReason, 1);
+  EXPECT_THAT(histogram()->GetAllSamples(kHistogramClosingReason),
+              ElementsAre(base::Bucket(/* min= */ 2, /* count= */ 1)));
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    WebAppOfflinePageTest,
-    ::testing::Values(PageFlagParam::kWithDefaultPageFlag,
-                      PageFlagParam::kWithoutDefaultPageFlag));
 
 class WebAppOfflineDarkModeTest
     : public WebAppOfflineTest,
@@ -540,8 +440,7 @@ class WebAppOfflineDarkModeTest
  public:
   WebAppOfflineDarkModeTest() {
     std::vector<base::test::FeatureRef> disabled_features;
-    feature_list_.InitWithFeatures({features::kPWAsDefaultOfflinePage,
-                                    blink::features::kWebAppEnableDarkMode},
+    feature_list_.InitWithFeatures({blink::features::kWebAppEnableDarkMode},
                                    {disabled_features});
   }
 

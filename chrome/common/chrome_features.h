@@ -173,8 +173,6 @@ extern const base::FeatureParam<OsIntegrationSubManagersStage>
 BASE_DECLARE_FEATURE(kDesktopTaskManagerEndProcessDisabledForExtension);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kPWAsDefaultOfflinePage);
-
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kDesktopPWAsCacheDuringDefaultInstall);
 

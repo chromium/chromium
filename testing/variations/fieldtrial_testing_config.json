@@ -5134,21 +5134,6 @@
             ]
         }
     ],
-    "DefaultOfflineExperience": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PWAsDefaultOfflinePage"
-                    ]
-                }
-            ]
-        }
-    ],
     "DefaultOpenSSLBufferSizeFeature": [
         {
             "platforms": [
