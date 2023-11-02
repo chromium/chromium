@@ -19,7 +19,6 @@ PermissionPromptBubble::PermissionPromptBubble(
       permission_requested_time_(base::TimeTicks::Now()) {
   LocationBarView* lbv = GetLocationBarView();
   if (lbv && lbv->IsDrawn() &&
-      base::FeatureList::IsEnabled(permissions::features::kConfirmationChip) &&
       delegate->Requests()[0]->IsConfirmationChipSupported()) {
     lbv->chip_controller()->InitializePermissionPrompt(
         delegate->GetWeakPtr(),
@@ -101,8 +100,7 @@ bool PermissionPromptBubble::UpdateAnchor() {
     prompt_bubble_->UpdateAnchorPosition();
   }
 
-  if (base::FeatureList::IsEnabled(permissions::features::kConfirmationChip) &&
-      !delegate()->Requests().empty() &&
+  if (!delegate()->Requests().empty() &&
       delegate()->Requests()[0]->IsConfirmationChipSupported()) {
     // If we have a location bar view but the chip_controller_ doesn't exist,
     // it means that the we switched from a browser mode that did not have a

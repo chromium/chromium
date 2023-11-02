@@ -132,8 +132,7 @@ void ChipController::OnRequestDecided(
     permissions::PermissionAction permission_action) {
   RemoveBubbleObserverAndResetTimersAndChipCallbacks();
   if (!GetLocationBarView()->IsDrawn() ||
-      GetLocationBarView()->GetWidget()->GetTopLevelWidget()->IsFullscreen() ||
-      !base::FeatureList::IsEnabled(permissions::features::kConfirmationChip)) {
+      GetLocationBarView()->GetWidget()->GetTopLevelWidget()->IsFullscreen()) {
     // If the location bar isn't drawn or during fullscreen, the chip can't be
     // shown anywhere.
     ResetPermissionPromptChip();

@@ -56,12 +56,7 @@
 
 namespace {
 
-enum ChipFeatureConfig {
-  REQUEST_CHIP,
-  REQUEST_CHIP_LOCATION_BAR_ICON_OVERRIDE,
-  REQUEST_AND_CONFIRMATION_CHIP,
-  REQUEST_AND_CONFIRMATION_CHIP_LOCATION_BAR_ICON_OVERRIDE
-};
+enum ChipFeatureConfig { LOCATION_BAR_ICON_OVERRIDE };
 
 constexpr char kAddNotificationsEventListener[] = R"(
     new Promise(async resolve => {
@@ -294,21 +289,9 @@ class LocationBarIconOverrideTest
     std::vector<base::test::FeatureRef> disabled_features = {};
 
     switch (GetParam()) {
-      case REQUEST_CHIP:
-        break;
-      case REQUEST_CHIP_LOCATION_BAR_ICON_OVERRIDE:
+      case LOCATION_BAR_ICON_OVERRIDE:
         scoped_feature_list_.InitWithFeatures(
             {permissions::features::kChipLocationBarIconOverride},
-            disabled_features);
-        break;
-      case REQUEST_AND_CONFIRMATION_CHIP:
-        scoped_feature_list_.InitWithFeatures(
-            {permissions::features::kConfirmationChip}, disabled_features);
-        break;
-      case REQUEST_AND_CONFIRMATION_CHIP_LOCATION_BAR_ICON_OVERRIDE:
-        scoped_feature_list_.InitWithFeatures(
-            {permissions::features::kConfirmationChip,
-             permissions::features::kChipLocationBarIconOverride},
             disabled_features);
         break;
     }
@@ -363,34 +346,32 @@ IN_PROC_BROWSER_TEST_P(LocationBarIconOverrideTest,
       ->GetLocationBarView()
       ->Layout();
 
-  if (base::FeatureList::IsEnabled(permissions::features::kConfirmationChip)) {
-    // Test with confirmation chip.
-    // Verify chip is still visible and has the confirmation text
-    EXPECT_TRUE(GetChip()->GetVisible());
-    EXPECT_TRUE(GetChip()->GetText() ==
-                l10n_util::GetStringUTF16(
-                    IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION));
+  // Test with confirmation chip.
+  // Verify chip is still visible and has the confirmation text
+  EXPECT_TRUE(GetChip()->GetVisible());
+  EXPECT_TRUE(GetChip()->GetText() ==
+              l10n_util::GetStringUTF16(
+                  IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION));
 
-    if (IsTestWithOverridenLocationBarIcon()) {
-      EXPECT_FALSE(IsLocationIconVisible());
-    } else {
-      EXPECT_TRUE(IsLocationIconVisible());
-    }
-
-    // Check collapse timer is running and fast forward fire callback. Then,
-    // fast forward animation to trigger callback and wait until it completes.
-    EXPECT_TRUE(GetChipController()->is_collapse_timer_running_for_testing());
-    GetChipController()->fire_collapse_timer_for_testing();
-    GetChip()->animation_for_testing()->End();
-    base::RunLoop().RunUntilIdle();
-
-    // Force synchronous update of layout values. In the actual code,
-    // InvalidateLayout() is sufficient, but leaves stale visibility values for
-    // testing.
-    BrowserView::GetBrowserViewForBrowser(browser())
-        ->GetLocationBarView()
-        ->Layout();
+  if (IsTestWithOverridenLocationBarIcon()) {
+    EXPECT_FALSE(IsLocationIconVisible());
+  } else {
+    EXPECT_TRUE(IsLocationIconVisible());
   }
+
+  // Check collapse timer is running and fast forward fire callback. Then,
+  // fast forward animation to trigger callback and wait until it completes.
+  EXPECT_TRUE(GetChipController()->is_collapse_timer_running_for_testing());
+  GetChipController()->fire_collapse_timer_for_testing();
+  GetChip()->animation_for_testing()->End();
+  base::RunLoop().RunUntilIdle();
+
+  // Force synchronous update of layout values. In the actual code,
+  // InvalidateLayout() is sufficient, but leaves stale visibility values for
+  // testing.
+  BrowserView::GetBrowserViewForBrowser(browser())
+      ->GetLocationBarView()
+      ->Layout();
 
   // With any feature flag configuration, we have to ensure that the location
   // bar icon is visible after the chip collapsed.
@@ -398,14 +379,9 @@ IN_PROC_BROWSER_TEST_P(LocationBarIconOverrideTest,
   EXPECT_TRUE(IsLocationIconVisible());
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    LocationBarIconOverrideTest,
-    ::testing::Values(
-        REQUEST_CHIP,
-        REQUEST_CHIP_LOCATION_BAR_ICON_OVERRIDE,
-        REQUEST_AND_CONFIRMATION_CHIP,
-        REQUEST_AND_CONFIRMATION_CHIP_LOCATION_BAR_ICON_OVERRIDE));
+INSTANTIATE_TEST_SUITE_P(All,
+                         LocationBarIconOverrideTest,
+                         ::testing::Values(LOCATION_BAR_ICON_OVERRIDE));
 
 class ConfirmationChipEnabledInteractiveTest
     : public PermissionChipInteractiveTest,
@@ -414,14 +390,9 @@ class ConfirmationChipEnabledInteractiveTest
   ConfirmationChipEnabledInteractiveTest() {
     std::vector<base::test::FeatureRef> disabled_features = {};
     switch (GetParam()) {
-      case REQUEST_AND_CONFIRMATION_CHIP:
+      case LOCATION_BAR_ICON_OVERRIDE:
         scoped_feature_list_.InitWithFeatures(
-            {permissions::features::kConfirmationChip}, disabled_features);
-        break;
-      case REQUEST_AND_CONFIRMATION_CHIP_LOCATION_BAR_ICON_OVERRIDE:
-        scoped_feature_list_.InitWithFeatures(
-            {permissions::features::kConfirmationChip,
-             permissions::features::kChipLocationBarIconOverride},
+            {permissions::features::kChipLocationBarIconOverride},
             disabled_features);
         break;
       default:
@@ -533,23 +504,14 @@ IN_PROC_BROWSER_TEST_P(ConfirmationChipEnabledInteractiveTest,
   ASSERT_FALSE(GetChip()->GetVisible());
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ConfirmationChipEnabledInteractiveTest,
-    ::testing::Values(
-        REQUEST_AND_CONFIRMATION_CHIP,
-        REQUEST_AND_CONFIRMATION_CHIP_LOCATION_BAR_ICON_OVERRIDE));
+INSTANTIATE_TEST_SUITE_P(All,
+                         ConfirmationChipEnabledInteractiveTest,
+                         ::testing::Values(LOCATION_BAR_ICON_OVERRIDE));
 
 class ConfirmationChipUmaInteractiveTest
     : public PermissionChipInteractiveTest {
  public:
-  ConfirmationChipUmaInteractiveTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {permissions::features::kConfirmationChip}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  ConfirmationChipUmaInteractiveTest() = default;
 };
 
 IN_PROC_BROWSER_TEST_F(ConfirmationChipUmaInteractiveTest, VerifyUmaMetrics) {
@@ -613,10 +575,7 @@ IN_PROC_BROWSER_TEST_F(ConfirmationChipUmaInteractiveTest, VerifyUmaMetrics) {
 
 class PageInfoChangedWithin1mUmaTest : public PermissionChipInteractiveTest {
  public:
-  PageInfoChangedWithin1mUmaTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {permissions::features::kConfirmationChip}, {});
-  }
+  PageInfoChangedWithin1mUmaTest() = default;
 
   void InitAndRequestNotification() {
     ASSERT_TRUE(embedded_test_server()->Start());

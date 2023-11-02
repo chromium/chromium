@@ -1568,8 +1568,7 @@ bool LocationBarView::ShowPageInfoDialog() {
 }
 
 void LocationBarView::RecordPageInfoMetrics() {
-  if (base::FeatureList::IsEnabled(permissions::features::kConfirmationChip) &&
-      chip_controller_) {
+  if (chip_controller_) {
     bool confirmation_chip_collapsed_recently =
         base::TimeTicks::Now() - confirmation_chip_collapsed_time_ <=
         permissions::kConfirmationConsiderationDurationForUma;

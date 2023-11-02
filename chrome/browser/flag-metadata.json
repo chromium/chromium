@@ -1227,14 +1227,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "confirmation-chip",
-    "owners": [
-      "fjacky@chromium.org",
-      "elklm@chromium.org"
-    ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "consumer-auto-update-toggle-allowed",
     "owners": [
       "kimjae@chromium.org",
