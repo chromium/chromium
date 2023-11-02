@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(info.on_file_downloaded_providers.empty());
   EXPECT_TRUE(info.on_bulk_data_entry_providers.empty());
   EXPECT_TRUE(info.on_print_providers.empty());
-  EXPECT_EQ(enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED,
+  EXPECT_EQ(enterprise_reporting_private::RealtimeUrlCheckMode::kDisabled,
             info.realtime_url_check_mode);
   EXPECT_TRUE(info.on_security_event_providers.empty());
   EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
@@ -323,23 +323,22 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(info.on_file_downloaded_providers.empty());
   EXPECT_TRUE(info.on_bulk_data_entry_providers.empty());
   EXPECT_TRUE(info.on_print_providers.empty());
-  EXPECT_EQ(enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED,
+  EXPECT_EQ(enterprise_reporting_private::RealtimeUrlCheckMode::kDisabled,
             info.realtime_url_check_mode);
   EXPECT_TRUE(info.on_security_event_providers.empty());
   EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
-  EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD,
+  EXPECT_EQ(enterprise_reporting_private::SafeBrowsingLevel::kStandard,
             info.safe_browsing_protection_level);
   EXPECT_EQ(BuiltInDnsClientPlatformDefault(),
             info.built_in_dns_client_enabled);
   EXPECT_EQ(
-      enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET,
+      enterprise_reporting_private::PasswordProtectionTrigger::kPolicyUnset,
       info.password_protection_warning_trigger);
   EXPECT_FALSE(info.chrome_remote_desktop_app_blocked);
   ExpectDefaultThirdPartyBlockingEnabled(info);
-  EXPECT_EQ(dev_mode_enabled() ? api::enterprise_reporting_private::
-                                     SettingValue::SETTING_VALUE_UNKNOWN
-                               : api::enterprise_reporting_private::
-                                     SettingValue::SETTING_VALUE_ENABLED,
+  EXPECT_EQ(dev_mode_enabled()
+                ? api::enterprise_reporting_private::SettingValue::kUnknown
+                : api::enterprise_reporting_private::SettingValue::kEnabled,
             info.os_firewall);
 }
 
@@ -389,15 +388,15 @@ IN_PROC_BROWSER_TEST_P(EnterpriseReportingPrivateGetContextInfoBrowserTest,
   EXPECT_TRUE(info.on_file_downloaded_providers.empty());
   EXPECT_TRUE(info.on_bulk_data_entry_providers.empty());
   EXPECT_TRUE(info.on_print_providers.empty());
-  EXPECT_EQ(enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED,
+  EXPECT_EQ(enterprise_reporting_private::RealtimeUrlCheckMode::kDisabled,
             info.realtime_url_check_mode);
   EXPECT_TRUE(info.on_security_event_providers.empty());
   EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
-  EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD,
+  EXPECT_EQ(enterprise_reporting_private::SafeBrowsingLevel::kStandard,
             info.safe_browsing_protection_level);
   EXPECT_TRUE(info.built_in_dns_client_enabled);
   EXPECT_EQ(
-      enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET,
+      enterprise_reporting_private::PasswordProtectionTrigger::kPolicyUnset,
       info.password_protection_warning_trigger);
   EXPECT_FALSE(info.chrome_remote_desktop_app_blocked);
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -672,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetCertificateTest,
                        TestPolicyUnset) {
   auto cert = GetCertificate();
 
-  EXPECT_EQ(enterprise_reporting_private::CERTIFICATE_STATUS_POLICY_UNSET,
+  EXPECT_EQ(enterprise_reporting_private::CertificateStatus::kPolicyUnset,
             cert.status);
 }
 
@@ -690,7 +689,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetCertificateTest,
 
   auto cert = GetCertificate();
 
-  EXPECT_EQ(enterprise_reporting_private::CERTIFICATE_STATUS_OK, cert.status);
+  EXPECT_EQ(enterprise_reporting_private::CertificateStatus::kOk, cert.status);
   EXPECT_FALSE(cert.encoded_certificate.has_value());
 }
 
@@ -710,7 +709,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetCertificateTest,
 
   auto cert = GetCertificate();
 
-  EXPECT_EQ(enterprise_reporting_private::CERTIFICATE_STATUS_OK, cert.status);
+  EXPECT_EQ(enterprise_reporting_private::CertificateStatus::kOk, cert.status);
   EXPECT_FALSE(cert.encoded_certificate.has_value());
 }
 
@@ -730,7 +729,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetCertificateTest,
 
   auto cert = GetCertificate();
 
-  EXPECT_EQ(enterprise_reporting_private::CERTIFICATE_STATUS_OK, cert.status);
+  EXPECT_EQ(enterprise_reporting_private::CertificateStatus::kOk, cert.status);
   EXPECT_FALSE(cert.encoded_certificate.has_value());
 }
 
@@ -750,7 +749,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetCertificateTest,
 
   auto cert = GetCertificate();
 
-  EXPECT_EQ(enterprise_reporting_private::CERTIFICATE_STATUS_OK, cert.status);
+  EXPECT_EQ(enterprise_reporting_private::CertificateStatus::kOk, cert.status);
   EXPECT_TRUE(cert.encoded_certificate.has_value());
 
   base::StringPiece der_cert = net::x509_util::CryptoBufferAsStringPiece(

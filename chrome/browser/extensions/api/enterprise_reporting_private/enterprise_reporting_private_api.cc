@@ -62,11 +62,11 @@ api::enterprise_reporting_private::SettingValue ToInfoSettingValue(
     enterprise_signals::SettingValue value) {
   switch (value) {
     case enterprise_signals::SettingValue::UNKNOWN:
-      return api::enterprise_reporting_private::SETTING_VALUE_UNKNOWN;
+      return api::enterprise_reporting_private::SettingValue::kUnknown;
     case enterprise_signals::SettingValue::DISABLED:
-      return api::enterprise_reporting_private::SETTING_VALUE_DISABLED;
+      return api::enterprise_reporting_private::SettingValue::kDisabled;
     case enterprise_signals::SettingValue::ENABLED:
-      return api::enterprise_reporting_private::SETTING_VALUE_ENABLED;
+      return api::enterprise_reporting_private::SettingValue::kEnabled;
   }
 }
 
@@ -94,12 +94,11 @@ api::enterprise_reporting_private::ContextInfo ToContextInfo(
   switch (signals.realtime_url_check_mode) {
     case safe_browsing::REAL_TIME_CHECK_DISABLED:
       info.realtime_url_check_mode = extensions::api::
-          enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED;
+          enterprise_reporting_private::RealtimeUrlCheckMode::kDisabled;
       break;
     case safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED:
-      info.realtime_url_check_mode =
-          extensions::api::enterprise_reporting_private::
-              REALTIME_URL_CHECK_MODE_ENABLED_MAIN_FRAME;
+      info.realtime_url_check_mode = extensions::api::
+          enterprise_reporting_private::RealtimeUrlCheckMode::kEnabledMainFrame;
       break;
   }
   info.browser_version = std::move(signals.browser_version);
@@ -109,36 +108,36 @@ api::enterprise_reporting_private::ContextInfo ToContextInfo(
   switch (signals.safe_browsing_protection_level) {
     case safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING:
       info.safe_browsing_protection_level = extensions::api::
-          enterprise_reporting_private::SAFE_BROWSING_LEVEL_DISABLED;
+          enterprise_reporting_private::SafeBrowsingLevel::kDisabled;
       break;
     case safe_browsing::SafeBrowsingState::STANDARD_PROTECTION:
       info.safe_browsing_protection_level = extensions::api::
-          enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD;
+          enterprise_reporting_private::SafeBrowsingLevel::kStandard;
       break;
     case safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION:
       info.safe_browsing_protection_level = extensions::api::
-          enterprise_reporting_private::SAFE_BROWSING_LEVEL_ENHANCED;
+          enterprise_reporting_private::SafeBrowsingLevel::kEnhanced;
       break;
   }
   if (!signals.password_protection_warning_trigger.has_value()) {
     info.password_protection_warning_trigger = extensions::api::
-        enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET;
+        enterprise_reporting_private::PasswordProtectionTrigger::kPolicyUnset;
   } else {
     switch (signals.password_protection_warning_trigger.value()) {
       case safe_browsing::PASSWORD_PROTECTION_OFF:
         info.password_protection_warning_trigger =
             extensions::api::enterprise_reporting_private::
-                PASSWORD_PROTECTION_TRIGGER_PASSWORD_PROTECTION_OFF;
+                PasswordProtectionTrigger::kPasswordProtectionOff;
         break;
       case safe_browsing::PASSWORD_REUSE:
         info.password_protection_warning_trigger =
             extensions::api::enterprise_reporting_private::
-                PASSWORD_PROTECTION_TRIGGER_PASSWORD_REUSE;
+                PasswordProtectionTrigger::kPasswordReuse;
         break;
       case safe_browsing::PHISHING_REUSE:
         info.password_protection_warning_trigger =
             extensions::api::enterprise_reporting_private::
-                PASSWORD_PROTECTION_TRIGGER_PHISHING_REUSE;
+                PasswordProtectionTrigger::kPhishingReuse;
         break;
       case safe_browsing::PASSWORD_PROTECTION_TRIGGER_MAX:
         NOTREACHED();
@@ -481,7 +480,7 @@ EnterpriseReportingPrivateGetCertificateFunction::Run() {
           prefs::kManagedAutoSelectCertificateForUrls)) {
     api::enterprise_reporting_private::Certificate ret;
     ret.status = extensions::api::enterprise_reporting_private::
-        CERTIFICATE_STATUS_POLICY_UNSET;
+        CertificateStatus::kPolicyUnset;
     return RespondNow(WithArguments(ret.ToValue()));
   }
 
@@ -503,7 +502,7 @@ void EnterpriseReportingPrivateGetCertificateFunction::OnClientCertFetched(
   // Getting here means the status is always OK, but the |encoded_certificate|
   // field is only set if there actually was a certificate selected.
   ret.status =
-      extensions::api::enterprise_reporting_private::CERTIFICATE_STATUS_OK;
+      extensions::api::enterprise_reporting_private::CertificateStatus::kOk;
   if (cert) {
     base::StringPiece der_cert = net::x509_util::CryptoBufferAsStringPiece(
         cert->certificate()->cert_buffer());
@@ -595,8 +594,7 @@ bool EnterpriseReportingPrivateEnqueueRecordFunction::TryParseParams(
 bool EnterpriseReportingPrivateEnqueueRecordFunction::TryAttachDMTokenToRecord(
     ::reporting::Record& record,
     api::enterprise_reporting_private::EventType event_type) {
-  if (event_type ==
-      api::enterprise_reporting_private::EventType::EVENT_TYPE_DEVICE) {
+  if (event_type == api::enterprise_reporting_private::EventType::kDevice) {
     // Device DM tokens are automatically appended during uploads, so we need
     // not specify them with the record.
     return true;

@@ -396,9 +396,9 @@ TEST_F(EnterpriseReportingPrivateGetDeviceInfoTest, GetDeviceInfo) {
   EXPECT_EQ("midnightshift", info.device_host_name);
   EXPECT_EQ("topshot", info.device_model);
   EXPECT_EQ("twirlchange", info.serial_number);
-  EXPECT_EQ(enterprise_reporting_private::SETTING_VALUE_ENABLED,
+  EXPECT_EQ(enterprise_reporting_private::SettingValue::kEnabled,
             info.screen_lock_secured);
-  EXPECT_EQ(enterprise_reporting_private::SETTING_VALUE_DISABLED,
+  EXPECT_EQ(enterprise_reporting_private::SettingValue::kDisabled,
             info.disk_encrypted);
   ASSERT_EQ(1u, info.mac_addresses.size());
   EXPECT_EQ("00:00:00:00:00:00", info.mac_addresses[0]);
@@ -422,9 +422,9 @@ TEST_F(EnterpriseReportingPrivateGetDeviceInfoTest, GetDeviceInfoConversion) {
   EXPECT_EQ("midnightshift", info.device_host_name);
   EXPECT_EQ("topshot", info.device_model);
   EXPECT_EQ("twirlchange", info.serial_number);
-  EXPECT_EQ(enterprise_reporting_private::SETTING_VALUE_ENABLED,
+  EXPECT_EQ(enterprise_reporting_private::SettingValue::kEnabled,
             info.screen_lock_secured);
-  EXPECT_EQ(enterprise_reporting_private::SETTING_VALUE_DISABLED,
+  EXPECT_EQ(enterprise_reporting_private::SettingValue::kDisabled,
             info.disk_encrypted);
   ASSERT_EQ(1u, info.mac_addresses.size());
   EXPECT_EQ("00:00:00:00:00:00", info.mac_addresses[0]);
@@ -493,16 +493,16 @@ TEST_F(EnterpriseReportingPrivateGetContextInfoTest, NoSpecialContext) {
   EXPECT_TRUE(info.on_file_attached_providers.empty());
   EXPECT_TRUE(info.on_file_downloaded_providers.empty());
   EXPECT_TRUE(info.on_bulk_data_entry_providers.empty());
-  EXPECT_EQ(enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED,
+  EXPECT_EQ(enterprise_reporting_private::RealtimeUrlCheckMode::kDisabled,
             info.realtime_url_check_mode);
   EXPECT_TRUE(info.on_security_event_providers.empty());
   EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
-  EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD,
+  EXPECT_EQ(enterprise_reporting_private::SafeBrowsingLevel::kStandard,
             info.safe_browsing_protection_level);
   EXPECT_EQ(BuiltInDnsClientPlatformDefault(),
             info.built_in_dns_client_enabled);
   EXPECT_EQ(
-      enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET,
+      enterprise_reporting_private::PasswordProtectionTrigger::kPolicyUnset,
       info.password_protection_warning_trigger);
   EXPECT_FALSE(info.chrome_remote_desktop_app_blocked);
   ExpectDefaultThirdPartyBlockingEnabled(info);
@@ -527,11 +527,11 @@ TEST_P(EnterpriseReportingPrivateGetContextInfoThirdPartyBlockingTest, Test) {
   EXPECT_TRUE(info.on_file_attached_providers.empty());
   EXPECT_TRUE(info.on_file_downloaded_providers.empty());
   EXPECT_TRUE(info.on_bulk_data_entry_providers.empty());
-  EXPECT_EQ(enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED,
+  EXPECT_EQ(enterprise_reporting_private::RealtimeUrlCheckMode::kDisabled,
             info.realtime_url_check_mode);
   EXPECT_TRUE(info.on_security_event_providers.empty());
   EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
-  EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD,
+  EXPECT_EQ(enterprise_reporting_private::SafeBrowsingLevel::kStandard,
             info.safe_browsing_protection_level);
   EXPECT_EQ(BuiltInDnsClientPlatformDefault(),
             info.built_in_dns_client_enabled);
@@ -566,26 +566,26 @@ TEST_P(EnterpriseReportingPrivateGetContextInfoSafeBrowsingTest, Test) {
   EXPECT_TRUE(info.on_file_attached_providers.empty());
   EXPECT_TRUE(info.on_file_downloaded_providers.empty());
   EXPECT_TRUE(info.on_bulk_data_entry_providers.empty());
-  EXPECT_EQ(enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED,
+  EXPECT_EQ(enterprise_reporting_private::RealtimeUrlCheckMode::kDisabled,
             info.realtime_url_check_mode);
   EXPECT_TRUE(info.on_security_event_providers.empty());
   EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
 
   if (safe_browsing_enabled) {
     if (safe_browsing_enhanced_enabled)
-      EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_ENHANCED,
+      EXPECT_EQ(enterprise_reporting_private::SafeBrowsingLevel::kEnhanced,
                 info.safe_browsing_protection_level);
     else
-      EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD,
+      EXPECT_EQ(enterprise_reporting_private::SafeBrowsingLevel::kStandard,
                 info.safe_browsing_protection_level);
   } else {
-    EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_DISABLED,
+    EXPECT_EQ(enterprise_reporting_private::SafeBrowsingLevel::kDisabled,
               info.safe_browsing_protection_level);
   }
   EXPECT_EQ(BuiltInDnsClientPlatformDefault(),
             info.built_in_dns_client_enabled);
   EXPECT_EQ(
-      enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET,
+      enterprise_reporting_private::PasswordProtectionTrigger::kPolicyUnset,
       info.password_protection_warning_trigger);
   ExpectDefaultThirdPartyBlockingEnabled(info);
   EXPECT_TRUE(info.enterprise_profile_id);
@@ -615,15 +615,15 @@ TEST_P(EnterpriseReportingPrivateGetContextInfoBuiltInDnsClientTest, Test) {
   EXPECT_TRUE(info.on_file_attached_providers.empty());
   EXPECT_TRUE(info.on_file_downloaded_providers.empty());
   EXPECT_TRUE(info.on_bulk_data_entry_providers.empty());
-  EXPECT_EQ(enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED,
+  EXPECT_EQ(enterprise_reporting_private::RealtimeUrlCheckMode::kDisabled,
             info.realtime_url_check_mode);
   EXPECT_TRUE(info.on_security_event_providers.empty());
   EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
-  EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD,
+  EXPECT_EQ(enterprise_reporting_private::SafeBrowsingLevel::kStandard,
             info.safe_browsing_protection_level);
   EXPECT_EQ(policyValue, info.built_in_dns_client_enabled);
   EXPECT_EQ(
-      enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET,
+      enterprise_reporting_private::PasswordProtectionTrigger::kPolicyUnset,
       info.password_protection_warning_trigger);
   ExpectDefaultThirdPartyBlockingEnabled(info);
   EXPECT_TRUE(info.enterprise_profile_id);
@@ -642,14 +642,14 @@ class EnterpriseReportingPrivateGetContextPasswordProtectionWarningTrigger
   safe_browsing::PasswordProtectionTrigger MapPasswordProtectionTriggerToPolicy(
       enterprise_reporting_private::PasswordProtectionTrigger enumValue) {
     switch (enumValue) {
-      case enterprise_reporting_private::
-          PASSWORD_PROTECTION_TRIGGER_PASSWORD_PROTECTION_OFF:
+      case enterprise_reporting_private::PasswordProtectionTrigger::
+          kPasswordProtectionOff:
         return safe_browsing::PASSWORD_PROTECTION_OFF;
-      case enterprise_reporting_private::
-          PASSWORD_PROTECTION_TRIGGER_PASSWORD_REUSE:
+      case enterprise_reporting_private::PasswordProtectionTrigger::
+          kPasswordReuse:
         return safe_browsing::PASSWORD_REUSE;
-      case enterprise_reporting_private::
-          PASSWORD_PROTECTION_TRIGGER_PHISHING_REUSE:
+      case enterprise_reporting_private::PasswordProtectionTrigger::
+          kPhishingReuse:
         return safe_browsing::PHISHING_REUSE;
       default:
         NOTREACHED();
@@ -673,11 +673,11 @@ TEST_P(EnterpriseReportingPrivateGetContextPasswordProtectionWarningTrigger,
   EXPECT_TRUE(info.on_file_attached_providers.empty());
   EXPECT_TRUE(info.on_file_downloaded_providers.empty());
   EXPECT_TRUE(info.on_bulk_data_entry_providers.empty());
-  EXPECT_EQ(enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED,
+  EXPECT_EQ(enterprise_reporting_private::RealtimeUrlCheckMode::kDisabled,
             info.realtime_url_check_mode);
   EXPECT_TRUE(info.on_security_event_providers.empty());
   EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
-  EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD,
+  EXPECT_EQ(enterprise_reporting_private::SafeBrowsingLevel::kStandard,
             info.safe_browsing_protection_level);
   EXPECT_EQ(BuiltInDnsClientPlatformDefault(),
             info.built_in_dns_client_enabled);
@@ -689,12 +689,12 @@ TEST_P(EnterpriseReportingPrivateGetContextPasswordProtectionWarningTrigger,
 INSTANTIATE_TEST_SUITE_P(
     ,
     EnterpriseReportingPrivateGetContextPasswordProtectionWarningTrigger,
-    testing::Values(enterprise_reporting_private::
-                        PASSWORD_PROTECTION_TRIGGER_PASSWORD_PROTECTION_OFF,
-                    enterprise_reporting_private::
-                        PASSWORD_PROTECTION_TRIGGER_PASSWORD_REUSE,
-                    enterprise_reporting_private::
-                        PASSWORD_PROTECTION_TRIGGER_PHISHING_REUSE));
+    testing::Values(
+        enterprise_reporting_private::PasswordProtectionTrigger::
+            kPasswordProtectionOff,
+        enterprise_reporting_private::PasswordProtectionTrigger::kPasswordReuse,
+        enterprise_reporting_private::PasswordProtectionTrigger::
+            kPhishingReuse));
 
 #if BUILDFLAG(IS_LINUX)
 class EnterpriseReportingPrivateGetContextOSFirewallLinuxTest
@@ -715,16 +715,16 @@ class EnterpriseReportingPrivateGetContextOSFirewallLinuxTest
     EXPECT_TRUE(info.on_file_attached_providers.empty());
     EXPECT_TRUE(info.on_file_downloaded_providers.empty());
     EXPECT_TRUE(info.on_bulk_data_entry_providers.empty());
-    EXPECT_EQ(enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED,
+    EXPECT_EQ(enterprise_reporting_private::RealtimeUrlCheckMode::kDisabled,
               info.realtime_url_check_mode);
     EXPECT_TRUE(info.on_security_event_providers.empty());
     EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
-    EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD,
+    EXPECT_EQ(enterprise_reporting_private::SafeBrowsingLevel::kStandard,
               info.safe_browsing_protection_level);
     EXPECT_EQ(BuiltInDnsClientPlatformDefault(),
               info.built_in_dns_client_enabled);
     EXPECT_EQ(
-        enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET,
+        enterprise_reporting_private::PasswordProtectionTrigger::kPolicyUnset,
         info.password_protection_warning_trigger);
     EXPECT_FALSE(info.chrome_remote_desktop_app_blocked);
     ExpectDefaultThirdPartyBlockingEnabled(info);
@@ -745,7 +745,7 @@ TEST_F(EnterpriseReportingPrivateGetContextOSFirewallLinuxTest,
 
   ExpectDefaultPolicies(info);
   EXPECT_EQ(info.os_firewall,
-            enterprise_reporting_private::SETTING_VALUE_UNKNOWN);
+            enterprise_reporting_private::SettingValue::kUnknown);
 }
 
 TEST_F(EnterpriseReportingPrivateGetContextOSFirewallLinuxTest, NoEnabledKey) {
@@ -758,23 +758,23 @@ TEST_F(EnterpriseReportingPrivateGetContextOSFirewallLinuxTest, NoEnabledKey) {
 
   ExpectDefaultPolicies(info);
   EXPECT_EQ(info.os_firewall,
-            enterprise_reporting_private::SETTING_VALUE_UNKNOWN);
+            enterprise_reporting_private::SettingValue::kUnknown);
 }
 
 TEST_P(EnterpriseReportingPrivateGetContextOSFirewallLinuxTest, Test) {
   enterprise_reporting_private::SettingValue os_firewall_value = GetParam();
   switch (os_firewall_value) {
-    case enterprise_reporting_private::SETTING_VALUE_ENABLED:
+    case enterprise_reporting_private::SettingValue::kEnabled:
       // File format to test if comments, empty lines and strings containing the
       // key are ignored
       base::WriteFile(file_path_,
                       "#ENABLED=no\nrandomtextENABLED=no\n  \nENABLED=yes\n");
       break;
-    case enterprise_reporting_private::SETTING_VALUE_DISABLED:
+    case enterprise_reporting_private::SettingValue::kDisabled:
       base::WriteFile(file_path_,
                       "#ENABLED=yes\nENABLEDrandomtext=yes\n  \nENABLED=no\n");
       break;
-    case enterprise_reporting_private::SETTING_VALUE_UNKNOWN:
+    case enterprise_reporting_private::SettingValue::kUnknown:
       // File content to test a value that isn't yes or no
       base::WriteFile(file_path_,
                       "#ENABLED=yes\nLOGLEVEL=yes\nENABLED=yesno\n");
@@ -793,9 +793,9 @@ TEST_P(EnterpriseReportingPrivateGetContextOSFirewallLinuxTest, Test) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     EnterpriseReportingPrivateGetContextOSFirewallLinuxTest,
-    testing::Values(enterprise_reporting_private::SETTING_VALUE_ENABLED,
-                    enterprise_reporting_private::SETTING_VALUE_DISABLED,
-                    enterprise_reporting_private::SETTING_VALUE_UNKNOWN));
+    testing::Values(enterprise_reporting_private::SettingValue::kEnabled,
+                    enterprise_reporting_private::SettingValue::kDisabled,
+                    enterprise_reporting_private::SettingValue::kUnknown));
 #endif  // BUILDFLAG(IS_LINUX)
 
 class EnterpriseReportingPrivateGetContextInfoChromeRemoteDesktopAppBlockedTest
@@ -824,16 +824,16 @@ class EnterpriseReportingPrivateGetContextInfoChromeRemoteDesktopAppBlockedTest
     EXPECT_TRUE(info.on_file_attached_providers.empty());
     EXPECT_TRUE(info.on_file_downloaded_providers.empty());
     EXPECT_TRUE(info.on_bulk_data_entry_providers.empty());
-    EXPECT_EQ(enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED,
+    EXPECT_EQ(enterprise_reporting_private::RealtimeUrlCheckMode::kDisabled,
               info.realtime_url_check_mode);
     EXPECT_TRUE(info.on_security_event_providers.empty());
     EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
-    EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD,
+    EXPECT_EQ(enterprise_reporting_private::SafeBrowsingLevel::kStandard,
               info.safe_browsing_protection_level);
     EXPECT_EQ(BuiltInDnsClientPlatformDefault(),
               info.built_in_dns_client_enabled);
     EXPECT_EQ(
-        enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET,
+        enterprise_reporting_private::PasswordProtectionTrigger::kPolicyUnset,
         info.password_protection_warning_trigger);
     ExpectDefaultThirdPartyBlockingEnabled(info);
     EXPECT_TRUE(info.enterprise_profile_id);
@@ -937,15 +937,15 @@ class EnterpriseReportingPrivateGetContextInfoOSFirewallTest
   ToInfoSettingValue(enterprise_signals::SettingValue value) {
     switch (value) {
       case SettingValue::DISABLED:
-        return extensions::api::enterprise_reporting_private::
-            SETTING_VALUE_DISABLED;
+        return extensions::api::enterprise_reporting_private::SettingValue::
+            kDisabled;
       case SettingValue::ENABLED:
-        return extensions::api::enterprise_reporting_private::
-            SETTING_VALUE_ENABLED;
+        return extensions::api::enterprise_reporting_private::SettingValue::
+            kEnabled;
       default:
         NOTREACHED();
-        return extensions::api::enterprise_reporting_private::
-            SETTING_VALUE_UNKNOWN;
+        return extensions::api::enterprise_reporting_private::SettingValue::
+            kUnknown;
     }
   }
   Microsoft::WRL::ComPtr<INetFwPolicy2> firewall_policy_;
@@ -962,16 +962,16 @@ TEST_P(EnterpriseReportingPrivateGetContextInfoOSFirewallTest, Test) {
   EXPECT_TRUE(info.on_file_attached_providers.empty());
   EXPECT_TRUE(info.on_file_downloaded_providers.empty());
   EXPECT_TRUE(info.on_bulk_data_entry_providers.empty());
-  EXPECT_EQ(enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED,
+  EXPECT_EQ(enterprise_reporting_private::RealtimeUrlCheckMode::kDisabled,
             info.realtime_url_check_mode);
   EXPECT_TRUE(info.on_security_event_providers.empty());
   EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
-  EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD,
+  EXPECT_EQ(enterprise_reporting_private::SafeBrowsingLevel::kStandard,
             info.safe_browsing_protection_level);
   EXPECT_EQ(BuiltInDnsClientPlatformDefault(),
             info.built_in_dns_client_enabled);
   EXPECT_EQ(
-      enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET,
+      enterprise_reporting_private::PasswordProtectionTrigger::kPolicyUnset,
       info.password_protection_warning_trigger);
   EXPECT_FALSE(info.chrome_remote_desktop_app_blocked);
   ExpectDefaultThirdPartyBlockingEnabled(info);
@@ -1014,11 +1014,11 @@ TEST_P(EnterpriseReportingPrivateGetContextInfoRealTimeURLCheckTest, Test) {
   enterprise_reporting_private::ContextInfo info = GetContextInfo();
 
   if (url_check_enabled()) {
-    EXPECT_EQ(enterprise_reporting_private::
-                  REALTIME_URL_CHECK_MODE_ENABLED_MAIN_FRAME,
-              info.realtime_url_check_mode);
+    EXPECT_EQ(
+        enterprise_reporting_private::RealtimeUrlCheckMode::kEnabledMainFrame,
+        info.realtime_url_check_mode);
   } else {
-    EXPECT_EQ(enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED,
+    EXPECT_EQ(enterprise_reporting_private::RealtimeUrlCheckMode::kDisabled,
               info.realtime_url_check_mode);
   }
 
@@ -1029,12 +1029,12 @@ TEST_P(EnterpriseReportingPrivateGetContextInfoRealTimeURLCheckTest, Test) {
   EXPECT_TRUE(info.on_bulk_data_entry_providers.empty());
   EXPECT_TRUE(info.on_security_event_providers.empty());
   EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
-  EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD,
+  EXPECT_EQ(enterprise_reporting_private::SafeBrowsingLevel::kStandard,
             info.safe_browsing_protection_level);
   EXPECT_EQ(BuiltInDnsClientPlatformDefault(),
             info.built_in_dns_client_enabled);
   EXPECT_EQ(
-      enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET,
+      enterprise_reporting_private::PasswordProtectionTrigger::kPolicyUnset,
       info.password_protection_warning_trigger);
   ExpectDefaultThirdPartyBlockingEnabled(info);
   EXPECT_TRUE(info.enterprise_profile_id);
@@ -1108,7 +1108,7 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   enqueue_record_request.record_data = serialized_record_data_;
   enqueue_record_request.priority = ::reporting::Priority::BACKGROUND_BATCH;
   enqueue_record_request.event_type =
-      api::enterprise_reporting_private::EventType::EVENT_TYPE_USER;
+      api::enterprise_reporting_private::EventType::kUser;
 
   base::Value::List params;
   params.Append(enqueue_record_request.ToValue());
@@ -1151,7 +1151,7 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   enqueue_record_request.priority = -1;
 
   enqueue_record_request.event_type =
-      api::enterprise_reporting_private::EventType::EVENT_TYPE_USER;
+      api::enterprise_reporting_private::EventType::kUser;
 
   base::Value::List params;
   params.Append(enqueue_record_request.ToValue());
@@ -1182,7 +1182,7 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   enqueue_record_request.priority = ::reporting::Priority::BACKGROUND_BATCH;
 
   enqueue_record_request.event_type =
-      api::enterprise_reporting_private::EventType::EVENT_TYPE_USER;
+      api::enterprise_reporting_private::EventType::kUser;
 
   base::Value::List params;
   params.Append(enqueue_record_request.ToValue());
@@ -1210,7 +1210,7 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   enqueue_record_request.record_data = serialized_record_data_;
   enqueue_record_request.priority = ::reporting::Priority::BACKGROUND_BATCH;
   enqueue_record_request.event_type =
-      api::enterprise_reporting_private::EventType::EVENT_TYPE_USER;
+      api::enterprise_reporting_private::EventType::kUser;
 
   base::Value::List params;
   params.Append(enqueue_record_request.ToValue());
@@ -1245,7 +1245,7 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   enqueue_record_request.record_data = serialized_record_data_;
   enqueue_record_request.priority = ::reporting::Priority::BACKGROUND_BATCH;
   enqueue_record_request.event_type =
-      api::enterprise_reporting_private::EventType::EVENT_TYPE_USER;
+      api::enterprise_reporting_private::EventType::kUser;
 
   base::Value::List params;
   params.Append(enqueue_record_request.ToValue());
@@ -1398,7 +1398,7 @@ TEST_F(EnterpriseReportingPrivateGetFileSystemInfoTest, Success) {
   EXPECT_EQ(parsed_file_system_signal->path,
             fake_file_item.file_path.AsUTF8Unsafe());
   EXPECT_EQ(parsed_file_system_signal->presence,
-            enterprise_reporting_private::PRESENCE_VALUE_FOUND);
+            enterprise_reporting_private::PresenceValue::kFound);
   EXPECT_EQ(*parsed_file_system_signal->sha256_hash, "c29tZSBoYXNoZWQgdmFsdWU");
 
   histogram_tester_.ExpectUniqueSample(
@@ -1540,7 +1540,7 @@ class EnterpriseReportingPrivateGetSettingsTest : public UserContextGatedTest {
     api_param.get_value = true;
 
     api_param.hive =
-        enterprise_reporting_private::REGISTRY_HIVE_HKEY_CURRENT_USER;
+        enterprise_reporting_private::RegistryHive::kHkeyCurrentUser;
 
     return api_param;
   }
@@ -1595,13 +1595,14 @@ TEST_F(EnterpriseReportingPrivateGetSettingsTest, Success) {
   ASSERT_TRUE(parsed_settings_signal);
   EXPECT_EQ(parsed_settings_signal->path, fake_settings_item.path);
   EXPECT_EQ(parsed_settings_signal->presence,
-            enterprise_reporting_private::PRESENCE_VALUE_FOUND);
+            enterprise_reporting_private::PresenceValue::kFound);
   ASSERT_TRUE(parsed_settings_signal->value);
   EXPECT_EQ(parsed_settings_signal->value.value(), setting_json_value);
 
-  ASSERT_TRUE(parsed_settings_signal->hive);
+  ASSERT_NE(parsed_settings_signal->hive,
+            enterprise_reporting_private::RegistryHive::kNone);
   EXPECT_EQ(parsed_settings_signal->hive,
-            enterprise_reporting_private::REGISTRY_HIVE_HKEY_CURRENT_USER);
+            enterprise_reporting_private::RegistryHive::kHkeyCurrentUser);
 
   histogram_tester_.ExpectUniqueSample(
       "Enterprise.DeviceSignals.Collection.Request.SystemSettings.Items", 1, 1);
@@ -1778,7 +1779,7 @@ TEST_F(EnterpriseReportingPrivateGetAvInfoTest, Success) {
   ASSERT_TRUE(parsed_av_signal);
   EXPECT_EQ(parsed_av_signal->display_name, fake_av_product.display_name);
   EXPECT_EQ(parsed_av_signal->state,
-            enterprise_reporting_private::ANTI_VIRUS_PRODUCT_STATE_OFF);
+            enterprise_reporting_private::AntiVirusProductState::kOff);
   EXPECT_EQ(parsed_av_signal->product_id, fake_av_product.product_id);
 
   histogram_tester_.ExpectUniqueSample(
