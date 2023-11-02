@@ -565,12 +565,12 @@ TEST(SnoopingProtectionNotificationBlockerInternalTest, AppNotifierTitles) {
   auto* app_cache =
       FakeAppRegistryCache::Get().GetAppRegistryCache(AccountId());
   apps::App crostini_app_state(apps::AppType::kCrostini, "crostini-app");
-  crostini_app_state.short_name = "Signal Messenger";
+  crostini_app_state.name = "Signal Messenger";
   auto crostini_app = std::make_unique<apps::AppUpdate>(
       &crostini_app_state, /*delta=*/nullptr, AccountId());
   app_cache->AddApp(std::move(crostini_app));
   apps::App arc_app_state(apps::AppType::kArc, "arc-app");
-  arc_app_state.short_name = "Discord";
+  arc_app_state.name = "Discord";
   auto arc_app = std::make_unique<apps::AppUpdate>(
       &arc_app_state, /*delta=*/nullptr, AccountId());
   app_cache->AddApp(std::move(arc_app));

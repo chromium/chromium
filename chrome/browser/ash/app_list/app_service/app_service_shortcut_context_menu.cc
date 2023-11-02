@@ -55,7 +55,7 @@ void AppServiceShortcutContextMenu::GetMenuModel(
   std::u16string host_app_name;
   proxy_->AppRegistryCache().ForOneApp(
       shortcut->host_app_id, [&host_app_name](const apps::AppUpdate& update) {
-        host_app_name = base::UTF8ToUTF16(update.ShortName());
+        host_app_name = base::UTF8ToUTF16(update.Name());
       });
 
   std::u16string open_label = l10n_util::GetStringFUTF16(

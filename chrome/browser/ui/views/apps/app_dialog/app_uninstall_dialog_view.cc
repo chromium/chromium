@@ -164,14 +164,13 @@ std::u16string GetWindowTitleForApp(Profile* profile,
 }  // namespace
 
 struct SubApp {
-  explicit SubApp(std::u16string short_name)
-      : short_name(std::move(short_name)) {}
+  explicit SubApp(std::u16string app_name) : app_name(std::move(app_name)) {}
   SubApp(SubApp&& sub_app) = default;
   SubApp& operator=(SubApp&& sub_app) = default;
   SubApp(const SubApp&) = delete;
   SubApp& operator=(const SubApp&) = delete;
 
-  std::u16string short_name;
+  std::u16string app_name;
 };
 
 static views::Widget* CreateAndShowWidget(gfx::NativeWindow parent_window,
@@ -404,7 +403,7 @@ void AppUninstallDialogView::InitializeViewForExtension(
 
 #if BUILDFLAG(IS_CHROMEOS)
 void AppUninstallDialogView::InitializeSubAppList(
-    const std::string& short_app_name,
+    const std::string& app_name,
     const std::vector<SubApp>& sub_apps) {
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   std::u16string description =
@@ -412,7 +411,7 @@ void AppUninstallDialogView::InitializeSubAppList(
           l10n_util::GetStringUTF16(
               IDS_APP_UNINSTALL_PROMPT_ADDITIONAL_UNINSTALLS_MESSAGE),
           /*name0=*/"NUM_SUB_APPS", static_cast<int>(sub_apps.size()),
-          /*name1=*/"APP_NAME", base::ASCIIToUTF16(short_app_name));
+          /*name1=*/"APP_NAME", base::ASCIIToUTF16(app_name));
 
   auto* description_label =
       AddChildView(std::make_unique<views::Label>(description));
@@ -431,7 +430,7 @@ void AppUninstallDialogView::InitializeSubAppList(
     auto box = std::make_unique<views::BoxLayoutView>();
     box->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
     auto* sub_app_label =
-        box->AddChildView(std::make_unique<views::Label>(sub_app.short_name));
+        box->AddChildView(std::make_unique<views::Label>(sub_app.app_name));
 
     sub_app_label->SetGroup(static_cast<int>(DialogViewID::SUB_APP_LABEL));
 
@@ -499,7 +498,7 @@ void AppUninstallDialogView::GetSubAppsInfo(
     apps::AppServiceProxyFactory::GetForProfile(profile_)
         ->AppRegistryCache()
         .ForOneApp(sub_app_id, [&sub_apps](const apps::AppUpdate& update) {
-          sub_apps.emplace_back(base::UTF8ToUTF16(update.ShortName()));
+          sub_apps.emplace_back(base::UTF8ToUTF16(update.Name()));
         });
   }
   std::move(callback).Run(std::move(sub_apps));
@@ -519,19 +518,19 @@ void AppUninstallDialogView::InitializeViewForWebApp(
     std::vector<SubApp> sub_apps) {
   // For web apps, publisher id is the start url.
   GURL app_start_url;
-  std::string short_app_name;
+  std::string app_name;
   apps::AppServiceProxyFactory::GetForProfile(profile_)
       ->AppRegistryCache()
-      .ForOneApp(app_id, [&app_start_url,
-                          &short_app_name](const apps::AppUpdate& update) {
-        app_start_url = GURL(update.PublisherId());
-        short_app_name = update.ShortName();
-      });
+      .ForOneApp(app_id,
+                 [&app_start_url, &app_name](const apps::AppUpdate& update) {
+                   app_start_url = GURL(update.PublisherId());
+                   app_name = update.Name();
+                 });
   DCHECK(app_start_url.is_valid());
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (!sub_apps.empty()) {
-    InitializeSubAppList(short_app_name, sub_apps);
+    InitializeSubAppList(app_name, sub_apps);
   }
 #endif
 

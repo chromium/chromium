@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutRemovalDialogViewBrowserTest, InvokeUi) {
   proxy()->AppRegistryCache().ForOneApp(
       app_constants::kChromeAppId,
       [&host_app_name](const apps::AppUpdate& update) {
-        host_app_name = base::UTF8ToUTF16(update.ShortName());
+        host_app_name = base::UTF8ToUTF16(update.Name());
       });
 
   std::u16string expected_title =
