@@ -293,3 +293,7 @@ BASE_FEATURE(kEnableUIEditMenuInteraction,
 BASE_FEATURE(kHistoryOptInForRestoreShortyAndReSignin,
              "HistoryOptInForRestoreShortyAndReSignin",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableBatchUploadFromBookmarksManager,
+             "EnableBatchUploadFromBookmarksManager",
+             base::FEATURE_DISABLED_BY_DEFAULT);

@@ -255,4 +255,9 @@ BASE_DECLARE_FEATURE(kEnableUIEditMenuInteraction);
 // also enabled.
 BASE_DECLARE_FEATURE(kHistoryOptInForRestoreShortyAndReSignin);
 
+// Enables batch upload entry point from the Bookmarks Manager.
+// Note: This has no effect if kReplaceSyncPromosWithSignInPromos is not
+// enabled.
+BASE_DECLARE_FEATURE(kEnableBatchUploadFromBookmarksManager);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_
