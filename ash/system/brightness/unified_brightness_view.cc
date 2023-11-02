@@ -6,11 +6,9 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_id.h"
 #include "ash/system/brightness/unified_brightness_slider_controller.h"
 #include "ash/system/night_light/night_light_controller_impl.h"
 #include "ash/system/tray/tray_popup_utils.h"
@@ -39,14 +37,13 @@ UnifiedBrightnessView::UnifiedBrightnessView(
       night_light_controller_(Shell::Get()->night_light_controller()) {
   model_->AddObserver(this);
 
-  if (features::IsQsRevampEnabled()) {
-    // For QsRevamp: This case applies to the brightness slider in the
-    // `DisplayDetailedView`. If `detailed_button_callback` is not passed in,
-    // both the `night_light_button_` and the drill-in button will not be added.
-    if (!detailed_button_callback.has_value()) {
-      OnDisplayBrightnessChanged(/*by_user=*/false);
-      return;
-    }
+  // This case applies to the brightness slider in the `DisplayDetailedView`. If
+  // `detailed_button_callback` is not passed in, both the `night_light_button_`
+  // and the drill-in button will not be added.
+  if (!detailed_button_callback.has_value()) {
+    OnDisplayBrightnessChanged(/*by_user=*/false);
+    return;
+  }
 
     const bool toggled = night_light_controller_->IsNightLightEnabled();
     night_light_button_ = AddChildView(std::make_unique<IconButton>(
@@ -98,15 +95,7 @@ UnifiedBrightnessView::UnifiedBrightnessView(
     if (window && WindowState::Get(window)->IsTrustedPinned()) {
       more_button_->SetEnabled(false);
     }
-  } else {
-    button()->SetEnabled(false);
-    // The button is set to disabled but wants to keep the color for an enabled
-    // icon.
-    button()->SetImageModel(
-        views::Button::STATE_DISABLED,
-        ui::ImageModel::FromVectorIcon(kUnifiedMenuBrightnessIcon,
-                                       kColorAshButtonIconColor));
-  }
+
   OnDisplayBrightnessChanged(/*by_user=*/false);
 }
 
@@ -115,13 +104,10 @@ UnifiedBrightnessView::~UnifiedBrightnessView() {
 }
 
 void UnifiedBrightnessView::OnDisplayBrightnessChanged(bool by_user) {
-  float level = model_->display_brightness();
-
-  if (features::IsQsRevampEnabled()) {
-    slider_button()->SetVectorIcon(GetBrightnessIconForLevel(level));
-    slider_button()->SetIconColorId(
-        cros_tokens::kCrosSysSystemOnPrimaryContainer);
-  }
+  float const level = model_->display_brightness();
+  slider_button()->SetVectorIcon(GetBrightnessIconForLevel(level));
+  slider_button()->SetIconColorId(
+      cros_tokens::kCrosSysSystemOnPrimaryContainer);
   SetSliderValue(level, by_user);
 }
 

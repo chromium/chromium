@@ -42,30 +42,21 @@ class UnifiedKeyboardBacklightToggleView
         model_(model) {
     model_->AddObserver(this);
 
-    if (features::IsQsRevampEnabled()) {
-      icon_button_ = AddChildView(std::make_unique<IconButton>(
-          views::Button::PressedCallback(), IconButton::Type::kMedium,
-          /*icon=*/&kUnifiedMenuKeyboardBrightnessIcon,
-          /*accessible_name_id=*/IDS_ASH_STATUS_TRAY_BRIGHTNESS,
-          /*is_togglable=*/false,
-          /*has_border=*/true));
-      icon_button_->SetCanProcessEventsWithinSubtree(/*can_process=*/false);
-    }
+    icon_button_ = AddChildView(std::make_unique<IconButton>(
+        views::Button::PressedCallback(), IconButton::Type::kMedium,
+        /*icon=*/&kUnifiedMenuKeyboardBrightnessIcon,
+        /*accessible_name_id=*/IDS_ASH_STATUS_TRAY_BRIGHTNESS,
+        /*is_togglable=*/false,
+        /*has_border=*/true));
+    icon_button_->SetCanProcessEventsWithinSubtree(/*can_process=*/false);
 
     toast_label_ =
         AddChildView(std::make_unique<views::Label>(l10n_util::GetStringUTF16(
             toggled_on ? IDS_ASH_STATUS_AREA_TOAST_KBL_ON
                        : IDS_ASH_STATUS_AREA_TOAST_KBL_OFF)));
-    if (chromeos::features::IsJellyEnabled()) {
-      toast_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
-      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
-                                            *toast_label_);
-    } else {
-      toast_label_->SetEnabledColorId(kColorAshTextColorPrimary);
-      TrayPopupUtils::SetLabelFontList(
-          toast_label_, TrayPopupUtils::FontStyle::kPodMenuHeader);
-    }
-
+    toast_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
+                                          *toast_label_);
     slider()->SetVisible(false);
   }
 

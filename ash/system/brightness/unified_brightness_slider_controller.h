@@ -31,8 +31,7 @@ class ASH_EXPORT UnifiedBrightnessSliderController
 
   ~UnifiedBrightnessSliderController() override;
 
-  // For QsRevamp: Creates a slider view for the brightness slider in
-  // `DisplayDetailedView`.
+  // Creates a slider view for the brightness slider in `DisplayDetailedView`.
   std::unique_ptr<UnifiedBrightnessView> CreateBrightnessSlider();
 
   // UnifiedSliderListener:

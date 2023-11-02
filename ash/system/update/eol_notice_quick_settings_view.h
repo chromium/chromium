@@ -27,10 +27,6 @@ class ASH_EXPORT EolNoticeQuickSettingsView : public views::LabelButton {
 
   // views::LabelButton:
   void PaintButtonContents(gfx::Canvas* canvas) override;
-  void OnThemeChanged() override;
-
- private:
-  const bool is_qs_revamp_enabled_;
 };
 
 }  // namespace ash

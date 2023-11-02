@@ -4,7 +4,6 @@
 
 #include "ash/system/audio/unified_volume_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -13,7 +12,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -35,7 +33,6 @@ class UnifiedVolumeViewTest : public AshTestBase {
   ~UnifiedVolumeViewTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kQsRevamp);
     AshTestBase::SetUp();
     GetPrimaryUnifiedSystemTray()->ShowBubble();
   }
@@ -76,9 +73,6 @@ class UnifiedVolumeViewTest : public AshTestBase {
   }
 
   views::Button* more_button() { return unified_volume_view()->more_button(); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that `UnifiedVolumeView` is made up of a `QuickSettingsSlider`, a

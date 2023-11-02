@@ -4,7 +4,6 @@
 
 #include "ash/system/brightness/unified_brightness_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/brightness/unified_brightness_slider_controller.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -14,7 +13,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/image_view.h"
@@ -38,7 +36,6 @@ class UnifiedBrightnessViewTest : public AshTestBase {
   ~UnifiedBrightnessViewTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kQsRevamp);
     AshTestBase::SetUp();
     GetPrimaryUnifiedSystemTray()->ShowBubble();
     brightness_slider_controller_ =
@@ -111,7 +108,6 @@ class UnifiedBrightnessViewTest : public AshTestBase {
   raw_ptr<UnifiedBrightnessSliderController,
           DanglingUntriaged | ExperimentalAsh>
       brightness_slider_controller_ = nullptr;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests to ensure that the `slider_button` does not handle any events,

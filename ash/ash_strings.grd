@@ -997,12 +997,6 @@ Style notes:
       <message name="IDS_ASH_STATUS_AREA_TOAST_KBL_ON" desc="The text in the toast that shows up when the keyboard backlight is toggled on using a physical key or shortcut.">
         Keyboard backlight is on
       </message>
-      <message name="IDS_ASH_STATUS_AREA_TOAST_MIC_OFF" desc="The text in the toast that shows up when the mic is muted using a physical key or shortcut.">
-        Device microphone access is off
-      </message>
-      <message name="IDS_ASH_STATUS_AREA_TOAST_MIC_ON" desc="The text in the toast that shows up when the mic is unmuted using a physical key or shortcut.">
-        Device microphone access is on
-      </message>
       <message name="IDS_ASH_STATUS_TRAY_VOLUME" desc="The accessible text for the toggle volume muted button in the tray.">
         Toggle Volume. <ph name="STATE_TEXT">$1<ex>Volume is muted</ex></ph>
       </message>

@@ -4,20 +4,16 @@
 
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/views/view.h"
-#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -26,18 +22,13 @@ constexpr uint64_t kInternalMicId = 10003;
 // Pixel tests for the quick settings audio detailed view.
 class AudioDetailedViewPixelTest : public AshTestBase {
  public:
-  AudioDetailedViewPixelTest() {
-    feature_list_.InitWithFeatures({chromeos::features::kJelly}, {});
-  }
+  AudioDetailedViewPixelTest() = default;
 
   // AshTestBase:
   absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(AudioDetailedViewPixelTest, Basics) {

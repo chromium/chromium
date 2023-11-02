@@ -5,7 +5,6 @@
 #include "ash/system/audio/unified_audio_detailed_view_controller.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/switch.h"
@@ -336,7 +335,7 @@ TEST_F(UnifiedAudioDetailedViewControllerTest, OneInputSlider) {
   EXPECT_EQ(kInternalMicId, cras_audio_handler_->GetPrimaryActiveInputNode());
   EXPECT_TRUE(input_sliders_map_.find(kInternalMicId)->second->GetVisible());
 
-  // Both sliders should be visible for QsRevamp.
+  // Both sliders should be visible.
   EXPECT_TRUE(input_sliders_map_.find(kMicJackId)->second->GetVisible());
 
   cras_audio_handler_->SwitchToDevice(AudioDevice(GenerateAudioNode(kMicJack)),
@@ -344,7 +343,7 @@ TEST_F(UnifiedAudioDetailedViewControllerTest, OneInputSlider) {
   EXPECT_EQ(kMicJackId, cras_audio_handler_->GetPrimaryActiveInputNode());
   EXPECT_TRUE(input_sliders_map_.find(kMicJackId)->second->GetVisible());
 
-  // Both sliders should be visible for QsRevamp.
+  // Both sliders should be visible.
   EXPECT_TRUE(input_sliders_map_.find(kInternalMicId)->second->GetVisible());
 }
 
@@ -513,7 +512,7 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
   EXPECT_FALSE(toggle->GetIsOn());
   EXPECT_FALSE(audio_pref_handler_->GetNoiseCancellationState());
 
-  // For QsRevamp, the entire row of `noise_cancellation_view_` is clickable.
+  // The entire row of `noise_cancellation_view_` is clickable.
   ToggleNoiseCancellation();
   EXPECT_TRUE(audio_pref_handler_->GetNoiseCancellationState());
 

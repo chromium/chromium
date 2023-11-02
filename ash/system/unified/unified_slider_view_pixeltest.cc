@@ -4,14 +4,12 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
 #include "ash/system/audio/unified_volume_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/views/widget/widget.h"
 
@@ -30,10 +28,7 @@ class FakeDelegate : public UnifiedVolumeSliderController::Delegate {
 // Pixel tests for the quick settings `UnifiedSliderView`.
 class UnifiedSliderViewPixelTest : public AshTestBase {
  public:
-  UnifiedSliderViewPixelTest() {
-    feature_list_.InitWithFeatures(
-        {features::kQsRevamp, chromeos::features::kJelly}, {});
-  }
+  UnifiedSliderViewPixelTest() = default;
 
   // AshTestBase:
   void SetUp() override {
@@ -59,7 +54,6 @@ class UnifiedSliderViewPixelTest : public AshTestBase {
     return pixel_test::InitParams();
   }
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<FakeDelegate> delegate_;
   std::unique_ptr<UnifiedVolumeSliderController>
       unified_volume_slider_controller_;
