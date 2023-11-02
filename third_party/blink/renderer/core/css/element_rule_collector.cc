@@ -477,8 +477,9 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
       continue;
     }
     if (can_use_fast_reject_ &&
-        selector_filter_.FastRejectSelector<RuleData::kMaximumIdentifierCount>(
-            rule_data.DescendantSelectorIdentifierHashes())) {
+        selector_filter_.FastRejectSelector(
+            rule_data.DescendantSelectorIdentifierHashes(
+                rule_set->BloomHashBacking()))) {
       fast_rejected++;
       if (perf_trace_enabled) {
         selector_statistics_collector.SetWasFastRejected();
