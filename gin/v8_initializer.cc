@@ -391,6 +391,9 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   SetV8FlagsIfOverridden(features::kJavaScriptPromiseWithResolvers,
                          "--js-promise-withresolvers",
                          "--no-js-promise-withresolvers");
+  SetV8FlagsIfOverridden(features::kJavaScriptArrayFromAsync,
+                         "--harmony-array-from-async",
+                         "--no-harmony-array-from-async");
 
   if (IsolateHolder::kStrictMode == mode) {
     SetV8Flags("--use_strict");
