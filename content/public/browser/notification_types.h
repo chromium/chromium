@@ -51,13 +51,6 @@ enum NotificationType {
 
   // WebContents ---------------------------------------------------------------
 
-  // Indicates that a RenderProcessHost was created and its handle is now
-  // available. The source will be the RenderProcessHost that corresponds to
-  // the process.
-  // DEPRECATED: Use RenderProcessHostObserver::RenderProcessReady()
-  // TODO(https://crbug.com/357627): Remove.
-  NOTIFICATION_RENDERER_PROCESS_CREATED,
-
   // Indicates that a RenderProcessHost is destructing. The source will be the
   // RenderProcessHost that corresponds to the process.
   // DEPRECATED: Use RenderProcessHostObserver::RenderProcessHostDestroyed()

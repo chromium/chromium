@@ -5215,7 +5215,7 @@ void RenderProcessHostImpl::SendProcessStateToRenderer() {
 
 void RenderProcessHostImpl::OnProcessLaunched() {
   // No point doing anything, since this object will be destructed soon.  We
-  // especially don't want to send the RENDERER_PROCESS_CREATED notification,
+  // especially don't want to send the OnRenderProcessHostCreated notification,
   // since some clients might expect a RENDERER_PROCESS_TERMINATED afterwards
   // to properly cleanup.
   if (deleting_soon_)
@@ -5229,8 +5229,8 @@ void RenderProcessHostImpl::OnProcessLaunched() {
 
     // Unpause the channel now that the process is launched. We don't flush it
     // yet to ensure that any initialization messages sent here (e.g., things
-    // done in response to NOTIFICATION_RENDER_PROCESS_CREATED; see below)
-    // preempt already queued messages.
+    // done in response to OnRenderProcessHostCreated; see below) preempt
+    // already queued messages.
     channel_->Unpause(false /* flush */);
 
     gpu_client_->SetClientPid(GetProcess().Pid());
@@ -5282,9 +5282,6 @@ void RenderProcessHostImpl::OnProcessLaunched() {
   // The queued messages contain such things as "navigate". If this
   // notification was after, we can end up executing JavaScript before the
   // initialization happens.
-  NotificationService::current()->Notify(NOTIFICATION_RENDERER_PROCESS_CREATED,
-                                         Source<RenderProcessHost>(this),
-                                         NotificationService::NoDetails());
   for (auto* observer : GetAllCreationObservers())
     observer->OnRenderProcessHostCreated(this);
 
