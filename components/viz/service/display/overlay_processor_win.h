@@ -65,8 +65,14 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
       gfx::Rect* root_damage_rect,
       std::vector<gfx::Rect>* content_bounds) override;
 
-  void set_using_dc_layers_for_testing(bool value) { using_dc_layers_ = value; }
+  // Sets whether or not |render_pass_id| will be marked for a DComp surface
+  // backing. If |value| is true, this also resets the frame count since
+  // enabling DC layers.
+  void SetUsingDCLayersForTesting(AggregatedRenderPassId render_pass_id,
+                                  bool value);
+
   void set_frames_since_last_qualified_multi_overlays_for_testing(int value) {
+    CHECK_IS_TEST();
     GetOverlayProcessor()
         ->set_frames_since_last_qualified_multi_overlays_for_testing(value);
   }
@@ -112,10 +118,10 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   // Reference to the global viz singleton.
   const raw_ptr<const DebugRendererSettings> debug_settings_;
 
-  // Whether direct composition layers are being used with SetEnableDCLayers().
-  bool using_dc_layers_ = false;
-  // Number of frames since the last time direct composition layers were used.
-  int frames_since_using_dc_layers_ = 0;
+  // Number of frames since the last time direct composition layers were used
+  // for each render pass we promote overlays from in the frame. Presence in
+  // this map indicates that the render pass is using a DComp surface.
+  base::flat_map<AggregatedRenderPassId, int> frames_since_using_dc_layers_map_;
 
   // TODO(weiliangc): Eventually fold DCLayerOverlayProcessor into this class.
   std::unique_ptr<DCLayerOverlayProcessor> dc_layer_overlay_processor_;
