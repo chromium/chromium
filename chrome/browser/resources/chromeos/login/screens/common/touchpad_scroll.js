@@ -33,6 +33,14 @@ const TouchpadScrollScreenElementBase = mixinBehaviors(
     [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
 
 /**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   shouldShowReturn: boolean,
+ * }}
+ */
+let TouchpadScrollScreenData;
+
+/**
  * Enum to represent steps on the touchpad scroll screen.
  * Currently there is only one step, but we still use
  * MultiStepBehavior because it provides implementation of
@@ -118,6 +126,9 @@ class TouchpadScrollScreen extends TouchpadScrollScreenElementBase {
     scrollArea.scrollTop = scrollArea.scrollHeight / 2 - 150;
   }
 
+  /**
+   * @param {TouchpadScrollScreenData} data Screen init payload.
+   */
   onBeforeShow(data) {
     this.shouldShowReturn_ = data['shouldShowReturn'];
   }

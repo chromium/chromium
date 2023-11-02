@@ -41,6 +41,19 @@ const SigninFatalErrorBase = mixinBehaviors(
 SigninFatalErrorBase.$;
 
 /**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   errorState: OobeTypes.FatalErrorCode,
+ *   errorText: (string|undefined),
+ *   keyboardHint: (string|undefined),
+ *   details: (string|undefined),
+ *   helpLinkText: (string|undefined),
+ *   url: (string|undefined),
+ * }}
+ */
+let SigninFatalErrorScreenData;
+
+/**
  * @polymer
  */
 class SigninFatalScreen extends SigninFatalErrorBase {
@@ -66,15 +79,17 @@ class SigninFatalScreen extends SigninFatalErrorBase {
 
       /**
        * Error state from the screen
+       * @type {OobeTypes.FatalErrorCode}
        * @private
        */
       errorState_: {
         type: Number,
-        value: 0,
+        value: OobeTypes.FatalErrorCode.UNKNOWN,
       },
 
       /**
        * Additional information that will be used when creating the subtitle.
+       * @type {SigninFatalErrorScreenData}
        * @private
        */
       params_: {
@@ -82,20 +97,31 @@ class SigninFatalScreen extends SigninFatalErrorBase {
         value: {},
       },
 
+      /**
+       * @type {(string|undefined)}
+       * @private
+       */
       keyboardHint_: {
         type: String,
       },
 
+      /**
+       * @type {(string|undefined)}
+       * @private
+       */
       details_: {
         type: String,
       },
 
+      /**
+       * @type {(string|undefined)}
+       * @private
+       */
       helpLinkText_: {
         type: String,
       },
     };
   }
-
 
   ready() {
     super.ready();
@@ -116,10 +142,10 @@ class SigninFatalScreen extends SigninFatalErrorBase {
 
   /**
    * Invoked just before being shown. Contains all the data for the screen.
-   * @suppress {missingProperties} params_ fields.
+   * @param {SigninFatalErrorScreenData} data Screen init payload.
    */
   onBeforeShow(data) {
-    this.errorState_ = data && 'errorState' in data && data.errorState;
+    this.errorState_ = data?.errorState;
     this.params_ = data;
     this.keyboardHint_ = this.params_.keyboardHint;
     this.details_ = this.params_.details;
@@ -149,10 +175,9 @@ class SigninFatalScreen extends SigninFatalErrorBase {
    * Generates the subtitle that is shown to the
    * user based on the error
    * @param {string} locale
-   * @param {number} error_state
+   * @param {OobeTypes.FatalErrorCode} error_state
    * @param {string} params
    * @private
-   * @suppress {missingProperties} errorText in this.params_
    */
   computeSubtitle_(locale, error_state, params) {
     switch (this.errorState_) {
@@ -161,9 +186,12 @@ class SigninFatalScreen extends SigninFatalErrorBase {
       case OobeTypes.FatalErrorCode.MISSING_GAIA_INFO:
         return this.i18n('fatalErrorMessageNoAccountDetails');
       case OobeTypes.FatalErrorCode.INSECURE_CONTENT_BLOCKED:
-        return this.i18n(
-            'fatalErrorMessageInsecureURL',
-            'url' in this.params_ && this.params_.url);
+        /**
+         * @suppress {checkTypes} We know that url is already a valid string.
+         * @type {string}
+         */
+        const url = this.params_?.url;
+        return this.i18n('fatalErrorMessageInsecureURL', url);
       case OobeTypes.FatalErrorCode.CUSTOM:
         return this.params_.errorText;
       case OobeTypes.FatalErrorCode.UNKNOWN:

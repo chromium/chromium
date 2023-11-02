@@ -31,6 +31,14 @@ const DrivePinningScreenElementBase = mixinBehaviors(
     [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
 
 /**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   shouldShowReturn: boolean,
+ * }}
+ */
+let DrivePinningScreenData;
+
+/**
  * Enum to represent steps on the drive pinning screen.
  * Currently there is only one step, but we still use
  * MultiStepBehavior because it provides implementation of
@@ -119,6 +127,9 @@ class DrivePinningScreen extends DrivePinningScreenElementBase {
     return OOBE_UI_STATE.ONBOARDING;
   }
 
+  /**
+   * @param {DrivePinningScreenData} data Screen init payload
+   */
   onBeforeShow(data) {
     this.shouldShowReturn_ = data['shouldShowReturn'];
   }

@@ -105,6 +105,13 @@ const GaiaSigninElementBase = mixinBehaviors(
  */
 GaiaSigninElementBase.$;
 
+/**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   hasUserPods: boolean,
+ * }}
+ */
+let GaiaSigninScreenData;
 
 /**
  * @polymer

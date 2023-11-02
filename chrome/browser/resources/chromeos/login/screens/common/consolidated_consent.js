@@ -95,6 +95,23 @@ const ConsolidatedConsentScreenElementBase = mixinBehaviors(
     [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
 
 /**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *  isArcEnabled: boolean,
+ *  isDemo: boolean,
+ *  isChildAccount: boolean,
+ *  isTosHidden: boolean,
+ *  showRecoveryOption: boolean,
+ *  recoveryOptionDefault: boolean,
+ *  googleEulaUrl: string,
+ *  crosEulaUrl: string,
+ *  arcTosUrl: string,
+ *  privacyPolicyUrl: string,
+ * }}
+ */
+let ConsolidatedConsentScreenData;
+
+/**
  * @polymer
  */
 class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
@@ -237,6 +254,9 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     this.updateLocalizedContent();
   }
 
+  /**
+   * @param {ConsolidatedConsentScreenData} data Screen init payload.
+   */
   onBeforeShow(data) {
     window.setTimeout(this.applyOobeConfiguration_);
 

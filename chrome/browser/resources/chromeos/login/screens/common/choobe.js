@@ -20,7 +20,7 @@ import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../component
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
-import {OobeScreensList} from '../../components/oobe_screens_list.js';
+import {OobeScreensList, ScreenItem} from '../../components/oobe_screens_list.js';
 
 /**
  * @constructor
@@ -32,6 +32,20 @@ import {OobeScreensList} from '../../components/oobe_screens_list.js';
 const ChoobeScreenElementBase = mixinBehaviors(
     [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
 
+/**
+ * @typedef {{
+ *   screensList: OobeScreensList,
+ * }}
+ */
+ChoobeScreenElementBase.$;
+
+/**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   screens: !Array<ScreenItem>,
+ * }}
+ */
+let ChoobeScreenData;
 
 const ChoobeStep = {
   OVERVIEW: 'overview',
@@ -80,6 +94,9 @@ class ChoobeScreen extends ChoobeScreenElementBase {
     this.initializeLoginScreen('ChoobeScreen');
   }
 
+  /**
+   * @param {ChoobeScreenData} data Screen init payload.
+   */
   onBeforeShow(data) {
     if ('screens' in data) {
       this.$.screensList.init(data['screens']);
