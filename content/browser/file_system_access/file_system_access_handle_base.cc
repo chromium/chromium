@@ -434,9 +434,7 @@ void FileSystemAccessHandleBase::DidTakeMoveLocks(
   }
   // Only allow overwriting moves if we have write access to the destination or
   // its parent.
-  if (has_write_access &&
-      !base::FeatureList::IsEnabled(
-          features::kFileSystemAccessDoNotOverwriteOnMove)) {
+  if (has_write_access) {
     DoPerformMoveOperation(dest_url, std::move(locks),
                            has_transient_user_activation, std::move(callback));
     return;
