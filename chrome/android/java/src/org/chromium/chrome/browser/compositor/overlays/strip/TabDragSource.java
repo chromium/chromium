@@ -156,13 +156,12 @@ public class TabDragSource {
                     mSourceStripLayoutHelper.clearActiveClickedTab();
                     break;
                 case DragEvent.ACTION_DRAG_ENTERED:
-                    mSourceStripLayoutHelper.dragActiveClickedTabOntoStrip(
-                            LayoutManagerImpl.time(), mLastXPosition);
+                    mSourceStripLayoutHelper.onDownInternal(
+                            LayoutManagerImpl.time(), mLastXPosition, mLastYPosition, true, 0);
                     mPointerInView = true;
                     break;
                 case DragEvent.ACTION_DRAG_EXITED:
-                    mSourceStripLayoutHelper.dragActiveClickedTabOutOfStrip(
-                            LayoutManagerImpl.time());
+                    mSourceStripLayoutHelper.onUpOrCancel(LayoutManagerImpl.time());
                     mPointerInView = false;
                     break;
                 default:

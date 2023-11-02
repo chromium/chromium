@@ -24,7 +24,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
@@ -73,6 +72,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab.Stri
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
+import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -2222,7 +2222,8 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
 
         // Act: End the tab closing animations to apply final values.
-        Animator runningAnimator = mStripLayoutHelper.getRunningAnimatorForTesting();
+        CompositorAnimator runningAnimator =
+                (CompositorAnimator) mStripLayoutHelper.getRunningAnimatorForTesting();
         runningAnimator.end();
 
         // Assert: Tab is closed and animations are still running.
@@ -2273,7 +2274,8 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
 
         // Act: End the animations to apply final values.
-        Animator runningAnimator = mStripLayoutHelper.getRunningAnimatorForTesting();
+        CompositorAnimator runningAnimator =
+                (CompositorAnimator) mStripLayoutHelper.getRunningAnimatorForTesting();
         runningAnimator.end();
 
         // Assert: Tab is closed and animations are still running.
@@ -2389,7 +2391,7 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.getScrollOffset(),
                 0.0);
         // Reorder mode is disabled for scrolling strip.
-        assertFalse(mStripLayoutHelper.getInReorderModeForTesting());
+        assertFalse(mStripLayoutHelper.isInReorderModeForTesting());
     }
 
     @Test
@@ -2886,70 +2888,6 @@ public class StripLayoutHelperTest {
         // Act and verify the broadcast is sent.
         onLongPress_OffTab();
         verify(activity, times(1)).sendBroadcast(any());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
-    @Config(sdk = Build.VERSION_CODES.R)
-    public void testDrag_DragActiveClickedTabOntoStrip() {
-        // Setup and mark the active clicked tab.
-        initializeTest(false, false, false, 1, 5);
-        mStripLayoutHelper.setDraggedTabOffStripForTesting(true);
-
-        // Drag tab back onto strip.
-        float expectedOffsetX = 123.45f;
-        mStripLayoutHelper.setLastOffsetXForTesting(expectedOffsetX);
-        mStripLayoutHelper.dragActiveClickedTabOntoStrip(TIMESTAMP, 0f);
-
-        // Verify we continue reorder mode with the correct x-offset.
-        assertFalse(
-                "Should mark tab is not on strip.",
-                mStripLayoutHelper.isDraggedTabOffStripForTesting());
-        assertEquals(
-                "Should restore x-offset.",
-                expectedOffsetX,
-                mStripLayoutHelper.getInteractingTabForTesting().getOffsetX(),
-                EPSILON);
-        assertTrue(
-                "Should re-enter reorder mode.", mStripLayoutHelper.getInReorderModeForTesting());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
-    @Config(sdk = Build.VERSION_CODES.R)
-    public void testDrag_DragActiveClickedTabOutOfStrip() {
-        // Setup and mark the active clicked tab.
-        initializeTest(false, false, false, 1, 5);
-        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
-
-        // Drag tab out of strip.
-        float expectedOffsetX = 123.45f;
-        mStripLayoutHelper.dragActiveClickedTabOntoStrip(TIMESTAMP, 0.f);
-        StripLayoutTab draggedTab = mStripLayoutHelper.getInteractingTabForTesting();
-        draggedTab.setOffsetX(expectedOffsetX);
-        mStripLayoutHelper.dragActiveClickedTabOutOfStrip(TIMESTAMP);
-
-        // Finish animations.
-        assertNotNull(
-                "Animator should be running.", mStripLayoutHelper.getRunningAnimatorForTesting());
-        mStripLayoutHelper.finishAnimationsAndPushTabUpdates();
-
-        // Verify we stop reorder mode and animate the tab exiting.
-        assertEquals(
-                "Should have stored dragged tab's x-offset.",
-                expectedOffsetX,
-                mStripLayoutHelper.getLastOffsetXForTesting(),
-                EPSILON);
-        assertTrue(
-                "Should mark the tab is off the strip.",
-                mStripLayoutHelper.isDraggedTabOffStripForTesting());
-        assertFalse(
-                "Should not be in reorder mode.", mStripLayoutHelper.getInReorderModeForTesting());
-        assertEquals(
-                "Tab should be translated off the strip.",
-                SCREEN_HEIGHT,
-                draggedTab.getOffsetY(),
-                EPSILON);
     }
 
     @Test
