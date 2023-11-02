@@ -6,6 +6,19 @@ import glob
 import re
 
 from cca import cli
+from typing import List
+
+
+def glob_with_ignore(pattern: str, ignore_list: List[str]):
+    for filename in glob.glob(pattern, recursive=True):
+        if filename in ignore_list:
+            continue
+        if filename.startswith('dist/'):
+            # The file is generated from cca.py bundle
+            # TODO(pihsun): respect .gitignore here?
+            continue
+        yield filename
+
 
 # Ref: https://developer.mozilla.org/en-US/docs/Web/CSS/named-color
 _CSS_NAMED_COLORS = """
@@ -40,7 +53,6 @@ _CSS_ALLOWLIST = ["utils/cca/static/colors.css"]
 
 
 def _check_color_tokens_css() -> int:
-    css_files = glob.glob("**/*.css", recursive=True)
     returncode = 0
 
     def print_error(filename, lineno, msg):
@@ -48,9 +60,7 @@ def _check_color_tokens_css() -> int:
         print(f"{filename}:{lineno} - {msg}")
         returncode = 1
 
-    for filename in css_files:
-        if filename in _CSS_ALLOWLIST:
-            continue
+    for filename in glob_with_ignore("**/*.css", _CSS_ALLOWLIST):
         with open(filename) as f:
             css_lines = f.read().splitlines()
 
@@ -102,7 +112,6 @@ _SVG_ALLOWLIST = [
 
 
 def _check_color_tokens_svg() -> int:
-    svg_files = glob.glob("**/*.svg", recursive=True)
     returncode = 0
 
     def print_error(filename, lineno, msg):
@@ -110,9 +119,7 @@ def _check_color_tokens_svg() -> int:
         print(f"{filename}:{lineno} - {msg}")
         returncode = 1
 
-    for filename in svg_files:
-        if filename in _SVG_ALLOWLIST:
-            continue
+    for filename in glob_with_ignore("**/*.svg", _SVG_ALLOWLIST):
         with open(filename) as f:
             svg_lines = f.read().splitlines()
 
