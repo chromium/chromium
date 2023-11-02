@@ -41,6 +41,11 @@
 #include "components/metrics/structured/structured_events.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/webui/ash/web_app_install/web_app_install_dialog.h"
+#include "chromeos/constants/chromeos_features.h"
+#endif
+
 namespace web_app {
 
 namespace {
@@ -71,6 +76,15 @@ void OnWebAppInstallShowInstallDialog(
         cros_events::AppDiscovery_Browser_ClickInstallAppFromMenu()
             .SetAppId(app_id)
             .Record();
+      }
+#endif
+// TODO(b/307145346): Eventually, this should also be primary install for LACROS
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      if (base::FeatureList::IsEnabled(
+              chromeos::features::kCrosWebAppInstallDialog)) {
+        ash::web_app_install::WebAppInstallDialog::Show(
+            initiator_web_contents->GetNativeView());
+        return;
       }
 #endif
       if (webapps::AppBannerManager::FromWebContents(initiator_web_contents)

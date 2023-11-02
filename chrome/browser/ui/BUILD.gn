@@ -6463,6 +6463,7 @@ static_library("ui") {
       deps += [
         "//chrome/browser/ash/system_web_apps/types",
         "//chrome/browser/ui/ash/system_web_apps",
+        "//chrome/browser/ui/webui/ash/web_app_install:mojo_bindings",
       ]
       allow_circular_includes_from +=
           [ "//chrome/browser/ui/ash/system_web_apps" ]

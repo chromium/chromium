@@ -18,7 +18,7 @@ class WebAppInstallDialog : public SystemWebDialogDelegate {
 
   // Creates and shows a new dialog for installing a web app. Returns true
   // if a new dialog has been effectively created.
-  static bool Show();
+  static bool Show(gfx::NativeWindow parent);
 
   void OnDialogShown(content::WebUI* webui) override;
 

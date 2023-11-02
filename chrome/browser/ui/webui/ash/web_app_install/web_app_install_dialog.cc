@@ -12,7 +12,7 @@
 namespace ash::web_app_install {
 
 // static
-bool WebAppInstallDialog::Show() {
+bool WebAppInstallDialog::Show(gfx::NativeWindow parent) {
   CHECK(base::FeatureList::IsEnabled(
       chromeos::features::kCrosWebAppInstallDialog));
   // Allow no more than one upload dialog at a time.
@@ -27,7 +27,7 @@ bool WebAppInstallDialog::Show() {
   // The pointer is managed by an instance of `views::WebDialogView` and removed
   // in `SystemWebDialogDelegate::OnDialogClosed`.
   WebAppInstallDialog* dialog = new WebAppInstallDialog(std::move(args));
-  dialog->ShowSystemDialog();
+  dialog->ShowSystemDialog(parent);
   return true;
 }
 
