@@ -102,7 +102,7 @@ AggregatableValues& AggregatableValues::operator=(AggregatableValues&&) =
 
 base::Value::Dict AggregatableValues::ToJson() const {
   base::Value::Dict dict;
-  for (auto [key, value] : values_) {
+  for (const auto& [key, value] : values_) {
     DCHECK(base::IsValueInRangeForNumericType<int>(value));
     dict.Set(key, static_cast<int>(value));
   }
