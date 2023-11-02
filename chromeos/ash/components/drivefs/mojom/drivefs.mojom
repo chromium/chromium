@@ -147,7 +147,8 @@ interface DriveFs {
                       CancelUploadMode cancel_mode);
 
   // Enable Docs offline explicitly.
-  SetDocsOfflineEnabled(bool enabled) => (FileError error);
+  SetDocsOfflineEnabled(bool enabled) =>
+      (FileError error, DocsOfflineEnableStatus status);
 
   // Returns the total space used by files that have been pinned.
   GetOfflineFilesSpaceUsage() => (FileError error, int64 space_used);
@@ -169,6 +170,25 @@ interface DriveFs {
 
   // Gets counts of files in docs offline extension.
   GetDocsOfflineStats() => (FileError error, DocsOfflineStats counts);
+};
+
+[Extensible]
+enum DocsOfflineEnableStatus {
+  [Default] kUnknown,
+  kSuccess,
+  kAlreadyEnabled,
+  kUnknownError,
+  kDisableUnsupported,
+  kOfflineEligible,
+  kOfflineIneligibleUnknown,
+  kOfflineIneligibleOtherUser,
+  kOfflineIneligibleDbInInvalidState,
+  kOfflineIneligiblePolicyDisallow,
+  kOfflineIneligibleNoExtension,
+  kOfflineIneligibleInsufficientDiskSpace,
+  kNativeMessageHostError,
+  kNativeMessageClientError,
+  kSystemError,
 };
 
 // Implemented by Chrome, used from DriveFS.

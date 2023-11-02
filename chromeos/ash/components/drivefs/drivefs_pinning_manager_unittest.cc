@@ -50,6 +50,7 @@ using base::test::RunClosure;
 using base::test::RunOnceCallback;
 using base::test::TaskEnvironment;
 using drive::FileError;
+using mojom::DocsOfflineEnableStatus;
 using mojom::FileChange;
 using mojom::FileMetadata;
 using mojom::FileMetadataPtr;
@@ -186,7 +187,7 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
 
   MOCK_METHOD(void,
               SetDocsOfflineEnabled,
-              (bool, OnceCallback<void(FileError)>),
+              (bool, OnceCallback<void(FileError, DocsOfflineEnableStatus)>),
               (override));
 
  private:
@@ -2611,7 +2612,8 @@ TEST_F(DriveFsPinningManagerTest, StartPinning) {
 
   EXPECT_CALL(drivefs_, SetDocsOfflineEnabled(true, _))
       .Times(1)
-      .WillOnce(RunOnceCallback<1>(drive::FILE_ERROR_OK));
+      .WillOnce(RunOnceCallback<1>(drive::FILE_ERROR_OK,
+                                   DocsOfflineEnableStatus::kSuccess));
   manager.StartPinning();
   EXPECT_EQ(manager.progress_.stage, Stage::kSuccess);
 

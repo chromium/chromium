@@ -710,7 +710,8 @@ void FakeDriveFs::CancelUploadByPath(
 void FakeDriveFs::SetDocsOfflineEnabled(
     bool enabled,
     drivefs::mojom::DriveFs::SetDocsOfflineEnabledCallback callback) {
-  std::move(callback).Run(drive::FILE_ERROR_OK);
+  std::move(callback).Run(drive::FILE_ERROR_OK,
+                          drivefs::mojom::DocsOfflineEnableStatus::kSuccess);
 }
 
 void FakeDriveFs::GetDocsOfflineStats(
