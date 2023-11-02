@@ -62,16 +62,15 @@ UnifiedBrightnessView::UnifiedBrightnessView(
     // Sets the icon, icon color, background color for `night_light_button_`
     // when it's toggled.
     night_light_button_->SetToggledVectorIcon(kUnifiedMenuNightLightIcon);
-    night_light_button_->SetIconToggledColorId(
+    night_light_button_->SetIconToggledColor(
         cros_tokens::kCrosSysSystemOnPrimaryContainer);
-    night_light_button_->SetBackgroundToggledColorId(
+    night_light_button_->SetBackgroundToggledColor(
         cros_tokens::kCrosSysSystemPrimaryContainer);
     // Sets the icon, icon color, background color for `night_light_button_`
     // when it's not toggled.
     night_light_button_->SetVectorIcon(kUnifiedMenuNightLightOffIcon);
-    night_light_button_->SetIconColorId(cros_tokens::kCrosSysOnSurface);
-    night_light_button_->SetBackgroundColorId(
-        cros_tokens::kCrosSysSystemOnBase);
+    night_light_button_->SetIconColor(cros_tokens::kCrosSysOnSurface);
+    night_light_button_->SetBackgroundColor(cros_tokens::kCrosSysSystemOnBase);
     // `night_light_button_` should show the toggled on icon even when disabled.
     night_light_button_->SetButtonBehavior(
         IconButton::DisabledButtonBehavior::kCanDisplayDisabledToggleValue);
@@ -86,7 +85,7 @@ UnifiedBrightnessView::UnifiedBrightnessView(
         std::move(detailed_button_callback.value()),
         IconButton::Type::kMediumFloating, &kQuickSettingsRightArrowIcon,
         IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_SETTINGS_TOOLTIP));
-    more_button_->SetIconColorId(cros_tokens::kCrosSysSecondary);
+    more_button_->SetIconColor(cros_tokens::kCrosSysSecondary);
 
     // In the case that there is a trusted pinned window (fullscreen lock mode)
     // and the brightness slider popup is shown, do not allow the more_button to
@@ -106,8 +105,7 @@ UnifiedBrightnessView::~UnifiedBrightnessView() {
 void UnifiedBrightnessView::OnDisplayBrightnessChanged(bool by_user) {
   float const level = model_->display_brightness();
   slider_button()->SetVectorIcon(GetBrightnessIconForLevel(level));
-  slider_button()->SetIconColorId(
-      cros_tokens::kCrosSysSystemOnPrimaryContainer);
+  slider_button()->SetIconColor(cros_tokens::kCrosSysSystemOnPrimaryContainer);
   SetSliderValue(level, by_user);
 }
 

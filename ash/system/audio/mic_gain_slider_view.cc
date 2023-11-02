@@ -168,7 +168,7 @@ void MicGainSliderView::Update(bool by_user) {
   }
   slider_button()->SetVectorIcon(is_muted ? kMutedMicrophoneIcon
                                           : kImeMenuMicrophoneIcon);
-  slider_button()->SetIconColorId(
+  slider_button()->SetIconColor(
       is_active ? (is_muted ? cros_tokens::kCrosSysOnSurface
                             : cros_tokens::kCrosSysSystemOnPrimaryContainer)
                 : cros_tokens::kCrosSysOnSurfaceVariant);

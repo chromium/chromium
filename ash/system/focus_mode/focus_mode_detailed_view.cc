@@ -89,7 +89,7 @@ std::unique_ptr<IconButton> CreateTimerAdjustmentButton(
   timer_adjustment_button->SetImageVerticalAlignment(
       views::ImageButton::VerticalAlignment::ALIGN_MIDDLE);
   timer_adjustment_button->SetPreferredSize(kTimerAdjustmentButtonSize);
-  timer_adjustment_button->SetIconColorId(cros_tokens::kCrosSysOnSurface);
+  timer_adjustment_button->SetIconColor(cros_tokens::kCrosSysOnSurface);
   timer_adjustment_button->SetBackground(
       views::CreateThemedRoundedRectBackground(
           background_color, kTimerAdjustmentButtonSize.height() / 2, 0));

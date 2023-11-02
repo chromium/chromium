@@ -59,7 +59,7 @@ UnifiedVolumeView::UnifiedVolumeView(
     more_button_->SetEnabled(false);
   }
 
-  more_button_->SetIconColorId(cros_tokens::kCrosSysSecondary);
+  more_button_->SetIconColor(cros_tokens::kCrosSysSecondary);
   // TODO(b/257151067): Update the a11y name id.
   // Adds the live caption button before `more_button_`.
   a11y_controller_->AddObserver(this);
@@ -83,15 +83,15 @@ UnifiedVolumeView::UnifiedVolumeView(
   // Sets the icon, icon color, background color for `live_caption_button_`
   // when it's toggled.
   live_caption_button_->SetToggledVectorIcon(kUnifiedMenuLiveCaptionIcon);
-  live_caption_button_->SetIconToggledColorId(
+  live_caption_button_->SetIconToggledColor(
       cros_tokens::kCrosSysSystemOnPrimaryContainer);
-  live_caption_button_->SetBackgroundToggledColorId(
+  live_caption_button_->SetBackgroundToggledColor(
       cros_tokens::kCrosSysSystemPrimaryContainer);
   // Sets the icon, icon color, background color for `live_caption_button_`
   // when it's not toggled.
   live_caption_button_->SetVectorIcon(kUnifiedMenuLiveCaptionOffIcon);
-  live_caption_button_->SetIconColorId(cros_tokens::kCrosSysOnSurface);
-  live_caption_button_->SetBackgroundColorId(cros_tokens::kCrosSysSystemOnBase);
+  live_caption_button_->SetIconColor(cros_tokens::kCrosSysOnSurface);
+  live_caption_button_->SetBackgroundColor(cros_tokens::kCrosSysSystemOnBase);
 
   live_caption_button_->SetToggled(enabled);
 
@@ -168,7 +168,7 @@ void UnifiedVolumeView::Update(bool by_user) {
       // TODO(b/257151067): Adds tooltip.
       slider_button()->SetVectorIcon(is_muted ? kUnifiedMenuVolumeMuteIcon
                                               : GetVolumeIconForLevel(level));
-      slider_button()->SetIconColorId(
+      slider_button()->SetIconColor(
           is_muted ? cros_tokens::kCrosSysOnSurfaceVariant
                    : cros_tokens::kCrosSysSystemOnPrimaryContainer);
 
@@ -183,7 +183,7 @@ void UnifiedVolumeView::Update(bool by_user) {
               : Style::kRadioInactive);
       slider_button()->SetVectorIcon(is_muted ? kUnifiedMenuVolumeMuteIcon
                                               : GetVolumeIconForLevel(level));
-      slider_button()->SetIconColorId(
+      slider_button()->SetIconColor(
           active_device_id == device_id_
               ? (is_muted ? cros_tokens::kCrosSysOnSurface
                           : cros_tokens::kCrosSysSystemOnPrimaryContainer)

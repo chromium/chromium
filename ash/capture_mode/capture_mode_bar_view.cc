@@ -124,8 +124,8 @@ void CaptureModeBarView::AppendCommonElements() {
       /*has_border=*/true));
 
   // Customize the settings button toggled color.
-  settings_button_->SetIconToggledColorId(kColorAshButtonIconColor);
-  settings_button_->SetBackgroundToggledColorId(
+  settings_button_->SetIconToggledColor(kColorAshButtonIconColor);
+  settings_button_->SetBackgroundToggledColor(
       kColorAshControlBackgroundColorInactive);
 
   // Add highlight helper to settings button and close button.

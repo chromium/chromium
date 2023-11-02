@@ -374,12 +374,11 @@ void GameDashboardToolbarView::AddShortcutTiles() {
             IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE),
         /*is_togglable=*/true));
     record_game_button_->SetVectorIcon(kGdRecordGameIcon);
-    record_game_button_->SetIconColorId(cros_tokens::kCrosSysOnSurface);
+    record_game_button_->SetIconColor(cros_tokens::kCrosSysOnSurface);
 
-    record_game_button_->SetBackgroundToggledColorId(
-        cros_tokens::kCrosSysError);
+    record_game_button_->SetBackgroundToggledColor(cros_tokens::kCrosSysError);
     record_game_button_->SetToggledVectorIcon(kCaptureModeCircleStopIcon);
-    record_game_button_->SetIconToggledColorId(cros_tokens::kCrosSysOnError);
+    record_game_button_->SetIconToggledColor(cros_tokens::kCrosSysOnError);
     UpdateRecordGameButton(
         GameDashboardController::Get()->active_recording_context() == context_);
   }

@@ -194,8 +194,8 @@ MediaTray::PinButton::PinButton()
           /*has_border=*/false) {
   SetIconSize(kTrayTopShortcutButtonIconSize);
   SetToggledVectorIcon(kPinnedIcon);
-  SetIconColorId(cros_tokens::kCrosSysOnSurface);
-  SetBackgroundToggledColorId(cros_tokens::kCrosSysSystemPrimaryContainer);
+  SetIconColor(cros_tokens::kCrosSysOnSurface);
+  SetBackgroundToggledColor(cros_tokens::kCrosSysSystemPrimaryContainer);
   SetToggled(MediaTray::IsPinnedToShelf());
 }
 

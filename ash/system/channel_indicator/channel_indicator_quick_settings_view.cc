@@ -363,7 +363,7 @@ class SubmitFeedbackButton : public IconButton {
   void OnThemeChanged() override {
     auto* color_provider = GetColorProvider();
     if (features::IsQsRevampEnabled()) {
-      SetIconColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+      SetIconColor(cros_tokens::kCrosSysOnSurfaceVariant);
 
       const SkColor ink_drop_base_color =
           color_provider->GetColor(kColorAshInkDropOpaqueColor);

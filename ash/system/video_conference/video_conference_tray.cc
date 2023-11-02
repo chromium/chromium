@@ -148,10 +148,10 @@ VideoConferenceTrayButton::VideoConferenceTrayButton(
           /*views::Button*=*/this,
           TrayBackgroundViewCatalogName::kVideoConferenceTray)));
 
-  SetBackgroundToggledColorId(cros_tokens::kCrosSysSystemNegativeContainer);
-  SetIconToggledColorId(cros_tokens::kCrosSysSystemOnNegativeContainer);
+  SetBackgroundToggledColor(cros_tokens::kCrosSysSystemNegativeContainer);
+  SetIconToggledColor(cros_tokens::kCrosSysSystemOnNegativeContainer);
 
-  SetBackgroundColorId(cros_tokens::kCrosSysSystemOnBase1);
+  SetBackgroundColor(cros_tokens::kCrosSysSystemOnBase1);
 
   SetToggledVectorIcon(*toggled_icon);
 

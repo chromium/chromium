@@ -147,7 +147,7 @@ GlanceablesTasksView::GlanceablesTasksView(
                               TasksLaunchSource::kHeaderButton),
           IconButton::Type::kMedium, &kGlanceablesTasksIcon,
           IDS_GLANCEABLES_TASKS_HEADER_ICON_ACCESSIBLE_NAME));
-  header_icon->SetBackgroundColorId(cros_tokens::kCrosSysBaseElevated);
+  header_icon->SetBackgroundColor(cros_tokens::kCrosSysBaseElevated);
   header_icon->SetProperty(views::kMarginsKey, kHeaderIconButtonMargins);
   header_icon->SetID(
       base::to_underlying(GlanceablesViewId::kTasksBubbleHeaderIcon));
