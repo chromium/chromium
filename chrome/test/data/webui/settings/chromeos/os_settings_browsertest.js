@@ -448,7 +448,7 @@ TEST_F(
  ],
  [
    'InternetPageInternetDetailSubpage',
-   'internet_page/internet_detail_subpage_tests.js', {
+   'internet_page/internet_detail_subpage_test.js', {
      enabled: [
        'ash::features::kApnRevamp',
        'ash::features::kPasspointARCSupport',

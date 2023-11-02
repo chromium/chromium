@@ -171,7 +171,6 @@ export class FakeNetworkConfig {
 
   /**
    * @param {string} methodName
-   * @protected
    */
   methodCalled(methodName) {
     this.getResolver_(methodName).resolve();
@@ -369,7 +368,6 @@ export class FakeNetworkConfig {
 
   /**
    * @param {DeviceStateProperties} deviceState
-   * @private
    */
   setDeviceStateForTest(deviceState) {
     assert(deviceState.type !== undefined);

@@ -82,7 +82,7 @@ const SettingsInternetDetailPageElementBase =
                 DeepLinkingMixinInterface&NetworkListenerBehaviorInterface&
                 CrPolicyNetworkBehaviorMojoInterface>;
 
-class SettingsInternetDetailPageElement extends
+export class SettingsInternetDetailPageElement extends
     SettingsInternetDetailPageElementBase {
   static get is() {
     return 'settings-internet-detail-subpage' as const;

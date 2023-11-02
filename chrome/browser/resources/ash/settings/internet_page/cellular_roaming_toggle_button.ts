@@ -33,7 +33,7 @@ import {getTemplate} from './cellular_roaming_toggle_button.html.js';
 const CellularRoamingToggleButtonElementBase =
     PrefsMixin(I18nMixin(PolymerElement));
 
-class CellularRoamingToggleButtonElement extends
+export class CellularRoamingToggleButtonElement extends
     CellularRoamingToggleButtonElementBase {
   static get is() {
     return 'cellular-roaming-toggle-button' as const;
