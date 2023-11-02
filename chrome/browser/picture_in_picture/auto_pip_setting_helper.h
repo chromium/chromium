@@ -75,6 +75,26 @@ class AutoPipSettingHelper {
   ResultCb take_result_cb_for_testing() { return CreateResultCb(); }
 
  private:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class PromptResult {
+    // The user closed the PiP window before selecting a choice. Note that this
+    // will not be recorded when the PiP window is closed automatically by the
+    // user focusing the original tab.
+    kIgnored = 0,
+
+    // The user chose to block automatic picture-in-picture.
+    kBlock = 1,
+
+    // The user chose to allow automatic picture-in-picture on every visit.
+    kAllowOnEveryVisit = 2,
+
+    // The user chose to allow automatic picture-in-picture this time.
+    kAllowOnce = 3,
+
+    kMaxValue = kAllowOnce,
+  };
+
   // Returns the content setting, modified as needed by any embargo.
   ContentSetting GetEffectiveContentSetting();
 
@@ -87,6 +107,9 @@ class AutoPipSettingHelper {
 
   // Return a new ResultCb, and invalidate any previous ones.
   ResultCb CreateResultCb();
+
+  // Record metrics for the result of the prompt.
+  void RecordResult(PromptResult result);
 
   GURL origin_;
   const raw_ptr<HostContentSettingsMap> settings_map_ = nullptr;

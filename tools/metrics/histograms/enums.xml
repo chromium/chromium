@@ -58434,6 +58434,13 @@ Called by update_use_counter_css.py.-->
   <int value="4" label="Conflicting name resolution"/>
 </enum>
 
+<enum name="MediaAutoPictureInPicturePromptResult">
+  <int value="0" label="Ignored"/>
+  <int value="1" label="Block"/>
+  <int value="2" label="Allow on every visit"/>
+  <int value="3" label="Allow this time"/>
+</enum>
+
 <enum name="MediaCommand">
   <int value="0" label="Resume"/>
   <int value="1" label="Pause"/>
