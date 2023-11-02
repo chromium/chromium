@@ -1150,17 +1150,17 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_INTERNET_HOTSPOT_SUBTITLE_WITH_LEARN_MORE_LINK,
           ui::GetChromeOSDeviceName(),
-          GetHelpUrlWithBoard(chrome::kInstantTetheringLearnMoreURL)));
+          GetHelpUrlWithBoard(chrome::kChromebookHotspotLearnMoreURL)));
   html_source->AddString(
       "hotspotMobileDataNotSupportedSublabelWithLink",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_INTERNET_HOTSPOT_MOBILE_DATA_NOT_SUPPORTED_SUBLABEL_WITH_LEARN_MORE_LINK,
-          GetHelpUrlWithBoard(chrome::kInstantTetheringLearnMoreURL)));
+          GetHelpUrlWithBoard(chrome::kChromebookHotspotLearnMoreURL)));
   html_source->AddString(
       "hotspotNoMobileDataSublabelWithLink",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_INTERNET_HOTSPOT_NO_MOBILE_DATA_SUBLABEL_WITH_LEARN_MORE_LINK,
-          GetHelpUrlWithBoard(chrome::kInstantTetheringLearnMoreURL)));
+          GetHelpUrlWithBoard(chrome::kChromebookHotspotLearnMoreURL)));
   html_source->AddString(
       "hotspotSettingsTitle",
       l10n_util::GetStringFUTF16(IDS_SETTINGS_INTERNET_HOTSPOT_SETTINGS_TITLE,
@@ -1170,7 +1170,7 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_INTERNET_HOTSPOT_SETTINGS_SUBTITLE_WITH_LEARN_MORE_LINK,
           ui::GetChromeOSDeviceName(),
-          GetHelpUrlWithBoard(chrome::kInstantTetheringLearnMoreURL)));
+          GetHelpUrlWithBoard(chrome::kChromebookHotspotLearnMoreURL)));
   html_source->AddBoolean("isUserLoggedIn", IsUserLoggedIn());
 }
 

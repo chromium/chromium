@@ -627,6 +627,10 @@ inline constexpr char kGoogleNameserversLearnMoreURL[] =
 inline constexpr char kInstantTetheringLearnMoreURL[] =
     "https://support.google.com/chromebook?p=instant_tethering";
 
+// The URL for the "learn more" link for Chromebook hotspot.
+inline constexpr char kChromebookHotspotLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=chromebook_hotspot";
+
 // The URL for the "Learn more" link for Kerberos accounts.
 inline constexpr char kKerberosAccountsLearnMoreURL[] =
     "https://support.google.com/chromebook?p=kerberos_accounts";
