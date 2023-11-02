@@ -152,16 +152,20 @@ class TouchToFillPasswordGenerationCoordinator {
     }
 
     void hideFromNative() {
-        onDismissed(InteractionResult.DISMISSED_FROM_NATIVE);
+        hideBottomSheet(InteractionResult.DISMISSED_FROM_NATIVE);
     }
 
     private void onDismissed(@InteractionResult int interactionResult) {
+        hideBottomSheet(interactionResult);
+        mTouchToFillPasswordGenerationDelegate.onDismissed(
+                interactionResult == InteractionResult.USED_GENERATED_PASSWORD);
+    }
+
+    private void hideBottomSheet(@InteractionResult int interactionResult) {
         // It's important to remove the observer before the `mBottomSheetController.hideContent`
         // call to avoid calling `onDismissed` twice.
         mBottomSheetController.removeObserver(mBottomSheetObserver);
         mBottomSheetController.hideContent(mTouchToFillPasswordGenerationView, true);
-        mTouchToFillPasswordGenerationDelegate.onDismissed(
-                interactionResult == InteractionResult.USED_GENERATED_PASSWORD);
 
         setPasswordGenerationBottomSheetDismissCount(interactionResult);
         RecordHistogram.recordEnumeratedHistogram(

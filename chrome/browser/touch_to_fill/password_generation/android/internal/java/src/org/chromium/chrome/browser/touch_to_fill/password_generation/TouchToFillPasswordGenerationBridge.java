@@ -66,6 +66,7 @@ class TouchToFillPasswordGenerationBridge
     @CalledByNative
     public void hideFromNative() {
         mCoordinator.hideFromNative();
+        mNativeTouchToFillPasswordGenerationBridge = 0;
     }
 
     @Override
@@ -74,6 +75,7 @@ class TouchToFillPasswordGenerationBridge
 
         TouchToFillPasswordGenerationBridgeJni.get()
                 .onDismissed(mNativeTouchToFillPasswordGenerationBridge, passwordAccepted);
+        mNativeTouchToFillPasswordGenerationBridge = 0;
     }
 
     @Override
@@ -82,6 +84,8 @@ class TouchToFillPasswordGenerationBridge
 
         TouchToFillPasswordGenerationBridgeJni.get().onGeneratedPasswordAccepted(
                 mNativeTouchToFillPasswordGenerationBridge, password);
+        // No need to reset mNativeTouchToFillPasswordGenerationBridge, onDismissed will do it
+        // afterwards.
     }
 
     @Override
@@ -90,6 +94,8 @@ class TouchToFillPasswordGenerationBridge
 
         TouchToFillPasswordGenerationBridgeJni.get().onGeneratedPasswordRejected(
                 mNativeTouchToFillPasswordGenerationBridge);
+        // No need to reset mNativeTouchToFillPasswordGenerationBridge, onDismissed will do it
+        // afterwards.
     }
 
     @NativeMethods
