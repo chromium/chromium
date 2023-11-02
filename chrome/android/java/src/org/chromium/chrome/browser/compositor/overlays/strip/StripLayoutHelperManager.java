@@ -26,6 +26,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
@@ -310,6 +311,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
      * @param toolbarContainerView @{link View} passed to @{link TabDragSource} for drag and drop.
      * @param tabHoverCardViewStub The {@link ViewStub} representing the strip tab hover card.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
+     * @param browserControlsStateProvider @{@link BrowserControlsStateProvider} for drag drop.
      */
     public StripLayoutHelperManager(
             Context context,
@@ -323,7 +325,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             DragAndDropDelegate dragDropDelegate,
             View toolbarContainerView,
             @NonNull ViewStub tabHoverCardViewStub,
-            ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
+            ObservableSupplier<TabContentManager> tabContentManagerSupplier,
+            @NonNull BrowserControlsStateProvider browserControlsStateProvider) {
         mUpdateHost = updateHost;
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
         mTabStripTreeProvider = new TabStripSceneLayer(context);
@@ -449,7 +452,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                             toolbarContainerView,
                             multiInstanceManager,
                             dragDropDelegate,
-                            managerHost.getBrowserControlsManager());
+                            browserControlsStateProvider);
             mTabDropTarget = new TabDropTarget(this, multiInstanceManager, toolbarContainerView);
         }
 
