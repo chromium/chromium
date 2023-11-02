@@ -396,7 +396,7 @@ CanvasResourceDispatcher* OffscreenCanvas::GetOrCreateResourceDispatcher() {
   DCHECK(HasPlaceholderCanvas());
   // If we don't have a valid placeholder_canvas_id_, then this is a standalone
   // OffscreenCanvas, and it should not have a placeholder.
-  if (!frame_dispatcher_) {
+  if (frame_dispatcher_ == nullptr || restoring_gpu_context_) {
     scoped_refptr<base::SingleThreadTaskRunner>
         agent_group_scheduler_compositor_task_runner;
     scoped_refptr<base::SingleThreadTaskRunner> dispatcher_task_runner;
@@ -428,8 +428,9 @@ CanvasResourceDispatcher* OffscreenCanvas::GetOrCreateResourceDispatcher() {
 }
 
 CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
-  if (ResourceProvider())
+  if (ResourceProvider() && !restoring_gpu_context_) {
     return ResourceProvider();
+  }
 
   std::unique_ptr<CanvasResourceProvider> provider;
   gfx::Size surface_size(width(), height());
@@ -569,15 +570,27 @@ UkmParameters OffscreenCanvas::GetUkmParameters() {
 void OffscreenCanvas::NotifyGpuContextLost() {
   if (context_ && !context_->isContextLost()) {
     // This code path is used only by 2D canvas, because NotifyGpuContextLost
-    // is called by Canvas2DLayerBridge rather than the rendering context
+    // is called by Canvas2DLayerBridge and OffscreenCanvas itself, rather
+    // than the rendering context.
     DCHECK(context_->IsRenderingContext2D());
     context_->LoseContext(CanvasRenderingContext::kRealLostContext);
   }
-  if (frame_dispatcher_) {
+  if (context_->IsWebGL() && frame_dispatcher_ != nullptr) {
     // We'll need to recreate a new frame dispatcher once the context is
     // restored in order to reestablish the compositor frame sink mojo
     // channel.
     frame_dispatcher_ = nullptr;
+  }
+}
+
+void OffscreenCanvas::CheckForGpuContextLost() {
+  // If the GPU has crashed, it is necessary to notify the OffscreenCanvas so
+  // the context can be recovered.
+  if (ResourceProvider() && ResourceProvider()->IsAccelerated() &&
+      ResourceProvider()->IsGpuContextLost()) {
+    set_context_lost(true);
+    ReplaceResourceProvider(nullptr);
+    NotifyGpuContextLost();
   }
 }
 

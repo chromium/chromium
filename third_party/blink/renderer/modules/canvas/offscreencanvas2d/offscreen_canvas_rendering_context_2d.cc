@@ -183,6 +183,9 @@ bool OffscreenCanvasRenderingContext2D::CanCreateCanvas2dResourceProvider()
 CanvasResourceProvider*
 OffscreenCanvasRenderingContext2D::GetOrCreateCanvasResourceProvider() const {
   DCHECK(Host() && Host()->IsOffscreenCanvas());
+  if (HostAsOffscreenCanvas() != nullptr) {
+    HostAsOffscreenCanvas()->CheckForGpuContextLost();
+  }
   return static_cast<OffscreenCanvas*>(Host())->GetOrCreateResourceProvider();
 }
 
@@ -425,12 +428,19 @@ void OffscreenCanvasRenderingContext2D::TryRestoreContextEvent(
   // If lost mode is |kRealLostContext|, it means the context was not lost due
   // to surface failure but rather due to a an eviction, which means image
   // buffer exists.
-  if (context_lost_mode_ == kRealLostContext &&
-      GetOrCreateCanvasResourceProvider() &&
-      GetCanvasResourceProvider()->Canvas()) {
-    try_restore_context_event_timer_.Stop();
-    DispatchContextRestoredEvent(nullptr);
-    return;
+  if (context_lost_mode_ == kRealLostContext) {
+    CHECK(HostAsOffscreenCanvas() != nullptr);
+    // Let the OffscreenCanvas know that it should attempt to recreate the
+    // resource dispatcher in order to restore the context.
+    HostAsOffscreenCanvas()->SetRestoringGpuContext(true);
+    bool valid_resource_provider =
+        GetOrCreateCanvasResourceProvider() != nullptr;
+    HostAsOffscreenCanvas()->SetRestoringGpuContext(false);
+    if (valid_resource_provider && GetCanvasResourceProvider()->Canvas()) {
+      try_restore_context_event_timer_.Stop();
+      DispatchContextRestoredEvent(nullptr);
+      return;
+    }
   }
 
   // It gets here if lost mode is |kRealLostContext| and it fails to create a

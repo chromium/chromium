@@ -5976,6 +5976,7 @@ data/gpu/media_recorder_from_video_element.js
 data/gpu/mem_webgl.html
 data/gpu/offscreencanvas_imagebitmap_from_worker_uses_overlay.html
 data/gpu/offscreencanvas_imagebitmap_uses_overlay.html
+data/gpu/offscreencanvas_recovery_after_gpu_crash.html
 data/gpu/pixel_background.html
 data/gpu/pixel_background_image.html
 data/gpu/pixel_browser_plugin.html
