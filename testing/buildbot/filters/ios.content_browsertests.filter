@@ -30,7 +30,6 @@
 -All/SitePerProcessBrowserTest.TextAutosizerPageInfo/1
 -All/SitePerProcessBrowserTest.TwoSubframesCreatePopupMenuWidgetsSimultaneously/0
 -All/SitePerProcessBrowserTest.TwoSubframesCreatePopupMenuWidgetsSimultaneously/1
--All/SyntheticInputTest.SmoothScrollWheel/0
 -All/TouchpadPinchBrowserTest.TouchpadPinchChangesPageScale/0
 -All/TouchpadPinchBrowserTest.TouchpadPinchChangesPageScale/1
 -All/TouchpadPinchBrowserTest.WheelListenerAllowingPinch/0
