@@ -7432,8 +7432,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImportantFile.FileReplaceRetryCount" units="attempt count"
-    expires_after="2023-12-12">
-  <owner>brucedawson@chromium.org</owner>
+    expires_after="2024-06-12">
+  <owner>etienneb@chromium.org</owner>
   <owner>grt@chromium.org</owner>
   <summary>
     The number of retries needed to successfully move the temporary file to its
