@@ -205,6 +205,7 @@ if (build_with_chromium) {
         "absl/container:inlined_vector_test",
         "absl/container:node_slot_policy_test",
         "absl/container:raw_hash_set_allocator_test",
+        "absl/container:raw_hash_set_test",
         "absl/container:sample_element_size_test",
         "absl/crc:crc32c_test",
         "absl/crc:crc_cord_state_test",

@@ -157,7 +157,7 @@ ABSL_ATTRIBUTE_ALWAYS_INLINE inline void PrefetchToLocalCacheForWrite(
   // unless -march=broadwell or newer; this is not generally the default, so we
   // manually emit prefetchw. PREFETCHW is recognized as a no-op on older Intel
   // processors and has been present on AMD processors since the K6-2.
-#if defined(__x86_64__)
+#if defined(__x86_64__) && !defined(__PRFCHW__)
   asm("prefetchw %0" : : "m"(*reinterpret_cast<const char*>(addr)));
 #else
   __builtin_prefetch(addr, 1, 3);

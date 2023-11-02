@@ -1667,7 +1667,6 @@ EXPORTS
     ??1CRC@crc_internal@absl@@UAE@XZ
     ??1CRCImpl@crc_internal@absl@@UAE@XZ
     ??1CheckOpMessageBuilder@log_internal@absl@@QAE@XZ
-    ??1CondVar@absl@@QAE@XZ
     ??1Cord@absl@@QAE@XZ
     ??1CordBuffer@absl@@QAE@XZ
     ??1CordRepCrc@cord_internal@absl@@QAE@XZ
@@ -2329,6 +2328,7 @@ EXPORTS
     ?DoStore@?$AtomicHook@P6AX_J@Z@base_internal@absl@@AAE_NP6AX_J@Z@Z
     ?DoStore@?$AtomicHook@P6A_NW4LogSeverity@absl@@PBDHPAPADPAH@Z@base_internal@absl@@AAE_NP6A_NW4LogSeverity@3@PBDHPAPADPAH@Z@Z
     ?DropDeletesWithoutResize@container_internal@absl@@YAXAAVCommonFields@12@ABUPolicyFunctions@12@PAX@Z
+    ?Dtor@Mutex@absl@@AAEXXZ
     ?DummyFunction@?$AtomicHook@P6A?AV?$optional@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@__Cr@std@@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@23@ABVCord@absl@@@Z@base_internal@absl@@CA?AV?$optional@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@__Cr@std@@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@56@ABVCord@3@@Z
     ?DummyFunction@?$AtomicHook@P6AXPBDH000@Z@base_internal@absl@@CAXPBDH000@Z
     ?DummyFunction@?$AtomicHook@P6AXPBDPBX@Z@base_internal@absl@@CAXPBDPBX@Z
@@ -4452,6 +4452,7 @@ EXPORTS
     ?set_value@InputValue@UnboundConversion@str_format_internal@absl@@QAEXH@Z
     ?shallow_subcords_enabled@cord_internal@absl@@3U?$atomic@_N@__Cr@std@@A
     ?should_rehash_for_bug_detection_on_insert@CommonFieldsGenerationInfoEnabled@container_internal@absl@@QBE_NPBW4ctrl_t@23@I@Z
+    ?should_rehash_for_bug_detection_on_move@CommonFieldsGenerationInfoEnabled@container_internal@absl@@QBE_NPBW4ctrl_t@23@I@Z
     ?shrink_to_fit@?$vector@UTransition@cctz@time_internal@absl@@V?$allocator@UTransition@cctz@time_internal@absl@@@__Cr@std@@@__Cr@std@@QAEXXZ
     ?size@?$BigUnsigned@$03@strings_internal@absl@@QBEHXZ
     ?size@?$BigUnsigned@$0FE@@strings_internal@absl@@QBEHXZ
