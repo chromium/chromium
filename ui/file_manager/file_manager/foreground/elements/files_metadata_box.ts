@@ -41,6 +41,8 @@ export interface FilesMetadataBox {
   metadata: string;
 }
 
+// TODO(b/289003444): Move the following type definitions into ../js/metadata
+// when that folder has been converted to typescript.
 type LatLongArray = [[number, number], [number, number], [number, number]];
 
 // GPS Data as per https://exiv2.org/tags.html.

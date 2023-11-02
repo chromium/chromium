@@ -64,8 +64,6 @@ js_library("files_app_entry_interfaces") {
 }
 
 js_library("metadata_model") {
-  deps =
-      [ "//ui/file_manager/file_manager/foreground/js/metadata:metadata_item" ]
 }
 
 js_library("metadata_worker_window") {
