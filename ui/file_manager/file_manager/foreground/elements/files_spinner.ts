@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './files_spinner.html.js';
 
-/** @type {!HTMLTemplateElement} */
-const htmlTemplate = html`{__html_template__}`;
-
-/**
- * FilesSpinner.
- */
 export class FilesSpinner extends HTMLElement {
   constructor() {
     super();
 
-    const fragment = htmlTemplate.content.cloneNode(true);
+    const template = document.createElement('template');
+    template.innerHTML = getTemplate() as unknown as string;
+    const fragment = template.content.cloneNode(true);
     this.attachShadow({mode: 'open'}).appendChild(fragment);
+  }
+
+  static get is() {
+    return 'files-spinner' as const;
   }
 
   /**
@@ -25,7 +25,7 @@ export class FilesSpinner extends HTMLElement {
     if (!this.shadowRoot) {
       return;
     }
-    const host = /** @type {!HTMLElement} */ (this.shadowRoot.host);
+    const host = this.shadowRoot.host;
 
     host.setAttribute('role', 'progressbar');
     host.setAttribute('aria-disabled', 'false');
@@ -34,6 +34,10 @@ export class FilesSpinner extends HTMLElement {
   }
 }
 
-customElements.define('files-spinner', FilesSpinner);
+declare global {
+  interface HTMLElementTagNameMap {
+    [FilesSpinner.is]: FilesSpinner;
+  }
+}
 
-//# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_spinner.js
+customElements.define(FilesSpinner.is, FilesSpinner);

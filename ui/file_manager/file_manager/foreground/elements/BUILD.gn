@@ -10,24 +10,14 @@ import("//ui/file_manager/base/gn/js_test_type_check.gni")
 
 visibility = [ "//ui/file_manager/file_manager/foreground/*" ]
 
-group("elements") {
-  visibility += [ "//ui/file_manager/*" ]
-  public_deps =
-      [ "//ui/file_manager/file_manager/foreground/elements:files_spinner" ]
-}
-
 html_to_js("web_components") {
   visibility += [ "//ui/file_manager/*" ]
   js_files = [
-    "files_spinner.js",
     "icons.js",
     "xf_button.js",
     "xf_display_panel.js",
     "xf_panel_item.js",
   ]
-}
-
-js_library("files_spinner") {
 }
 
 html_to_wrapper("polymer_elements") {

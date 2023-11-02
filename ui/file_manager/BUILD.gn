@@ -140,7 +140,6 @@ preprocess_if_expr("preprocess_generated") {
   deps = [
     ":html_wrapper_files",
     "//ui/file_manager/base/gn:file_types_data_gen_js",
-    "//ui/file_manager/file_manager/foreground/elements:elements",
     "//ui/file_manager/file_manager/foreground/elements:polymer_elements",
     "//ui/file_manager/file_manager/foreground/elements:web_components",
   ]
@@ -438,7 +437,6 @@ generate_grd("build_grd") {
     deps += [
       ":for_image_loader",
       "//ui/file_manager/file_manager/background/js:build",
-      "//ui/file_manager/file_manager/foreground/elements:elements",
       "//ui/file_manager/file_manager/foreground/js:build",
       "//ui/file_manager/file_manager/foreground/js:build_worker",
     ]
