@@ -38,6 +38,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_formatter.h"
@@ -354,6 +355,11 @@ std::optional<std::u16string> GetCountrySelectControlValue(
     const std::u16string& value,
     base::span<const SelectOption> field_options,
     std::string* failure_to_fill) {
+  // Search for exact matches.
+  if (std::optional<std::u16string> select_control_value =
+          GetSelectControlValue(value, field_options, failure_to_fill)) {
+    return select_control_value;
+  }
   std::string country_code = CountryNames::GetInstance()->GetCountryCode(value);
   if (country_code.empty()) {
     if (failure_to_fill) {
@@ -458,7 +464,11 @@ std::optional<std::u16string> GetExpirationMonthSelectControlValue(
       return option.value;
     }
   }
-  return GetNumericSelectControlValue(month, field_options, failure_to_fill);
+  std::optional<std::u16string> numeric_value =
+      GetNumericSelectControlValue(month, field_options, failure_to_fill);
+  return numeric_value
+             ? numeric_value
+             : GetSelectControlValue(value, field_options, failure_to_fill);
 }
 
 // Returns true if the last two digits in `year` match those in `str`.
@@ -476,6 +486,10 @@ std::optional<std::u16string> GetYearSelectControlValue(
     const std::u16string& value,
     base::span<const SelectOption> field_options,
     std::string* failure_to_fill) {
+  if (std::optional<std::u16string> select_control_value =
+          GetSelectControlValue(value, field_options, failure_to_fill)) {
+    return select_control_value;
+  }
   if (value.size() != 2U && value.size() != 4U) {
     if (failure_to_fill) {
       *failure_to_fill += "Year to fill does not have length 2 or 4. ";
@@ -505,6 +519,10 @@ std::optional<std::u16string> GetCreditCardTypeSelectControlValue(
     const std::u16string& value,
     base::span<const SelectOption> field_options,
     std::string* failure_to_fill) {
+  if (std::optional<std::u16string> select_control_value =
+          GetSelectControlValue(value, field_options, failure_to_fill)) {
+    return select_control_value;
+  }
   if (std::optional<std::u16string> select_control_value =
           GetSelectControlValueSubstringMatch(value, /*ignore_whitespace=*/true,
                                               field_options, failure_to_fill)) {
@@ -623,56 +641,6 @@ std::u16string GetCreditCardVerificationCodeForInput(
     // For preview, we will mask CVC with dots.
     case mojom::ActionPersistence::kPreview:
       return CreditCard::GetMidlineEllipsisDots(cvc_candidate.length());
-  }
-}
-
-// Gets the `value` in the select control to fill in `field`. If an exact match
-// is not found, falls back to alternate filling strategies based on the `type`.
-// A nullopt value means that no value for filling was found.
-std::optional<std::u16string> GetSelectOrSelectListControlValue(
-    const AutofillType& type,
-    const std::u16string& value,
-    absl::variant<const AutofillProfile*, const CreditCard*>
-        profile_or_credit_card,
-    const std::string& app_locale,
-    base::span<const SelectOption> field_options,
-    AddressNormalizer* address_normalizer,
-    std::string* failure_to_fill) {
-  ServerFieldType storable_type = type.GetStorableType();
-
-  // Credit card expiration month is checked first since an exact match on value
-  // may not be correct.
-  if (storable_type == CREDIT_CARD_EXP_MONTH) {
-    return GetExpirationMonthSelectControlValue(value, app_locale,
-                                                field_options, failure_to_fill);
-  }
-  // Search for exact matches.
-  if (std::optional<std::u16string> select_control_value =
-          GetSelectControlValue(value, field_options, failure_to_fill)) {
-    return select_control_value;
-  }
-  // If that fails, try specific fallbacks based on the field type.
-  switch (storable_type) {
-    case ADDRESS_HOME_STATE: {
-      CHECK(absl::holds_alternative<const AutofillProfile*>(
-          profile_or_credit_card));
-      const std::string country_code = data_util::GetCountryCodeWithFallback(
-          *absl::get<const AutofillProfile*>(profile_or_credit_card),
-          app_locale);
-      return GetStateSelectControlValue(value, field_options, country_code,
-                                        address_normalizer, failure_to_fill);
-    }
-    case ADDRESS_HOME_COUNTRY:
-      return GetCountrySelectControlValue(value, field_options,
-                                          failure_to_fill);
-    case CREDIT_CARD_EXP_2_DIGIT_YEAR:
-    case CREDIT_CARD_EXP_4_DIGIT_YEAR:
-      return GetYearSelectControlValue(value, field_options, failure_to_fill);
-    case CREDIT_CARD_TYPE:
-      return GetCreditCardTypeSelectControlValue(value, field_options,
-                                                 failure_to_fill);
-    default:
-      return std::nullopt;
   }
 }
 
@@ -967,6 +935,26 @@ std::u16string GetValueForVirtualCardInputPreview(
   }
 }
 
+std::optional<std::u16string> GetValueForCreditCardSelectControl(
+    const std::u16string& value,
+    const std::string& app_locale,
+    const AutofillField& field,
+    std::string* failure_to_fill) {
+  switch (field.Type().GetStorableType()) {
+    case CREDIT_CARD_EXP_MONTH:
+      return GetExpirationMonthSelectControlValue(
+          value, app_locale, field.options, failure_to_fill);
+    case CREDIT_CARD_EXP_2_DIGIT_YEAR:
+    case CREDIT_CARD_EXP_4_DIGIT_YEAR:
+      return GetYearSelectControlValue(value, field.options, failure_to_fill);
+    case CREDIT_CARD_TYPE:
+      return GetCreditCardTypeSelectControlValue(value, field.options,
+                                                 failure_to_fill);
+    default:
+      return GetSelectControlValue(value, field.options, failure_to_fill);
+  }
+}
+
 std::optional<std::u16string> GetValueForCreditCard(
     const CreditCard& credit_card,
     const std::u16string& cvc,
@@ -982,10 +970,10 @@ std::optional<std::u16string> GetValueForCreditCard(
           : GetValueForCreditCardForInput(credit_card, cvc, app_locale,
                                           action_persistence, field,
                                           failure_to_fill);
+
   return field.IsSelectOrSelectListElement()
-             ? GetSelectOrSelectListControlValue(
-                   field.Type(), value, &credit_card, app_locale, field.options,
-                   /*address_normalizer=*/nullptr, failure_to_fill)
+             ? GetValueForCreditCardSelectControl(value, app_locale, field,
+                                                  failure_to_fill)
              : value;
 }
 
@@ -1018,6 +1006,31 @@ std::u16string GetValueForProfileForInput(const AutofillProfile& profile,
   return value;
 }
 
+std::optional<std::u16string> GetValueForProfileSelectControl(
+    const AutofillProfile& profile,
+    const std::u16string& value,
+    const std::string& app_locale,
+    base::span<const SelectOption> field_options,
+    ServerFieldType field_type,
+    AddressNormalizer* address_normalizer,
+    std::string* failure_to_fill) {
+  switch (field_type) {
+    case ADDRESS_HOME_COUNTRY:
+      return GetCountrySelectControlValue(value, field_options,
+                                          failure_to_fill);
+    case ADDRESS_HOME_STATE:
+      return GetStateSelectControlValue(
+          value, field_options,
+          data_util::GetCountryCodeWithFallback(profile, app_locale),
+          address_normalizer, failure_to_fill);
+    case PHONE_HOME_COUNTRY_CODE:
+      return GetPhoneCountryCodeSelectControlForInput(value, field_options,
+                                                      failure_to_fill);
+    default:
+      return GetSelectControlValue(value, field_options, failure_to_fill);
+  }
+}
+
 // Returns the appropriate `profile` value based on `field_type` to fill
 // into `field_data`, and nullopt if no value could be found for the given
 // `field_data`.
@@ -1032,9 +1045,10 @@ std::optional<std::u16string> GetValueForProfile(
       profile, app_locale, field_type, field_data, failure_to_fill);
 
   return field_data->IsSelectOrSelectListElement()
-             ? GetSelectOrSelectListControlValue(
-                   field_type, value, &profile, app_locale, field_data->options,
-                   address_normalizer, failure_to_fill)
+             ? GetValueForProfileSelectControl(
+                   profile, value, app_locale, field_data->options,
+                   field_type.GetStorableType(), address_normalizer,
+                   failure_to_fill)
              : value;
 }
 
