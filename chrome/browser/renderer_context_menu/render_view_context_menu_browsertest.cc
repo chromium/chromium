@@ -2220,16 +2220,16 @@ IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTestNoTestingConfig,
   observer.Wait();
 
   // Set the automatic beacon
-  EXPECT_TRUE(
-      ExecJs(fenced_frame_node,
-             content::JsReplace(R"(
+  EXPECT_TRUE(ExecJs(
+      fenced_frame_node,
+      content::JsReplace(R"(
       window.fence.setReportEventDataForAutomaticBeacons({
         eventType: $1,
         eventData: $2,
         destination: ['seller', 'buyer']
       });
     )",
-                                "reserved.top_navigation", kBeaconMessage)));
+                         "reserved.top_navigation_commit", kBeaconMessage)));
 
   // This simulates the conditions when right clicking on a link.
   content::ContextMenuParams params;

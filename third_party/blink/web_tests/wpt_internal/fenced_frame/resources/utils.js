@@ -495,12 +495,14 @@ async function nextValueFromServer(key) {
 }
 
 // Reads the data from the latest automatic beacon sent to the server.
-async function readAutomaticBeaconDataFromServer() {
-  const serverUrl = `${BEACON_URL}`;
-  const response = await fetch(serverUrl);
+async function readAutomaticBeaconDataFromServer(expected_body) {
+  let serverURL = `${BEACON_URL}`;
+  const response = await fetch(serverURL + "?" + new URLSearchParams({
+    expected_body: expected_body,
+  }));
   if (!response.ok)
-    throw new Error('An error happened in the server');
-    const value = await response.text();
+    throw new Error('An error happened in the server ' + response.status);
+  const value = await response.text();
 
   // The value is not stored in the server.
   if (value === "<Not set>")
@@ -509,12 +511,14 @@ async function readAutomaticBeaconDataFromServer() {
   return { status: true, value: value };
 }
 
+
 // Convenience wrapper around the above getter that will wait until a value is
 // available on the server.
-async function nextAutomaticBeacon() {
+async function nextAutomaticBeacon(expected_body) {
   while (true) {
     // Fetches the test result from the server.
-    const { status, value } = await readAutomaticBeaconDataFromServer();
+    const { status, value } =
+        await readAutomaticBeaconDataFromServer(expected_body);
     if (!status) {
       // The test result has not been stored yet. Retry after a while.
       await new Promise(resolve => setTimeout(resolve, 20));

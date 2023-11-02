@@ -595,6 +595,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // Called from the currently active document via the
   // `Fence.setReportEventDataForAutomaticBeacons` JS API.
   void SetFencedFrameAutomaticBeaconReportEventData(
+      blink::mojom::AutomaticBeaconType event_type,
       const std::string& event_data,
       const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
       network::AttributionReportingRuntimeFeatures
@@ -604,7 +605,8 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // Helper function to clear out automatic beacon data after one automatic
   // beacon if `once` was set to true when calling
   // `setReportEventDataForAutomaticBeacons()`.
-  void MaybeResetFencedFrameAutomaticBeaconReportEventData();
+  void MaybeResetFencedFrameAutomaticBeaconReportEventData(
+      blink::mojom::AutomaticBeaconType event_type);
 
   // Returns the number of fenced frame boundaries above this frame. The
   // outermost main frame's frame tree has fenced frame depth 0, a topmost

@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<title>Test ctrl+click for automatic beacons</title>
+<title>Test window.fence.setReportEventDataForAutomaticBeacons</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
 <script src="/common/dispatcher/dispatcher.js"></script>
 <script src="resources/utils.js"></script>
-<script src="/common/get-host-info.sub.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
@@ -13,20 +12,26 @@
 <body>
 <script>
 promise_test(async(t) => {
+  const actions = new test_driver.Actions();
   const fencedframe = await attachFencedFrameContext(
     {generator_api: 'fledge', automatic_beacon: true});
-  const new_url = new URL("wpt_internal/fenced_frame/resources/dummy.html",
-      get_host_info().HTTPS_NOTSAMESITE_ORIGIN);
-  const beacon_data = "This is the beacon data!";
+  const new_url = new URL("resources/dummy.html", location.href);
+  const beacon_data = "This is the second test's beacon data!";
 
   await fencedframe.execute((new_url, beacon_data) => {
     let a = document.createElement('a');
     a.textContent = "Click me!";
     a.href = new_url;
     a.target = "_blank";
+    a.style.position = "absolute";
+    a.style.left = "0px";
+    a.style.top = "0px";
+    a.style.width = "100%";
+    a.style.height = "100%";
 
     // When the anchor link is clicked, the click handler will set the data
-    // before the navigation happens.
+    // before the navigation happens. This test checks to make sure that the
+    // data makes it to the correct place by the time the navigation commits.
     a.onclick = () => {
       let beacon_event = {
         eventType: "reserved.top_navigation_commit",
@@ -37,28 +42,21 @@ promise_test(async(t) => {
     };
     document.body.appendChild(a);
 
-    assert_not_equals(eventSender, null);
-
-    var rect = a.getBoundingClientRect();
-    eventSender.mouseMoveTo(rect.x+rect.width/2, rect.y+rect.height/2);
-
-    const isMac = navigator.userAgent.search(/\bMac OS X\b/) != -1;
-    eventSender.mouseDown(0, [isMac ? 'metaKey' : 'ctrlKey']);
-    eventSender.mouseUp(0, [isMac ? 'metaKey' : 'ctrlKey']);
   }, [new_url, beacon_data]);
+
+  // This will trigger the beacon data storing + navigation.
+  await actions.pointerMove(0, 0, {origin: fencedframe.element})
+               .pointerDown()
+               .pointerUp()
+               .send();
 
   const received_beacon_data = await nextAutomaticBeacon(beacon_data);
   assert_equals(received_beacon_data, beacon_data);
 
-  // Also test automatic beacons with middle clicks
-  await fencedframe.execute(() => {
-    eventSender.mouseDown(1);
-    eventSender.mouseUp(1);
-  }, []);
-  const middle_click_nav_received_beacon_data = await
-      nextAutomaticBeacon(beacon_data);
-  assert_equals(middle_click_nav_received_beacon_data, beacon_data);
-}, 'Trigger an automatic beacon from ctrl+clicking a link.');
+  // Leaving this fenced frame around for subsequent tests can lead to
+  // flakiness.
+  document.body.removeChild(fencedframe.element);
+}, 'Set and trigger an automatic beacon in an <a> click handler');
 
 </script>
 </body>

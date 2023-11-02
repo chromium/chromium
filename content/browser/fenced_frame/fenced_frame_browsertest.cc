@@ -2104,7 +2104,8 @@ class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
          // `FencedFrameConfig` object upon developer request.
          {blink::features::kFencedFramesAPIChanges, {}},
          {blink::features::kFencedFramesM120FeaturesPart1, {}},
-         {blink::features::kFencedFramesAutomaticBeaconCredentials, {}}},
+         {blink::features::kFencedFramesAutomaticBeaconCredentials, {}},
+         {blink::features::kFencedFramesM120FeaturesPart2, {}}},
         {/* disabled_features */});
   }
 
@@ -7012,7 +7013,7 @@ class FencedFrameAutomaticBeaconBrowserTest
     fenced_frame_reporter->OnUrlMappingReady(
         blink::FencedFrame::ReportingDestination::kBuyer,
         {
-            {blink::kFencedFrameTopNavigationBeaconType, reporting_url},
+            {blink::kFencedFrameTopNavigationCommitBeaconType, reporting_url},
         });
     // Set empty reporting url for seller.
     fenced_frame_reporter->OnUrlMappingReady(
@@ -7078,16 +7079,17 @@ class FencedFrameAutomaticBeaconBrowserTest
       if (!config.message) {
         // Call `setReportEventDataForAutomaticBeacons()` without `eventData`
         // field.
-        EXPECT_TRUE(ExecJs(ad_frame_root_node,
-                           JsReplace(R"(
+        EXPECT_TRUE(
+            ExecJs(ad_frame_root_node,
+                   JsReplace(R"(
               window.fence.setReportEventDataForAutomaticBeacons({
                 eventType: $1,
                 destination: $2
               });
             )",
-                                     blink::kFencedFrameTopNavigationBeaconType,
-                                     destination_list.Clone()),
-                           ad_frame_execjs_options));
+                             blink::kFencedFrameTopNavigationCommitBeaconType,
+                             destination_list.Clone()),
+                   ad_frame_execjs_options));
       } else {
         // Call `setReportEventDataForAutomaticBeacons()` with `eventData`.
         EvalJsResult result =
@@ -7099,7 +7101,7 @@ class FencedFrameAutomaticBeaconBrowserTest
                 destination: $3
               });
             )",
-                             blink::kFencedFrameTopNavigationBeaconType,
+                             blink::kFencedFrameTopNavigationCommitBeaconType,
                              config.message.value(), destination_list.Clone()),
                    ad_frame_execjs_options);
 

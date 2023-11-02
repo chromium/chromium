@@ -186,6 +186,7 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
       network::AttributionReportingRuntimeFeatures
           attribution_reporting_runtime_features) override;
   void SetFencedFrameAutomaticBeaconReportEventData(
+      blink::mojom::AutomaticBeaconType event_type,
       const WTF::String& event_data,
       const WTF::Vector<blink::FencedFrame::ReportingDestination>& destinations,
       network::AttributionReportingRuntimeFeatures

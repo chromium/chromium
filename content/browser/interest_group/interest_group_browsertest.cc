@@ -16025,6 +16025,14 @@ class InterestGroupAdComponentAutomaticBeaconBrowserTest
     : public InterestGroupFencedFrameBrowserTest,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
+  InterestGroupAdComponentAutomaticBeaconBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {blink::features::kFencedFramesM120FeaturesPart2},
+        /*disabled_features=*/
+        {});
+  }
+
   std::unique_ptr<NetworkResponder> CreateNetworkResponder() override {
     // Fenced frame window.fence.reportEvent API requires a responder that
     // handles beacons sent to the reporting url.
@@ -16152,6 +16160,9 @@ class InterestGroupAdComponentAutomaticBeaconBrowserTest
       EXPECT_TRUE(observer.last_navigation_succeeded());
     }
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test window.fence.reportEvent from an ad component frame is disallowed:
@@ -16286,8 +16297,8 @@ IN_PROC_BROWSER_TEST_P(InterestGroupAdComponentAutomaticBeaconBrowserTest,
   EXPECT_TRUE(network_responder_->HasReceivedRequest());
 }
 
-// Test `reserved.top_navigation` beacon from an ad component frame nested in
-// the main ad frame:
+// Test automatic beacons from an ad component frames nested in the main ad
+// frame:
 // 1. Run an auction with an ad component.
 // 2. Load the ad in a top-level frame.
 // 3. Load the ad component in the nested frame.
@@ -16311,7 +16322,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupAdComponentAutomaticBeaconBrowserTest,
   EXPECT_TRUE(ExecJs(ad_component_frame, (R"(
                         window.fence.setReportEventDataForAutomaticBeacons(
                           {
-                            eventType: 'reserved.top_navigation',
+                            eventType: 'reserved.top_navigation_commit',
                             eventData: 'should be igonred',
                             destination: ['seller']
                           }
@@ -16330,8 +16341,8 @@ IN_PROC_BROWSER_TEST_P(InterestGroupAdComponentAutomaticBeaconBrowserTest,
   EXPECT_TRUE(network_responder_->HasReceivedRequest());
 }
 
-// Test `reserved.top_navigation` beacon from an ad component frame nested in
-// the main ad frame:
+// Test automatic beacons from an ad component frames nested in the main ad
+// frame:
 // 1. Run an auction with an ad component.
 // 2. Load the ad in a top-level frame.
 // 3. Load the ad component in the nested frame.
@@ -16355,7 +16366,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupAdComponentAutomaticBeaconBrowserTest,
   EXPECT_TRUE(ExecJs(ad_component_frame, (R"(
                         window.fence.setReportEventDataForAutomaticBeacons(
                           {
-                            eventType: 'reserved.top_navigation',
+                            eventType: 'reserved.top_navigation_commit',
                             eventData: 'should be igonred',
                             destination: ['seller']
                           }
@@ -16395,7 +16406,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupAdComponentAutomaticBeaconBrowserTest,
   EXPECT_TRUE(ExecJs(ad_component_frame, (R"(
                         window.fence.setReportEventDataForAutomaticBeacons(
                           {
-                            eventType: 'reserved.top_navigation',
+                            eventType: 'reserved.top_navigation_commit',
                             eventData: 'should be igonred',
                             destination: ['seller']
                           }
@@ -16466,7 +16477,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupAdComponentAutomaticBeaconBrowserTest,
   EXPECT_TRUE(ExecJs(ad_component_frame, (R"(
                         window.fence.setReportEventDataForAutomaticBeacons(
                           {
-                            eventType: 'reserved.top_navigation',
+                            eventType: 'reserved.top_navigation_commit',
                             eventData: '',
                             destination: ['seller']
                           }
@@ -16505,7 +16516,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupAdComponentAutomaticBeaconBrowserTest,
   EXPECT_TRUE(ExecJs(ad_component_frame, (R"(
                         window.fence.setReportEventDataForAutomaticBeacons(
                           {
-                            eventType: 'reserved.top_navigation',
+                            eventType: 'reserved.top_navigation_commit',
                             eventData: 'should be igonred',
                             destination: ['seller']
                           }
@@ -16550,7 +16561,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupAdComponentAutomaticBeaconBrowserTest,
   EXPECT_TRUE(ExecJs(ad_component_frame, (R"(
                         window.fence.setReportEventDataForAutomaticBeacons(
                           {
-                            eventType: 'reserved.top_navigation',
+                            eventType: 'reserved.top_navigation_commit',
                             destination: ['seller']
                           }
                         );

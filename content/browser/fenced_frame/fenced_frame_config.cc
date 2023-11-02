@@ -357,22 +357,36 @@ void FencedFrameProperties::UpdateMappedURL(GURL url) {
 }
 
 void FencedFrameProperties::UpdateAutomaticBeaconData(
+    blink::mojom::AutomaticBeaconType event_type,
     const std::string& event_data,
     const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
     network::AttributionReportingRuntimeFeatures
         attribution_reporting_runtime_features,
     bool once) {
   // For an ad component, the event data from its automatic beacon is ignored.
-  automatic_beacon_info_.emplace(is_ad_component_ ? std::string{} : event_data,
-                                 destinations,
-                                 attribution_reporting_runtime_features, once);
+  automatic_beacon_info_.emplace(
+      event_type,
+      AutomaticBeaconInfo(is_ad_component_ ? std::string{} : event_data,
+                          destinations, attribution_reporting_runtime_features,
+                          once));
 }
 
-void FencedFrameProperties::MaybeResetAutomaticBeaconData() {
-  if (automatic_beacon_info_.has_value() &&
-      automatic_beacon_info_->once == true) {
-    automatic_beacon_info_.reset();
+void FencedFrameProperties::MaybeResetAutomaticBeaconData(
+    blink::mojom::AutomaticBeaconType event_type) {
+  auto it = automatic_beacon_info_.find(event_type);
+  if (it != automatic_beacon_info_.end() && it->second.once == true) {
+    automatic_beacon_info_.erase(it);
   }
+}
+
+const absl::optional<AutomaticBeaconInfo>
+FencedFrameProperties::GetAutomaticBeaconInfo(
+    blink::mojom::AutomaticBeaconType event_type) const {
+  auto it = automatic_beacon_info_.find(event_type);
+  if (it == automatic_beacon_info_.end()) {
+    return absl::nullopt;
+  }
+  return it->second;
 }
 
 }  // namespace content

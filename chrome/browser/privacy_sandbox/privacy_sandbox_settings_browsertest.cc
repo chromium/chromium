@@ -500,25 +500,26 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxSettingsEventReportingBrowserTest,
   std::unique_ptr<content::test::FencedFrameReporterObserverForTesting>
       beacon_observer = content::test::InstallFencedFrameReporterObserver(
           fenced_frame_rfh,
-          content::DestinationEnumEvent(
-              blink::kFencedFrameTopNavigationBeaconType, kBeaconMessage));
+          content::AutomaticBeaconEvent(
+              blink::mojom::AutomaticBeaconType::kDeprecatedTopNavigation,
+              kBeaconMessage));
 
   // Listen to the console error message from
   // `FencedFrameReporter::SendReportInternal()`.
   console_error_observer_->SetPattern(
       kFencedFrameReportingDestinationNotAttested);
 
-  EXPECT_TRUE(
-      ExecJs(fenced_frame_rfh,
-             content::JsReplace(R"(
+  EXPECT_TRUE(ExecJs(
+      fenced_frame_rfh,
+      content::JsReplace(R"(
       window.fence.setReportEventDataForAutomaticBeacons({
         eventType: $1,
         eventData: $2,
         destination: ['buyer']
       });
     )",
-                                blink::kFencedFrameTopNavigationBeaconType,
-                                kBeaconMessage)));
+                         blink::kDeprecatedFencedFrameTopNavigationBeaconType,
+                         kBeaconMessage)));
 
   // Commit a top-level navigation.
   GURL navigation_url(https_server_.GetURL("a.test", "/title2.html"));

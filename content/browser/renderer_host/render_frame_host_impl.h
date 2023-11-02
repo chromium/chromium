@@ -2470,6 +2470,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       network::AttributionReportingRuntimeFeatures
           attribution_reporting_runtime_features) override;
   void SetFencedFrameAutomaticBeaconReportEventData(
+      blink::mojom::AutomaticBeaconType event_type,
       const std::string& event_data,
       const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
       network::AttributionReportingRuntimeFeatures
@@ -3035,6 +3036,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // don't want eviction to happen.
   void RecordBackForwardCacheDisablingReason(
       BackForwardCacheDisablingFeature feature);
+
+  // Send an automatic beacon of type `event_type` if one was registered
+  // with the NavigationRequest's initiator frame using the
+  // `window.fence.setReportEventDataForAutomaticBeacons` API.
+  void MaybeSendFencedFrameAutomaticReportingBeacon(
+      NavigationRequest& navigation_request,
+      blink::mojom::AutomaticBeaconType event_type);
 
  protected:
   friend class RenderFrameHostFactory;
@@ -4067,17 +4075,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // document commits first.
   void ClosePageTimeout(ClosePageSource source);
 
-  // Send an automatic `reserved.top_navigation` beacon if one was registered
-  // with the NavigationRequest's initiator frame using the
-  // `window.fence.setReportEventDataForAutomaticBeacons` API.
-  void MaybeSendFencedFrameAutomaticReportingBeacon(
-      NavigationRequest& navigation_request);
-
   // Helper function that handles creating and sending a fenced frame beacon.
   // This also handles sending console messages if the call to send the beacon
   // originated from the renderer.
   // Calls to this function for automatic beacons (i.e. the
-  // "reserved.top_navigation" beacon) will originate from the browser. All
+  // "reserved.top_navigation_*" beacon) will originate from the browser. All
   // other fenced frame beacon calls happen through a `fence.sendBeacon()`
   // JavaScript call which will originate from the renderer.
   // `attribution_reporting_runtime_features` indicates whether Attribution

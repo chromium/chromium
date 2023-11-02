@@ -17,7 +17,7 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
 function reportResult(auctionConfig, browserSignals) {
   registerAdBeacon({
     'click': browserSignals.interestGroupOwner + "/report_event.html",
-    'reserved.top_navigation':
+    'reserved.top_navigation_commit':
       browserSignals.interestGroupOwner + "/report_event.html"
   });
 }
