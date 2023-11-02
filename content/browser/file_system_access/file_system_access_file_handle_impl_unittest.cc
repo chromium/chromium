@@ -879,7 +879,7 @@ TEST_F(FileSystemAccessFileHandleSwapFileCloningTest, HandleCloneFailure) {
 // destination directory.
 class FileSystemAccessFileHandleImplMovePermissionsTest
     : public FileSystemAccessFileHandleImplTest,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -887,27 +887,10 @@ class FileSystemAccessFileHandleImplMovePermissionsTest
 
     SetupHelper(storage::kFileSystemTypeLocal, /*is_incognito=*/false);
     manager_->SetPermissionContextForTesting(&permission_context_);
-
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    // TODO(crbug.com/1394837): Remove this alongside the corresponding flag.
-    if (gesture_required()) {
-      enabled_features.push_back(
-          features::
-              kFileSystemAccessRenameWithoutParentAccessRequiresUserActivation);
-    } else {
-      disabled_features.push_back(
-          features::
-              kFileSystemAccessRenameWithoutParentAccessRequiresUserActivation);
-    }
-
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   bool target_present() const { return std::get<0>(GetParam()); }
-  bool gesture_required() const { return std::get<1>(GetParam()); }
-  bool gesture_present() const { return std::get<2>(GetParam()); }
+  bool gesture_present() const { return std::get<1>(GetParam()); }
 
   std::pair<base::FilePath, base::FilePath> CreateSourceAndMaybeTarget() {
     base::FilePath source;
@@ -1139,8 +1122,6 @@ class FileSystemAccessFileHandleImplMovePermissionsTest
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   scoped_refptr<FixedFileSystemAccessPermissionGrant> ask_grant_ =
       base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
           FixedFileSystemAccessPermissionGrant::PermissionStatus::ASK,
@@ -1196,7 +1177,7 @@ TEST_P(FileSystemAccessFileHandleImplMovePermissionsTest,
   // Cannot overwrite a file without a user gesture or explicit access to the
   // parent or target (even if overwrites are enabled). Reject with a
   // permission error.
-  if (target_present() || (gesture_required() && !gesture_present())) {
+  if (target_present() || !gesture_present()) {
     ExpectFileRenameFailure(
         /*parent=*/dir_.GetPath(), source, target, parent_grant, target_grant,
         blink::mojom::FileSystemAccessStatus::kPermissionDenied);
@@ -1299,9 +1280,6 @@ INSTANTIATE_TEST_SUITE_P(
     FileSystemAccessFileHandleImplMovePermissionsTest,
     ::testing::Combine(
         // Is there a file to be overwritten?
-        ::testing::Bool(),
-        // Is kFileSystemAccessRenameWithoutParentAccessRequiresUserActivation
-        // flag enabled?
         ::testing::Bool(),
         // Does the site have user activation?
         ::testing::Bool()));

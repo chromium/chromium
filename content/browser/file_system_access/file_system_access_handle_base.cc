@@ -351,10 +351,7 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
           blink::mojom::PermissionStatus::GRANTED;
   // Require a user gesture if the write access to the destination is not
   // explicitly granted.
-  if (!has_write_access && !has_transient_user_activation &&
-      base::FeatureList::IsEnabled(
-          features::
-              kFileSystemAccessRenameWithoutParentAccessRequiresUserActivation)) {
+  if (!has_write_access && !has_transient_user_activation) {
     DCHECK_NE(dest_status, blink::mojom::PermissionStatus::DENIED);
     // Files in the OPFS always have write access and should never be gated on a
     // user gesture requirement.

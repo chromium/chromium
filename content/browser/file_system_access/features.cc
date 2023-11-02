@@ -24,13 +24,6 @@ BASE_FEATURE(kFileSystemAccessRemove,
              "FileSystemAccessRemove",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// TODO(crbug.com/1394837): Remove this flag eventually.
-// When enabled, a user gesture is required to rename a file if the site does
-// not have write access to the parent. See http://b/254157070 for more context.
-BASE_FEATURE(kFileSystemAccessRenameWithoutParentAccessRequiresUserActivation,
-             "FileSystemAccessRenameWithoutParentAccessRequiresUserActivation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // TODO(crbug.com/1247850): Remove this flag eventually.
 // When enabled, move operations within the same file system that do not change
 // the file extension will not be subject to safe browsing checks.
