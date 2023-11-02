@@ -2023,39 +2023,54 @@ size_t AXNodeData::ByteSize() const {
   size_t total_size = sizeof(id) + sizeof(role) + sizeof(state) +
                       sizeof(actions) + sizeof(relative_bounds);
 
-  // Less simple collections.
-  total_size += int_attributes.size() *
-                    (sizeof(ax::mojom::IntAttribute) + sizeof(int32_t)) +
-                float_attributes.size() *
-                    (sizeof(ax::mojom::FloatAttribute) + sizeof(float)) +
-                bool_attributes.size() *
-                    (sizeof(ax::mojom::BoolAttribute) + sizeof(bool)) +
-                child_ids.size() * sizeof(int32_t);
+  AXNodeDataSize node_data_size;
+  AccumulateSize(node_data_size);
+  total_size += node_data_size.ByteSize();
+  return total_size;
+}
 
-  // Complex collections.
+void AXNodeData::AccumulateSize(
+    AXNodeData::AXNodeDataSize& node_data_size) const {
+  node_data_size.int_attribute_size +=
+      int_attributes.size() *
+      (sizeof(ax::mojom::IntAttribute) + sizeof(int32_t));
+  node_data_size.float_attribute_size +=
+      float_attributes.size() *
+      (sizeof(ax::mojom::FloatAttribute) + sizeof(float));
+  node_data_size.bool_attribute_size +=
+      bool_attributes.size() *
+      (sizeof(ax::mojom::BoolAttribute) + sizeof(bool));
+  node_data_size.child_ids_size = child_ids.size() * sizeof(int32_t);
+
   for (const auto& pair : string_attributes) {
-    total_size +=
+    node_data_size.string_attribute_size +=
         sizeof(ax::mojom::StringAttribute) + pair.second.size() * sizeof(char);
   }
 
   for (const auto& pair : intlist_attributes) {
-    total_size += sizeof(ax::mojom::IntListAttribute) +
-                  pair.second.size() * sizeof(int32_t);
+    node_data_size.int_list_attribhute_size +=
+        sizeof(ax::mojom::IntListAttribute) +
+        pair.second.size() * sizeof(int32_t);
   }
 
   for (const auto& pair : stringlist_attributes) {
-    total_size += sizeof(ax::mojom::StringListAttribute);
+    node_data_size.string_list_attribute_size +=
+        sizeof(ax::mojom::StringListAttribute);
     for (const auto& value : pair.second) {
-      total_size += value.size() * sizeof(char);
+      node_data_size.string_list_attribute_size += value.size() * sizeof(char);
     }
   }
 
   for (const auto& pair : html_attributes) {
-    total_size +=
+    node_data_size.html_attribute_size +=
         pair.first.size() * sizeof(char) + pair.second.size() * sizeof(char);
   }
+}
 
-  return total_size;
+size_t AXNodeData::AXNodeDataSize::ByteSize() const {
+  return int_attribute_size + float_attribute_size + bool_attribute_size +
+         string_attribute_size + int_list_attribhute_size +
+         string_list_attribute_size + html_attribute_size + child_ids_size;
 }
 
 std::string AXNodeData::DropeffectBitfieldToString() const {

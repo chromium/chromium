@@ -1924,6 +1924,45 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.Performance.AXObjectCacheImpl.Incremental"
+    units="bytes" expires_after="2024-02-11">
+  <owner>kevers@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the size of dirty tree serialization from the renderer to the browser
+    process.
+
+    Logged every time the document layout is clean and we need to update the
+    accessibility tree. Low priority updates may be batched and sent every 150ms
+    if a change was detected.
+  </summary>
+</histogram>
+
+<histogram
+    name="Accessibility.Performance.AXObjectCacheImpl.Incremental.{DataType}"
+    units="bytes" expires_after="2024-02-11">
+  <owner>kevers@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the contribution of {DataType} valued properties to the overall size
+    of dirty tree serialization from the renderer to the browser process.
+
+    Logged every time the document layout is clean and we need to update the
+    accessibility tree. Low priority updates may be batched and sent every 150ms
+    if a change was detected.
+  </summary>
+  <token key="DataType">
+    <variant name="Bool"/>
+    <variant name="ChildIds"/>
+    <variant name="Float"/>
+    <variant name="HTML"/>
+    <variant name="Int"/>
+    <variant name="IntList"/>
+    <variant name="String"/>
+    <variant name="StringList"/>
+  </token>
+</histogram>
+
 <histogram
     name="Accessibility.Performance.AXObjectCacheImpl.RedundantSerializations"
     units="count" expires_after="2024-04-28">
@@ -1936,6 +1975,17 @@ chromium-metrics-reviews@google.com.
 
     Logged every time the document layout is clean and we need update the the
     accessibility tree.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Performance.AXObjectCacheImpl.Snapshot"
+    units="bytes" expires_after="2024-02-11">
+  <owner>kevers@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the size of entire tree (snapshot) serialization from the renderer to
+    the browser process. Snapshots are on demand when the entire a11y tree needs
+    to be send from the renderer to the browser process.
   </summary>
 </histogram>
 

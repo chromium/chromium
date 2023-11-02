@@ -52,6 +52,8 @@ struct AX_BASE_EXPORT AXTreeUpdate {
   AXTreeUpdate(const AXTreeUpdate& other);
   ~AXTreeUpdate();
 
+  void AccumulateSize(AXNodeData::AXNodeDataSize& node_data_size) const;
+
   // If |has_tree_data| is true, the value of |tree_data| should be used
   // to update the tree data, otherwise it should be ignored.
   bool has_tree_data = false;
@@ -84,6 +86,9 @@ struct AX_BASE_EXPORT AXTreeUpdate {
 
   // Return a multi-line indented string representation, for logging.
   std::string ToString(bool verbose = true) const;
+
+  // Returns the approximate size in bytes.
+  size_t ByteSize() const;
 };
 
 }  // namespace ui

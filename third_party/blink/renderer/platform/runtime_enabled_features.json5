@@ -250,6 +250,11 @@
       public: true,
     },
     {
+      name: "AccessibilitySerializationSizeMetrics",
+      status: "experimental",
+      base_feature: "none",
+    },
+    {
       name: "AccessibilityUseAXPositionForDocumentMarkers",
       base_feature: "none",
       public: true,

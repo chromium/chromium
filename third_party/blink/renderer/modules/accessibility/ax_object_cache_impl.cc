@@ -717,6 +717,47 @@ AXObjectType DetermineAXObjectType(const Node* node,
   return is_layout_relevant ? kAXLayoutObject : kAXNodeObject;
 }
 
+const int kSizeMb = 1000000;
+const int kSize10Mb = 10 * kSizeMb;
+const int kSizeGb = 1000 * kSizeMb;
+const int kBucketCount = 100;
+
+void LogNodeDataSizeDistribution(
+    const ui::AXNodeData::AXNodeDataSize& node_data_size) {
+  UMA_HISTOGRAM_CUSTOM_COUNTS(
+      "Accessibility.Performance.AXObjectCacheImpl.Incremental.Int",
+      base::saturated_cast<int>(node_data_size.int_attribute_size), 1,
+      kSize10Mb, kBucketCount);
+  UMA_HISTOGRAM_CUSTOM_COUNTS(
+      "Accessibility.Performance.AXObjectCacheImpl.Incremental.Float",
+      base::saturated_cast<int>(node_data_size.float_attribute_size), 1,
+      kSize10Mb, kBucketCount);
+  UMA_HISTOGRAM_CUSTOM_COUNTS(
+      "Accessibility.Performance.AXObjectCacheImpl.Incremental.Bool",
+      base::saturated_cast<int>(node_data_size.bool_attribute_size), 1, kSizeMb,
+      kBucketCount);
+  UMA_HISTOGRAM_CUSTOM_COUNTS(
+      "Accessibility.Performance.AXObjectCacheImpl.Incremental.String",
+      base::saturated_cast<int>(node_data_size.string_attribute_size), 1,
+      kSizeGb, kBucketCount);
+  UMA_HISTOGRAM_CUSTOM_COUNTS(
+      "Accessibility.Performance.AXObjectCacheImpl.Incremental.IntList",
+      base::saturated_cast<int>(node_data_size.int_list_attribhute_size), 1,
+      kSize10Mb, kBucketCount);
+  UMA_HISTOGRAM_CUSTOM_COUNTS(
+      "Accessibility.Performance.AXObjectCacheImpl.Incremental.StringList",
+      base::saturated_cast<int>(node_data_size.string_list_attribute_size), 1,
+      kSizeGb, kBucketCount);
+  UMA_HISTOGRAM_CUSTOM_COUNTS(
+      "Accessibility.Performance.AXObjectCacheImpl.Incremental.HTML",
+      base::saturated_cast<int>(node_data_size.html_attribute_size), 1, kSizeGb,
+      kBucketCount);
+  UMA_HISTOGRAM_CUSTOM_COUNTS(
+      "Accessibility.Performance.AXObjectCacheImpl.Incremental.ChildIds",
+      base::saturated_cast<int>(node_data_size.child_ids_size), 1, kSize10Mb,
+      kBucketCount);
+}
+
 }  // namespace
 
 // static
@@ -4411,6 +4452,14 @@ bool AXObjectCacheImpl::SerializeEntireTree(size_t max_node_count,
   CHECK(success)
       << "Serializer failed. Should have hit DCHECK inside of serializer.";
 
+  if (RuntimeEnabledFeatures::AccessibilitySerializationSizeMetricsEnabled()) {
+    // For a tree snapshot, we don't break down by type.
+    UMA_HISTOGRAM_CUSTOM_COUNTS(
+        "Accessibility.Performance.AXObjectCacheImpl.Snapshot",
+        base::saturated_cast<int>(response->ByteSize()), 1, kSizeGb,
+        kBucketCount);
+  }
+
   return true;
 }
 
@@ -4473,6 +4522,7 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
   DCHECK(!popup_document_ || popup_document_->Lifecycle().GetState() >=
                                  DocumentLifecycle::kLayoutClean);
 
+  ui::AXNodeData::AXNodeDataSize node_data_size;
   while (!dirty_objects_.empty() && --num_remaining_objects_to_serialize > 0) {
     AXDirtyObject* current_dirty_object = std::move(dirty_objects_.front());
     dirty_objects_.pop_front();
@@ -4539,11 +4589,23 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
                .Find(obj);
 
     updates.push_back(update);
+    if (RuntimeEnabledFeatures::
+            AccessibilitySerializationSizeMetricsEnabled()) {
+      update.AccumulateSize(node_data_size);
+    }
   }
 
   UMA_HISTOGRAM_COUNTS_10000(
       "Accessibility.Performance.AXObjectCacheImpl.RedundantSerializations",
       redundant_serialization_count);
+
+  if (RuntimeEnabledFeatures::AccessibilitySerializationSizeMetricsEnabled()) {
+    LogNodeDataSizeDistribution(node_data_size);
+    UMA_HISTOGRAM_CUSTOM_COUNTS(
+        "Accessibility.Performance.AXObjectCacheImpl.Incremental",
+        base::saturated_cast<int>(node_data_size.ByteSize()), 1, kSizeGb,
+        kBucketCount);
+  }
 
   // Add kLayoutComplete if layout has changed.
   if (need_to_send_location_changes_) {
