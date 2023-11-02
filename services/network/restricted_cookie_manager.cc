@@ -374,6 +374,7 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
     // the user explicitly deleting all cookies.
     if (!restricted_cookie_manager_->cookie_settings().IsCookieAccessible(
             change.cookie, url_, site_for_cookies_, top_frame_origin_,
+            restricted_cookie_manager_->first_party_set_metadata_,
             restricted_cookie_manager_->GetCookieSettingOverrides(
                 has_storage_access_),
             /*cookie_inclusion_status=*/nullptr)) {
@@ -714,7 +715,8 @@ void RestrictedCookieManager::SetCanonicalCookie(
   // TODO(morlovich): Try to validate site_for_cookies as well.
   bool blocked = !cookie_settings_->IsCookieAccessible(
       cookie, url, site_for_cookies, top_frame_origin,
-      GetCookieSettingOverrides(has_storage_access), &status);
+      first_party_set_metadata_, GetCookieSettingOverrides(has_storage_access),
+      &status);
 
   if (blocked) {
     // Cookie allowed by cookie_settings checks could be blocked explicitly,

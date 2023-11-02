@@ -407,8 +407,10 @@ void URLRequestJob::NotifySSLCertificateError(int net_error,
 bool URLRequestJob::CanSetCookie(
     const net::CanonicalCookie& cookie,
     CookieOptions* options,
+    const net::FirstPartySetMetadata& first_party_set_metadata,
     CookieInclusionStatus* inclusion_status) const {
-  return request_->CanSetCookie(cookie, options, inclusion_status);
+  return request_->CanSetCookie(cookie, options, first_party_set_metadata,
+                                inclusion_status);
 }
 
 void URLRequestJob::NotifyHeadersComplete() {

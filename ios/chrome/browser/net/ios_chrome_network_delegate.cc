@@ -97,6 +97,7 @@ bool IOSChromeNetworkDelegate::OnCanSetCookie(
     const net::URLRequest& request,
     const net::CanonicalCookie& cookie,
     net::CookieOptions* options,
+    const net::FirstPartySetMetadata& first_party_set_metadata,
     net::CookieInclusionStatus* inclusion_status) {
   // Null during tests, or when we're running in the system context.
   if (!cookie_settings_)

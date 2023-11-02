@@ -918,6 +918,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // been called.
   bool CanSetCookie(const net::CanonicalCookie& cookie,
                     CookieOptions* options,
+                    const net::FirstPartySetMetadata& first_party_set_metadata,
                     CookieInclusionStatus* inclusion_status) const;
 
   // Called just before calling a delegate that may block a request. |type|
