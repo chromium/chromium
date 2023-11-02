@@ -49,6 +49,9 @@
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DAWN)
 #include "gpu/command_buffer/service/shared_image/external_vk_image_dawn_representation.h"
+#if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+#include "gpu/command_buffer/service/shared_image/dawn_gl_texture_representation.h"
+#endif
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -687,6 +690,14 @@ std::unique_ptr<DawnImageRepresentation> ExternalVkImageBacking::ProduceDawn(
     return nullptr;
   }
 
+#if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+  if (backend_type == wgpu::BackendType::OpenGLES) {
+    auto image = ProduceGLTexturePassthrough(manager, tracker);
+    return std::make_unique<DawnGLTextureRepresentation>(
+        std::move(image), manager, this, tracker, wgpuDevice);
+  }
+#endif
+
   DCHECK_EQ(vk_textures_.size(), 1u);
   auto memory_fd = vk_textures_[0].vulkan_image->GetMemoryFd();
   if (!memory_fd.is_valid()) {
@@ -854,11 +865,6 @@ bool ExternalVkImageBacking::CreateGLTexture(bool is_passthrough,
 std::unique_ptr<GLTextureImageRepresentation>
 ExternalVkImageBacking::ProduceGLTexture(SharedImageManager* manager,
                                          MemoryTypeTracker* tracker) {
-  if (!(usage() & SHARED_IMAGE_USAGE_GLES2)) {
-    DLOG(ERROR) << "The backing is not created with GLES2 usage.";
-    return nullptr;
-  }
-
   if (gl_textures_.empty()) {
     if (!ProduceGLTextureInternal(/*is_passthrough=*/false)) {
       return nullptr;
@@ -879,11 +885,6 @@ std::unique_ptr<GLTexturePassthroughImageRepresentation>
 ExternalVkImageBacking::ProduceGLTexturePassthrough(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
-  if (!(usage() & SHARED_IMAGE_USAGE_GLES2)) {
-    DLOG(ERROR) << "The backing is not created with GLES2 usage.";
-    return nullptr;
-  }
-
   if (gl_textures_.empty()) {
     if (!ProduceGLTextureInternal(/*is_passthrough=*/true)) {
       return nullptr;
