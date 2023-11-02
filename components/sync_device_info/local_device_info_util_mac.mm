@@ -25,16 +25,16 @@ std::string GetPersonalizableDeviceNameInternal() {
       SCDynamicStoreCreate(kCFAllocatorDefault, CFSTR("chrome_sync"),
                            /*callout=*/nullptr, &context));
   base::apple::ScopedCFTypeRef<CFStringRef> machine_name(
-      SCDynamicStoreCopyLocalHostName(store));
+      SCDynamicStoreCopyLocalHostName(store.get()));
   if (machine_name) {
-    return base::SysCFStringRefToUTF8(machine_name);
+    return base::SysCFStringRefToUTF8(machine_name.get());
   }
 
   // Fall back to get computer name.
   base::apple::ScopedCFTypeRef<CFStringRef> computer_name(
-      SCDynamicStoreCopyComputerName(store, /*nameEncoding=*/nullptr));
+      SCDynamicStoreCopyComputerName(store.get(), /*nameEncoding=*/nullptr));
   if (computer_name) {
-    return base::SysCFStringRefToUTF8(computer_name);
+    return base::SysCFStringRefToUTF8(computer_name.get());
   }
 
   // If all else fails, return to using a slightly nicer version of the hardware
