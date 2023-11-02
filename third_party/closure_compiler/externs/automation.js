@@ -2561,19 +2561,6 @@ chrome.automation.AutomationNode.prototype.createPosition = function(type, offse
 
 
 /**
- * Get the automation tree for the tab with the given tabId, or the current tab
- * if no tabID is given, enabling automation if necessary. Returns a tree with a
- * placeholder root node; listen for the "loadComplete" event to get a
- * notification that the tree has fully loaded (the previous root node reference
- * will stop working at or before this point).
- * @param {number=} tabId
- * @param {function(!chrome.automation.AutomationNode): void=} callback Called
- *     when the <code>AutomationNode</code> for the page is available.
- * @see https://developer.chrome.com/extensions/automation#method-getTree
- */
-chrome.automation.getTree = function(tabId, callback) {};
-
-/**
  * Get the automation tree for the whole desktop which consists of all on screen
  * views. Note this API is currently only supported on Chrome OS.
  * @param {function(!chrome.automation.AutomationNode): void} callback Called

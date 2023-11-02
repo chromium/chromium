@@ -1529,14 +1529,6 @@ enum PositionType {
   callback AccessibilityFocusCallback = void(AutomationNode focusedNode);
 
   interface Functions {
-    // Get the automation tree for the tab with the given tabId, or the current
-    // tab if no tabID is given, enabling automation if necessary. Returns a
-    // tree with a placeholder root node; listen for the "loadComplete" event to
-    // get a notification that the tree has fully loaded (the previous root node
-    // reference will stop working at or before this point).
-    [nocompile] static void getTree(optional long tabId,
-                                    optional RootCallback callback);
-
     // Get the automation tree for the whole desktop which consists of all on
     // screen views. Note this API is currently only supported on Chrome OS.
     [nocompile] static void getDesktop(RootCallback callback);
