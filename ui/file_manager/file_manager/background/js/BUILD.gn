@@ -41,11 +41,6 @@ js_library("file_manager_base") {
   ]
 }
 
-js_library("mock_crostini") {
-  testonly = true
-  deps = [ "//ui/file_manager/file_manager/externs/background:crostini" ]
-}
-
 js_unittest("file_operation_handler_unittest") {
   deps = [
     ":file_operation_util",

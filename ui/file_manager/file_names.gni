@@ -187,6 +187,7 @@ static_js_files = [
 # END: static_js_files.
 
 ts_files = [
+  "file_manager/background/js/mock_crostini.ts",
   "file_manager/foreground/elements/xf_circular_progress.ts",
 
   # Common.
@@ -511,7 +512,6 @@ unittest_files = [
   # Background:
   "file_manager/background/js/file_operation_handler_unittest.js",
   "file_manager/background/js/file_operation_manager_unittest.js",
-  "file_manager/background/js/mock_crostini.js",
   "file_manager/background/js/mock_file_operation_manager.js",
   "file_manager/background/js/mock_progress_center.js",
   "file_manager/background/js/mock_volume_manager.js",

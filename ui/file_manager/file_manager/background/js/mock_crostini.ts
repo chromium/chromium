@@ -10,8 +10,7 @@ import {CrostiniImpl} from './crostini.js';
 /**
  * Crostini shared path state handler factory for foreground tests. Change it
  * to a mock when tests need to override {CrostiniImpl} behavior.
- * @return {!Crostini}
  */
-export function createCrostiniForTest() {
+export function createCrostiniForTest(): Crostini {
   return new CrostiniImpl();
 }
