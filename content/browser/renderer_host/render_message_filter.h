@@ -45,7 +45,6 @@ class RenderMessageFilter
   friend class base::DeleteHelper<RenderMessageFilter>;
 
   // mojom::RenderMessageFilter:
-  void GenerateRoutingID(GenerateRoutingIDCallback routing_id) override;
   void GenerateFrameRoutingID(GenerateFrameRoutingIDCallback callback) override;
   void HasGpuProcess(HasGpuProcessCallback callback) override;
 

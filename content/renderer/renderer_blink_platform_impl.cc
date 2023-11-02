@@ -181,7 +181,8 @@ RendererBlinkPlatformImpl::RendererBlinkPlatformImpl(
                             : nullptr),
       sudden_termination_disables_(0),
       is_locked_to_site_(false),
-      main_thread_scheduler_(main_thread_scheduler) {
+      main_thread_scheduler_(main_thread_scheduler),
+      next_frame_sink_id_(uint32_t{std::numeric_limits<int32_t>::max()} + 1) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   sk_sp<font_service::FontLoader> font_loader;
 #endif
@@ -358,8 +359,9 @@ void RendererBlinkPlatformImpl::SuddenTerminationChanged(bool enabled) {
 //------------------------------------------------------------------------------
 
 viz::FrameSinkId RendererBlinkPlatformImpl::GenerateFrameSinkId() {
-  return viz::FrameSinkId(RenderThread::Get()->GetClientId(),
-                          RenderThread::Get()->GenerateRoutingID());
+  uint32_t frame_sink_id = next_frame_sink_id_++;
+  CHECK_LT(frame_sink_id, next_frame_sink_id_);
+  return viz::FrameSinkId(RenderThread::Get()->GetClientId(), frame_sink_id);
 }
 
 bool RendererBlinkPlatformImpl::IsLockedToSite() const {

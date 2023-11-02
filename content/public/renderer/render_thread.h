@@ -73,7 +73,6 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
       int32_t routing_id,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) = 0;
   virtual void RemoveRoute(int32_t routing_id) = 0;
-  virtual int GenerateRoutingID() = 0;
   virtual bool GenerateFrameRoutingID(
       int32_t& routing_id,
       blink::LocalFrameToken& frame_token,

@@ -42,11 +42,6 @@ class MockRenderMessageFilterImpl : public mojom::RenderMessageFilter {
   MockRenderMessageFilterImpl() = default;
   ~MockRenderMessageFilterImpl() override = default;
 
-  // mojom::RenderMessageFilter:
-  void GenerateRoutingID(GenerateRoutingIDCallback callback) override {
-    std::move(callback).Run(RenderThread::Get()->GenerateRoutingID());
-  }
-
   void GenerateFrameRoutingID(
       GenerateFrameRoutingIDCallback callback) override {
     int routing_id;
@@ -136,10 +131,6 @@ void MockRenderThread::AttachTaskRunnerToRoute(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {}
 
 void MockRenderThread::RemoveRoute(int32_t routing_id) {}
-
-int MockRenderThread::GenerateRoutingID() {
-  return GetNextRoutingID();
-}
 
 bool MockRenderThread::GenerateFrameRoutingID(
     int32_t& routing_id,

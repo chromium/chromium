@@ -53,11 +53,6 @@ void RenderMessageFilter::OnDestruct() const {
   BrowserThread::DeleteOnIOThread::Destruct(this);
 }
 
-void RenderMessageFilter::GenerateRoutingID(
-    GenerateRoutingIDCallback callback) {
-  std::move(callback).Run(render_widget_helper_->GetNextRoutingID());
-}
-
 void RenderMessageFilter::GenerateFrameRoutingID(
     GenerateFrameRoutingIDCallback callback) {
   int32_t routing_id = render_widget_helper_->GetNextRoutingID();

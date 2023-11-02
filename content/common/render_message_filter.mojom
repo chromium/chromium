@@ -8,9 +8,6 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 interface RenderMessageFilter {
-  // Synchronously generates a new routing ID for the caller.
-  [Sync] GenerateRoutingID() => (int32 routing_id);
-
   // Similar to GenerateRoutingID but also generates a `frame token`,
   // `devtools_frame_token`, and `document_token`. A subsequent call to
   // `FrameHost::CreateChildFrame` is expected after this call.
