@@ -5,12 +5,9 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_TYPE_HELPERS_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_TYPE_HELPERS_H_
 
-#include <string>
 #include <type_traits>
 
 #include "base/types/optional_util.h"
-#include "base/types/strong_alias.h"
-#include "base/unguessable_token.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace performance_manager::resource_attribution {
@@ -70,41 +67,6 @@ constexpr bool operator!=(const V& a, const T& b) {
 // namespace.
 using internal::operator==;
 using internal::operator!=;
-
-// A StrongAlias for a class that implements the TokenType interface (including
-// base::TokenType and blink::MultiToken).
-template <typename TagType, typename UnderlyingTokenType>
-class TokenAlias : public base::StrongAlias<TagType, UnderlyingTokenType> {
- private:
-  using Super = base::StrongAlias<TagType, UnderlyingTokenType>;
-
- public:
-  using Super::Super;
-
-  // As TokenType, allow default assignment operators for compatibility with
-  // STL containers.
-  TokenAlias(const TokenAlias&) = default;
-  TokenAlias(TokenAlias&&) = default;
-  TokenAlias& operator=(const TokenAlias&) = default;
-  TokenAlias& operator=(TokenAlias&&) = default;
-
-  // Returns the underlying `base::UnguessableToken` of the currently held
-  // token.
-  const base::UnguessableToken& token_value() const {
-    return Super::value_.value();
-  }
-
-  // As TokenType, a hash functor for use in unordered containers.
-  struct Hasher {
-    using argument_type = TokenAlias;
-    using result_type = size_t;
-    result_type operator()(const argument_type& token) const {
-      return base::UnguessableTokenHash()(token.token_value());
-    }
-  };
-
-  std::string ToString() const { return this->token_value().ToString(); }
-};
 
 }  // namespace performance_manager::resource_attribution
 
