@@ -353,6 +353,22 @@ class MetaBuildWrapper:
                       default=None,
                       help=('Optional service account to run the swarming '
                             'tasks as.'))
+    subp.add_argument('--named-cache',
+                      default=[],
+                      dest='named_cache',
+                      action='append',
+                      metavar='{NAME}={VALUE}',
+                      help=('Additional named cache for test, example: '
+                            '"runtime_ios_16_4=Runtime-ios-16.4"'))
+    subp.add_argument(
+        '--cipd-package',
+        default=[],
+        dest='cipd_package',
+        action='append',
+        metavar='{LOCATION}:{CIPD_PACKAGE}:{REVISION}',
+        help=("Additional cipd packages to fetch for test, example: "
+              "'.:infra/tools/mac_toolchain/${platform}="
+              "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce'"))
     subp.add_argument('--tags', default=[], action='append', metavar='FOO:BAR',
                       help='Tags to assign to the swarming task')
     subp.add_argument('--no-default-dimensions', action='store_false',
@@ -630,6 +646,10 @@ class MetaBuildWrapper:
           '-dump-json',
           json_file,
       ]
+      for cipd_package in self.args.cipd_package:
+        cmd.extend(['-cipd-package', cipd_package])
+      for named_cache in self.args.named_cache:
+        cmd.extend(['-named-cache', named_cache])
       if realm:
         cmd += ['--realm', realm]
       cmd += tags + dimensions + ['--'] + list(isolate_cmd)
