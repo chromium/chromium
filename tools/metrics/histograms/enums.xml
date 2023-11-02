@@ -64232,6 +64232,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="174" label="After Update Notification"/>
   <int value="175" label="Sub Apps Uninstall"/>
   <int value="176" label="Network Carrier Unlock"/>
+  <int value="177" label="Coral Feature"/>
+  <int value="178" label="Input Device Settings"/>
 </enum>
 
 <enum name="NotificationDatabaseStatus">

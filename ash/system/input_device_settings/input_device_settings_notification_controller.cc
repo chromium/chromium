@@ -13,6 +13,7 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
+#include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -22,6 +23,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -98,6 +100,10 @@ const char kSixPackKeyPageUpRewriteNotificationId[] =
     "page_up_six_pack_rewrite_blocked_by_setting";
 const char kSixPackKeyPageDownRewriteNotificationId[] =
     "page_down_six_pack_rewrite_blocked_by_setting";
+const char kInputDeviceSettingsMousePrefix[] =
+    "peripheral_customization_mouse_";
+const char kInputDeviceSettingsGraphicsTabletPrefix[] =
+    "peripheral_customization_graphics_tablet_";
 const char kDelimiter[] = "_";
 
 bool IsRightClickRewriteDisabled(SimulateRightClickModifier active_modifier) {
@@ -161,6 +167,15 @@ std::string GetRightClickNotificationId(
     case SimulateRightClickModifier::kNone:
       NOTREACHED_NORETURN();
   }
+}
+
+std::string GetPeripheralCustomizationMouseNotificationID(uint32_t id) {
+  return kInputDeviceSettingsMousePrefix + base::NumberToString(id);
+}
+
+std::string GetPeripheralCustomizationGraphicsTabletNotificationID(
+    uint32_t id) {
+  return kInputDeviceSettingsGraphicsTabletPrefix + base::NumberToString(id);
 }
 
 // We only display notifications for active user sessions (signed-in/guest with
@@ -481,6 +496,52 @@ void InputDeviceSettingsNotificationController::
                               weak_ptr_factory_.GetWeakPtr(), device_id, pref,
                               notification_id)),
       kNotificationKeyboardIcon,
+      message_center::SystemNotificationWarningLevel::NORMAL);
+  message_center_->AddNotification(std::move(notification));
+}
+
+// TODO(wangdanny): Add link to per device mouse settings subpage.
+void InputDeviceSettingsNotificationController::NotifyMouseIsCustomizable(
+    const mojom::Mouse& mouse) {
+  const auto peripheral_name = base::UTF8ToUTF16(mouse.name);
+  auto notification = CreateSystemNotificationPtr(
+      message_center::NOTIFICATION_TYPE_SIMPLE,
+      GetPeripheralCustomizationMouseNotificationID(mouse.id),
+      l10n_util::GetStringFUTF16(
+          IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_PERIPHERAL_CUSTOMIZATION_TITLE,
+          peripheral_name),
+      l10n_util::GetStringFUTF16(
+          IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_MOUSE_CUSTOMIZATION,
+          peripheral_name),
+      std::u16string(), GURL(),
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kNotifierId,
+                                 NotificationCatalogName::kInputDeviceSettings),
+      message_center::RichNotificationData(), nullptr, kSettingsIcon,
+      message_center::SystemNotificationWarningLevel::NORMAL);
+  message_center_->AddNotification(std::move(notification));
+}
+
+// TODO(wangdanny): Add link to graphics tablet settings subpage.
+void InputDeviceSettingsNotificationController::
+    NotifyGraphicsTabletIsCustomizable(
+        const mojom::GraphicsTablet& graphics_tablet) {
+  const auto peripheral_name = base::UTF8ToUTF16(graphics_tablet.name);
+  auto notification = CreateSystemNotificationPtr(
+      message_center::NOTIFICATION_TYPE_SIMPLE,
+      GetPeripheralCustomizationGraphicsTabletNotificationID(
+          graphics_tablet.id),
+      l10n_util::GetStringFUTF16(
+          IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_PERIPHERAL_CUSTOMIZATION_TITLE,
+          peripheral_name),
+      l10n_util::GetStringFUTF16(
+          IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_GRAPHICS_TABLET_CUSTOMIZATION,
+          peripheral_name),
+      std::u16string(), GURL(),
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kNotifierId,
+                                 NotificationCatalogName::kInputDeviceSettings),
+      message_center::RichNotificationData(), nullptr, kSettingsIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
   message_center_->AddNotification(std::move(notification));
 }

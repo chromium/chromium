@@ -7,6 +7,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
+#include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -321,6 +322,34 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
             message_center()->NotificationCount());
   EXPECT_TRUE(message_center()->FindVisibleNotificationById(
       "page_down_six_pack_rewrite_blocked_by_setting_1"));
+}
+
+TEST_F(InputDeviceSettingsNotificationControllerTest,
+       NotifyPeripheralCustomization) {
+  size_t expected_notification_count = 1;
+  const mojom::Mouse kMouse1 = mojom::Mouse(
+      /*name=*/"Razer Basilisk V3",
+      /*is_external=*/false,
+      /*id=*/1,
+      /*device_key=*/"fake-device-key1",
+      /*customization_restriction=*/
+      mojom::CustomizationRestriction::kAllowCustomizations,
+      mojom::MouseSettings::New());
+  const mojom::GraphicsTablet kGraphicsTablet2 = mojom::GraphicsTablet(
+      /*name=*/"Wacom Intuos S",
+      /*id=*/2,
+      /*device_key=*/"fake-device-key2", mojom::GraphicsTabletSettings::New());
+  controller()->NotifyMouseIsCustomizable(kMouse1);
+  EXPECT_EQ(expected_notification_count++,
+            message_center()->NotificationCount());
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
+      "peripheral_customization_mouse_1"));
+
+  controller()->NotifyGraphicsTabletIsCustomizable(kGraphicsTablet2);
+  EXPECT_EQ(expected_notification_count++,
+            message_center()->NotificationCount());
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
+      "peripheral_customization_graphics_tablet_2"));
 }
 
 TEST_F(InputDeviceSettingsNotificationControllerTest,
