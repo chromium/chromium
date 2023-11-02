@@ -204,12 +204,8 @@ export class BrowsingContextProcessor {
     return {};
   }
 
-  async close(
-    commandParams: BrowsingContext.CloseParameters
-  ): Promise<EmptyResult> {
-    const context = this.#browsingContextStorage.getContext(
-      commandParams.context
-    );
+  async close(params: BrowsingContext.CloseParameters): Promise<EmptyResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
 
     if (!context.isTopLevelContext()) {
       throw new InvalidArgumentException(
@@ -222,7 +218,7 @@ export class BrowsingContextProcessor {
         const onContextDestroyed = (
           event: Protocol.Target.DetachedFromTargetEvent
         ) => {
-          if (event.targetId === commandParams.context) {
+          if (event.targetId === params.context) {
             this.#browserCdpClient.off(
               'Target.detachedFromTarget',
               onContextDestroyed
@@ -236,7 +232,13 @@ export class BrowsingContextProcessor {
         );
       });
 
-      await context.close();
+      if (params.promptUnload) {
+        await context.close();
+      } else {
+        await this.#browserCdpClient.sendCommand('Target.closeTarget', {
+          targetId: params.context,
+        });
+      }
 
       // Sometimes CDP command finishes before `detachedFromTarget` event,
       // sometimes after. Wait for the CDP command to be finished, and then wait
