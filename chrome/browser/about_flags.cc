@@ -5508,6 +5508,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     "ForceDarkVariations")},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_ANDROID)
+    {"enable-accessibility-include-long-click-action",
+     flag_descriptions::kAccessibilityIncludeLongClickActionName,
+     flag_descriptions::kAccessibilityIncludeLongClickActionDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kAccessibilityIncludeLongClickAction)},
     {"enable-accessibility-page-zoom",
      flag_descriptions::kAccessibilityPageZoomName,
      flag_descriptions::kAccessibilityPageZoomDescription, kOsAndroid,

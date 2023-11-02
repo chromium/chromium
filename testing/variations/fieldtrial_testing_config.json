@@ -34,6 +34,21 @@
             ]
         }
     ],
+    "AccessibilityIncludeLongClickAction": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AccessibilityIncludeLongClickAction"
+                    ]
+                }
+            ]
+        }
+    ],
     "AccessibilityPageZoom": [
         {
             "platforms": [

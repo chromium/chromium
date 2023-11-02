@@ -2208,6 +2208,8 @@ extern const char kEnablePasswordSharingDescription[];
 
 #if BUILDFLAG(IS_ANDROID)
 
+extern const char kAccessibilityIncludeLongClickActionName[];
+extern const char kAccessibilityIncludeLongClickActionDescription[];
 extern const char kAccessibilityPageZoomName[];
 extern const char kAccessibilityPageZoomDescription[];
 extern const char kAccessibilityPerformanceFilteringName[];

@@ -1978,6 +1978,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-accessibility-include-long-click-action",
+    "owners": ["mschillaci@google.com", "//ui/accessibility/OWNERS"],
+    "expiry_milestone": 130
+  },  
+  {
     "name": "enable-accessibility-live-caption",
     "owners": [ "abigailbklein@google.com", "evliu@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 130
