@@ -42844,7 +42844,16 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   </int>
   <int value="9" label="kUserPresence">User presence not detected.</int>
   <int value="10" label="kSpaceNotFound">
-    The space for this operation is not fount.
+    The space for this operation is not found.
+  </int>
+  <int value="11" label="kPinWeaverExpired">
+    PinWeaver operation failed due to credential expired.
+  </int>
+  <int value="12" label="kPinWeaverLockedOut">
+    PinWeaver operation failed due to too many attempts as per delay schedule.
+  </int>
+  <int value="13" label="kPinWeaverOutOfSync">
+    PinWeaver operation failed due to out-of-sync root hash.
   </int>
 </enum>
 
