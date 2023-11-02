@@ -112,10 +112,6 @@ if (use_centipede) {
     sources = [ "src/centipede/runner_main.cc" ]
   }
 
-  source_set("centipede_weak_sancov_stubs") {
-    sources = [ "src/centipede/weak_sancov_stubs.cc" ]
-  }
-
   # The centipede out-of-process runner executable.
   executable("centipede") {
     configs += [ ":fuzztest_internal_config" ]
@@ -180,6 +176,12 @@ if (use_centipede) {
       "src/centipede/workdir.cc",
       "src/centipede/workdir.h",
     ]
+  }
+}
+
+if (use_centipede || enable_fuzztest_fuzz) {
+  source_set("centipede_weak_sancov_stubs") {
+    sources = [ "src/centipede/weak_sancov_stubs.cc" ]
   }
 }
 
