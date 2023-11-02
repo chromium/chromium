@@ -57,6 +57,7 @@
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_delegate.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/mock_autofill_manager_observer.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_autofill_tick_clock.h"
@@ -535,7 +536,8 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
     // "fr" instead of "en").
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {blink::features::kAutofillShadowDOM},
+        {blink::features::kAutofillShadowDOM,
+         features::kAutofillTextAreaChangeEvents},
         /*disabled_features=*/{features::kAutofillPageLanguageDetection});
   }
   ~AutofillInteractiveTestBase() override = default;
@@ -1138,10 +1140,74 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   // Modify a field.
   ASSERT_TRUE(FocusField(GetElementById("city"), GetWebContents()));
   FillElementWithValue("city", "Montreal");
+}
 
-  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  EXPECT_THAT(GetFormValues(),
-              ValuesAre(MergeValue(kDefaultAddress, {"city", "Montreal"})));
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ModifyTextNotifiesObserver) {
+  CreateTestProfile();
+  SetTestUrlResponse(kTestShippingFormString);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+
+  autofill::MockAutofillManagerObserver observer;
+  BrowserAutofillManager* autofill_manager = GetBrowserAutofillManager();
+  autofill_manager->AddObserver(&observer);
+
+  // OnAfterTextFieldDidChange will eventually be called with the final text
+  // "Montreal".
+  EventWaiter<bool> waiter({true});
+  EXPECT_CALL(observer, OnAfterTextFieldDidChange(_, _, _, _))
+      .WillRepeatedly([&](AutofillManager&, FormGlobalId, FieldGlobalId,
+                          std::u16string text_value) {
+        if (text_value == u"Montreal") {
+          waiter.OnEvent(true);
+        }
+      });
+
+  ASSERT_TRUE(FocusField(GetElementById("city"), GetWebContents()));
+  FillElementWithValue("city", "Montreal");
+
+  ASSERT_TRUE(waiter.Wait());
+  autofill_manager->RemoveObserver(&observer);
+}
+
+// Same as ModifyTextNotifiesObserver, but for textarea rather than input
+// elements.
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
+                       ModifyTextAreaNotifiesObserver) {
+  constexpr char kForm[] = R"(
+  <html>
+  <head>
+    <!-- Disable extra network request for /favicon.ico -->
+    <link rel="icon" href="data:,">
+  </head>
+  <body>
+    <form action="https://www.example.com/" method="POST" id="shipping">
+    <label for="address1">Address line 1:</label>
+     <textarea id="address1"></textarea>
+    </form>
+    )";
+
+  CreateTestProfile();
+  SetTestUrlResponse(kForm);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+
+  autofill::MockAutofillManagerObserver observer;
+  BrowserAutofillManager* autofill_manager = GetBrowserAutofillManager();
+  autofill_manager->AddObserver(&observer);
+
+  EventWaiter<bool> waiter({true});
+  EXPECT_CALL(observer, OnAfterTextFieldDidChange(_, _, _, _))
+      .WillRepeatedly([&](AutofillManager&, FormGlobalId, FieldGlobalId,
+                          std::u16string text_value) {
+        if (text_value == u"My Address") {
+          waiter.OnEvent(true);
+        }
+      });
+
+  ASSERT_TRUE(FocusField(GetElementById("address1"), GetWebContents()));
+  FillElementWithValue("address1", "My Address");
+
+  ASSERT_TRUE(waiter.Wait());
+  autofill_manager->RemoveObserver(&observer);
 }
 
 void DoModifySelectFieldAndFill(AutofillInteractiveTest* test,

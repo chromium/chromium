@@ -7697,6 +7697,46 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Compose.TextElementUsage">
+  <owner>harringtond@google.com</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Reported once per page load per each multiline text element that received
+    input. Excludes potentially sensitive fields including input type=password
+    or when autofill determines the field is sensitive.
+  </summary>
+  <metric name="AutofillFormControlType">
+    <summary>
+      The control type, such as text or textarea. See
+      |autofill::FormControlType|.
+    </summary>
+  </metric>
+  <metric name="IsAutofillFieldType">
+    <summary>
+      Whether the field is detected and supported by Autofill.
+    </summary>
+  </metric>
+  <metric name="TypedCharacterCount">
+    <summary>
+      Total number of characters typed into the text element. Bucketed with an
+      exponential factor of 2. This is reported as -1 for sensitive field types,
+      like passwords or credit cards numbers. Note that this number attempts to
+      count only typed changes, but is not always accurate. Additionally, there
+      is a limit to the total possible length observed.
+    </summary>
+  </metric>
+  <metric name="TypedWordCount">
+    <summary>
+      Total number of space-delimited words typed into the text element.
+      Bucketed with an exponential factor of 2. This is reported as -1 for
+      sensitive field types like passwords or credit cards numbers. Note that
+      this number attempts to count only typed changes, but is not always
+      accurate. Additionally, there is a limit to the total possible length
+      observed.
+    </summary>
+  </metric>
+</event>
+
 <event name="Compositor.Rendering">
   <owner>khushalsagar@chromium.org</owner>
   <summary>

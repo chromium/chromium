@@ -638,6 +638,12 @@ BASE_FEATURE(kAutofillSilentProfileUpdateForInsufficientImport,
              "AutofillSilentProfileUpdateForInsufficientImport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Sends text change events for textarea elements. When this is off, only input
+// elements send text change events.
+BASE_FEATURE(kAutofillTextAreaChangeEvents,
+             "AutofillTextAreaChangeEvents",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, on form submit, observations for every used profile are
 // collected into the profile's `token_quality()`.
 // TODO(crbug.com/1453650): Remove when launched.

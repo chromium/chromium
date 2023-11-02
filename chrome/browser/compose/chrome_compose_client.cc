@@ -13,6 +13,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/compose/compose_enabling.h"
+#include "chrome/browser/compose/compose_text_usage_logger.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,9 +34,12 @@
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -266,9 +270,11 @@ compose::ComposeHintDecision ChromeComposeClient::GetOptimizationGuidanceForUrl(
   return compose_metadata->decision();
 }
 
-// content::WebContentsObserver implementation.
 void ChromeComposeClient::PrimaryPageChanged(content::Page& page) {
   RemoveAllSessions();
+
+  compose::ComposeTextUsageLogger::GetOrCreateForCurrentDocument(
+      &page.GetMainDocument());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeComposeClient);

@@ -291,7 +291,7 @@ class AutofillAgent : public content::RenderFrameObserver,
           form_util::ExtractOption::kOptions}) const;
   FRIEND_TEST_ALL_PREFIXES(FormAutocompleteTest, CollectFormlessElements);
 
-  void OnTextFieldDidChange(const blink::WebInputElement& element);
+  void OnTextFieldDidChange(const blink::WebFormControlElement& element);
   void DidChangeScrollOffsetImpl(const blink::WebFormControlElement& element);
 
   // Shows the autofill suggestions for |element|. This call is asynchronous

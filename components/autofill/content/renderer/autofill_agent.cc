@@ -67,6 +67,7 @@
 #include "third_party/blink/public/web/web_element_collection.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_form_element.h"
+#include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"
 #include "third_party/blink/public/web/web_option_element.h"
@@ -525,28 +526,34 @@ void AutofillAgent::TextFieldDidChange(const WebFormControlElement& element) {
   form_tracker_.TextFieldDidChange(element);
 }
 
-void AutofillAgent::OnTextFieldDidChange(const WebInputElement& element) {
+void AutofillAgent::OnTextFieldDidChange(const WebFormControlElement& element) {
   DCHECK(MaybeWasOwnedByFrame(element, unsafe_render_frame()));
+  // TODO(crbug.com/1494479): Add throttling to avoid sending this event for
+  // rapid changes.
 
   // The field might have changed while the user was hovering on a suggestion,
   // the preview in that case should be cleared since new suggestions will be
   // showing up.
   ClearPreviewedForm();
 
-  if (password_generation_agent_ &&
-      password_generation_agent_->TextDidChangeInTextField(element)) {
+  const auto input_element = element.DynamicTo<WebInputElement>();
+  if (password_generation_agent_ && !input_element.IsNull() &&
+      password_generation_agent_->TextDidChangeInTextField(input_element)) {
     is_popup_possibly_visible_ = true;
     return;
   }
 
-  if (password_autofill_agent_->TextDidChangeInTextField(element)) {
+  if (!input_element.IsNull() &&
+      password_autofill_agent_->TextDidChangeInTextField(input_element)) {
     is_popup_possibly_visible_ = true;
     last_queried_element_ = element;
     return;
   }
 
-  ShowSuggestions(element,
-                  AutofillSuggestionTriggerSource::kTextFieldDidChange);
+  if (!input_element.IsNull()) {
+    ShowSuggestions(element,
+                    AutofillSuggestionTriggerSource::kTextFieldDidChange);
+  }
 
   FormData form;
   FormFieldData field;
@@ -1466,7 +1473,7 @@ void AutofillAgent::OnProvisionallySaveForm(
     }
 
     if (source == ElementChangeSource::TEXTFIELD_CHANGED) {
-      OnTextFieldDidChange(element.To<WebInputElement>());
+      OnTextFieldDidChange(element);
     } else {
       FormData form_data;
       FormFieldData field;

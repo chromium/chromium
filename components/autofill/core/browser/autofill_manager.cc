@@ -440,15 +440,15 @@ void AutofillManager::OnTextFieldDidChange(const FormData& form,
   if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)) {
     OnTextFieldDidChangeImpl(form, field, bounding_box, timestamp);
     NotifyObservers(&Observer::OnAfterTextFieldDidChange, form.global_id(),
-                    field.global_id());
+                    field.global_id(), field.value);
     return;
   }
   ParseFormAsync(
-      form,
-      ParsingCallback(&AutofillManager::OnTextFieldDidChangeImpl, field,
-                      bounding_box, timestamp)
-          .Then(NotifyObserversCallback(&Observer::OnAfterTextFieldDidChange,
-                                        form.global_id(), field.global_id())));
+      form, ParsingCallback(&AutofillManager::OnTextFieldDidChangeImpl, field,
+                            bounding_box, timestamp)
+                .Then(NotifyObserversCallback(
+                    &Observer::OnAfterTextFieldDidChange, form.global_id(),
+                    field.global_id(), field.value)));
 }
 
 void AutofillManager::OnTextFieldDidScroll(const FormData& form,

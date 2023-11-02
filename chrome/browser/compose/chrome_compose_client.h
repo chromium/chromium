@@ -77,6 +77,12 @@ class ChromeComposeClient
       optimization_guide::OptimizationGuideModelExecutor* model_executor);
   void SetSkipShowDialogForTest();
 
+  // content::WebContentsObserver implementation.
+  // Called when the primary page location changes. This includes reloads.
+  // TODO: Look into using DocumentUserData or keying sessions on render ID
+  // to more accurately save and remove state.
+  void PrimaryPageChanged(content::Page& page) override;
+
   void SetOptimizationGuideForTest(
       optimization_guide::OptimizationGuideDecider* opt_guide);
 
@@ -112,12 +118,6 @@ class ChromeComposeClient
 
   // Removes all sessions and resets `last_compose_field_id_`.
   void RemoveAllSessions();
-
-  // content::WebContentsObserver implementation.
-  // Called when the primary page location changes. This includes reloads.
-  // TODO: Look into using DocumentUserData or keying sessions on render ID
-  // to more accurately save and remove state.
-  void PrimaryPageChanged(content::Page& page) override;
 
   compose::ComposeManagerImpl manager_;
 

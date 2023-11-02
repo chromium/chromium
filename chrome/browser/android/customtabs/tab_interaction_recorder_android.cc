@@ -5,6 +5,7 @@
 #include "chrome/browser/android/customtabs/tab_interaction_recorder_android.h"
 
 #include <memory>
+#include <string>
 
 #include "base/android/jni_android.h"
 #include "base/functional/bind.h"
@@ -70,7 +71,8 @@ void AutofillObserverImpl::OnAfterSelectControlDidChange(
 
 void AutofillObserverImpl::OnAfterTextFieldDidChange(autofill::AutofillManager&,
                                                      autofill::FormGlobalId,
-                                                     autofill::FieldGlobalId) {
+                                                     autofill::FieldGlobalId,
+                                                     std::u16string) {
   OnFormInteraction();
 }
 

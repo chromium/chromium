@@ -1902,11 +1902,11 @@ void PasswordAutofillAgent::OnProvisionallySaveForm(
     return;
 
   WebInputElement input_element = element.DynamicTo<WebInputElement>();
-
   if (source == ElementChangeSource::TEXTFIELD_CHANGED) {
-    DCHECK(!input_element.IsNull());
-    // keeps track of all text changes even if it isn't displaying UI.
-    UpdateStateForTextChange(input_element);
+    // Keeps track of all text changes even if it isn't displaying UI.
+    if (!input_element.IsNull()) {
+      UpdateStateForTextChange(input_element);
+    }
     return;
   }
 

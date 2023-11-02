@@ -132,17 +132,23 @@ void FormTracker::TextFieldDidChange(const WebFormControlElement& element) {
   DCHECK(!element.DynamicTo<WebInputElement>().IsNull() ||
          form_util::IsTextAreaElement(element));
 
-  if (ignore_control_changes_)
+  if (ignore_control_changes_) {
     return;
+  }
 
   // If the element isn't focused then the changes don't matter. This check is
   // required to properly handle IME interactions.
-  if (!element.Focused())
+  if (!element.Focused()) {
     return;
-
-  const WebInputElement input_element = element.DynamicTo<WebInputElement>();
-  if (input_element.IsNull())
-    return;
+  }
+  // Return early for textarea elements unless kAutofillTextAreaChangeEvents is
+  // enabled.
+  if (!base::FeatureList::IsEnabled(features::kAutofillTextAreaChangeEvents)) {
+    const WebInputElement input_element = element.DynamicTo<WebInputElement>();
+    if (input_element.IsNull()) {
+      return;
+    }
+  }
 
   if (!unsafe_render_frame()) {
     return;
@@ -227,7 +233,6 @@ void FormTracker::FormControlDidChangeImpl(
   } else {
     last_interacted_form_ = FormRef(element.Form());
   }
-
   for (auto& observer : observers_) {
     observer.OnProvisionallySaveForm(element.Form(), element, change_source);
   }

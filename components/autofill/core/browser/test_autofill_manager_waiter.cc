@@ -113,7 +113,8 @@ void TestAutofillManagerWaiter::OnBeforeTextFieldDidChange(
 void TestAutofillManagerWaiter::OnAfterTextFieldDidChange(
     AutofillManager& manager,
     FormGlobalId form,
-    FieldGlobalId field) {
+    FieldGlobalId field,
+    std::u16string text_value) {
   Decrement(Event::kTextFieldDidChange);
 }
 

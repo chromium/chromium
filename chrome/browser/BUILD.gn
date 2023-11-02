@@ -8010,6 +8010,8 @@ static_library("browser") {
       "compose/compose_enabling.h",
       "compose/compose_session.cc",
       "compose/compose_session.h",
+      "compose/compose_text_usage_logger.cc",
+      "compose/compose_text_usage_logger.h",
       "compose/translate_language_provider.cc",
       "compose/translate_language_provider.h",
     ]
@@ -8018,10 +8020,15 @@ static_library("browser") {
       ":compose_optimization_guide_proto",
       "//chrome/common/compose",
       "//chrome/common/compose:mojo_bindings",
+      "//components/autofill/content/browser:browser",
+      "//components/autofill/core/browser",
+      "//components/autofill/core/common",
       "//components/autofill/core/common",
       "//components/compose/core/browser",
       "//components/optimization_guide/core",
       "//components/optimization_guide/proto:optimization_guide_proto",
+      "//services/metrics/public/cpp:metrics_cpp",
+      "//services/metrics/public/cpp:ukm_builders",
     ]
   }
 }

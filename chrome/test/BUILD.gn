@@ -6974,6 +6974,7 @@ test("unit_tests") {
     sources += [
       "../browser/compose/chrome_compose_client_unittest.cc",
       "../browser/compose/compose_enabling_unittest.cc",
+      "../browser/compose/compose_text_usage_logger_unittest.cc",
       "../common/compose/type_conversions_unittest.cc",
     ]
     deps += [

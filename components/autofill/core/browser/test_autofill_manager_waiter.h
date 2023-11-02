@@ -165,7 +165,8 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
                                   FieldGlobalId field) override;
   void OnAfterTextFieldDidChange(AutofillManager& manager,
                                  FormGlobalId form,
-                                 FieldGlobalId field) override;
+                                 FieldGlobalId field,
+                                 std::u16string text_value) override;
 
   void OnBeforeTextFieldDidScroll(AutofillManager& manager,
                                   FormGlobalId form,
@@ -295,8 +296,10 @@ class AutofillManagerSingleEventWaiter : public AutofillManager::Observer {
   }
   void OnAfterTextFieldDidChange(AutofillManager& manager,
                                  FormGlobalId form,
-                                 FieldGlobalId field) override {
-    MaybeQuit(&Observer::OnAfterTextFieldDidChange, manager, form, field);
+                                 FieldGlobalId field,
+                                 std::u16string text_value) override {
+    MaybeQuit(&Observer::OnAfterTextFieldDidChange, manager, form, field,
+              text_value);
   }
   void OnBeforeTextFieldDidScroll(AutofillManager& manager,
                                   FormGlobalId form,

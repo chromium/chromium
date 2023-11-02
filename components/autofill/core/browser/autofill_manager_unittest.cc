@@ -470,7 +470,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   // asynchronous, so OnAfterTextFieldDidChange() is asynchronous, too.
   EXPECT_CALL(observer, OnBeforeTextFieldDidChange(m, f, ff));
   manager_->OnTextFieldDidChange(form, field, {}, {});
-  EXPECT_CALL(observer, OnAfterTextFieldDidChange(m, f, ff));
+  EXPECT_CALL(observer, OnAfterTextFieldDidChange(m, f, ff, std::u16string()));
   EXPECT_CALL(observer, OnFieldTypesDetermined(m, f, heuristics));
   task_environment_.RunUntilIdle();
 
