@@ -125,7 +125,7 @@ async def test_continue_with_auth_invalid_credentials(websocket, context_id,
         "network.responseCompleted"
     ], [context_id])
 
-    await execute_command(
+    result = await execute_command(
         websocket, {
             "method": "network.addIntercept",
             "params": {
@@ -157,6 +157,7 @@ async def test_continue_with_auth_invalid_credentials(websocket, context_id,
                 "type": "other",
             },
             "isBlocked": True,
+            "intercepts": [result["intercept"]],
             "navigation": ANY_STR,
             "redirectCount": 0,
             "request": {
@@ -481,6 +482,3 @@ async def test_continue_with_auth_remove_intercept_inflight_request(
         },
         "type": "event",
     }
-
-
-# TODO: Globally replace "example_url" with "auth_required_url".

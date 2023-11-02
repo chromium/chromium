@@ -150,12 +150,12 @@ def another_example_url(local_server: LocalHttpServer):
 
 @pytest.fixture
 def auth_required_url(local_server: LocalHttpServer):
-    """Return a URL that requires authentication (status code 401)."""
-    # All of these URLs work, just pick one.
-    # url = "https://authenticationtest.com/HTTPAuth/"
-    # url = "http://the-internet.herokuapp.com/basic_auth"
-    # url = "http://httpstat.us/401"
-    pytest.skip(reason='TODO: Use our own test server.')
+    """Return a URL that requires authentication (status code 401).
+    Alternatively, any of the following URLs could also be used:
+        - "https://authenticationtest.com/HTTPAuth/"
+        - "http://the-internet.herokuapp.com/basic_auth"
+        - "http://httpstat.us/401"
+    """
     return local_server.url_basic_auth()
 
 
