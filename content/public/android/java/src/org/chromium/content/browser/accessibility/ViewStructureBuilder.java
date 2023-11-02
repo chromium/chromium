@@ -66,11 +66,12 @@ public class ViewStructureBuilder {
     private void setViewStructureNodeBounds(ViewStructure node, boolean isRootNode,
             int parentRelativeLeft, int parentRelativeTop, int width, int height, int unclippedLeft,
             int unclippedTop, int unclippedWidth, int unclippedHeight) {
-        int left = (int) mRenderCoordinates.fromLocalCssToPix(parentRelativeLeft);
-        int top = (int) mRenderCoordinates.fromLocalCssToPix(parentRelativeTop);
-        width = (int) mRenderCoordinates.fromLocalCssToPix(width);
-        height = (int) mRenderCoordinates.fromLocalCssToPix(height);
-        Rect boundsInParent = new Rect(left, top, left + width, top + height);
+        Rect boundsInParent =
+                new Rect(
+                        parentRelativeLeft,
+                        parentRelativeTop,
+                        parentRelativeLeft + width,
+                        parentRelativeTop + height);
         if (isRootNode) {
             // Offset of the web content relative to the View.
             boundsInParent.offset(0, (int) mRenderCoordinates.getContentOffsetYPix());
@@ -79,16 +80,11 @@ public class ViewStructureBuilder {
         node.setDimens(boundsInParent.left, boundsInParent.top, 0, 0, width, height);
 
         // Add unclipped bounds in the Bundle extras for services interested in these values.
-        int unclippedLeftCSS = (int) mRenderCoordinates.fromLocalCssToPix(unclippedLeft);
-        int unclippedTopCSS = (int) mRenderCoordinates.fromLocalCssToPix(unclippedTop);
-        int unclippedWidthCSS = (int) mRenderCoordinates.fromLocalCssToPix(unclippedWidth);
-        int unclippedHeightCSS = (int) mRenderCoordinates.fromLocalCssToPix(unclippedHeight);
-
         Bundle extras = node.getExtras();
-        extras.putInt(EXTRAS_KEY_UNCLIPPED_LEFT, unclippedLeftCSS);
-        extras.putInt(EXTRAS_KEY_UNCLIPPED_TOP, unclippedTopCSS);
-        extras.putInt(EXTRAS_KEY_UNCLIPPED_WIDTH, unclippedWidthCSS);
-        extras.putInt(EXTRAS_KEY_UNCLIPPED_HEIGHT, unclippedHeightCSS);
+        extras.putInt(EXTRAS_KEY_UNCLIPPED_LEFT, unclippedLeft);
+        extras.putInt(EXTRAS_KEY_UNCLIPPED_TOP, unclippedTop);
+        extras.putInt(EXTRAS_KEY_UNCLIPPED_WIDTH, unclippedWidth);
+        extras.putInt(EXTRAS_KEY_UNCLIPPED_HEIGHT, unclippedHeight);
     }
 
     @CalledByNative
