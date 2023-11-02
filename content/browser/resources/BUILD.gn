@@ -6,12 +6,12 @@ import("//device/vr/buildflags/buildflags.gni")
 
 group("resources") {
   public_deps = [
-    "aggregation_service:resources",
     "attribution_reporting:resources",
     "gpu:resources",
     "histograms:resources",
     "indexed_db:resources",
     "net:resources",
+    "private_aggregation:resources",
     "process:resources",
     "quota:resources",
     "service_worker:resources",

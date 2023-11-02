@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './aggregation_service_internals_table.js';
+import './private_aggregation_internals_table.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {AggregatableReportRequestID, Factory as AggregationServiceInternalsFactory, HandlerRemote as AggregationServiceInternalsHandlerRemote, ObserverInterface, ObserverReceiver, ReportStatus, WebUIAggregatableReport} from './aggregation_service_internals.mojom-webui.js';
-import {AggregationServiceInternalsTableElement} from './aggregation_service_internals_table.js';
+import {AggregatableReportRequestID, Factory as PrivateAggregationInternalsFactory, HandlerRemote as PrivateAggregationInternalsHandlerRemote, ObserverInterface, ObserverReceiver, ReportStatus, WebUIAggregatableReport} from './private_aggregation_internals.mojom-webui.js';
+import {PrivateAggregationInternalsTableElement} from './private_aggregation_internals_table.js';
 import {Column, TableModel} from './table_model.js';
 
 function compareDefault<T>(a: T, b: T): number {
@@ -308,7 +308,7 @@ class ReportTableModel extends TableModel<Report> {
 /**
  * Reference to the backend providing all the data.
  */
-let pageHandler: AggregationServiceInternalsHandlerRemote|null = null;
+let pageHandler: PrivateAggregationInternalsHandlerRemote|null = null;
 
 let reportTableModel: ReportTableModel|null = null;
 
@@ -344,7 +344,7 @@ class Observer implements ObserverInterface {
 
 document.addEventListener('DOMContentLoaded', () => {
   // Setup the mojo interface.
-  pageHandler = new AggregationServiceInternalsHandlerRemote();
+  pageHandler = new PrivateAggregationInternalsHandlerRemote();
 
   const sendReports =
       document.querySelector<HTMLButtonElement>('#send-reports');
@@ -356,11 +356,11 @@ document.addEventListener('DOMContentLoaded', () => {
   clearData!.addEventListener('click', clearStorage);
 
   const reportTable =
-      document.querySelector<AggregationServiceInternalsTableElement<Report>>(
+      document.querySelector<PrivateAggregationInternalsTableElement<Report>>(
           '#reportTable');
   reportTable!.setModel(reportTableModel!);
 
-  AggregationServiceInternalsFactory.getRemote().create(
+  PrivateAggregationInternalsFactory.getRemote().create(
     new ObserverReceiver(new Observer()).$.bindNewPipeAndPassRemote(),
     pageHandler.$.bindNewPipeAndPassReceiver());
 

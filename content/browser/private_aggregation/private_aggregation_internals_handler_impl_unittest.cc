@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/aggregation_service/aggregation_service_internals_handler_impl.h"
+#include "content/browser/private_aggregation/private_aggregation_internals_handler_impl.h"
 
 #include <stddef.h>
 
@@ -22,7 +22,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
-#include "content/browser/aggregation_service/aggregation_service_internals.mojom.h"
+#include "content/browser/private_aggregation/private_aggregation_internals.mojom.h"
 #include "content/browser/aggregation_service/aggregation_service_observer.h"
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
@@ -42,25 +42,25 @@ namespace content {
 
 namespace {
 
-class MockObserver : public aggregation_service_internals::mojom::Observer {
+class MockObserver : public private_aggregation_internals::mojom::Observer {
  public:
   MOCK_METHOD(void, OnRequestStorageModified, (), (override));
 
   MOCK_METHOD(
       void,
       OnReportHandled,
-      (aggregation_service_internals::mojom::WebUIAggregatableReportPtr report),
+      (private_aggregation_internals::mojom::WebUIAggregatableReportPtr report),
       (override));
 };
 
 void VerifyWebUIAggregatableReport(
-    const aggregation_service_internals::mojom::WebUIAggregatableReport&
+    const private_aggregation_internals::mojom::WebUIAggregatableReport&
         web_report,
     const AggregatableReportRequest& request,
     absl::optional<AggregationServiceStorage::RequestId> id,
     const absl::optional<AggregatableReport>& report,
     base::Time report_time,
-    aggregation_service_internals::mojom::ReportStatus status) {
+    private_aggregation_internals::mojom::ReportStatus status) {
   EXPECT_EQ(web_report.id, id);
 
   EXPECT_EQ(web_report.report_time,
@@ -99,10 +99,10 @@ void VerifyWebUIAggregatableReport(
 
 }  // namespace
 
-class AggregationServiceInternalsHandlerImplTest
+class PrivateAggregationInternalsHandlerImplTest
     : public RenderViewHostTestHarness {
  public:
-  AggregationServiceInternalsHandlerImplTest() : receiver_(&observer_) {}
+  PrivateAggregationInternalsHandlerImplTest() : receiver_(&observer_) {}
 
  protected:
   void SetUp() override {
@@ -127,7 +127,7 @@ class AggregationServiceInternalsHandlerImplTest
         std::move(private_aggregation_manager));
 
     internals_handler_ =
-        std::make_unique<AggregationServiceInternalsHandlerImpl>(
+        std::make_unique<PrivateAggregationInternalsHandlerImpl>(
             &web_ui_, receiver_.BindNewPipeAndPassRemote(),
             remote_handler_.BindNewPipeAndPassReceiver());
   }
@@ -158,13 +158,13 @@ class AggregationServiceInternalsHandlerImplTest
   TestWebUI web_ui_;
   raw_ptr<MockAggregationService> aggregation_service_;
   raw_ptr<MockPrivateAggregationManagerImpl> private_aggregation_manager_;
-  mojo::Remote<aggregation_service_internals::mojom::Handler> remote_handler_;
+  mojo::Remote<private_aggregation_internals::mojom::Handler> remote_handler_;
   MockObserver observer_;
-  mojo::Receiver<aggregation_service_internals::mojom::Observer> receiver_;
-  std::unique_ptr<AggregationServiceInternalsHandlerImpl> internals_handler_;
+  mojo::Receiver<private_aggregation_internals::mojom::Observer> receiver_;
+  std::unique_ptr<PrivateAggregationInternalsHandlerImpl> internals_handler_;
 };
 
-TEST_F(AggregationServiceInternalsHandlerImplTest, GetReports) {
+TEST_F(PrivateAggregationInternalsHandlerImplTest, GetReports) {
   AggregatableReportRequest request =
       aggregation_service::CreateExampleRequest();
   AggregationServiceStorage::RequestId id{20};
@@ -183,19 +183,19 @@ TEST_F(AggregationServiceInternalsHandlerImplTest, GetReports) {
   base::RunLoop run_loop;
   internals_handler_->GetReports(base::BindLambdaForTesting(
       [&](std::vector<
-          aggregation_service_internals::mojom::WebUIAggregatableReportPtr>
+          private_aggregation_internals::mojom::WebUIAggregatableReportPtr>
               reports) {
         ASSERT_EQ(reports.size(), 1u);
         VerifyWebUIAggregatableReport(
             *reports.front(), request, id, /*report=*/absl::nullopt,
             request.shared_info().scheduled_report_time,
-            aggregation_service_internals::mojom::ReportStatus::kPending);
+            private_aggregation_internals::mojom::ReportStatus::kPending);
         run_loop.Quit();
       }));
   run_loop.Run();
 }
 
-TEST_F(AggregationServiceInternalsHandlerImplTest, SendReports) {
+TEST_F(PrivateAggregationInternalsHandlerImplTest, SendReports) {
   EXPECT_CALL(*aggregation_service_,
               SendReportsForWebUI(
                   testing::ElementsAre(AggregationServiceStorage::RequestId(5)),
@@ -208,7 +208,7 @@ TEST_F(AggregationServiceInternalsHandlerImplTest, SendReports) {
   run_loop.Run();
 }
 
-TEST_F(AggregationServiceInternalsHandlerImplTest, ClearStorage) {
+TEST_F(PrivateAggregationInternalsHandlerImplTest, ClearStorage) {
   EXPECT_CALL(*aggregation_service_, ClearData)
       .WillOnce(base::test::RunOnceCallback<3>());
   EXPECT_CALL(*private_aggregation_manager_, ClearBudgetData)
@@ -219,7 +219,7 @@ TEST_F(AggregationServiceInternalsHandlerImplTest, ClearStorage) {
   run_loop.Run();
 }
 
-TEST_F(AggregationServiceInternalsHandlerImplTest, NotifyReportsChanged) {
+TEST_F(PrivateAggregationInternalsHandlerImplTest, NotifyReportsChanged) {
   base::RunLoop run_loop;
   EXPECT_CALL(observer_, OnRequestStorageModified)
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
@@ -228,8 +228,8 @@ TEST_F(AggregationServiceInternalsHandlerImplTest, NotifyReportsChanged) {
   run_loop.Run();
 }
 
-TEST_F(AggregationServiceInternalsHandlerImplTest, NotifyReportHandled) {
-  aggregation_service_internals::mojom::WebUIAggregatableReportPtr web_report;
+TEST_F(PrivateAggregationInternalsHandlerImplTest, NotifyReportHandled) {
+  private_aggregation_internals::mojom::WebUIAggregatableReportPtr web_report;
   base::RunLoop run_loop;
   EXPECT_CALL(observer_, OnReportHandled)
       .WillOnce(testing::DoAll(base::test::RunClosure(run_loop.QuitClosure()),
@@ -253,11 +253,11 @@ TEST_F(AggregationServiceInternalsHandlerImplTest, NotifyReportHandled) {
   ASSERT_TRUE(web_report);
   VerifyWebUIAggregatableReport(
       *web_report, request, id, report, now,
-      aggregation_service_internals::mojom::ReportStatus::kSent);
+      private_aggregation_internals::mojom::ReportStatus::kSent);
 }
 
-TEST_F(AggregationServiceInternalsHandlerImplTest, NotifyReportHandled_NoId) {
-  aggregation_service_internals::mojom::WebUIAggregatableReportPtr web_report;
+TEST_F(PrivateAggregationInternalsHandlerImplTest, NotifyReportHandled_NoId) {
+  private_aggregation_internals::mojom::WebUIAggregatableReportPtr web_report;
   base::RunLoop run_loop;
   EXPECT_CALL(observer_, OnReportHandled)
       .WillOnce(testing::DoAll(base::test::RunClosure(run_loop.QuitClosure()),
@@ -281,7 +281,7 @@ TEST_F(AggregationServiceInternalsHandlerImplTest, NotifyReportHandled_NoId) {
   ASSERT_TRUE(web_report);
   VerifyWebUIAggregatableReport(
       *web_report, request, /*id=*/absl::nullopt, report, now,
-      aggregation_service_internals::mojom::ReportStatus::kSent);
+      private_aggregation_internals::mojom::ReportStatus::kSent);
 }
 
 }  // namespace content

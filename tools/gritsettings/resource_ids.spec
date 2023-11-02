@@ -605,7 +605,7 @@
   "components/resources/dev_ui_components_resources.grd": {
     "includes": [4820],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/content/browser/resources/aggregation_service/resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/content/browser/resources/private_aggregation/resources.grd": {
     "META": {"sizes": {"includes": [20]}},
     "includes": [4840],
   },

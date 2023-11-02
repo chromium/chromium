@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/aggregation_service/aggregation_service_internals_ui.h"
+#include "content/browser/private_aggregation/private_aggregation_internals_ui.h"
 
 #include <memory>
 #include <string>
@@ -41,9 +41,9 @@ constexpr char kPrivateAggregationInternalsUrl[] =
 
 const std::u16string kCompleteTitle = u"Complete";
 
-class AggregationServiceInternalsWebUiBrowserTest : public ContentBrowserTest {
+class PrivateAggregationInternalsWebUiBrowserTest : public ContentBrowserTest {
  public:
-  AggregationServiceInternalsWebUiBrowserTest() = default;
+  PrivateAggregationInternalsWebUiBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
@@ -79,8 +79,9 @@ class AggregationServiceInternalsWebUiBrowserTest : public ContentBrowserTest {
       const table = document.querySelector('#reportTable')
           .shadowRoot.querySelector('tbody');
       const obs = new MutationObserver((_, obs) => {
+        const kEmptyRowText = 'No sent or pending reports.';
         if (table.children.length === 1 &&
-            table.children[0].children[0].textContent === 'No sent or pending reports.') {
+            table.children[0].children[0].textContent === kEmptyRowText) {
           obs.disconnect();
           document.title = $1;
         }
@@ -114,7 +115,7 @@ class AggregationServiceInternalsWebUiBrowserTest : public ContentBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(AggregationServiceInternalsWebUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateAggregationInternalsWebUiBrowserTest,
                        NavigationUrl_ResolvedToWebUI) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kPrivateAggregationInternalsUrl)));
 
@@ -124,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(AggregationServiceInternalsWebUiBrowserTest,
                          EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1));
 }
 
-IN_PROC_BROWSER_TEST_F(AggregationServiceInternalsWebUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateAggregationInternalsWebUiBrowserTest,
                        WebUIShownWithNoReports_NoReportsDisplayed) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kPrivateAggregationInternalsUrl)));
 
@@ -134,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(AggregationServiceInternalsWebUiBrowserTest,
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(AggregationServiceInternalsWebUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateAggregationInternalsWebUiBrowserTest,
                        WebUIShownWithReports_ReportsDisplayed) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kPrivateAggregationInternalsUrl)));
 
@@ -189,13 +190,15 @@ IN_PROC_BROWSER_TEST_F(AggregationServiceInternalsWebUiBrowserTest,
           .shadowRoot.querySelector('tbody');
       const cell = (a, b) => table.children[a]?.children[b]?.textContent;
       const obs = new MutationObserver((_, obs) => {
+        const kExpectedBodyStr =
+          '[ {  "bucket": {   "high": "0",   "low": "123"  },  "value": 456 }]';
         if (table.children.length === 4 &&
             cell(0, 1) === 'Pending' &&
             cell(0, 2) === 'https://reporting.example/example-path' &&
             cell(0, 3) === (new Date($2)).toLocaleString() &&
             cell(0, 4) === 'example-api' &&
             cell(0, 5) === '' &&
-            cell(0, 6) === '[ {  "bucket": {   "high": "0",   "low": "123"  },  "value": 456 }]' &&
+            cell(0, 6) === kExpectedBodyStr &&
             cell(1, 1) === 'Sent' &&
             cell(2, 1) === 'Failed to assemble' &&
             cell(3, 1) === 'Failed to send') {
@@ -269,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(AggregationServiceInternalsWebUiBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(AggregationServiceInternalsWebUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateAggregationInternalsWebUiBrowserTest,
                        WebUISendReports_ReportsRemoved) {
   EXPECT_CALL(aggregation_service(), GetPendingReportRequestsForWebUI)
       .WillOnce([](GetPendingReportsCallback callback) {
@@ -331,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(AggregationServiceInternalsWebUiBrowserTest,
   EXPECT_EQ(kSentTitle, sent_title_watcher.WaitAndGetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(AggregationServiceInternalsWebUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateAggregationInternalsWebUiBrowserTest,
                        WebUIClearStorage_ReportsRemoved) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kPrivateAggregationInternalsUrl)));
 

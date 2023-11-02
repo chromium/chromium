@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module aggregation_service_internals.mojom;
+module private_aggregation_internals.mojom;
 
 import "url/mojom/url.mojom";
 import "mojo/public/mojom/base/int128.mojom";
@@ -40,7 +40,7 @@ struct WebUIAggregatableReport {
   string report_body;
 };
 
-// Observer for events relevant to the aggregation service internals WebUI.
+// Observer for events relevant to the private aggregation internals WebUI.
 interface Observer {
   // Called when the reports in storage changed, indicating that the observer
   // should call `Handler::GetReports()`.

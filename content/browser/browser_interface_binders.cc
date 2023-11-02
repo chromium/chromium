@@ -14,8 +14,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
-#include "content/browser/aggregation_service/aggregation_service_internals.mojom.h"
-#include "content/browser/aggregation_service/aggregation_service_internals_ui.h"
 #include "content/browser/attribution_reporting/attribution_internals.mojom.h"
 #include "content/browser/attribution_reporting/attribution_internals_ui.h"
 #include "content/browser/background_fetch/background_fetch_service_impl.h"
@@ -43,6 +41,8 @@
 #include "content/browser/picture_in_picture/picture_in_picture_service_impl.h"
 #include "content/browser/preloading/anchor_element_interaction_host_impl.h"
 #include "content/browser/preloading/speculation_rules/speculation_host_impl.h"
+#include "content/browser/private_aggregation/private_aggregation_internals.mojom.h"
+#include "content/browser/private_aggregation/private_aggregation_internals_ui.h"
 #include "content/browser/process_internals/process_internals.mojom.h"
 #include "content/browser/process_internals/process_internals_ui.h"
 #include "content/browser/quota/quota_context.h"
@@ -1210,8 +1210,8 @@ void PopulateBinderMapWithContext(
       base::BindRepeating(&EmptyBinderForFrame<device::mojom::VRService>));
 #endif
   RegisterWebUIControllerInterfaceBinder<
-      aggregation_service_internals::mojom::Factory,
-      AggregationServiceInternalsUI>(map);
+      private_aggregation_internals::mojom::Factory,
+      PrivateAggregationInternalsUI>(map);
   RegisterWebUIControllerInterfaceBinder<attribution_internals::mojom::Factory,
                                          AttributionInternalsUI>(map);
   RegisterWebUIControllerInterfaceBinder<storage::mojom::IdbInternalsHandler,

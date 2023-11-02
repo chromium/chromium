@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
-import {getTemplate} from './aggregation_service_internals_table.html.js';
+import {getTemplate} from './private_aggregation_internals_table.html.js';
 import {TableModel} from './table_model.js';
 
 /**
@@ -34,7 +34,7 @@ function setSortAttrs(th: HTMLElement, sortDesc: boolean|null) {
  * Column knows how to render the underlying value of the row type T, and
  * optionally sort rows of type T by that value.
  */
-export class AggregationServiceInternalsTableElement<T> extends CustomElement {
+export class PrivateAggregationInternalsTableElement<T> extends CustomElement {
   static override get template() {
     return getTemplate();
   }
@@ -138,4 +138,4 @@ export class AggregationServiceInternalsTableElement<T> extends CustomElement {
 
 customElements.define(
     'aggregation-service-internals-table',
-    AggregationServiceInternalsTableElement);
+    PrivateAggregationInternalsTableElement);

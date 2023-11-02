@@ -5,7 +5,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
-  sources = [ "aggregation_service_internals.mojom" ]
+  sources = [ "private_aggregation_internals.mojom" ]
   public_deps = [
     "//mojo/public/mojom/base:base",
     "//url/mojom:url_mojom_origin",
@@ -18,15 +18,15 @@ mojom("mojo_bindings") {
       types = [
         {
           mojom =
-              "aggregation_service_internals.mojom.AggregatableReportRequestID"
+              "private_aggregation_internals.mojom.AggregatableReportRequestID"
           cpp = "::content::AggregatableReportRequestStorageId"
         },
       ]
       traits_headers = [
-        "aggregation_service_internals_mojom_traits.h",
-        "aggregatable_report_request_storage_id.h",
+        "private_aggregation_internals_mojom_traits.h",
+        "//content/browser/aggregation_service/aggregatable_report_request_storage_id.h",
       ]
-      traits_sources = [ "aggregation_service_internals_mojom_traits.cc" ]
+      traits_sources = [ "private_aggregation_internals_mojom_traits.cc" ]
       traits_deps = [
         "//components/services/storage",
         "//content/common:mojo_bindings",

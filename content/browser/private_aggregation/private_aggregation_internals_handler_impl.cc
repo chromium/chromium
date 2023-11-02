@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/aggregation_service/aggregation_service_internals_handler_impl.h"
+#include "content/browser/private_aggregation/private_aggregation_internals_handler_impl.h"
 
 #include <iterator>
 #include <string>
@@ -20,7 +20,7 @@
 #include "base/values.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
-#include "content/browser/aggregation_service/aggregation_service_internals.mojom.h"
+#include "content/browser/private_aggregation/private_aggregation_internals.mojom.h"
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -41,20 +41,20 @@ PrivateAggregationManager* GetPrivateAggregationManager(
   return PrivateAggregationManager::GetManager(*browser_context);
 }
 
-aggregation_service_internals::mojom::WebUIAggregatableReportPtr
+private_aggregation_internals::mojom::WebUIAggregatableReportPtr
 CreateWebUIAggregatableReport(
     const AggregatableReportRequest& request,
     absl::optional<AggregationServiceStorage::RequestId> id,
     absl::optional<base::Time> actual_report_time,
-    aggregation_service_internals::mojom::ReportStatus status,
+    private_aggregation_internals::mojom::ReportStatus status,
     const absl::optional<AggregatableReport>& report) {
-  std::vector<aggregation_service_internals::mojom::
+  std::vector<private_aggregation_internals::mojom::
                   AggregatableHistogramContributionPtr>
       contributions;
   base::ranges::transform(request.payload_contents().contributions,
                           std::back_inserter(contributions),
                           [](const auto& contribution) {
-                            return aggregation_service_internals::mojom::
+                            return private_aggregation_internals::mojom::
                                 AggregatableHistogramContribution::New(
                                     contribution.bucket, contribution.value);
                           });
@@ -84,17 +84,17 @@ CreateWebUIAggregatableReport(
   base::Time report_time =
       actual_report_time.value_or(request.shared_info().scheduled_report_time);
 
-  return aggregation_service_internals::mojom::WebUIAggregatableReport::New(
+  return private_aggregation_internals::mojom::WebUIAggregatableReport::New(
       id, report_time.InMillisecondsFSinceUnixEpoch(),
       request.shared_info().api_identifier, request.shared_info().api_version,
       request.GetReportingUrl(), std::move(contributions), status, output_json);
 }
 
 void ForwardReportsToWebUI(
-    aggregation_service_internals::mojom::Handler::GetReportsCallback
+    private_aggregation_internals::mojom::Handler::GetReportsCallback
         web_ui_callback,
     std::vector<AggregationServiceStorage::RequestAndId> requests_and_ids) {
-  std::vector<aggregation_service_internals::mojom::WebUIAggregatableReportPtr>
+  std::vector<private_aggregation_internals::mojom::WebUIAggregatableReportPtr>
       web_ui_reports;
   web_ui_reports.reserve(requests_and_ids.size());
   for (const AggregationServiceStorage::RequestAndId& request_and_id :
@@ -102,7 +102,7 @@ void ForwardReportsToWebUI(
     web_ui_reports.push_back(CreateWebUIAggregatableReport(
         request_and_id.request, request_and_id.id,
         /*actual_report_time=*/absl::nullopt,
-        aggregation_service_internals::mojom::ReportStatus::kPending,
+        private_aggregation_internals::mojom::ReportStatus::kPending,
         /*report=*/absl::nullopt));
   }
 
@@ -111,11 +111,11 @@ void ForwardReportsToWebUI(
 
 }  // namespace
 
-AggregationServiceInternalsHandlerImpl::AggregationServiceInternalsHandlerImpl(
+PrivateAggregationInternalsHandlerImpl::PrivateAggregationInternalsHandlerImpl(
     WebUI* web_ui,
-    mojo::PendingRemote<aggregation_service_internals::mojom::Observer>
+    mojo::PendingRemote<private_aggregation_internals::mojom::Observer>
         observer,
-    mojo::PendingReceiver<aggregation_service_internals::mojom::Handler>
+    mojo::PendingReceiver<private_aggregation_internals::mojom::Handler>
         handler)
     : web_ui_(web_ui),
       observer_(std::move(observer)),
@@ -127,16 +127,16 @@ AggregationServiceInternalsHandlerImpl::AggregationServiceInternalsHandlerImpl(
     // `base::Unretained()` is safe because the observer is owned by `this`
     // and the callback will only be called while `observer_` is still alive.
     observer_.set_disconnect_handler(base::BindOnce(
-        &AggregationServiceInternalsHandlerImpl::OnObserverDisconnected,
+        &PrivateAggregationInternalsHandlerImpl::OnObserverDisconnected,
         base::Unretained(this)));
   }
 }
 
-AggregationServiceInternalsHandlerImpl::
-    ~AggregationServiceInternalsHandlerImpl() = default;
+PrivateAggregationInternalsHandlerImpl::
+    ~PrivateAggregationInternalsHandlerImpl() = default;
 
-void AggregationServiceInternalsHandlerImpl::GetReports(
-    aggregation_service_internals::mojom::Handler::GetReportsCallback
+void PrivateAggregationInternalsHandlerImpl::GetReports(
+    private_aggregation_internals::mojom::Handler::GetReportsCallback
         callback) {
   if (AggregationService* aggregation_service =
           GetAggregationService(web_ui_->GetWebContents())) {
@@ -147,9 +147,9 @@ void AggregationServiceInternalsHandlerImpl::GetReports(
   }
 }
 
-void AggregationServiceInternalsHandlerImpl::SendReports(
+void PrivateAggregationInternalsHandlerImpl::SendReports(
     const std::vector<AggregationServiceStorage::RequestId>& ids,
-    aggregation_service_internals::mojom::Handler::SendReportsCallback
+    private_aggregation_internals::mojom::Handler::SendReportsCallback
         callback) {
   if (AggregationService* aggregation_service =
           GetAggregationService(web_ui_->GetWebContents())) {
@@ -159,8 +159,8 @@ void AggregationServiceInternalsHandlerImpl::SendReports(
   }
 }
 
-void AggregationServiceInternalsHandlerImpl::ClearStorage(
-    aggregation_service_internals::mojom::Handler::ClearStorageCallback
+void PrivateAggregationInternalsHandlerImpl::ClearStorage(
+    private_aggregation_internals::mojom::Handler::ClearStorageCallback
         callback) {
   // Only run `callback` after we've cleared the aggregation service data *and*
   // the private aggregation budget data.
@@ -175,8 +175,6 @@ void AggregationServiceInternalsHandlerImpl::ClearStorage(
     barrier.Run();
   }
 
-  // TODO(https://crbug.com/1496401) Resolve this layering violation;
-  // aggregation_service should not depend on private_aggregation.
   if (PrivateAggregationManager* private_aggregation_manager =
           GetPrivateAggregationManager(web_ui_->GetWebContents())) {
     private_aggregation_manager->ClearBudgetData(
@@ -188,29 +186,29 @@ void AggregationServiceInternalsHandlerImpl::ClearStorage(
   }
 }
 
-void AggregationServiceInternalsHandlerImpl::OnRequestStorageModified() {
+void PrivateAggregationInternalsHandlerImpl::OnRequestStorageModified() {
   observer_->OnRequestStorageModified();
 }
 
-void AggregationServiceInternalsHandlerImpl::OnReportHandled(
+void PrivateAggregationInternalsHandlerImpl::OnReportHandled(
     const AggregatableReportRequest& request,
     absl::optional<AggregationServiceStorage::RequestId> id,
     const absl::optional<AggregatableReport>& report,
     base::Time actual_report_time,
     AggregationServiceObserver::ReportStatus status) {
-  aggregation_service_internals::mojom::ReportStatus web_report_status;
+  private_aggregation_internals::mojom::ReportStatus web_report_status;
   switch (status) {
     case AggregationServiceObserver::ReportStatus::kSent:
       web_report_status =
-          aggregation_service_internals::mojom::ReportStatus::kSent;
+          private_aggregation_internals::mojom::ReportStatus::kSent;
       break;
     case AggregationServiceObserver::ReportStatus::kFailedToAssemble:
       web_report_status =
-          aggregation_service_internals::mojom::ReportStatus::kFailedToAssemble;
+          private_aggregation_internals::mojom::ReportStatus::kFailedToAssemble;
       break;
     case AggregationServiceObserver::ReportStatus::kFailedToSend:
       web_report_status =
-          aggregation_service_internals::mojom::ReportStatus::kFailedToSend;
+          private_aggregation_internals::mojom::ReportStatus::kFailedToSend;
       break;
   }
 
@@ -218,7 +216,7 @@ void AggregationServiceInternalsHandlerImpl::OnReportHandled(
       request, id, actual_report_time, web_report_status, report));
 }
 
-void AggregationServiceInternalsHandlerImpl::OnObserverDisconnected() {
+void PrivateAggregationInternalsHandlerImpl::OnObserverDisconnected() {
   aggregation_service_observer_.Reset();
 }
 
