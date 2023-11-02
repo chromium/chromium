@@ -122,6 +122,9 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
     gfx::Size size;
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer;
     gpu::Mailbox mailbox;
+    // Tracks whether the SharedImage is created with GpuMemoryBuffer containing
+    // multiplanar format and prefers external sampler.
+    bool is_multiplanar_buffer = false;
   };
 
   // All the resources needed to compose a frame.
@@ -750,6 +753,19 @@ gfx::Size CodedSize(const VideoFrame* video_frame,
   DCHECK(gfx::Rect(video_frame->coded_size()).Contains(gfx::Rect(output)));
   return output;
 }
+
+bool SetPrefersExternalSampler(viz::SharedImageFormat& format) {
+  if (format.is_multi_plane()) {
+    // Set prefers external sampler only for multiplanar formats on ozone based
+    // platforms.
+#if BUILDFLAG(IS_OZONE)
+    format.SetPrefersExternalSampler();
+    return true;
+#endif
+  }
+  return false;
+}
+
 }  // unnamed namespace
 
 // Creates a VideoFrame backed by native textures starting from a software
@@ -1254,10 +1270,13 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
 
       constexpr char kDebugLabel[] = "MediaGmbVideoFramePool";
       if (base::FeatureList::IsEnabled(kUseMultiPlaneFormatForSoftwareVideo)) {
-        viz::SharedImageFormat multi_planar_format =
+        viz::SharedImageFormat si_format =
             OutputFormatToSharedImageFormat(output_format_, plane);
+        if (SetPrefersExternalSampler(si_format)) {
+          plane_resource.is_multiplanar_buffer = true;
+        }
         auto client_shared_image = sii->CreateSharedImage(
-            multi_planar_format, gpu_memory_buffer->GetSize(), color_space,
+            si_format, gpu_memory_buffer->GetSize(), color_space,
             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, kDebugLabel,
             gpu_memory_buffer->CloneHandle());
         CHECK(client_shared_image);
@@ -1312,6 +1331,11 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
     // multiplanar path.
     frame->set_shared_image_format_type(
         SharedImageFormatType::kSharedImageFormat);
+    PlaneResource& resource = frame_resources->plane_resources[0];
+    if (resource.is_multiplanar_buffer) {
+      frame->set_shared_image_format_type(
+          SharedImageFormatType::kSharedImageFormatExternalSampler);
+    }
   }
 
   bool allow_overlay = false;
