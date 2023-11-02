@@ -1160,6 +1160,17 @@
         "timeout_sec": 7200,
         "use_lkgm": true,
         "variant_id": "BRYA_RELEASE_LKGM"
+      },
+      {
+        "autotest_name": "chromium",
+        "ci_only": true,
+        "cros_board": "brya",
+        "dut_pool": "chrome",
+        "name": "chromeos_integration_tests BRYA_RELEASE_LKGM",
+        "test": "chromeos_integration_tests",
+        "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
+        "use_lkgm": true,
+        "variant_id": "BRYA_RELEASE_LKGM"
       }
     ]
   },
