@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.SafeModeAction;
+import org.chromium.android_webview.common.SafeModeActionIds;
 import org.chromium.base.Log;
 
 /**
@@ -17,7 +18,7 @@ import org.chromium.base.Log;
 public class NoopSafeModeAction implements SafeModeAction {
     private static final String TAG = "WebViewSafeMode";
     // This ID should not be changed or reused.
-    private static final String ID = "noop";
+    private static final String ID = SafeModeActionIds.NOOP;
 
     @NonNull
     @Override

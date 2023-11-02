@@ -5765,6 +5765,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.SafeMode.ActionName"
+    enum="AndroidWebViewSafeModeActionName" expires_after="2024-07-28">
+  <owner>avvall@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records which SafeModeAction was executed. This is recorded once during
+    WebView startup and only if SafeMode is enabled (see
+    &quot;Android.WebView.SafeMode.SafeModeEnabled&quot;).
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.SafeMode.ExecutionResult"
     enum="AndroidWebViewSafeModeResult" expires_after="2024-01-28">
   <owner>ntfschr@chromium.org</owner>

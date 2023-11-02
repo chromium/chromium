@@ -2284,6 +2284,17 @@ Unknown properties are collapsed to zero. -->
       label="Renderer kill (OOM or update) was handled for all WebViews"/>
 </enum>
 
+<enum name="AndroidWebViewSafeModeActionName">
+  <int value="0" label="Delete Variations Seed"/>
+  <int value="1" label="Fast Variations Seed"/>
+  <int value="2" label="Noop"/>
+  <int value="3" label="Disable Android Autofill"/>
+  <int value="4" label="Disable Chrome Autocomplete"/>
+  <int value="5" label="Disable Origin Trials"/>
+  <int value="6" label="Disable Safe Browsing"/>
+  <int value="7" label="Reset Component Updater"/>
+</enum>
+
 <enum name="AndroidWebViewSafeModeResult">
   <int value="0" label="Success"/>
   <int value="1" label="Unknown error (Java Exception)"/>

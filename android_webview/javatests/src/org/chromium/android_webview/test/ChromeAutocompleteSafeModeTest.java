@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.autofill.ChromeAutocompleteSafeModeAction;
 import org.chromium.android_webview.common.SafeModeAction;
+import org.chromium.android_webview.common.SafeModeActionIds;
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactory;
 import org.chromium.base.test.util.Feature;
@@ -70,7 +71,7 @@ public class ChromeAutocompleteSafeModeTest {
         SafeModeController safeModeController = SafeModeController.getInstance();
         safeModeController.registerActions(
                 new SafeModeAction[] {new ChromeAutocompleteSafeModeAction()});
-        safeModeController.executeActions(Set.of(ChromeAutocompleteSafeModeAction.ID));
+        safeModeController.executeActions(Set.of(SafeModeActionIds.DISABLE_CHROME_AUTOCOMPLETE));
 
         AwTestContainerView mTestContainerView =
                 mRule.createAwTestContainerViewOnMainSync(
@@ -92,7 +93,7 @@ public class ChromeAutocompleteSafeModeTest {
         SafeModeController safeModeController = SafeModeController.getInstance();
         safeModeController.registerActions(
                 new SafeModeAction[] {new ChromeAutocompleteSafeModeAction()});
-        safeModeController.executeActions(Set.of(ChromeAutocompleteSafeModeAction.ID));
+        safeModeController.executeActions(Set.of(SafeModeActionIds.DISABLE_CHROME_AUTOCOMPLETE));
 
         AwTestContainerView mTestContainerView =
                 mRule.createAwTestContainerViewOnMainSync(

@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.SafeModeAction;
+import org.chromium.android_webview.common.SafeModeActionIds;
 import org.chromium.android_webview.common.variations.VariationsUtils;
 import org.chromium.base.Log;
 
@@ -21,7 +22,7 @@ public class VariationsSeedSafeModeAction implements SafeModeAction {
     private static final String TAG = "WebViewSafeMode";
 
     // This ID should not be changed or reused.
-    private static final String ID = "delete_variations_seed";
+    private static final String ID = SafeModeActionIds.DELETE_VARIATIONS_SEED;
 
     @Override
     @NonNull

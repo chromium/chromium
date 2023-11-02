@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.BrowserSafeModeActionList;
 import org.chromium.android_webview.common.SafeModeAction;
+import org.chromium.android_webview.common.SafeModeActionIds;
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.common.VariationsFastFetchModeUtils;
 import org.chromium.android_webview.common.services.ISafeModeService;
@@ -937,6 +938,114 @@ public class SafeModeTest {
     }
 
     @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testSafeModeAction_namesRecordedAsExpected() throws Throwable {
+        HistogramWatcher.Builder histogramWatcherBuilder = HistogramWatcher.newBuilder();
+        histogramWatcherBuilder.expectIntRecords(
+                "Android.WebView.SafeMode.ActionName",
+                SafeModeController.sSafeModeActionLoggingMap.get(
+                        SafeModeActionIds.DELETE_VARIATIONS_SEED),
+                SafeModeController.sSafeModeActionLoggingMap.get(
+                        SafeModeActionIds.FAST_VARIATIONS_SEED));
+        HistogramWatcher watcher = histogramWatcherBuilder.build();
+
+        TestSafeModeAction successAction1 =
+                new TestSafeModeAction(SafeModeActionIds.DELETE_VARIATIONS_SEED);
+        TestSafeModeAction successAction2 =
+                new TestSafeModeAction(SafeModeActionIds.FAST_VARIATIONS_SEED);
+        Set<String> allSuccessful = asSet(successAction1.getId(), successAction2.getId());
+        SafeModeController.getInstance()
+                .registerActions(new SafeModeAction[] {successAction1, successAction2});
+        SafeModeController.getInstance().executeActions(allSuccessful);
+        watcher.assertExpected(
+                "SafeModeAction names should be recorded: ["
+                        + successAction1.getId()
+                        + ", "
+                        + successAction2.getId()
+                        + "]");
+        Assert.assertEquals(
+                "successAction1 should have been executed exactly 1 time",
+                1,
+                successAction1.getCallCount());
+        Assert.assertEquals(
+                "successAction2 should have been executed exactly 1 time",
+                1,
+                successAction2.getCallCount());
+        SafeModeController.getInstance().unregisterActionsForTesting();
+
+        histogramWatcherBuilder = HistogramWatcher.newBuilder();
+        histogramWatcherBuilder.expectIntRecords(
+                "Android.WebView.SafeMode.ActionName",
+                SafeModeController.sSafeModeActionLoggingMap.get(SafeModeActionIds.NOOP),
+                SafeModeController.sSafeModeActionLoggingMap.get(
+                        SafeModeActionIds.DISABLE_ANDROID_AUTOFILL));
+        watcher = histogramWatcherBuilder.build();
+        successAction1 = new TestSafeModeAction(SafeModeActionIds.NOOP);
+        successAction2 = new TestSafeModeAction(SafeModeActionIds.DISABLE_ANDROID_AUTOFILL);
+        allSuccessful = asSet(successAction1.getId(), successAction2.getId());
+        SafeModeController.getInstance()
+                .registerActions(new SafeModeAction[] {successAction1, successAction2});
+        SafeModeController.getInstance().executeActions(allSuccessful);
+        watcher.assertExpected(
+                "SafeModeAction names should be recorded: ["
+                        + successAction1.getId()
+                        + ", "
+                        + successAction2.getId()
+                        + "]");
+        Assert.assertEquals(
+                "successAction1 should have been executed exactly 1 time",
+                1,
+                successAction1.getCallCount());
+        Assert.assertEquals(
+                "successAction2 should have been executed exactly 1 time",
+                1,
+                successAction2.getCallCount());
+        SafeModeController.getInstance().unregisterActionsForTesting();
+
+        histogramWatcherBuilder = HistogramWatcher.newBuilder();
+        histogramWatcherBuilder.expectIntRecords(
+                "Android.WebView.SafeMode.ActionName",
+                SafeModeController.sSafeModeActionLoggingMap.get(
+                        SafeModeActionIds.DISABLE_CHROME_AUTOCOMPLETE),
+                SafeModeController.sSafeModeActionLoggingMap.get(
+                        SafeModeActionIds.DISABLE_AW_SAFE_BROWSING),
+                SafeModeController.sSafeModeActionLoggingMap.get(
+                        SafeModeActionIds.DISABLE_ORIGIN_TRIALS));
+        watcher = histogramWatcherBuilder.build();
+        successAction1 = new TestSafeModeAction(SafeModeActionIds.DISABLE_CHROME_AUTOCOMPLETE);
+        successAction2 = new TestSafeModeAction(SafeModeActionIds.DISABLE_AW_SAFE_BROWSING);
+        TestSafeModeAction successAction3 =
+                new TestSafeModeAction(SafeModeActionIds.DISABLE_ORIGIN_TRIALS);
+        allSuccessful =
+                asSet(successAction1.getId(), successAction2.getId(), successAction3.getId());
+        SafeModeController.getInstance()
+                .registerActions(
+                        new SafeModeAction[] {successAction1, successAction2, successAction3});
+        SafeModeController.getInstance().executeActions(allSuccessful);
+        watcher.assertExpected(
+                "SafeModeAction names should be recorded: ["
+                        + successAction1.getId()
+                        + ", "
+                        + successAction2.getId()
+                        + ", "
+                        + successAction3.getId()
+                        + "]");
+        Assert.assertEquals(
+                "successAction1 should have been executed exactly 1 time",
+                1,
+                successAction1.getCallCount());
+        Assert.assertEquals(
+                "successAction2 should have been executed exactly 1 time",
+                1,
+                successAction2.getCallCount());
+        Assert.assertEquals(
+                "successAction3 should have been executed exactly 1 time",
+                1,
+                successAction3.getCallCount());
+    }
+
+    @Test
     @MediumTest
     public void testSafeModeAction_canRegisterBrowserActions() throws Exception {
         // Validity check: verify we can register the production SafeModeAction list. As long as
@@ -1096,7 +1205,6 @@ public class SafeModeTest {
         VariationsTestUtils.deleteSeeds(); // ensure no seed files exist
         FastVariationsSeedSafeModeAction action =
                 new FastVariationsSeedSafeModeAction(TEST_WEBVIEW_PACKAGE_NAME);
-        long now = System.currentTimeMillis();
         // Since no seed file exists in the embedding app directory, and the ContentProvider
         // does not have a valid seed to return to the FastVariationsSeedSafeModeAction,
         // it fails with no valid seed to load.

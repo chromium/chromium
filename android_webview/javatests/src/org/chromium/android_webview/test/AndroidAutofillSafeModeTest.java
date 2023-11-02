@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.autofill.AndroidAutofillSafeModeAction;
 import org.chromium.android_webview.common.SafeModeAction;
+import org.chromium.android_webview.common.SafeModeActionIds;
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactory;
 import org.chromium.base.test.util.Feature;
@@ -49,7 +50,7 @@ public class AndroidAutofillSafeModeTest {
         SafeModeController safeModeController = SafeModeController.getInstance();
         safeModeController.registerActions(
                 new SafeModeAction[] {new AndroidAutofillSafeModeAction()});
-        safeModeController.executeActions(Set.of(AndroidAutofillSafeModeAction.ID));
+        safeModeController.executeActions(Set.of(SafeModeActionIds.DISABLE_ANDROID_AUTOFILL));
 
         // When
         AwTestContainerView mTestContainerView =

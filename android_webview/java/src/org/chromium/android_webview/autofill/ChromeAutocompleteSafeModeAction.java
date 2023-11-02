@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.SafeModeAction;
+import org.chromium.android_webview.common.SafeModeActionIds;
 
 /**
  * A {@link SafeModeAction} to disable autocomplete provided by Chrome.
@@ -18,7 +19,7 @@ import org.chromium.android_webview.common.SafeModeAction;
 @Lifetime.Singleton
 public class ChromeAutocompleteSafeModeAction implements SafeModeAction {
     // This ID should not be changed or reused.
-    public static final String ID = "disable_chrome_autocomplete";
+    private static final String ID = SafeModeActionIds.DISABLE_CHROME_AUTOCOMPLETE;
 
     private static boolean sIsChromeAutocompleteDisabled;
 
