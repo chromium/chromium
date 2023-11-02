@@ -12,6 +12,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/autofill/mock_autofill_popup_controller.h"
+#include "chrome/browser/ui/views/autofill/popup/mock_accessibility_selection_delegate.h"
+#include "chrome/browser/ui/views/autofill/popup/mock_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_strategy.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
@@ -49,21 +51,6 @@ using CellType = PopupRowView::CellType;
 using CellIndex = PopupRowView::SelectionDelegate::CellIndex;
 
 constexpr gfx::Point kOutOfBounds{1000, 1000};
-
-class MockAccessibilitySelectionDelegate
-    : public PopupRowView::AccessibilitySelectionDelegate {
- public:
-  MOCK_METHOD(void, NotifyAXSelection, (views::View&), (override));
-};
-
-class MockSelectionDelegate : public PopupRowView::SelectionDelegate {
- public:
-  MOCK_METHOD(absl::optional<CellIndex>, GetSelectedCell, (), (const override));
-  MOCK_METHOD(void,
-              SetSelectedCell,
-              (absl::optional<CellIndex>, PopupCellSelectionSource),
-              (override));
-};
 
 class MockPopupCellView : public PopupCellView {
  public:
