@@ -170,8 +170,16 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationIconViewInteractiveTest,
                         &OfferNotificationIconView::ShouldShowLabel, true));
 }
 
+// TODO(crbug.com/1498588): Flaky on Linux MSAN.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_IconCollapseAfterBubbleWidgetIsClosed \
+  DISABLED_IconCollapseAfterBubbleWidgetIsClosed
+#else
+#define MAYBE_IconCollapseAfterBubbleWidgetIsClosed \
+  IconCollapseAfterBubbleWidgetIsClosed
+#endif
 IN_PROC_BROWSER_TEST_F(OfferNotificationIconViewInteractiveTest,
-                       IconCollapseAfterBubbleWidgetIsClosed) {
+                       MAYBE_IconCollapseAfterBubbleWidgetIsClosed) {
   SetUpShoppingServiceToReturnDiscounts();
 
   RunTestSequence(
