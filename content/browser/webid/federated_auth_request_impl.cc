@@ -61,7 +61,10 @@ using FederatedApiPermissionStatus =
 using RevokeStatusForMetrics = content::FedCmRevokeStatus;
 using TokenStatus = content::FedCmRequestIdTokenStatus;
 using SignInStateMatchStatus = content::FedCmSignInStateMatchStatus;
+using TokenResponseType =
+    content::IdpNetworkRequestManager::FedCmTokenResponseType;
 using ErrorDialogType = content::IdpNetworkRequestManager::FedCmErrorDialogType;
+using ErrorUrlType = content::IdpNetworkRequestManager::FedCmErrorUrlType;
 using LoginState = content::IdentityRequestAccount::LoginState;
 using SignInMode = content::IdentityRequestAccount::SignInMode;
 using ErrorDialogResult = content::FedCmErrorDialogResult;
@@ -2720,7 +2723,9 @@ void FederatedAuthRequestImpl::Revoke(
 
 void FederatedAuthRequestImpl::RecordErrorMetrics(
     IdentityProviderRequestOptionsPtr idp,
-    absl::optional<ErrorDialogType> error_dialog_type) {
+    TokenResponseType token_response_type,
+    absl::optional<ErrorDialogType> error_dialog_type,
+    absl::optional<ErrorUrlType> error_url_type) {
   if (!IsFedCmErrorEnabled()) {
     return;
   }
@@ -2737,8 +2742,14 @@ void FederatedAuthRequestImpl::RecordErrorMetrics(
         /*is_disabled=*/false);
   }
 
+  fedcm_metrics_->RecordTokenResponseTypeMetrics(token_response_type);
+
   if (error_dialog_type) {
     fedcm_metrics_->RecordErrorDialogType(*error_dialog_type);
+  }
+
+  if (error_url_type) {
+    fedcm_metrics_->RecordErrorUrlTypeMetrics(*error_url_type);
   }
 }
 

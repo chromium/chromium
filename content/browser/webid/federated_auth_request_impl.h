@@ -355,8 +355,11 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   void RecordErrorMetrics(
       blink::mojom::IdentityProviderRequestOptionsPtr idp,
+      IdpNetworkRequestManager::FedCmTokenResponseType token_response_type,
       absl::optional<IdpNetworkRequestManager::FedCmErrorDialogType>
-          error_dialog_type);
+          error_dialog_type,
+      absl::optional<IdpNetworkRequestManager::FedCmErrorUrlType>
+          error_url_type);
 
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
   std::unique_ptr<IdentityRequestDialogController> request_dialog_controller_;

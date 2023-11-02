@@ -183,6 +183,29 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     kMaxValue = kServerErrorWithUrl
   };
 
+  // This enum describes the type of token response received.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class FedCmTokenResponseType {
+    kTokenReceivedAndErrorNotReceived = 0,
+    kTokenReceivedAndErrorReceived = 1,
+    kTokenNotReceivedAndErrorNotReceived = 2,
+    kTokenNotReceivedAndErrorReceived = 3,
+
+    kMaxValue = kTokenNotReceivedAndErrorReceived
+  };
+
+  // This enum describes the type of error URL compared to the IDP's config URL.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class FedCmErrorUrlType {
+    kSameOrigin = 0,
+    kCrossOriginSameSite = 1,
+    kCrossSite = 2,
+
+    kMaxValue = kCrossSite
+  };
+
   using AccountList = std::vector<IdentityRequestAccount>;
   using AccountsRequestCallback =
       base::OnceCallback<void(FetchStatus, AccountList)>;
@@ -205,7 +228,9 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
       base::OnceCallback<void(FetchStatus, TokenResult)>;
   using ContinueOnCallback = base::OnceCallback<void(FetchStatus, const GURL&)>;
   using RecordErrorMetricsCallback =
-      base::OnceCallback<void(absl::optional<FedCmErrorDialogType>)>;
+      base::OnceCallback<void(FedCmTokenResponseType,
+                              absl::optional<FedCmErrorDialogType>,
+                              absl::optional<FedCmErrorUrlType>)>;
 
   static std::unique_ptr<IdpNetworkRequestManager> Create(
       RenderFrameHostImpl* host);

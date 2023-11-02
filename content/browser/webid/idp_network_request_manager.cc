@@ -51,6 +51,9 @@ using ParseStatus = content::IdpNetworkRequestManager::ParseStatus;
 using AccountsResponseInvalidReason =
     content::IdpNetworkRequestManager::AccountsResponseInvalidReason;
 using ErrorDialogType = content::IdpNetworkRequestManager::FedCmErrorDialogType;
+using TokenResponseType =
+    content::IdpNetworkRequestManager::FedCmTokenResponseType;
+using ErrorUrlType = content::IdpNetworkRequestManager::FedCmErrorUrlType;
 
 // TODO(kenrb): These need to be defined in the explainer or draft spec and
 // referenced here.
@@ -599,34 +602,41 @@ void OnAccountsRequestParsed(
                           std::move(account_list));
 }
 
-GURL GetErrorUrl(const std::string* url, const GURL& idp_url) {
+std::pair<GURL, absl::optional<ErrorUrlType>> GetErrorUrlAndType(
+    const std::string* url,
+    const GURL& idp_url) {
   if (!url || url->empty()) {
-    return GURL();
+    return std::make_pair(GURL(), absl::nullopt);
   }
 
   GURL error_url = idp_url.Resolve(*url);
   if (!error_url.is_valid()) {
-    return GURL();
+    return std::make_pair(GURL(), absl::nullopt);
   }
 
   url::Origin error_origin = url::Origin::Create(error_url);
   if (!network::IsOriginPotentiallyTrustworthy(error_origin)) {
-    return GURL();
+    return std::make_pair(GURL(), absl::nullopt);
   }
 
   std::string error_url_etld_plus_one =
       webid::FormatUrlWithDomain(error_url, /*for_display=*/false);
   if (error_url_etld_plus_one.empty()) {
-    return GURL();
+    return std::make_pair(GURL(), absl::nullopt);
+  }
+
+  url::Origin idp_origin = url::Origin::Create(idp_url);
+  if (error_origin == idp_origin) {
+    return std::make_pair(error_url, ErrorUrlType::kSameOrigin);
   }
 
   std::string idp_etld_plus_one =
       webid::FormatUrlWithDomain(idp_url, /*for_display=*/false);
   if (error_url_etld_plus_one != idp_etld_plus_one) {
-    return GURL();
+    return std::make_pair(GURL(), ErrorUrlType::kCrossSite);
   }
 
-  return error_url;
+  return std::make_pair(error_url, ErrorUrlType::kCrossOriginSameSite);
 }
 
 ErrorDialogType GetErrorDialogType(const std::string& code, const GURL& url) {
@@ -654,6 +664,18 @@ ErrorDialogType GetErrorDialogType(const std::string& code, const GURL& url) {
                  : ErrorDialogType::kGenericNonEmptyWithoutUrl;
 }
 
+TokenResponseType GetTokenResponseType(const std::string* token,
+                                       const base::Value::Dict* error) {
+  if (token && error) {
+    return TokenResponseType::kTokenReceivedAndErrorReceived;
+  } else if (token) {
+    return TokenResponseType::kTokenReceivedAndErrorNotReceived;
+  } else if (error) {
+    return TokenResponseType::kTokenNotReceivedAndErrorReceived;
+  }
+  return TokenResponseType::kTokenNotReceivedAndErrorNotReceived;
+}
+
 void OnTokenRequestParsed(
     IdpNetworkRequestManager::TokenRequestCallback callback,
     IdpNetworkRequestManager::ContinueOnCallback continue_on_callback,
@@ -668,7 +690,9 @@ void OnTokenRequestParsed(
     if (IsFedCmErrorEnabled()) {
       token_result.error = TokenError{kServerError, GURL()};
       std::move(record_error_metrics_callback)
-          .Run(ErrorDialogType::kServerErrorWithoutUrl);
+          .Run(TokenResponseType::kTokenNotReceivedAndErrorNotReceived,
+               ErrorDialogType::kServerErrorWithoutUrl,
+               /*error_url_type=*/absl::nullopt);
     }
     std::move(callback).Run(fetch_status, token_result);
     return;
@@ -679,16 +703,21 @@ void OnTokenRequestParsed(
                                  ? response.FindString(kTokenKey)
                                  : nullptr;
   const std::string* continue_on = response.FindString(kContinueOnKey);
+  const base::Value::Dict* response_error = response.FindDict(kErrorKey);
+  TokenResponseType token_response_type =
+      GetTokenResponseType(token, response_error);
 
   if (IsFedCmErrorEnabled()) {
-    const base::Value::Dict* response_error = response.FindDict(kErrorKey);
     if (response_error) {
       std::string error_code = ExtractString(*response_error, kErrorCodeKey);
       const std::string* url = response_error->FindString(kErrorUrlKey);
-      GURL error_url = GetErrorUrl(url, token_url);
+      GURL error_url;
+      absl::optional<ErrorUrlType> error_url_type;
+      std::tie(error_url, error_url_type) = GetErrorUrlAndType(url, token_url);
       token_result.error = TokenError{error_code, error_url};
       std::move(record_error_metrics_callback)
-          .Run(GetErrorDialogType(error_code, error_url));
+          .Run(token_response_type, GetErrorDialogType(error_code, error_url),
+               error_url_type);
       std::move(callback).Run(
           {ParseStatus::kSuccess, fetch_status.response_code}, token_result);
       return;
@@ -697,6 +726,9 @@ void OnTokenRequestParsed(
 
   if (token) {
     token_result.token = *token;
+    std::move(record_error_metrics_callback)
+        .Run(token_response_type, /*error_dialog_type=*/absl::nullopt,
+             /*error_url_type=*/absl::nullopt);
     std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
                             token_result);
     return;
@@ -713,7 +745,8 @@ void OnTokenRequestParsed(
   }
 
   std::move(record_error_metrics_callback)
-      .Run(ErrorDialogType::kGenericEmptyWithoutUrl);
+      .Run(token_response_type, ErrorDialogType::kGenericEmptyWithoutUrl,
+           /*error_url_type=*/absl::nullopt);
   std::move(callback).Run(
       {ParseStatus::kInvalidResponseError, fetch_status.response_code},
       token_result);

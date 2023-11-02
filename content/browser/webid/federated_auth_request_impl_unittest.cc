@@ -62,6 +62,9 @@ using LoginState = content::IdentityRequestAccount::LoginState;
 using SignInMode = content::IdentityRequestAccount::SignInMode;
 using SignInStateMatchStatus = content::FedCmSignInStateMatchStatus;
 using ErrorDialogType = content::IdpNetworkRequestManager::FedCmErrorDialogType;
+using TokenResponseType =
+    content::IdpNetworkRequestManager::FedCmTokenResponseType;
+using ErrorUrlType = content::IdpNetworkRequestManager::FedCmErrorUrlType;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;
@@ -306,7 +309,10 @@ struct MockConfiguration {
   absl::optional<GURL> continue_on;
   MediationRequirement mediation_requirement = MediationRequirement::kOptional;
   absl::optional<TokenError> token_error;
+  TokenResponseType token_response_type =
+      TokenResponseType::kTokenNotReceivedAndErrorNotReceived;
   absl::optional<ErrorDialogType> error_dialog_type;
+  absl::optional<ErrorUrlType> error_url_type;
 };
 
 static const MockClientIdConfiguration kDefaultClientMetadata{
@@ -511,12 +517,11 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
       RecordErrorMetricsCallback record_error_metrics_callback) override {
     ++num_fetched_[FetchedEndpoint::TOKEN];
 
-    if (config_.error_dialog_type) {
-      base::OnceCallback bound_record_error_metrics_callback = base::BindOnce(
-          std::move(record_error_metrics_callback), config_.error_dialog_type);
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, std::move(bound_record_error_metrics_callback));
-    }
+    base::OnceCallback bound_record_error_metrics_callback = base::BindOnce(
+        std::move(record_error_metrics_callback), config_.token_response_type,
+        config_.error_dialog_type, config_.error_url_type);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(bound_record_error_metrics_callback));
 
     if (config_.token_error) {
       TokenResult result;
@@ -5118,9 +5123,12 @@ TEST_F(FederatedAuthRequestImplTest, InvalidResponseErrorDialogShown) {
 
   MockConfiguration configuration = kConfigurationValid;
   ErrorDialogType error_dialog_type = ErrorDialogType::kGenericEmptyWithoutUrl;
+  TokenResponseType token_response_type =
+      TokenResponseType::kTokenNotReceivedAndErrorNotReceived;
   configuration.token_response.parse_status =
       ParseStatus::kInvalidResponseError;
   configuration.error_dialog_type = error_dialog_type;
+  configuration.token_response_type = token_response_type;
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
@@ -5137,9 +5145,14 @@ TEST_F(FederatedAuthRequestImplTest, InvalidResponseErrorDialogShown) {
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.Error.ErrorDialogResult",
       FedCmErrorDialogResult::kCloseWithoutMoreDetails, 1);
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Error.TokenResponseType",
+                                       token_response_type, 1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Error.ErrorUrlType", 0);
 
   ExpectUKMPresence("Error.ErrorDialogType");
   ExpectUKMPresence("Error.ErrorDialogResult");
+  ExpectUKMPresence("Error.TokenResponseType");
+  ExpectNoUKMPresence("Error.ErrorUrlType");
   CheckAllFedCmSessionIDs();
 }
 
@@ -5165,9 +5178,13 @@ TEST_F(FederatedAuthRequestImplTest, InvalidResponseErrorDialogDisabled) {
 
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Error.ErrorDialogType", 0);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Error.ErrorDialogResult", 0);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Error.TokenResponseType", 0);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Error.ErrorUrlType", 0);
 
   ExpectNoUKMPresence("Error.ErrorDialogType");
   ExpectNoUKMPresence("Error.ErrorDialogResult");
+  ExpectNoUKMPresence("Error.TokenResponseType");
+  ExpectNoUKMPresence("Error.ErrorUrlType");
   CheckAllFedCmSessionIDs();
 }
 
@@ -5178,8 +5195,11 @@ TEST_F(FederatedAuthRequestImplTest, NoResponseErrorDialogShown) {
 
   MockConfiguration configuration = kConfigurationValid;
   ErrorDialogType error_dialog_type = ErrorDialogType::kGenericEmptyWithoutUrl;
+  TokenResponseType token_response_type =
+      TokenResponseType::kTokenNotReceivedAndErrorNotReceived;
   configuration.token_response.parse_status = ParseStatus::kNoResponseError;
   configuration.error_dialog_type = error_dialog_type;
+  configuration.token_response_type = token_response_type;
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
@@ -5196,9 +5216,14 @@ TEST_F(FederatedAuthRequestImplTest, NoResponseErrorDialogShown) {
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.Error.ErrorDialogResult",
       FedCmErrorDialogResult::kCloseWithoutMoreDetails, 1);
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Error.TokenResponseType",
+                                       token_response_type, 1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Error.ErrorUrlType", 0);
 
   ExpectUKMPresence("Error.ErrorDialogType");
   ExpectUKMPresence("Error.ErrorDialogResult");
+  ExpectUKMPresence("Error.TokenResponseType");
+  ExpectNoUKMPresence("Error.ErrorUrlType");
   CheckAllFedCmSessionIDs();
 }
 
@@ -5209,9 +5234,14 @@ TEST_F(FederatedAuthRequestImplTest, ErrorUrlDisplayedWithProperUrl) {
 
   MockConfiguration configuration = kConfigurationValid;
   ErrorDialogType error_dialog_type = ErrorDialogType::kGenericEmptyWithUrl;
+  TokenResponseType token_response_type =
+      TokenResponseType::kTokenNotReceivedAndErrorNotReceived;
+  ErrorUrlType error_url_type = ErrorUrlType::kCrossOriginSameSite;
   configuration.token_error =
       TokenError(/*code=*/"", GURL("https://foo.idp.example/error"));
   configuration.error_dialog_type = error_dialog_type;
+  configuration.token_response_type = token_response_type;
+  configuration.error_url_type = error_url_type;
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
@@ -5230,9 +5260,15 @@ TEST_F(FederatedAuthRequestImplTest, ErrorUrlDisplayedWithProperUrl) {
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.Error.ErrorDialogResult",
       FedCmErrorDialogResult::kCloseWithMoreDetails, 1);
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Error.TokenResponseType",
+                                       token_response_type, 1);
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Error.ErrorUrlType",
+                                       error_url_type, 1);
 
   ExpectUKMPresence("Error.ErrorDialogType");
   ExpectUKMPresence("Error.ErrorDialogResult");
+  ExpectUKMPresence("Error.TokenResponseType");
+  ExpectUKMPresenceInternal("Error.ErrorUrlType", FedCmIdpEntry::kEntryName);
   CheckAllFedCmSessionIDs();
 }
 
@@ -5341,6 +5377,67 @@ TEST_F(FederatedAuthRequestImplTest, ErrorDialogResultMetrics) {
       FedCmErrorDialogResult::kGotItWithMoreDetails, 1);
 
   ExpectUKMPresence("Error.ErrorDialogResult");
+  CheckAllFedCmSessionIDs();
+}
+
+// Test that token response type metrics are recorded.
+TEST_F(FederatedAuthRequestImplTest, TokenResponseTypeMetrics) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmError);
+
+  MockConfiguration configuration = kConfigurationValid;
+  TokenResponseType token_response_type =
+      TokenResponseType::kTokenNotReceivedAndErrorReceived;
+  configuration.token_error = TokenError(/*code=*/"invalid_request",
+                                         GURL("https://foo.idp.example/error"));
+  configuration.token_response_type = token_response_type;
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
+      /*standalone_console_message=*/absl::nullopt,
+      /*selected_idp_config_url=*/absl::nullopt};
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+
+  EXPECT_TRUE(DidFetch(FetchedEndpoint::TOKEN));
+  EXPECT_TRUE(dialog_controller_state_.did_show_error_dialog);
+
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Error.TokenResponseType",
+                                       token_response_type, 1);
+
+  ExpectUKMPresence("Error.TokenResponseType");
+  CheckAllFedCmSessionIDs();
+}
+
+// Test that error url type metrics are recorded.
+TEST_F(FederatedAuthRequestImplTest, ErrorUrlTypeMetrics) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmError);
+
+  MockConfiguration configuration = kConfigurationValid;
+  ErrorUrlType error_url_type = ErrorUrlType::kCrossOriginSameSite;
+  configuration.token_error = TokenError(/*code=*/"invalid_request",
+                                         GURL("https://foo.idp.example/error"));
+  configuration.error_url_type = error_url_type;
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
+      /*standalone_console_message=*/absl::nullopt,
+      /*selected_idp_config_url=*/absl::nullopt};
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+
+  EXPECT_TRUE(DidFetch(FetchedEndpoint::TOKEN));
+  EXPECT_TRUE(dialog_controller_state_.did_show_error_dialog);
+
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Error.ErrorUrlType",
+                                       error_url_type, 1);
+
+  ExpectUKMPresenceInternal("Error.ErrorUrlType", FedCmIdpEntry::kEntryName);
   CheckAllFedCmSessionIDs();
 }
 

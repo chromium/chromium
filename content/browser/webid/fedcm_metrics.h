@@ -272,6 +272,15 @@ class CONTENT_EXPORT FedCmMetrics {
   // Records the outcome of the error dialog.
   void RecordErrorDialogResult(FedCmErrorDialogResult result);
 
+  // Records the type of token response received.
+  void RecordTokenResponseTypeMetrics(
+      IdpNetworkRequestManager::FedCmTokenResponseType type);
+
+  // Records whether the error URL is same-site cross-origin, same-origin or
+  // cross-site with the config URL.
+  void RecordErrorUrlTypeMetrics(
+      IdpNetworkRequestManager::FedCmErrorUrlType type);
+
  private:
   // The page's SourceId. Used to log the UKM event Blink.FedCm.
   ukm::SourceId page_source_id_;
