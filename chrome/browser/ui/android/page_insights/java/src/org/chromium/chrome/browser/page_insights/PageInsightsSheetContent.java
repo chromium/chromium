@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.Callback;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -33,6 +34,16 @@ import java.text.DateFormat;
 import java.util.Date;
 
 public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayoutChangeListener {
+
+    @VisibleForTesting
+    static final String PAGE_INSIGHTS_FULL_HEIGHT_RATIO_PARAM = "page_insights_full_height_ratio";
+
+    @VisibleForTesting
+    static final String PAGE_INSIGHTS_PEEK_HEIGHT_RATIO_PARAM = "page_insights_peek_height_ratio";
+
+    @VisibleForTesting
+    static final String PAGE_INSIGHTS_PEEK_WITH_PRIVACY_HEIGHT_RATIO_PARAM =
+            "page_insights_peek_with_privacy_height_ratio";
 
     interface OnBottomSheetTapHandler {
         /** Returns true if the tap has been handled. */
@@ -45,11 +56,13 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
     }
 
     /** Ratio of the height when in full mode. */
-    static final float FULL_HEIGHT_RATIO = 0.9f;
+    static final float DEFAULT_FULL_HEIGHT_RATIO = 0.9f;
 
-    @VisibleForTesting static final float PEEK_HEIGHT_RATIO_WITHOUT_PRIVACY_NOTICE = 0.201f;
+    /** Ratio of the height when in peek mode and privacy notice is not showing. */
+    @VisibleForTesting static final float DEFAULT_PEEK_HEIGHT_RATIO = 0.201f;
 
-    @VisibleForTesting static final float PEEK_HEIGHT_RATIO_WITH_PRIVACY_NOTICE = 0.263f;
+    /** Ratio of the height when in peek mode and privacy notice is showing. */
+    @VisibleForTesting static final float DEFAULT_PEEK_WITH_PRIVACY_HEIGHT_RATIO = 0.263f;
 
     private static final SharedPreferencesManager sSharedPreferencesManager =
             ChromeSharedPreferences.getInstance();
@@ -57,6 +70,9 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
 
     private final OnBackPressHandler mOnBackPressHandler;
     private final ObservableSupplierImpl<Boolean> mWillHandleBackPressSupplier;
+    private final float mFullHeightRatio;
+    private final float mPeekHeightRatio;
+    private final float mPeekWithPrivacyHeightRatio;
 
     private Context mContext;
     private View mLayoutView;
@@ -83,6 +99,24 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
             OnBackPressHandler onBackPressHandler,
             ObservableSupplierImpl<Boolean> willHandleBackPressSupplier,
             OnBottomSheetTapHandler onBottomSheetTapHandler) {
+        mFullHeightRatio =
+                (float)
+                        ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
+                                PAGE_INSIGHTS_FULL_HEIGHT_RATIO_PARAM,
+                                DEFAULT_FULL_HEIGHT_RATIO);
+        mPeekHeightRatio =
+                (float)
+                        ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
+                                PAGE_INSIGHTS_PEEK_HEIGHT_RATIO_PARAM,
+                                DEFAULT_PEEK_HEIGHT_RATIO);
+        mPeekWithPrivacyHeightRatio =
+                (float)
+                        ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
+                                PAGE_INSIGHTS_PEEK_WITH_PRIVACY_HEIGHT_RATIO_PARAM,
+                                DEFAULT_PEEK_WITH_PRIVACY_HEIGHT_RATIO);
         mLayoutView = layoutView;
         mToolbarView = (ViewGroup) LayoutInflater.from(context).inflate(
             R.layout.page_insights_sheet_toolbar, null);
@@ -160,10 +194,10 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
             return HeightMode.DISABLED;
         } else if (mShouldPrivacyNoticeBeShown) {
             // TODO(b/282739536): Find the right peeking height value from the feed view dimension.
-            return (int) (PEEK_HEIGHT_RATIO_WITH_PRIVACY_NOTICE * mFullScreenHeight);
+            return (int) (mPeekWithPrivacyHeightRatio * mFullScreenHeight);
         } else {
             // TODO(b/282739536): Find the right peeking height value from the feed view dimension.
-            return (int) (PEEK_HEIGHT_RATIO_WITHOUT_PRIVACY_NOTICE * mFullScreenHeight);
+            return (int) (mPeekHeightRatio * mFullScreenHeight);
         }
     }
 
@@ -242,6 +276,14 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
     @Override
     public void onBackPressed() {
         mOnBackPressHandler.handle();
+    }
+
+    /**
+     * Returns the actual height of the fully expanded bottom sheet, as a ratio of the screen
+     * height.
+     */
+    public float getActualFullHeightRatio() {
+        return mFullHeightRatio;
     }
 
     void showLoadingIndicator() {
@@ -329,7 +371,7 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
         // sizing ourselves, here in Java. :(
         // TODO(b/306894418): See if this issue can be fixed or avoided.
         float contentHeight =
-                (mFullScreenHeight * FULL_HEIGHT_RATIO)
+                (mFullScreenHeight * mFullHeightRatio)
                         - mContext.getResources()
                                 .getDimensionPixelSize(R.dimen.page_insights_toolbar_height);
         int contentWidth =

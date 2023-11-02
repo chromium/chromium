@@ -581,7 +581,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     }
 
     private float getPeekHeightRatio() {
-        float fullHeight = PageInsightsSheetContent.FULL_HEIGHT_RATIO * mSheetContainer.getHeight();
+        float fullHeight = mSheetContent.getActualFullHeightRatio() * mSheetContainer.getHeight();
         return mSheetContent.getPeekHeight() / fullHeight;
     }
 
