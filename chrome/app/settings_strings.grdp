@@ -3573,7 +3573,7 @@
     Delete
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIE_REMOVE_SITE" desc="Label for the trashcan button to delete all cookies and site data for a specific site (ex: all the cookies set on google.com).">
-    Remove <ph name="SITE">$1<ex>google.com</ex></ph>
+    Delete site data and permissions for <ph name="SITE">$1<ex>google.com</ex></ph>
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_RESET_ALL" desc="Text for the button that resets the site's permissions back to the defaults.">
     Reset
