@@ -897,8 +897,8 @@ std::u16string GetPhoneCountryCodeSelectControlForInput(
   return {};
 }
 
-// Returns the appropriate `credit_card` value based on `storable_type` to fill
-// into `field`.
+// Returns the appropriate `credit_card` value based on `field`'s type to fill
+// into the input `field`.
 std::u16string GetValueForCreditCardForInput(
     const CreditCard& credit_card,
     const std::u16string& cvc,
@@ -974,29 +974,28 @@ std::optional<std::u16string> GetValueForCreditCard(
     mojom::ActionPersistence action_persistence,
     const AutofillField& field,
     std::string* failure_to_fill) {
-  return credit_card.record_type() == CreditCard::RecordType::kVirtualCard &&
-                 action_persistence == mojom::ActionPersistence::kPreview
-             ? GetValueForVirtualCardInputPreview(credit_card, app_locale,
-                                                  field, failure_to_fill)
-             : GetValueForCreditCardForInput(credit_card, cvc, app_locale,
-                                             action_persistence, field,
-                                             failure_to_fill);
+  const std::u16string value =
+      credit_card.record_type() == CreditCard::RecordType::kVirtualCard &&
+              action_persistence == mojom::ActionPersistence::kPreview
+          ? GetValueForVirtualCardInputPreview(credit_card, app_locale, field,
+                                               failure_to_fill)
+          : GetValueForCreditCardForInput(credit_card, cvc, app_locale,
+                                          action_persistence, field,
+                                          failure_to_fill);
+  return field.IsSelectOrSelectListElement()
+             ? GetSelectOrSelectListControlValue(
+                   field.Type(), value, &credit_card, app_locale, field.options,
+                   /*address_normalizer=*/nullptr, failure_to_fill)
+             : value;
 }
 
-}  // namespace
-
-FieldFiller::FieldFiller(const std::string& app_locale,
-                         AddressNormalizer* address_normalizer)
-    : app_locale_(app_locale), address_normalizer_(address_normalizer) {}
-
-FieldFiller::~FieldFiller() = default;
-
-// static
-std::u16string FieldFiller::GetValueForProfile(const AutofillProfile& profile,
-                                               const std::string& app_locale,
-                                               const AutofillType& field_type,
-                                               const FormFieldData* field_data,
-                                               std::string* failure_to_fill) {
+// Returns the appropriate `profile` value based on `field_type` to fill
+// into the input `field`.
+std::u16string GetValueForProfileForInput(const AutofillProfile& profile,
+                                          const std::string& app_locale,
+                                          const AutofillType& field_type,
+                                          const FormFieldData* field_data,
+                                          std::string* failure_to_fill) {
   const std::u16string value = profile.GetInfo(field_type, app_locale);
   if (field_type.group() == FieldTypeGroup::kPhone) {
     return field_data->IsSelectOrSelectListElement() &&
@@ -1018,6 +1017,34 @@ std::u16string FieldFiller::GetValueForProfile(const AutofillProfile& profile,
   }
   return value;
 }
+
+// Returns the appropriate `profile` value based on `field_type` to fill
+// into `field_data`, and nullopt if no value could be found for the given
+// `field_data`.
+std::optional<std::u16string> GetValueForProfile(
+    const AutofillProfile& profile,
+    const std::string& app_locale,
+    const AutofillType& field_type,
+    const FormFieldData* field_data,
+    AddressNormalizer* address_normalizer,
+    std::string* failure_to_fill) {
+  const std::u16string value = GetValueForProfileForInput(
+      profile, app_locale, field_type, field_data, failure_to_fill);
+
+  return field_data->IsSelectOrSelectListElement()
+             ? GetSelectOrSelectListControlValue(
+                   field_type, value, &profile, app_locale, field_data->options,
+                   address_normalizer, failure_to_fill)
+             : value;
+}
+
+}  // namespace
+
+FieldFiller::FieldFiller(const std::string& app_locale,
+                         AddressNormalizer* address_normalizer)
+    : app_locale_(app_locale), address_normalizer_(address_normalizer) {}
+
+FieldFiller::~FieldFiller() = default;
 
 std::u16string FieldFiller::GetValueForFilling(
     const AutofillField& field,
@@ -1042,7 +1069,8 @@ std::u16string FieldFiller::GetValueForFilling(
   const AutofillProfile* profile =
       absl::get<const AutofillProfile*>(profile_or_credit_card);
   return GetValueForProfile(*profile, app_locale_, field.Type(), field_data,
-                            failure_to_fill);
+                            address_normalizer_, failure_to_fill)
+      .value_or(u"");
 }
 
 bool FieldFiller::FillFormField(
@@ -1068,16 +1096,6 @@ bool FieldFiller::FillFormField(
       *failure_to_fill += "No value to fill available. ";
     }
     return false;
-  }
-  if (field.IsSelectOrSelectListElement()) {
-    std::optional<std::u16string> select_control_value =
-        GetSelectOrSelectListControlValue(
-            field.Type(), value, profile_or_credit_card, app_locale_,
-            field_data->options, address_normalizer_, failure_to_fill);
-    if (select_control_value) {
-      field_data->value = *select_control_value;
-    }
-    return select_control_value.has_value();
   }
   field_data->value = value;
   if (value_is_an_override) {
