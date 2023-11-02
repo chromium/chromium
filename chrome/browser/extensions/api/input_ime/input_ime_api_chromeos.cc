@@ -77,7 +77,7 @@ void SetMenuItemToMenu(const input_ime::MenuItem& input,
     out->label = *input.label;
   }
 
-  if (input.style != input_ime::MENU_ITEM_STYLE_NONE) {
+  if (input.style != input_ime::MenuItemStyle::kNone) {
     out->style =
         static_cast<ash::input_method::InputMethodManager::MenuItemStyle>(
             input.style);
@@ -99,9 +99,9 @@ keyboard::KeyboardConfig GetKeyboardConfig() {
 ash::ime::AssistiveWindowType ConvertAssistiveWindowType(
     input_ime::AssistiveWindowType type) {
   switch (type) {
-    case input_ime::ASSISTIVE_WINDOW_TYPE_NONE:
+    case input_ime::AssistiveWindowType::kNone:
       return ash::ime::AssistiveWindowType::kNone;
-    case input_ime::ASSISTIVE_WINDOW_TYPE_UNDO:
+    case input_ime::AssistiveWindowType::kUndo:
       return ash::ime::AssistiveWindowType::kUndoWindow;
   }
 }
@@ -109,11 +109,11 @@ ash::ime::AssistiveWindowType ConvertAssistiveWindowType(
 ui::ime::ButtonId ConvertAssistiveWindowButtonId(
     input_ime::AssistiveWindowButton id) {
   switch (id) {
-    case input_ime::ASSISTIVE_WINDOW_BUTTON_ADDTODICTIONARY:
+    case input_ime::AssistiveWindowButton::kAddToDictionary:
       return ui::ime::ButtonId::kAddToDictionary;
-    case input_ime::ASSISTIVE_WINDOW_BUTTON_UNDO:
+    case input_ime::AssistiveWindowButton::kUndo:
       return ui::ime::ButtonId::kUndo;
-    case input_ime::ASSISTIVE_WINDOW_BUTTON_NONE:
+    case input_ime::AssistiveWindowButton::kNone:
       return ui::ime::ButtonId::kNone;
   }
 }
@@ -126,11 +126,11 @@ input_ime::AssistiveWindowButton ConvertAssistiveWindowButton(
     case ui::ime::ButtonId::kSuggestion:
     case ui::ime::ButtonId::kLearnMore:
     case ui::ime::ButtonId::kIgnoreSuggestion:
-      return input_ime::ASSISTIVE_WINDOW_BUTTON_NONE;
+      return input_ime::AssistiveWindowButton::kNone;
     case ui::ime::ButtonId::kUndo:
-      return input_ime::ASSISTIVE_WINDOW_BUTTON_UNDO;
+      return input_ime::AssistiveWindowButton::kUndo;
     case ui::ime::ButtonId::kAddToDictionary:
-      return input_ime::ASSISTIVE_WINDOW_BUTTON_ADDTODICTIONARY;
+      return input_ime::AssistiveWindowButton::kAddToDictionary;
   }
 }
 
@@ -144,9 +144,9 @@ input_ime::AssistiveWindowType ConvertAssistiveWindowType(
     case ash::ime::AssistiveWindowType::kMultiWordSuggestion:
     case ash::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion:
     case ash::ime::AssistiveWindowType::kLearnMore:
-      return input_ime::AssistiveWindowType::ASSISTIVE_WINDOW_TYPE_NONE;
+      return input_ime::AssistiveWindowType::kNone;
     case ash::ime::AssistiveWindowType::kUndoWindow:
-      return input_ime::AssistiveWindowType::ASSISTIVE_WINDOW_TYPE_UNDO;
+      return input_ime::AssistiveWindowType::kUndo;
   }
 }
 
@@ -274,20 +274,20 @@ class ImeObserverChromeOS
         !HasListener(input_ime::OnCandidateClicked::kEventName))
       return;
 
-    input_ime::MouseButton button_enum = input_ime::MOUSE_BUTTON_NONE;
+    input_ime::MouseButton button_enum = input_ime::MouseButton::kNone;
     switch (button) {
       case ash::input_method::MOUSE_BUTTON_MIDDLE:
-        button_enum = input_ime::MOUSE_BUTTON_MIDDLE;
+        button_enum = input_ime::MouseButton::kMiddle;
         break;
 
       case ash::input_method::MOUSE_BUTTON_RIGHT:
-        button_enum = input_ime::MOUSE_BUTTON_RIGHT;
+        button_enum = input_ime::MouseButton::kRight;
         break;
 
       case ash::input_method::MOUSE_BUTTON_LEFT:
       // Default to left.
       default:
-        button_enum = input_ime::MOUSE_BUTTON_LEFT;
+        button_enum = input_ime::MouseButton::kLeft;
         break;
     }
 
@@ -375,8 +375,8 @@ class ImeObserverChromeOS
 
     input_ime::KeyboardEvent keyboard_event;
     keyboard_event.type = (event.type() == ui::ET_KEY_RELEASED)
-                              ? input_ime::KEYBOARD_EVENT_TYPE_KEYUP
-                              : input_ime::KEYBOARD_EVENT_TYPE_KEYDOWN;
+                              ? input_ime::KeyboardEventType::kKeyup
+                              : input_ime::KeyboardEventType::kKeydown;
 
     // For legacy reasons, we still put a |requestID| into the keyData, even
     // though there is already a |requestID| argument in OnKeyEvent.
@@ -842,16 +842,16 @@ class ImeObserverChromeOS
     // API, the behaviour is left intact for now.
     switch (mode) {
       case ash::AutocapitalizationMode::kNone:
-        return input_ime::AUTO_CAPITALIZE_TYPE_NONE;
+        return input_ime::AutoCapitalizeType::kNone;
       case ash::AutocapitalizationMode::kCharacters:
-        return input_ime::AUTO_CAPITALIZE_TYPE_CHARACTERS;
+        return input_ime::AutoCapitalizeType::kCharacters;
       case ash::AutocapitalizationMode::kWords:
-        return input_ime::AUTO_CAPITALIZE_TYPE_WORDS;
+        return input_ime::AutoCapitalizeType::kWords;
       case ash::AutocapitalizationMode::kSentences:
-        return input_ime::AUTO_CAPITALIZE_TYPE_SENTENCES;
+        return input_ime::AutoCapitalizeType::kSentences;
       case ash::AutocapitalizationMode::kUnspecified:
         // The default value is "sentences".
-        return input_ime::AUTO_CAPITALIZE_TYPE_SENTENCES;
+        return input_ime::AutoCapitalizeType::kSentences;
     }
   }
 
@@ -1133,10 +1133,10 @@ InputImeSetCandidateWindowPropertiesFunction::Run() {
     modified = true;
   }
 
-  if (properties.window_position == input_ime::WINDOW_POSITION_COMPOSITION) {
+  if (properties.window_position == input_ime::WindowPosition::kComposition) {
     properties_out.show_window_at_composition = true;
     modified = true;
-  } else if (properties.window_position == input_ime::WINDOW_POSITION_CURSOR) {
+  } else if (properties.window_position == input_ime::WindowPosition::kCursor) {
     properties_out.show_window_at_composition = false;
     modified = true;
   }
