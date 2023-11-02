@@ -4,6 +4,8 @@
 
 package org.chromium.components.stylus_handwriting;
 
+import static android.view.PointerIcon.TYPE_HANDWRITING;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -19,6 +21,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorBoundsInfo;
 import android.view.inputmethod.InputMethodInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -34,6 +37,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.stylus_handwriting.test_support.ShadowGlobalSettings;
 import org.chromium.components.stylus_handwriting.test_support.ShadowSecureSettings;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ViewAndroidDelegate;
 
 import java.util.List;
 
@@ -76,6 +80,22 @@ public class AndroidStylusWritingHandlerTest {
     }
 
     @Test
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void handlerUsesSecureSettings_onAndroidU() {
+        when(mInputMethodInfo.supportsStylusHandwriting()).thenReturn(true);
+        ShadowGlobalSettings.setHandwritingEnabled(false);
+        ShadowSecureSettings.setHandwritingEnabled(true);
+        assertTrue(AndroidStylusWritingHandler.isEnabled(mContext));
+    }
+
+    @Test
+    public void handlerIsDisabled_noKeyboard() {
+        ShadowGlobalSettings.setHandwritingEnabled(true);
+        when(mInputMethodManager.getInputMethodList()).thenReturn(List.of());
+        assertFalse(AndroidStylusWritingHandler.isEnabled(mContext));
+    }
+
+    @Test
     public void handlerIsDisabled_noKeyboardSupport() {
         when(mInputMethodInfo.supportsStylusHandwriting()).thenReturn(false);
         ShadowGlobalSettings.setHandwritingEnabled(true);
@@ -90,10 +110,39 @@ public class AndroidStylusWritingHandlerTest {
     }
 
     @Test
-    public void webContentsStylusWritingHandlerIsSet() {
+    public void webContentsChanged_StylusWritingHandlerIsSet() {
         WebContents webContents = mock(WebContents.class);
+        ViewGroup containerView = mock(ViewGroup.class);
+        ViewAndroidDelegate viewAndroidDelegate =
+                ViewAndroidDelegate.createBasicDelegate(containerView);
+        when(webContents.getViewAndroidDelegate()).thenReturn(viewAndroidDelegate);
+
         mHandler.onWebContentsChanged(mContext, webContents);
         verify(webContents).setStylusWritingHandler(eq(mHandler));
+    }
+
+    @Test
+    public void testAutoHandwritingIsDisabled() {
+        WebContents webContents = mock(WebContents.class);
+        ViewGroup containerView = mock(ViewGroup.class);
+        ViewAndroidDelegate viewAndroidDelegate =
+                ViewAndroidDelegate.createBasicDelegate(containerView);
+        when(webContents.getViewAndroidDelegate()).thenReturn(viewAndroidDelegate);
+
+        mHandler.onWebContentsChanged(mContext, webContents);
+        // Ensure we notify Android that we handle our own handwriting.
+        verify(containerView).setAutoHandwritingEnabled(false);
+    }
+
+    @Test
+    public void testShowSoftKeyboardEnabled_beforeAndroidU() {
+        assertTrue(mHandler.canShowSoftKeyboard());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void testShowSoftKeyboardDisabled_afterAndroidU() {
+        assertFalse(mHandler.canShowSoftKeyboard());
     }
 
     @Test
@@ -129,5 +178,10 @@ public class AndroidStylusWritingHandlerTest {
                         "InputMethod.StylusHandwriting.Triggered", StylusApiOption.Api.ANDROID);
         mHandler.requestStartStylusWriting(null);
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testHandlerUsesAndroidIcon() {
+        assertEquals(TYPE_HANDWRITING, mHandler.getStylusPointerIcon());
     }
 }
