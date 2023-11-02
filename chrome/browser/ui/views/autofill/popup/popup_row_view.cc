@@ -51,8 +51,7 @@ namespace {
 
 // Returns the margin on the left and right of the row.
 int GetHorizontalMargin() {
-  return base::FeatureList::IsEnabled(
-             features::kAutofillShowAutocompleteDeleteButton)
+  return ShouldApplyNewAutofillPopupStyle()
              ? ChromeLayoutProvider::Get()->GetDistanceMetric(
                    DISTANCE_CONTENT_LIST_VERTICAL_SINGLE)
              : 0;

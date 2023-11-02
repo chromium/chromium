@@ -277,9 +277,7 @@ std::u16string GetVoiceOverStringFromSuggestion(const Suggestion& suggestion) {
 gfx::Insets GetMarginsForContentCell(bool has_control_element) {
   int left_margin = PopupBaseView::GetHorizontalMargin();
   int right_margin = left_margin;
-
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillShowAutocompleteDeleteButton)) {
+  if (ShouldApplyNewAutofillPopupStyle()) {
     // If the feature is enabled, then the row already adds some extra
     // horizontal margin on the left - deduct that.
     left_margin = std::max(

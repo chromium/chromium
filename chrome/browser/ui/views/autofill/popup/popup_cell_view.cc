@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -69,8 +70,7 @@ void PopupCellView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 void PopupCellView::RefreshStyle() {
   if (GetSelected()) {
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillShowAutocompleteDeleteButton)) {
+    if (ShouldApplyNewAutofillPopupStyle()) {
       SetBackground(views::CreateThemedRoundedRectBackground(
           ui::kColorDropdownBackgroundSelected,
           ChromeLayoutProvider::Get()->GetCornerRadiusMetric(

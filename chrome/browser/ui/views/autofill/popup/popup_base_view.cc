@@ -86,10 +86,8 @@ std::unique_ptr<views::Border> CreateBorder() {
 // static
 int PopupBaseView::GetCornerRadius() {
   return ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-      base::FeatureList::IsEnabled(
-          features::kAutofillShowAutocompleteDeleteButton)
-          ? views::Emphasis::kHigh
-          : views::Emphasis::kMedium);
+      ShouldApplyNewAutofillPopupStyle() ? views::Emphasis::kHigh
+                                         : views::Emphasis::kMedium);
 }
 
 // static

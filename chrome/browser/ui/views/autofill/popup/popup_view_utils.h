@@ -173,6 +173,14 @@ int GetMainTextStyleForPopupItemId(PopupItemId popup_item_id);
 // suggestions.
 bool IsExpandablePopupItemId(PopupItemId popup_item_id);
 
+// Returns whether the Autofill popup will have new styles features applied to
+// it. This should be the case for features launched after M117.
+// TODO(crbug.com/1459990): Remove once feature is rolled out. Both the granular
+// filling feature and the autocomplete delete apply the new styles. Therefore
+// we can remove this method once any is launched.
+// TODO(crbug.com/1489242): Remove once feature is rolled out.
+bool ShouldApplyNewAutofillPopupStyle();
+
 }  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_VIEW_UTILS_H_

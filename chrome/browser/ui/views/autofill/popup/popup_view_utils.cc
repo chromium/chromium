@@ -677,4 +677,11 @@ bool IsExpandablePopupItemId(PopupItemId popup_item_id) {
   }
 }
 
+bool ShouldApplyNewAutofillPopupStyle() {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillShowAutocompleteDeleteButton) ||
+         base::FeatureList::IsEnabled(
+             features::kAutofillGranularFillingAvailable);
+}
+
 }  // namespace autofill
