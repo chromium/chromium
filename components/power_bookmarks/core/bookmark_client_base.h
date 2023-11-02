@@ -25,6 +25,27 @@ class BookmarkNode;
 
 namespace power_bookmarks {
 
+extern const char kSaveLocationStateHistogramBase[];
+
+// The possible ways a suggested save location can be handled. These must be
+// kept in sync with the values in enums.xml.
+enum class SuggestedSaveLocationState {
+  // The suggestion provider did not have a suggestion.
+  kNoSuggestion = 0,
+
+  // The provider had a suggestion but it was blocked from a prior rejection.
+  kBlocked = 1,
+
+  // The suggestion was used to create the bookmark.
+  kUsed = 2,
+
+  // The provider had a suggestion but was superseded by some other feature.
+  kSuperseded = 3,
+
+  // This enum must be last and is only used for histograms.
+  kMaxValue = kSuperseded
+};
+
 class BookmarkClientBase : public bookmarks::BookmarkClient {
  public:
   BookmarkClientBase();

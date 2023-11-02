@@ -79457,6 +79457,16 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="CrossOrigin"/>
 </enum>
 
+<enum name="SuggestedSaveLocationState">
+  <summary>
+    The different possible states of a suggested save location for bookmarks.
+  </summary>
+  <int value="0" label="No suggestion"/>
+  <int value="1" label="Blocked from prior rejection"/>
+  <int value="2" label="Used"/>
+  <int value="3" label="Superseded by other suggestion"/>
+</enum>
+
 <!--
 These values are based on the server-side type AnswerTriggererKey. Note that not
 all of the types are launched in Chrome but if they're sent erroneously, it

@@ -7,12 +7,16 @@
 #include <string>
 #include <vector>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 
 namespace power_bookmarks {
+
+const char kSaveLocationStateHistogramBase[] =
+    "PowerBookmarks.SuggestedSaveLocation.";
 
 namespace {
 const char kWasSuggestedFolderKey[] = "was_folder_suggested";
@@ -58,8 +62,23 @@ const bookmarks::BookmarkNode* BookmarkClientBase::GetSuggestedSaveLocation(
     return nullptr;
   }
 
+  const bookmarks::BookmarkNode* suggestion = nullptr;
   for (SuggestedSaveLocationProvider* provider : save_location_providers_) {
-    const bookmarks::BookmarkNode* suggestion = provider->GetSuggestion(url);
+    std::string feature_name = provider->GetFeatureNameForMetrics();
+    CHECK(!feature_name.empty());
+    std::string histogram_name = kSaveLocationStateHistogramBase + feature_name;
+
+    // If we found a suggestion, iterate over the other providers and report
+    // that they were superseded.
+    if (suggestion) {
+      base::UmaHistogramEnumeration(
+          histogram_name, provider->GetSuggestion(url)
+                              ? SuggestedSaveLocationState::kSuperseded
+                              : SuggestedSaveLocationState::kNoSuggestion);
+      continue;
+    }
+
+    suggestion = provider->GetSuggestion(url);
 
     if (suggestion) {
       CHECK(suggestion->is_folder());
@@ -71,14 +90,25 @@ const bookmarks::BookmarkNode* BookmarkClientBase::GetSuggestedSaveLocation(
         if (it->second < base::Time::Now()) {
           temporarily_disallowed_suggestions_.erase(suggestion->uuid());
         } else {
+          base::UmaHistogramEnumeration(histogram_name,
+                                        SuggestedSaveLocationState::kBlocked);
+          suggestion = nullptr;
           continue;
         }
       }
 
       last_suggested_folder_uuid_ = suggestion->uuid();
       last_used_provider_ = provider;
-      return suggestion;
+      base::UmaHistogramEnumeration(histogram_name,
+                                    SuggestedSaveLocationState::kUsed);
+    } else {
+      base::UmaHistogramEnumeration(histogram_name,
+                                    SuggestedSaveLocationState::kNoSuggestion);
     }
+  }
+
+  if (suggestion) {
+    return suggestion;
   }
 
   // If there was no suggestion, reset so we're not tracking for a "normal"
@@ -172,6 +202,7 @@ void BookmarkClientBase::NodeMoveObserver::BookmarkNodeMoved(
     base::TimeDelta backoff_time = base::Seconds(0);
     if (client_->last_used_provider_) {
       backoff_time = client_->last_used_provider_->GetBackoffTime();
+      client_->last_used_provider_->OnSuggestionRejected();
     }
     client_->temporarily_disallowed_suggestions_[old_parent->uuid()] =
         base::Time::Now() + backoff_time;

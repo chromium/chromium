@@ -6763,6 +6763,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Commerce.PriceTracking.ShoppingCollection.RejectedSuggestion">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when a user rejects the shopping collection as the suggested save
+    location. This is detected by a user moving the bookmark that was added to
+    the collection out of that collection as the next bookmark action.
+  </description>
+</action>
+
 <action name="Commerce.PriceTracking.SidePanel.ClickedTrackedProduct">
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>

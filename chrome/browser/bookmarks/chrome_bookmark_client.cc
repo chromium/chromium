@@ -4,6 +4,7 @@
 
 #include "chrome/browser/bookmarks/chrome_bookmark_client.h"
 
+#include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -54,9 +55,18 @@ class ShoppingCollectionProvider
     return commerce::GetShoppingCollectionBookmarkFolder(model_.get(), true);
   }
 
-  const base::TimeDelta GetBackoffTime() override {
+  base::TimeDelta GetBackoffTime() override {
     // TODO(b:291326480): Make this configurable.
     return base::Hours(2);
+  }
+
+  std::string GetFeatureNameForMetrics() override {
+    return "ShoppingCollection";
+  }
+
+  void OnSuggestionRejected() override {
+    base::RecordAction(base::UserMetricsAction(
+        "Commerce.PriceTracking.ShoppingCollection.RejectedSuggestion"));
   }
 
  private:

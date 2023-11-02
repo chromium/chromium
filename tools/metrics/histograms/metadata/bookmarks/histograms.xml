@@ -834,6 +834,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PowerBookmarks.SuggestedSaveLocation.{FeatureName}"
+    enum="SuggestedSaveLocationState" expires_after="2024-02-20">
+  <owner>ayman@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records how a suggested save location is handled for a new bookmark.
+  </summary>
+  <token key="FeatureName">
+    <variant name="ShoppingCollection"/>
+  </token>
+</histogram>
+
 <histogram name="PowerBookmarks.{Function}.PowerType" enum="PowerBookmarkType"
     expires_after="2024-01-20">
   <owner>wylieb@chromium.org</owner>
