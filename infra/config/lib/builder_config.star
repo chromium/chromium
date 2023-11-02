@@ -749,6 +749,8 @@ def _set_builder_config_property(ctx):
                 # handle more than a few builds at a time. Keep them out of the
                 # mega CQ for now.
                 "chromium.gpu",
+                # "cft" builders are very red.
+                "cft",
             ]
             excluded_builders = [
                 # TODO(crbug.com/1484233): Remove the following as trybots are
