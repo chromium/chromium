@@ -154,16 +154,28 @@ class CC_PAINT_EXPORT DisplayItemList
   }
   size_t OpBytesUsed() const { return paint_op_buffer_.paint_ops_size(); }
 
+  DiscardableImageMap& discardable_image_map() {
+    base::AutoLock lock(image_generation_lock_);
+    if (!image_map_) {
+      GenerateDiscardableImagesMetadata();
+    }
+    return *image_map_;
+  }
+
   const DiscardableImageMap& discardable_image_map() const {
-    return image_map_;
+    base::AutoLock lock(image_generation_lock_);
+    if (!image_map_) {
+      GenerateDiscardableImagesMetadata();
+    }
+    return *image_map_;
   }
   base::flat_map<PaintImage::Id, PaintImage::DecodingMode>
   TakeDecodingModeMap() {
-    return image_map_.TakeDecodingModeMap();
+    return discardable_image_map().TakeDecodingModeMap();
   }
 
   void EmitTraceSnapshot() const;
-  void GenerateDiscardableImagesMetadata();
+  void GenerateDiscardableImagesMetadataForTesting() const;
 
   gfx::Rect VisualRectForTesting(int index) {
     return visual_rects_[static_cast<size_t>(index)];
@@ -216,10 +228,15 @@ class CC_PAINT_EXPORT DisplayItemList
   // `paint_op_buffer_`.
   void FinalizeImpl();
 
+  void GenerateDiscardableImagesMetadata() const;
+
+  mutable absl::optional<DiscardableImageMap> image_map_
+      GUARDED_BY_CONTEXT(image_generation_lock_);
+  mutable base::Lock image_generation_lock_;
+
   // RTree stores indices into the paint op buffer.
   // TODO(vmpstr): Update the rtree to store offsets instead.
   RTree<size_t> rtree_;
-  DiscardableImageMap image_map_;
   PaintOpBuffer paint_op_buffer_;
 
   // The visual rects associated with each of the display items in the
