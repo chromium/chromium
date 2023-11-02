@@ -419,6 +419,15 @@ suite('ComposeApp', () => {
     await flushTasks();
     testProxy.resetResolver('compose');
 
+    // Mock changing length and tone to verify they are unset after editing
+    // the input.
+    app.$.lengthMenu.value = `${Length.kShorter}`;
+    app.$.lengthMenu.dispatchEvent(new CustomEvent('change'));
+    app.$.toneMenu.value = `${Tone.kCasual}`;
+    app.$.toneMenu.dispatchEvent(new CustomEvent('change'));
+    await flushTasks();
+    testProxy.resetResolver('compose');
+
     // Mock clicking edit in the textarea and verify new textarea shows.
     app.$.textarea.dispatchEvent(
         new CustomEvent('edit-click', {composed: true, bubbles: true}));
@@ -444,6 +453,8 @@ suite('ComposeApp', () => {
     const args = await testProxy.whenCalled('compose');
     await mockResponse('new response');
     assertEquals('Here is an even better input.', args.input);
+    assertEquals(Length.kUnset, args.style.length);
+    assertEquals(Tone.kUnset, args.style.tone);
     assertTrue(app.$.resultContainer.textContent!.includes('new response'));
   });
 

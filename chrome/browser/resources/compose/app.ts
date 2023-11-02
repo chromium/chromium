@@ -270,6 +270,8 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
     this.isEditingSubmittedInput_ = false;
     this.input_ = this.editedInput_;
+    this.selectedLength_ = Length.kUnset;
+    this.selectedTone_ = Tone.kUnset;
     this.compose_();
   }
 
