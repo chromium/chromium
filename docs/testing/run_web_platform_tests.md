@@ -65,6 +65,17 @@ Chrome specific baselines reside at `third_party/blink/web_tests/platform/linux-
 falls back to `third_party/blink/web_tests/platform/linux`. To update baselines for chrome,
 you should trigger `linux-wpt-fyi-rel` and run [rebaseline tool](./web_test_expectations.md#How-to-rebaseline) after the results are ready.
 
+### Running webdriver tests with Chrome
+
+Webdriver tests are one type (wdspec) of web platform tests. Due to this you can run webdriver tests
+the same way as other web platform tests, e.g.
+
+```bash
+third_party/blink/tools/run_wpt_tests.py --release -p chrome external/wpt/webdriver/tests/classic/find_element/find.py
+```
+
+The `webdriver_tests_suite` step of `linux-blink-rel` runs wdspec tests and can provide results for rebaselining.
+
 ## Running Web Platform Tests with Chrome Android
 
 To be updated.
