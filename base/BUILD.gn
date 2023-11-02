@@ -4131,6 +4131,7 @@ if (enable_nocompile_tests_new) {
       "memory/weak_ptr_nocompile.nc",
       "no_destructor_nocompile.nc",
       "strings/stringprintf_nocompile.nc",
+      "task/task_traits_nocompile.nc",
       "thread_annotations_nocompile.nc",
       "values_nocompile.nc",
     ]
@@ -4161,7 +4162,6 @@ if (enable_nocompile_tests) {
       "sequence_checker_unittest.nc",
       "strings/string_piece_unittest.nc",
       "task/bind_post_task_unittest.nc",
-      "task/task_traits_unittest.nc",
       "traits_bag_unittest.nc",
       "types/pass_key_unittest.nc",
       "types/variant_util_unittest.nc",
