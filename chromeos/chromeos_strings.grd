@@ -4103,6 +4103,9 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT" desc="Used to edit action in various modals">
           Edit
         </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT_SHORTCUT" desc="Title for a dialog that allows the user to edit a shortcut.">
+          Edit shortcut
+        </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CUSTOMIZATION_DISABLED_BY_POLICY_MESSAGE"
             desc="The message shown to indicate that a user policy is in place
             to prevent the user from customizing the system shortcut">

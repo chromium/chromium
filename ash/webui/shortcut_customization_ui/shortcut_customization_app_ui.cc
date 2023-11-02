@@ -52,6 +52,7 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"addShortcut", IDS_SHORTCUT_CUSTOMIZATION_ADD_SHORTCUT},
       {"restoreDefaults", IDS_SHORTCUT_CUSTOMIZATION_RESTORE_DEFAULTS},
       {"edit", IDS_SHORTCUT_CUSTOMIZATION_EDIT},
+      {"editShortcut", IDS_SHORTCUT_CUSTOMIZATION_EDIT_SHORTCUT},
       {"editDialogDone", IDS_SHORTCUT_CUSTOMIZATION_EDIT_DIALOG_DONE},
       {"cancel", IDS_SHORTCUT_CUSTOMIZATION_CANCEL},
       {"editViewStatusMessage",
