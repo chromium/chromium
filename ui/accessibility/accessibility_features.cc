@@ -165,7 +165,7 @@ bool IsExperimentalAccessibilityGoogleTtsHighQualityVoicesEnabled() {
 
 BASE_FEATURE(kAccessibilityDictationKeyboardImprovements,
              "AccessibilityDictationKeyboardImprovements",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsAccessibilityDictationKeyboardImprovementsEnabled() {
   return base::FeatureList::IsEnabled(
