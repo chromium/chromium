@@ -80,6 +80,7 @@ class ASH_EXPORT ProjectorTranscript : public MetadataItem {
   ProjectorTranscript(
       const base::TimeDelta start_time,
       const base::TimeDelta end_time,
+      int group_id,
       const std::string& text,
       const std::vector<media::HypothesisParts>& hypothesis_parts);
   ProjectorTranscript(const ProjectorTranscript&) = delete;
@@ -88,7 +89,12 @@ class ASH_EXPORT ProjectorTranscript : public MetadataItem {
 
   base::Value::Dict ToJson() override;
 
+  std::vector<media::HypothesisParts>& hypothesis_parts() {
+    return hypothesis_parts_;
+  }
+
  private:
+  const int group_id_;
   std::vector<media::HypothesisParts> hypothesis_parts_;
 };
 
@@ -106,6 +112,7 @@ class ASH_EXPORT ProjectorMetadata {
 
   // Adds the transcript to the metadata.
   void AddTranscript(std::unique_ptr<ProjectorTranscript> transcript);
+
   // Notifies the metadata that transcription has completed.
   void SetSpeechRecognitionStatus(RecognitionStatus status);
   // Marks a beginning of a key idea. The timing info of the next transcript
@@ -119,7 +126,9 @@ class ASH_EXPORT ProjectorMetadata {
 
  private:
   base::Value::Dict ToJson();
-
+  // Add sentence transcripts to the metadata.
+  void AddSentenceTranscripts(
+      std::vector<std::unique_ptr<ProjectorTranscript>> sentence_transcripts);
   std::vector<std::unique_ptr<ProjectorTranscript>> transcripts_;
   std::vector<std::unique_ptr<ProjectorKeyIdea>> key_ideas_;
   std::string caption_language_;

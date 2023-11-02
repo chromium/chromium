@@ -65,6 +65,7 @@ void ProjectorMetadataController::RecordTranscription(
   const auto& timing = speech_result.timing_information;
   metadata_->AddTranscript(std::make_unique<ProjectorTranscript>(
       timing->audio_start_time, timing->audio_end_time,
+      /*group_id=*/timing->audio_start_time.InMilliseconds(),
       speech_result.transcription, timing->hypothesis_parts.value()));
 }
 
