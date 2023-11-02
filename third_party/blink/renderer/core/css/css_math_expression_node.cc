@@ -145,11 +145,6 @@ static CalculationResultCategory UnitCategory(
   }
 }
 
-static bool CanTypeBeSimplifiedWithConversionData(
-    CSSPrimitiveValue::UnitType type) {
-  return type != CSSPrimitiveValue::UnitType::kPercentage;
-}
-
 static bool HasDoubleValue(CSSPrimitiveValue::UnitType type) {
   switch (type) {
     case CSSPrimitiveValue::UnitType::kNumber:
@@ -439,13 +434,11 @@ CSSMathExpressionNode* AddNodeToSumNode(CSSMathExpressionNode* sum_node,
       op = CSSMathOperator::kAdd;
     }
     return MakeGarbageCollected<CSSMathExpressionOperation>(
-        sum_node, new_node, op, sum_node->Category(),
-        sum_node->CanBeResolvedWithConversionData());
+        sum_node, new_node, op, sum_node->Category());
   }
   // Add the node to the sum_node otherwise.
-  return MakeGarbageCollected<CSSMathExpressionOperation>(
-      sum_node, node, op, sum_node->Category(),
-      sum_node->CanBeResolvedWithConversionData());
+  return MakeGarbageCollected<CSSMathExpressionOperation>(sum_node, node, op,
+                                                          sum_node->Category());
 }
 
 CSSMathExpressionNode* AddNodesVectorToSumNode(CSSMathExpressionNode* sum_node,
@@ -553,8 +546,7 @@ CSSMathExpressionNode* MaybeSimplifySumNode(
       continue;
     }
     final_node = MakeGarbageCollected<CSSMathExpressionOperation>(
-        final_node, node, op, root->Category(),
-        root->CanBeResolvedWithConversionData());
+        final_node, node, op, root->Category());
   }
   return final_node;
 }
@@ -625,7 +617,6 @@ CSSMathExpressionNumericLiteral::CSSMathExpressionNumericLiteral(
     const CSSNumericLiteralValue* value)
     : CSSMathExpressionNode(
           UnitCategory(value->GetType()),
-          CanTypeBeSimplifiedWithConversionData(value->GetType()),
           false /* has_comparisons*/,
           false /* needs_tree_scope_population*/),
       value_(value) {
@@ -883,20 +874,6 @@ static CalculationResultCategory DetermineComparisonCategory(
   return category;
 }
 
-static bool DetermineCanBeSimplifiedWithConversionData(
-    const CSSMathExpressionOperation::Operands& operands) {
-  DCHECK(!operands.empty());
-
-  bool can_be_resolved_with_conversion_data = true;
-  for (const CSSMathExpressionNode* operand : operands) {
-    can_be_resolved_with_conversion_data =
-        can_be_resolved_with_conversion_data &&
-        operand->CanBeResolvedWithConversionData();
-  }
-
-  return can_be_resolved_with_conversion_data;
-}
-
 // ------ Start of CSSMathExpressionOperation member functions ------
 
 bool CSSMathExpressionOperation::AllOperandsAreNumeric() const {
@@ -919,12 +896,8 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateArithmeticOperation(
     return nullptr;
   }
 
-  const bool can_be_resolved_with_conversion_data =
-      left_side->CanBeResolvedWithConversionData() &&
-      right_side->CanBeResolvedWithConversionData();
-  return MakeGarbageCollected<CSSMathExpressionOperation>(
-      left_side, right_side, op, new_category,
-      can_be_resolved_with_conversion_data);
+  return MakeGarbageCollected<CSSMathExpressionOperation>(left_side, right_side,
+                                                          op, new_category);
 }
 
 // static
@@ -939,10 +912,8 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateComparisonFunction(
     return nullptr;
   }
 
-  const bool can_be_resolved_with_conversion_data =
-      DetermineCanBeSimplifiedWithConversionData(operands);
   return MakeGarbageCollected<CSSMathExpressionOperation>(
-      category, can_be_resolved_with_conversion_data, std::move(operands), op);
+      category, std::move(operands), op);
 }
 
 // static
@@ -981,10 +952,8 @@ CSSMathExpressionOperation::CreateComparisonFunctionSimplified(
     return operands.front()->Copy();
   }
 
-  const bool can_be_resolved_with_conversion_data =
-      DetermineCanBeSimplifiedWithConversionData(operands);
   return MakeGarbageCollected<CSSMathExpressionOperation>(
-      category, can_be_resolved_with_conversion_data, std::move(operands), op);
+      category, std::move(operands), op);
 }
 
 // Helper function for parsing number value
@@ -1161,11 +1130,8 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateSteppedValueFunction(
         value,
         CSSPrimitiveValue::CanonicalUnit(operands.front()->ResolvedUnitType()));
   }
-  const bool can_be_resolved_with_conversion_data =
-      operands.front()->CanBeResolvedWithConversionData() &&
-      operands.back()->CanBeResolvedWithConversionData();
   return MakeGarbageCollected<CSSMathExpressionOperation>(
-      category, can_be_resolved_with_conversion_data, std::move(operands), op);
+      category, std::move(operands), op);
 }
 
 // static
@@ -1209,11 +1175,8 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateExponentialFunction(
         unit_type = CSSPrimitiveValue::CanonicalUnit(
             operands.front()->ResolvedUnitType());
       } else {
-        const bool can_be_resolved_with_conversion_data =
-            DetermineCanBeSimplifiedWithConversionData(operands);
         return MakeGarbageCollected<CSSMathExpressionOperation>(
-            category, can_be_resolved_with_conversion_data, std::move(operands),
-            CSSMathOperator::kHypot);
+            category, std::move(operands), CSSMathOperator::kHypot);
       }
       break;
     }
@@ -1265,8 +1228,7 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateSignRelatedFunction(
             std::abs(opt.value()), operand->ResolvedUnitType());
       }
       return MakeGarbageCollected<CSSMathExpressionOperation>(
-          operand->Category(), operand->CanBeResolvedWithConversionData(),
-          std::move(operands), CSSMathOperator::kAbs);
+          operand->Category(), std::move(operands), CSSMathOperator::kAbs);
     }
     case CSSValueID::kSign: {
       if (CanEagerlySimplify(operand)) {
@@ -1280,8 +1242,7 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateSignRelatedFunction(
             signum, CSSPrimitiveValue::UnitType::kNumber);
       }
       return MakeGarbageCollected<CSSMathExpressionOperation>(
-          kCalcNumber, operand->CanBeResolvedWithConversionData(),
-          std::move(operands), CSSMathOperator::kSign);
+          kCalcNumber, std::move(operands), CSSMathOperator::kSign);
     }
     default:
       NOTREACHED();
@@ -1384,11 +1345,9 @@ CSSMathExpressionOperation::CSSMathExpressionOperation(
     const CSSMathExpressionNode* left_side,
     const CSSMathExpressionNode* right_side,
     CSSMathOperator op,
-    CalculationResultCategory category,
-    const bool can_be_resolved_with_conversion_data)
+    CalculationResultCategory category)
     : CSSMathExpressionNode(
           category,
-          can_be_resolved_with_conversion_data,
           left_side->HasComparisons() || right_side->HasComparisons(),
           !left_side->IsScopedValue() || !right_side->IsScopedValue()),
       operands_({left_side, right_side}),
@@ -1416,12 +1375,10 @@ static bool AnyOperandNeedsTreeScopePopulation(
 
 CSSMathExpressionOperation::CSSMathExpressionOperation(
     CalculationResultCategory category,
-    const bool can_be_resolved_with_conversion_data,
     Operands&& operands,
     CSSMathOperator op)
     : CSSMathExpressionNode(
           category,
-          can_be_resolved_with_conversion_data,
           IsComparison(op) || AnyOperandHasComparisons(operands),
           AnyOperandNeedsTreeScopePopulation(operands)),
       operands_(std::move(operands)),
@@ -1429,10 +1386,8 @@ CSSMathExpressionOperation::CSSMathExpressionOperation(
 
 CSSMathExpressionOperation::CSSMathExpressionOperation(
     CalculationResultCategory category,
-    const bool can_be_resolved_with_conversion_data,
     CSSMathOperator op)
     : CSSMathExpressionNode(category,
-                            can_be_resolved_with_conversion_data,
                             IsComparison(op),
                             false),
       operator_(op) {}
@@ -1664,7 +1619,7 @@ double CSSMathExpressionOperation::ComputeDouble(
 
 double CSSMathExpressionOperation::ComputeLengthPx(
     const CSSLengthResolver& length_resolver) const {
-  DCHECK(CanBeResolvedWithConversionData());
+  DCHECK(!HasPercentage());
   DCHECK_EQ(Category(), kCalcLength);
   return ComputeDouble(length_resolver);
 }
@@ -2048,8 +2003,7 @@ const CSSMathExpressionNode& CSSMathExpressionOperation::PopulateWithTreeScope(
     populated_operands.push_back(&op->EnsureScopedValue(tree_scope));
   }
   return *MakeGarbageCollected<CSSMathExpressionOperation>(
-      Category(), CanBeResolvedWithConversionData(),
-      std::move(populated_operands), operator_);
+      Category(), std::move(populated_operands), operator_);
 }
 
 #if DCHECK_IS_ON()
@@ -2077,7 +2031,6 @@ CSSMathExpressionAnchorQuery::CSSMathExpressionAnchorQuery(
     const CSSPrimitiveValue* fallback)
     : CSSMathExpressionNode(
           kCalcPercentLength,
-          false,
           false /* has_comparisons */,
           (anchor_specifier && !anchor_specifier->IsScopedValue()) ||
               (fallback && !fallback->IsScopedValue())),
@@ -2619,8 +2572,7 @@ class CSSMathExpressionNodeParser {
     }
     tokens.ConsumeIncludingWhitespace();
     return MakeGarbageCollected<CSSMathExpressionOperation>(
-        CalculationResultCategory::kCalcNumber,
-        true /* can_be_resolved_with_conversion_data */, rounding_op);
+        CalculationResultCategory::kCalcNumber, rounding_op);
   }
 
   CSSMathExpressionNode* ParseValueTerm(

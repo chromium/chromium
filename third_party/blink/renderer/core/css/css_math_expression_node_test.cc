@@ -339,7 +339,7 @@ TEST(CSSMathExpressionNode, TestParseDeeplyNestedExpression) {
 
     if (test_case.expected) {
       EXPECT_TRUE(res);
-      EXPECT_TRUE(res->CanBeResolvedWithConversionData());
+      EXPECT_TRUE(!res->HasPercentage());
     } else {
       EXPECT_FALSE(res);
     }
@@ -371,7 +371,7 @@ TEST(CSSMathExpressionNode, TestSteppedValueFunctions) {
     scoped_refptr<const CalculationExpressionNode> node =
         res->ToCalculationExpression(resolver);
     EXPECT_EQ(node->Evaluate(FLT_MAX, nullptr), test_case.output);
-    EXPECT_TRUE(res->CanBeResolvedWithConversionData());
+    EXPECT_TRUE(!res->HasPercentage());
   }
 }
 
@@ -391,7 +391,7 @@ TEST(CSSMathExpressionNode, TestSteppedValueFunctionsToCalculationExpression) {
         CSSMathExpressionNumericLiteral::Create(
             10, CSSPrimitiveValue::UnitType::kNumber)};
     const auto* operation = MakeGarbageCollected<CSSMathExpressionOperation>(
-        kCalcNumber, true, std::move(operands), test_case.op);
+        kCalcNumber, std::move(operands), test_case.op);
     CSSToLengthConversionData resolver{};
     scoped_refptr<const CalculationExpressionNode> node =
         operation->ToCalculationExpression(resolver);
@@ -445,7 +445,7 @@ TEST(CSSMathExpressionNode, TestExponentialFunctions) {
     scoped_refptr<const CalculationExpressionNode> node =
         res->ToCalculationExpression(resolver);
     EXPECT_EQ(node->Evaluate(FLT_MAX, nullptr), test_case.output);
-    EXPECT_TRUE(res->CanBeResolvedWithConversionData());
+    EXPECT_TRUE(!res->HasPercentage());
   }
 }
 
@@ -468,7 +468,7 @@ TEST(CSSMathExpressionNode, TestExponentialFunctionsSerialization) {
     const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
         CSSValueID::kCalc, range, *context, true, kCSSAnchorQueryTypesNone);
     EXPECT_EQ(res->CustomCSSText(), test_case.input);
-    EXPECT_EQ(res->CanBeResolvedWithConversionData(),
+    EXPECT_EQ(!res->HasPercentage(),
               test_case.can_be_simplified_with_conversion_data);
   }
 }
@@ -486,7 +486,7 @@ TEST(CSSMathExpressionNode, TestExponentialFunctionsToCalculationExpression) {
         CSSMathExpressionNumericLiteral::Create(
             4.0f, CSSPrimitiveValue::UnitType::kNumber)};
     const auto* operation = MakeGarbageCollected<CSSMathExpressionOperation>(
-        kCalcNumber, true, std::move(operands), test_case.op);
+        kCalcNumber, std::move(operands), test_case.op);
     CSSToLengthConversionData resolver{};
     scoped_refptr<const CalculationExpressionNode> node =
         operation->ToCalculationExpression(resolver);
