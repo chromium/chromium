@@ -600,7 +600,9 @@ class Generator(generator.Generator):
     for spec, kind in self.module.imported_kinds.items():
       assert this_module_path is not None
       base_path = _GetWebUiModulePath(kind.module)
-      assert base_path is not None
+      assert base_path is not None, \
+          "No WebUI bindings found for dependency {0!r} imported by " \
+              "{1!r}".format(kind.module, self.module)
       import_path = '{}{}-webui.js'.format(base_path,
                                            os.path.basename(kind.module.path))
 
