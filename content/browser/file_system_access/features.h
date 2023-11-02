@@ -25,10 +25,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kFileSystemAccessDirectoryIterationSymbolicLinkCheck);
 
-#if BUILDFLAG(IS_MAC)
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kFileSystemAccessCowSwapFile);
-#endif  // BUILDFLAG(IS_MAC)
-
 }  // namespace content::features
 
 #endif  // CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FEATURES_H_

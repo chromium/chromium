@@ -847,8 +847,7 @@ void FileSystemAccessFileHandleImpl::GetUniqueId(GetUniqueIdCallback callback) {
 
 #if BUILDFLAG(IS_MAC)
 bool FileSystemAccessFileHandleImpl::CanUseCowSwapFile() const {
-  return base::FeatureList::IsEnabled(features::kFileSystemAccessCowSwapFile) &&
-         url().type() == storage::kFileSystemTypeLocal;
+  return url().type() == storage::kFileSystemTypeLocal;
 }
 #endif  // BUILDFLAG(IS_MAC)
 

@@ -53,14 +53,4 @@ BASE_FEATURE(kFileSystemAccessDirectoryIterationSymbolicLinkCheck,
              "FileSystemAccessDirectoryIterationSymbolicLinkCheck",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/1413443): Remove this flag eventually.
-// When enabled, createWritable({ keepExistingData:true }) will create a swap
-// file using APFS's built-in support for copy-on-write files instead of copying
-// over the file's contents manually.
-BASE_FEATURE(kFileSystemAccessCowSwapFile,
-             "FileSystemAccessCowSwapFile",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_MAC)
-
 }  // namespace content::features

@@ -748,8 +748,6 @@ class FileSystemAccessFileHandleSwapFileCloningTest
     kAttemptedAndCompletedAsExpected
   };
 
-  FileSystemAccessFileHandleSwapFileCloningTest()
-      : scoped_feature_list_(features::kFileSystemAccessCowSwapFile) {}
   void SetUp() override {
     SetupHelper(storage::kFileSystemTypeLocal, /*is_incognito=*/false);
   }
@@ -778,9 +776,6 @@ class FileSystemAccessFileHandleSwapFileCloningTest
     // "expected".
     return CloneFileResult::kAttemptedAndCompletedAsExpected;
   }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(FileSystemAccessFileHandleSwapFileCloningTest, BasicClone) {
