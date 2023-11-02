@@ -48,7 +48,7 @@ class GinJavaBridgeMessageFilter : public BrowserMessageFilter,
   // Called on the UI thread.
   void AddRoutingIdForHost(GinJavaBridgeDispatcherHost* host,
                            RenderFrameHost* render_frame_host);
-  void RemoveHost(GinJavaBridgeDispatcherHost* host);
+  void RemoveRoutingIdForHost(RenderFrameHost* render_frame_host);
 
   static scoped_refptr<GinJavaBridgeMessageFilter> FromHost(
       AgentSchedulingGroupHost& agent_scheduling_group,
