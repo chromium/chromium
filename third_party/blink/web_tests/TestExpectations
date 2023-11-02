@@ -7071,8 +7071,6 @@ crbug.com/1494133 media/controls/video-overlay-cast-light-rendering.html [ Failu
 
 # Gardener 2023-10-20
 crbug.com/1494242 [ Mac ] external/wpt/background-fetch/fetch.https.window.html [ Failure Timeout ]
-crbug.com/1494265 [ Mac10.15 ] external/wpt/intersection-observer/padding-clip.html [ Failure ]
-crbug.com/1494265 [ Mac10.15 ] virtual/disable-intersection-optimization/external/wpt/intersection-observer/padding-clip.html [ Failure ]
 
 # Gardener 2023-10-23
 crbug.com/1363683 [ Mac10.15 ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-2d-drawImage.html [ Failure ]

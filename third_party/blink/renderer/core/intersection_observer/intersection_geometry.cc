@@ -78,10 +78,16 @@ PhysicalRect InitializeRootRect(const LayoutObject* root,
     // 2) An element wider than the ICB can cause us to resize the FrameView so
     // we can zoom out to fit the entire element width.
     result = layout_view->OverflowClipRect(PhysicalOffset());
-  } else if (root->IsBox() && root->IsScrollContainer()) {
-    result = To<LayoutBox>(root)->PhysicalContentBoxRect();
-  } else if (root->IsBox()) {
-    result = To<LayoutBox>(root)->PhysicalBorderBoxRect();
+  } else if (auto* layout_box = DynamicTo<LayoutBox>(root)) {
+    if (layout_box->ShouldClipOverflowAlongBothAxis()) {
+      // TODO(https://github.com/w3c/IntersectionObserver/issues/518):
+      // This doesn't strictly conform to the current spec (which says we
+      // should use the padding box rect) when there is overflow-clip-margin.
+      // We should also consider overflow-clip along only one axis.
+      result = layout_box->OverflowClipRect(PhysicalOffset());
+    } else {
+      result = layout_box->PhysicalBorderBoxRect();
+    }
   } else {
     result = To<LayoutInline>(root)->PhysicalLinesBoundingBox();
   }
@@ -95,7 +101,7 @@ PhysicalRect GetBoxBounds(const LayoutBox* box, bool use_overflow_clip_edge) {
   // overflow clip margin may have an effect, meaning we clip to the overflow
   // clip edge and not something else.
   if (use_overflow_clip_edge && box->ShouldApplyOverflowClipMargin()) {
-    // OverflowClipRect() may be smaller than PhysicalBorderBoxRect().
+    // OverflowClipRect() may be larger than PhysicalBorderBoxRect().
     bounds.Unite(box->OverflowClipRect(PhysicalOffset()));
   }
   return bounds;
@@ -590,7 +596,6 @@ bool IntersectionGeometry::ClipToRoot(const LayoutObject* root,
     return false;
   }
   // Map and clip rect into root element coordinates.
-  // TODO(szager): the writing mode flipping needs a test.
   const LayoutBox* local_ancestor = nullptr;
   if (!RootIsImplicit() ||
       root->GetDocument().GetFrame()->IsOutermostMainFrame())
@@ -673,22 +678,15 @@ bool IntersectionGeometry::ClipToRoot(const LayoutObject* root,
         intersection_rect.Move(scroll_offset);
         unclipped_intersection_rect.Move(scroll_offset);
       }
-      DeprecatedLayoutRect root_clip_rect = root_rect.ToLayoutRect();
-      // TODO(szager): This flipping seems incorrect because root_rect is
-      // already physical.
-      local_ancestor->DeprecatedFlipForWritingMode(root_clip_rect);
 
-      PhysicalRect root_clip_physical_rect{root_clip_rect};
-
+      PhysicalRect root_clip_rect = root_rect;
       if (!scroll_margin.empty() && root->IsScrollContainer()) {
         // If the root is scrollable, apply the scroll margin to inflate the
-        // root_clip_physical_rect.
-        ApplyMargin(root_clip_physical_rect, scroll_margin,
+        // root_clip_rect.
+        ApplyMargin(root_clip_rect, scroll_margin,
                     root->StyleRef().EffectiveZoom());
       }
-
-      does_intersect &= intersection_rect.InclusiveIntersect(
-          PhysicalRect(root_clip_physical_rect));
+      does_intersect &= intersection_rect.InclusiveIntersect(root_clip_rect);
     } else {
       // Note that we don't clip to root_rect here. That's ok because
       // (!local_ancestor) implies that the root is implicit and the
