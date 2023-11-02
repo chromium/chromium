@@ -4826,6 +4826,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DemoMode.GMSCoreDialogShown" enum="Boolean"
+    expires_after="2024-05-01">
+  <owner>llin@chromium.org</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
+  <owner>cros-demo-mode-eng@google.com</owner>
+  <summary>
+    Records whether a window associated with GMSCore has been created during the
+    demo session.
+  </summary>
+</histogram>
+
 <!-- Note: DemoMode.Highlights.* metrics are recorded via runtime-downloaded
   content that is not checked into Chromium. Please do not delete this code,
   even if it looks like there's no production references in Chromium, without

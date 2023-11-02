@@ -1647,6 +1647,8 @@ source_set("ash") {
     "login/demo_mode/demo_mode_dimensions.h",
     "login/demo_mode/demo_mode_resources_remover.cc",
     "login/demo_mode/demo_mode_resources_remover.h",
+    "login/demo_mode/demo_mode_window_closer.cc",
+    "login/demo_mode/demo_mode_window_closer.h",
     "login/demo_mode/demo_session.cc",
     "login/demo_mode/demo_session.h",
     "login/demo_mode/demo_setup_controller.cc",
