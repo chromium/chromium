@@ -285,6 +285,23 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
   return false;
 }
 
+void DownloadProtectionService::CancelChecksForDownload(
+    download::DownloadItem* item) {
+  if (!item) {
+    return;
+  }
+
+  content::BrowserContext* context =
+      content::DownloadItemUtils::GetBrowserContext(item);
+  for (auto it = context_download_requests_[context].begin();
+       it != context_download_requests_[context].end(); ++it) {
+    if (it->first->item() == item) {
+      context_download_requests_[context].erase(it);
+      break;
+    }
+  }
+}
+
 bool DownloadProtectionService::ShouldCheckDownloadUrl(
     download::DownloadItem* item) {
   Profile* profile = Profile::FromBrowserContext(

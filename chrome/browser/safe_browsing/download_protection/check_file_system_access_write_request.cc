@@ -52,6 +52,10 @@ CheckFileSystemAccessWriteRequest::CheckFileSystemAccessWriteRequest(
 CheckFileSystemAccessWriteRequest ::~CheckFileSystemAccessWriteRequest() =
     default;
 
+download::DownloadItem* CheckFileSystemAccessWriteRequest::item() const {
+  return nullptr;
+}
+
 bool CheckFileSystemAccessWriteRequest::IsSupportedDownload(
     DownloadCheckResultReason* reason) {
   if (!FileTypePolicies::GetInstance()->IsCheckedBinaryFile(

@@ -6,10 +6,15 @@
 
 #include <utility>
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
+#include "chrome/browser/download/chrome_download_manager_delegate.h"
+#include "chrome/browser/download/download_core_service.h"
+#include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/download/download_bubble_info.h"
@@ -21,6 +26,7 @@
 #include "chrome/browser/ui/views/download/bubble/download_dialog_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "components/offline_items_collection/core/offline_item.h"
+#include "content/public/browser/download_item_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_types.h"
@@ -152,6 +158,57 @@ void DownloadBubbleContentsView::ProcessDeepScanPress(
   if (DownloadUIModel* model = GetDownloadModel(id); model) {
     safe_browsing::DownloadProtectionService::UploadForConsumerDeepScanning(
         model->GetDownloadItem(), password);
+  }
+}
+
+void DownloadBubbleContentsView::ProcessLocalDecryptionPress(
+    const offline_items_collection::ContentId& id,
+    base::optional_ref<const std::string> password) {
+  if (DownloadUIModel* model = GetDownloadModel(id); model) {
+    safe_browsing::DownloadProtectionService::CheckDownloadWithLocalDecryption(
+        model->GetDownloadItem(), password);
+  }
+}
+
+void DownloadBubbleContentsView::ProcessLocalPasswordInProgressClick(
+    const offline_items_collection::ContentId& id,
+    DownloadCommands::Command command) {
+  DownloadUIModel* model = GetDownloadModel(id);
+  if (!model) {
+    return;
+  }
+
+  download::DownloadItem* item = model->GetDownloadItem();
+  safe_browsing::SafeBrowsingService* sb_service =
+      g_browser_process->safe_browsing_service();
+  if (!sb_service) {
+    return;
+  }
+  safe_browsing::DownloadProtectionService* protection_service =
+      sb_service->download_protection_service();
+  if (!protection_service) {
+    return;
+  }
+
+  protection_service->CancelChecksForDownload(item);
+
+  DownloadCoreService* download_core_service =
+      DownloadCoreServiceFactory::GetForBrowserContext(
+          content::DownloadItemUtils::GetBrowserContext(item));
+  DCHECK(download_core_service);
+  ChromeDownloadManagerDelegate* delegate =
+      download_core_service->GetDownloadManagerDelegate();
+  DCHECK(delegate);
+
+  if (command == DownloadCommands::CANCEL) {
+    delegate->CheckClientDownloadDone(
+        item->GetId(),
+        safe_browsing::DownloadCheckResult::PROMPT_FOR_LOCAL_PASSWORD_SCANNING);
+  } else if (command == DownloadCommands::BYPASS_DEEP_SCANNING) {
+    delegate->CheckClientDownloadDone(
+        item->GetId(), safe_browsing::DownloadCheckResult::UNKNOWN);
+  } else {
+    NOTREACHED() << "Unexpected command: " << static_cast<int>(command);
   }
 }
 

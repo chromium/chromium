@@ -67,6 +67,8 @@ class CheckClientDownloadRequestBase {
 
   DownloadProtectionService* service() const { return service_; }
 
+  virtual download::DownloadItem* item() const = 0;
+
  protected:
   // Subclasses can call this method to mark the request as finished (for
   // example because the download was cancelled) before the safe browsing

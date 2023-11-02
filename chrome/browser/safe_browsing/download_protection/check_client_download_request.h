@@ -56,6 +56,8 @@ class CheckClientDownloadRequest : public CheckClientDownloadRequestBase,
                                   const base::FilePath& target_path,
                                   DownloadCheckResultReason* reason);
 
+  download::DownloadItem* item() const override;
+
  private:
   // CheckClientDownloadRequestBase overrides:
   bool IsSupportedDownload(DownloadCheckResultReason* reason) override;

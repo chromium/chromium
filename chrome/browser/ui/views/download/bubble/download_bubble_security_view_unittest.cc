@@ -106,6 +106,12 @@ class MockDownloadBubbleSecurityViewDelegate
 
   void ProcessDeepScanPress(const ContentId&,
                             base::optional_ref<const std::string>) override {}
+  void ProcessLocalDecryptionPress(
+      const offline_items_collection::ContentId& id,
+      base::optional_ref<const std::string> password) override {}
+  void ProcessLocalPasswordInProgressClick(
+      const offline_items_collection::ContentId& id,
+      DownloadCommands::Command command) override {}
   bool IsEncryptedArchive(const ContentId&) override { return false; }
   bool HasPreviousIncorrectPassword(const ContentId&) override { return false; }
 

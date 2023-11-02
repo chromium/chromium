@@ -687,6 +687,10 @@ Permissions you've already given to websites and apps may apply to this account.
                desc="Text for the link to the help page about why Chrome blocks some downloaded files.">
         Learn why Chrome blocks some downloads
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_DEEP_SCANNING_PROMPT_LOCAL_DECRYPTION"
+        desc="Subpage summary of warning for a file where we recommend providing the password for on-device decryption">
+        This file may be dangerous<ph name="LINE_BREAK">$1</ph>Chrome can check this download for you if you provide the password &#x2014; your password stays on your device
+      </message>
 
       <!-- Download Shelf Items -->
       <message name="IDS_DOWNLOAD_STATUS_CRX_INSTALL_RUNNING"

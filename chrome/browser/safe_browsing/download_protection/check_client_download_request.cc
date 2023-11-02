@@ -202,6 +202,10 @@ bool CheckClientDownloadRequest::IsSupportedDownload(
   return IsSupportedDownload(*item_, item_->GetTargetFilePath(), reason);
 }
 
+download::DownloadItem* CheckClientDownloadRequest::item() const {
+  return item_;
+}
+
 content::BrowserContext* CheckClientDownloadRequest::GetBrowserContext() const {
   return content::DownloadItemUtils::GetBrowserContext(item_);
 }

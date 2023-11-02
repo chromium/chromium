@@ -3329,6 +3329,36 @@ are declared in tools/grit/grit_rule.gni.
         Incorrect password. Try again.
       </message>
 
+      <!-- Local archive decryption in download bubble -->
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_LOCAL_DECRYPTION_STATUS"
+        desc="Prompt when a suspicious archive is blocked due to being encrypted">
+        Suspicious file blocked
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_PASSWORD_NEEDED"
+        desc="Prompt when a suspicious archive is blocked due to being encrypted">
+        Password needed
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_ACCEPT_LOCAL_DECRYPTION"
+        desc="Label on button to accept using the password for checking a download for malware">
+        Check for malware
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_BYPASS_LOCAL_DECRYPTION"
+        desc="Label on button to bypass using the password for checking a download for malware">
+        Download suspicious file
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_LOCAL_DECRYPTION_CANCEL"
+        desc="Label on button to cancel checking a download for malware">
+        Cancel download
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_LOCAL_DECRYPTION_IN_PROGRESS"
+        desc="Description in the download bubble when a file is being checked for malware">
+        This file may be dangerous<ph name="LINE_BREAK">$1</ph>This check is taking longer than usual...
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_LOCAL_DECRYPTING"
+               desc="Status text for a download item that is being checked for malware.">
+        Checking for malware...
+      </message>
+
       <!-- Desktop omnibox PWA install icon -->
       <if expr="not is_android">
         <message name="IDS_OMNIBOX_PWA_INSTALL_ICON_LABEL" desc="String for the omnibox icon label promoting an app installation">

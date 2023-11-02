@@ -39,6 +39,8 @@ class CheckFileSystemAccessWriteRequest
 
   ~CheckFileSystemAccessWriteRequest() override;
 
+  download::DownloadItem* item() const override;
+
  private:
   // CheckClientDownloadRequestBase overrides:
   bool IsSupportedDownload(DownloadCheckResultReason* reason) override;

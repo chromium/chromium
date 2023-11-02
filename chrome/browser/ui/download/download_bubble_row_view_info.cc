@@ -277,8 +277,12 @@ void DownloadBubbleRowViewInfo::PopulateForInProgressOrComplete() {
       return;
     }
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING: {
-      // TODO(crbug.com/1491184): Implement UX for this danger type.
-      NOTREACHED();
+      icon_override_ = features::IsChromeRefresh2023()
+                           ? &kDownloadWarningIcon
+                           : &vector_icons::kNotSecureWarningIcon;
+      secondary_color_ = kColorDownloadItemIconWarning;
+      secondary_text_color_ = kColorDownloadItemTextWarning;
+      has_subpage_ = true;
       return;
     }
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:

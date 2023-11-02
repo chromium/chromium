@@ -100,6 +100,11 @@ class DownloadProtectionService {
       download::DownloadItem* item,
       CheckDownloadRepeatingCallback callback);
 
+  // Cancel the pending check for `item`. This function simply drops the pending
+  // work in the `DownloadProtectionService`. The caller is responsible for
+  // updating the download state so that it completes successfully.
+  void CancelChecksForDownload(download::DownloadItem* item);
+
   // Returns whether the download URL should be checked for safety based on user
   // prefs.
   virtual bool ShouldCheckDownloadUrl(download::DownloadItem* item);
