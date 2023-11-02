@@ -529,10 +529,11 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
   // Calculate the amount to grow the width and height of searchField so that
   // its frame covers the entire toolbar area.
+  CGFloat maxWidth = self.bounds.size.width;
   CGFloat maxXInset =
-      ui::AlignValueToUpperPixel((searchFieldNormalWidth - screenWidth) / 2);
+      ui::AlignValueToUpperPixel((searchFieldNormalWidth - maxWidth) / 2);
   widthConstraint.constant =
-      Interpolate(searchFieldNormalWidth, screenWidth, percent);
+      Interpolate(searchFieldNormalWidth, maxWidth, percent);
   CGFloat maxTopMarginDiff = fakeOmniboxHeight - locationBarHeight -
                              kAdaptiveLocationBarVerticalMargin;
   topMarginConstraint.constant =
