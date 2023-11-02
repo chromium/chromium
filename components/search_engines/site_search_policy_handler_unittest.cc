@@ -4,7 +4,9 @@
 
 #include "components/search_engines/site_search_policy_handler.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
@@ -17,7 +19,9 @@
 #include "components/prefs/pref_value_map.h"
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/enterprise_site_search_manager.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using testing::AllOf;
 using testing::ElementsAre;
@@ -26,12 +30,18 @@ namespace policy {
 
 namespace {
 
-struct TestCase {
+// Represents field values for SiteSearchSettings policy, used for generating
+// policy value entries. Fields set as nullptr will not be added to the
+// entry dictionary.
+struct TestProvider {
   const char* name;
   const char* shortcut;
   const char* url;
   const char* favicon;
-} kTestCases[] = {
+};
+
+// Used for tests that require a list of valid providers.
+TestProvider kValidTestProviders[] = {
     {.name = "work name",
      .shortcut = "work",
      .url = "https://work.com/{searchTerms}",
@@ -42,12 +52,75 @@ struct TestCase {
      .favicon = "https://docs.com/favicon.ico"},
 };
 
+// Used for tests that require providers with missing required fields. Missing
+// fields for test are represented as nullptr.
+TestProvider kMissingRequiredFieldsTestProviders[] = {
+    {.name = nullptr,
+     .shortcut = "missing_name",
+     .url = "https://missing_name.com/{searchTerms}",
+     .favicon = nullptr},
+    {.name = "missing_shortcut name",
+     .shortcut = nullptr,
+     .url = "https://missing_shortcut.com/{searchTerms}",
+     .favicon = nullptr},
+    {.name = "missing_url name",
+     .shortcut = "missing_url",
+     .url = nullptr,
+     .favicon = nullptr},
+};
+
+// Used for tests that require a list of providers with a duplicated shortcut,
+// but at least one valid entry.
+TestProvider kShortcutNotUniqueTestProviders[] = {
+    {.name = "work name",
+     .shortcut = "work",
+     .url = "https://work.com/q={searchTerms}&x",
+     .favicon = nullptr},
+    {.name = "also work name",
+     .shortcut = "work",
+     .url = "https://work.com/q={searchTerms}&y",
+     .favicon = nullptr},
+    {.name = "docs name",
+     .shortcut = "docs",
+     .url = "https://docs.com/{searchTerms}",
+     .favicon = "https://docs.com/favicon.ico"},
+};
+
+// Used for tests that require a list of providers with a duplicated shortcut
+// and no valid entry.
+TestProvider kNoUniqueShortcutTestProviders[] = {
+    {.name = "work name",
+     .shortcut = "work",
+     .url = "https://work.com/q={searchTerms}&x",
+     .favicon = nullptr},
+    {.name = "also work name",
+     .shortcut = "work",
+     .url = "https://work.com/q={searchTerms}&y",
+     .favicon = nullptr},
+};
+
 // Creates a simple list item for the site search policy.
-base::Value::Dict GenerateSiteSearchPolicyEntry(TestCase test_case) {
+base::Value::Dict GenerateSiteSearchPolicyEntry(const std::string& name,
+                                                const std::string& shortcut,
+                                                const std::string& url) {
   base::Value::Dict entry;
-  entry.Set(SiteSearchPolicyHandler::kName, test_case.name);
-  entry.Set(SiteSearchPolicyHandler::kShortcut, test_case.shortcut);
-  entry.Set(SiteSearchPolicyHandler::kUrl, test_case.url);
+  entry.Set(SiteSearchPolicyHandler::kName, name);
+  entry.Set(SiteSearchPolicyHandler::kShortcut, shortcut);
+  entry.Set(SiteSearchPolicyHandler::kUrl, url);
+  return entry;
+}
+
+base::Value::Dict GenerateSiteSearchPolicyEntry(TestProvider test_case) {
+  base::Value::Dict entry;
+  if (test_case.name) {
+    entry.Set(SiteSearchPolicyHandler::kName, test_case.name);
+  }
+  if (test_case.shortcut) {
+    entry.Set(SiteSearchPolicyHandler::kShortcut, test_case.shortcut);
+  }
+  if (test_case.url) {
+    entry.Set(SiteSearchPolicyHandler::kUrl, test_case.url);
+  }
   return entry;
 }
 
@@ -90,7 +163,7 @@ MATCHER_P(HasDoubleField,
 
 // Returns a matcher that accepts entries for the pref corresponding to the
 // site search policy. Field values are obtained from |test_case|.
-testing::Matcher<const base::Value&> IsSiteSearchEntry(TestCase test_case) {
+testing::Matcher<const base::Value&> IsSiteSearchEntry(TestProvider test_case) {
   return AllOf(
       HasStringField(DefaultSearchManager::kShortName, test_case.name),
       HasStringField(DefaultSearchManager::kKeyword, test_case.shortcut),
@@ -101,6 +174,16 @@ testing::Matcher<const base::Value&> IsSiteSearchEntry(TestCase test_case) {
       HasBooleanField(DefaultSearchManager::kSafeForAutoReplace, false),
       HasDoubleField(DefaultSearchManager::kDateCreated),
       HasDoubleField(DefaultSearchManager::kLastModified));
+}
+
+MATCHER_P(HasValidationError,
+          expected_str,
+          base::StringPrintf("%s error message `%s` for `SiteSearchSettings`",
+                             negation ? "does not contain" : "contains",
+                             base::UTF16ToUTF8(expected_str).c_str())) {
+  return arg->HasError(key::kSiteSearchSettings) &&
+         arg->GetErrorMessages(key::kSiteSearchSettings).find(expected_str) !=
+             std::wstring::npos;
 }
 
 }  // namespace
@@ -116,8 +199,8 @@ TEST(SiteSearchPolicyHandlerTest, FeatureDisabled) {
   PrefValueMap prefs;
 
   base::Value::List policy_value;
-  policy_value.Append(GenerateSiteSearchPolicyEntry(kTestCases[0]));
-  policy_value.Append(GenerateSiteSearchPolicyEntry(kTestCases[1]));
+  policy_value.Append(GenerateSiteSearchPolicyEntry(kValidTestProviders[0]));
+  policy_value.Append(GenerateSiteSearchPolicyEntry(kValidTestProviders[1]));
 
   policies.Set(key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
@@ -167,8 +250,8 @@ TEST(SiteSearchPolicyHandlerTest, ValidSiteSearchEntries) {
   PrefValueMap prefs;
 
   base::Value::List policy_value;
-  policy_value.Append(GenerateSiteSearchPolicyEntry(kTestCases[0]));
-  policy_value.Append(GenerateSiteSearchPolicyEntry(kTestCases[1]));
+  policy_value.Append(GenerateSiteSearchPolicyEntry(kValidTestProviders[0]));
+  policy_value.Append(GenerateSiteSearchPolicyEntry(kValidTestProviders[1]));
 
   policies.Set(key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
@@ -184,8 +267,147 @@ TEST(SiteSearchPolicyHandlerTest, ValidSiteSearchEntries) {
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
   EXPECT_THAT(providers->GetList(),
-              ElementsAre(IsSiteSearchEntry(kTestCases[0]),
-                          IsSiteSearchEntry(kTestCases[1])));
+              ElementsAre(IsSiteSearchEntry(kValidTestProviders[0]),
+                          IsSiteSearchEntry(kValidTestProviders[1])));
+}
+
+TEST(SiteSearchPolicyHandlerTest, InvalidFormat) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+
+  SiteSearchPolicyHandler handler(
+      policy::Schema::Wrap(policy::GetChromeSchemaData()));
+
+  policy::PolicyMap policies;
+  PolicyErrorMap errors;
+  PrefValueMap prefs;
+
+  policies.Set(key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               base::Value(false), nullptr);
+
+  ASSERT_FALSE(handler.CheckPolicySettings(policies, &errors));
+  EXPECT_TRUE(errors.HasError(key::kSiteSearchSettings));
+}
+
+TEST(SiteSearchPolicyHandlerTest, TooManySiteSearchEntries) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+
+  SiteSearchPolicyHandler handler(
+      policy::Schema::Wrap(policy::GetChromeSchemaData()));
+
+  policy::PolicyMap policies;
+  PolicyErrorMap errors;
+  PrefValueMap prefs;
+
+  // Policy value has one list entry over the max allowed.
+  base::Value::List policy_value;
+  for (int i = 0; i <= SiteSearchPolicyHandler::kMaxSiteSearchProviders; ++i) {
+    policy_value.Append(GenerateSiteSearchPolicyEntry(
+        base::StringPrintf("shortcut_%d", i), base::StringPrintf("name %d", i),
+        base::StringPrintf("https://site_%d.com/q={searchTerms}", i)));
+  }
+
+  policies.Set(key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               base::Value(std::move(policy_value)), nullptr);
+
+  ASSERT_FALSE(handler.CheckPolicySettings(policies, &errors));
+  EXPECT_THAT(&errors,
+              HasValidationError(l10n_util::GetStringFUTF16(
+                  IDS_POLICY_SITE_SEARCH_SETTINGS_MAX_PROVIDERS_LIMIT_ERROR,
+                  base::NumberToString16(
+                      SiteSearchPolicyHandler::kMaxSiteSearchProviders))));
+}
+
+TEST(SiteSearchPolicyHandlerTest, MissingRequiredField) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+
+  SiteSearchPolicyHandler handler(
+      policy::Schema::Wrap(policy::GetChromeSchemaData()));
+
+  for (auto* it = std::begin(kMissingRequiredFieldsTestProviders);
+       it != std::end(kMissingRequiredFieldsTestProviders); ++it) {
+    policy::PolicyMap policies;
+    PolicyErrorMap errors;
+    PrefValueMap prefs;
+
+    base::Value::List policy_value;
+    policy_value.Append(GenerateSiteSearchPolicyEntry(*it));
+
+    policies.Set(key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
+                 policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+                 base::Value(std::move(policy_value)), nullptr);
+
+    ASSERT_FALSE(handler.CheckPolicySettings(policies, &errors));
+    EXPECT_TRUE(errors.HasError(key::kSiteSearchSettings));
+  }
+}
+
+TEST(SiteSearchPolicyHandlerTest, ShortcutNotUnique) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+
+  SiteSearchPolicyHandler handler(
+      policy::Schema::Wrap(policy::GetChromeSchemaData()));
+
+  policy::PolicyMap policies;
+  PolicyErrorMap errors;
+  PrefValueMap prefs;
+
+  base::Value::List policy_value;
+  for (auto* it = std::begin(kShortcutNotUniqueTestProviders);
+       it != std::end(kShortcutNotUniqueTestProviders); ++it) {
+    policy_value.Append(GenerateSiteSearchPolicyEntry(*it));
+  }
+
+  policies.Set(key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               base::Value(std::move(policy_value)), nullptr);
+
+  ASSERT_TRUE(handler.CheckPolicySettings(policies, &errors));
+  EXPECT_THAT(&errors, HasValidationError(l10n_util::GetStringFUTF16(
+                           IDS_POLICY_SITE_SEARCH_SETTINGS_DUPLICATED_SHORTCUT,
+                           u"work")));
+
+  handler.ApplyPolicySettings(policies, &prefs);
+  base::Value* providers = nullptr;
+  ASSERT_TRUE(prefs.GetValue(
+      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
+  ASSERT_NE(providers, nullptr);
+  ASSERT_TRUE(providers->is_list());
+  EXPECT_THAT(
+      providers->GetList(),
+      ElementsAre(IsSiteSearchEntry(kShortcutNotUniqueTestProviders[2])));
+}
+
+TEST(SiteSearchPolicyHandlerTest, NoUniqueShortcut) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+
+  SiteSearchPolicyHandler handler(
+      policy::Schema::Wrap(policy::GetChromeSchemaData()));
+
+  policy::PolicyMap policies;
+  PolicyErrorMap errors;
+  PrefValueMap prefs;
+
+  base::Value::List policy_value;
+  for (auto* it = std::begin(kNoUniqueShortcutTestProviders);
+       it != std::end(kNoUniqueShortcutTestProviders); ++it) {
+    policy_value.Append(GenerateSiteSearchPolicyEntry(*it));
+  }
+
+  policies.Set(key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               base::Value(std::move(policy_value)), nullptr);
+
+  ASSERT_FALSE(handler.CheckPolicySettings(policies, &errors));
+  EXPECT_THAT(&errors, HasValidationError(l10n_util::GetStringFUTF16(
+                           IDS_POLICY_SITE_SEARCH_SETTINGS_DUPLICATED_SHORTCUT,
+                           u"work")));
 }
 
 }  // namespace policy

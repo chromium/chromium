@@ -195,6 +195,7 @@ source_set("unit_tests") {
     "//sql",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base",
     "//url",
   ]
 

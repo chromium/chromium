@@ -4,7 +4,9 @@
 
 #include "components/search_engines/site_search_policy_handler.h"
 
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -15,6 +17,7 @@
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/enterprise_site_search_manager.h"
 #include "components/search_engines/template_url.h"
+#include "components/strings/grit/components_strings.h"
 
 namespace policy {
 
@@ -71,11 +74,22 @@ base::Value SiteSearchDictFromPolicyValue(
   return base::Value(std::move(dict));
 }
 
+const std::string& GetShortcut(const base::Value& provider) {
+  const std::string* shortcut =
+      provider.GetDict().FindString(SiteSearchPolicyHandler::kShortcut);
+  // This is safe because `SimpleSchemaValidatingPolicyHandler` guarantees that
+  // the policy value is valid according to the schema.
+  CHECK(shortcut);
+  return *shortcut;
+}
+
 }  // namespace
 
 const char SiteSearchPolicyHandler::kName[] = "name";
 const char SiteSearchPolicyHandler::kShortcut[] = "shortcut";
 const char SiteSearchPolicyHandler::kUrl[] = "url";
+
+const int SiteSearchPolicyHandler::kMaxSiteSearchProviders = 100;
 
 SiteSearchPolicyHandler::SiteSearchPolicyHandler(Schema schema)
     : SimpleSchemaValidatingPolicyHandler(
@@ -90,13 +104,51 @@ SiteSearchPolicyHandler::~SiteSearchPolicyHandler() = default;
 
 bool SiteSearchPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                                                   PolicyErrorMap* errors) {
+  ignored_shortcuts_.clear();
+
   if (!IsSiteSearchPolicyEnabled() || !policies.Get(policy_name())) {
     return true;
   }
 
-  // TODO(b/306201833): Validate the policy value.
-  return SimpleSchemaValidatingPolicyHandler::CheckPolicySettings(policies,
-                                                                  errors);
+  if (!SimpleSchemaValidatingPolicyHandler::CheckPolicySettings(policies,
+                                                                errors)) {
+    return false;
+  }
+
+  const base::Value::List& site_search_providers =
+      policies.GetValue(policy_name(), base::Value::Type::LIST)->GetList();
+
+  if (site_search_providers.size() > kMaxSiteSearchProviders) {
+    errors->AddError(policy_name(),
+                     IDS_POLICY_SITE_SEARCH_SETTINGS_MAX_PROVIDERS_LIMIT_ERROR,
+                     base::NumberToString(kMaxSiteSearchProviders));
+    return false;
+  }
+
+  base::flat_set<std::string> shortcuts_already_seen;
+  base::flat_set<std::string> duplicated_shortcuts;
+  for (const base::Value& provider : site_search_providers) {
+    const std::string& shortcut = GetShortcut(provider);
+
+    // TODO(b/306201833): Implement remaining validation rules.
+
+    if (shortcuts_already_seen.find(shortcut) != shortcuts_already_seen.end()) {
+      // Only show an error message once per shortcut.
+      if (duplicated_shortcuts.find(shortcut) == duplicated_shortcuts.end()) {
+        errors->AddError(policy_name(),
+                         IDS_POLICY_SITE_SEARCH_SETTINGS_DUPLICATED_SHORTCUT,
+                         shortcut);
+      }
+
+      duplicated_shortcuts.insert(shortcut);
+      ignored_shortcuts_.insert(shortcut);
+    }
+
+    shortcuts_already_seen.insert(shortcut);
+  }
+
+  // Accept if there is at least one shortcut that should not be ignored.
+  return shortcuts_already_seen.size() > ignored_shortcuts_.size();
 }
 
 void SiteSearchPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
@@ -118,10 +170,12 @@ void SiteSearchPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
 
   base::Value::List providers;
   for (const base::Value& item : policy_value->GetList()) {
-    providers.Append(SiteSearchDictFromPolicyValue(item.GetDict()));
+    const std::string& shortcut = GetShortcut(item);
+    if (ignored_shortcuts_.find(shortcut) == ignored_shortcuts_.end()) {
+      providers.Append(SiteSearchDictFromPolicyValue(item.GetDict()));
+    }
   }
 
-  // TODO(b/306201833): Only copy over the valid entries.
   EnterpriseSiteSearchManager::AddPrefValueToMap(std::move(providers), prefs);
 }
 

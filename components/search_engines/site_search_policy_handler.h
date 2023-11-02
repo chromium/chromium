@@ -7,6 +7,10 @@
 
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
+#include <string>
+
+#include "base/containers/flat_set.h"
+
 namespace policy {
 
 // ConfigurationPolicyHandler for the SiteSearchSettings policy.
@@ -16,6 +20,10 @@ class SiteSearchPolicyHandler : public SimpleSchemaValidatingPolicyHandler {
   static const char kName[];
   static const char kShortcut[];
   static const char kUrl[];
+
+  // The maximum number of site search providers to be defined via policy, to
+  // avoid issues with very long lists.
+  static const int kMaxSiteSearchProviders;
 
   explicit SiteSearchPolicyHandler(Schema schema);
 
@@ -29,6 +37,13 @@ class SiteSearchPolicyHandler : public SimpleSchemaValidatingPolicyHandler {
                            PolicyErrorMap* errors) override;
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
+
+ private:
+  // The shortcuts corresponding to invalid entries that should not be written
+  // to prefs. Used for caching validation results between |CheckPolicySettings|
+  // and |ApplyPolicySettings|, so we don't need to replicate the validation
+  // procedure in both methods.
+  base::flat_set<std::string> ignored_shortcuts_;
 };
 
 }  // namespace policy
