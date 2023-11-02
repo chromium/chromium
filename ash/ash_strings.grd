@@ -2966,16 +2966,16 @@ Some features are limited to increase battery life.
         Show hotspot details. Hotspot is off.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_FEATURE_TILE_TOOLTIP_STATUS_OFF" desc="The tooltip for the hotspot feature tile of quick settings when hotspot is off and is allowed to turn on.">
-        Toggle Hotspot. Hotspot is off.
+        Toggle hotspot. Hotspot is off.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_FEATURE_TILE_TOOLTIP_STATUS_ON_NO_DEVICE_CONNECTED" desc="The tooltip for the hotspot feature tile of quick settings when hotspot is on and no device connected.">
-        Toggle Hotspot. Hotspot is on, no device connected.
+        Toggle hotspot. Hotspot is on, no device connected.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_FEATURE_TILE_TOOLTIP_STATUS_ON_ONE_DEVICE_CONNECTED" desc="The tooltip for the hotspot feature tile of quick settings when hotspot is on and one device connected.">
-        Toggle Hotspot. Hotspot is on, 1 device connected.
+        Toggle hotspot. Hotspot is on, 1 device connected.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_FEATURE_TILE_TOOLTIP_STATUS_ON_MULTIPLE_DEVICES_CONNECTED" desc="The tooltip for the hotspot feature tile of quick settings when hotspot is on and multiple devices connected.">
-        Toggle Hotspot. Hotspot is on, <ph name="DEVICECOUNT">$1</ph> devices connected.
+        Toggle hotspot. Hotspot is on, <ph name="DEVICECOUNT">$1</ph> devices connected.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_FEATURE_TILE_TOOLTIP_NO_MOBILE_DATA" desc="The tooltip for the hotspot feature tile of quick settings when hotspot is off and not allowed to turn on due to no mobile data connection.">
         Show hotspot details. Connect to mobile network to use hotspot.
@@ -3050,10 +3050,10 @@ Some features are limited to increase battery life.
         Turn on WiFi instead
       </message>
       <message name="IDS_ASH_HOTSPOT_WIFI_TURNED_ON_MESSAGE" desc="Message displayed in the system notification shown when hotspot is disabled due to WiFi being turned on.">
-        Hotspot has been turned off to use WiFi. To use Hotspot, turn WiFi off.
+        Hotspot has been turned off to use WiFi. To use hotspot, turn WiFi off.
       </message>
       <message name="IDS_ASH_HOTSPOT_ADMIN_RESTRICTED_MESSAGE" desc="Message displayed in the system notification shown when the hotspot is turned off by the administrator.">
-        Your administrator has turned Hotspot off.
+        Your administrator has turned hotspot off.
       </message>
       <message name="IDS_ASH_HOTSPOT_AUTO_DISABLED_MESSAGE" desc="Message displayed in the system notification shown when the hotspot is turned off due to inactivity.">
         Due to inactivity, hotspot has been turned off.

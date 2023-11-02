@@ -150,12 +150,12 @@ TEST_F(HotspotFeaturePodControllerTest, PressLabelWhenHotspotEnabled) {
   EXPECT_TRUE(hotspot_feature_tile_->IsToggled());
   EXPECT_EQ(u"Hotspot", hotspot_feature_tile_->label()->GetText());
   EXPECT_EQ(u"On", hotspot_feature_tile_->sub_label()->GetText());
-  EXPECT_EQ(u"Toggle Hotspot. Hotspot is on, no device connected.",
+  EXPECT_EQ(u"Toggle hotspot. Hotspot is on, no device connected.",
             hotspot_feature_tile_->icon_button()->GetTooltipText());
   EXPECT_EQ(u"Show hotspot details. Hotspot is on.",
             hotspot_feature_tile_->GetTooltipText());
   UpdateHotspotInfo(HotspotState::kEnabled, HotspotAllowStatus::kAllowed, 2);
-  EXPECT_EQ(u"Toggle Hotspot. Hotspot is on, 2 devices connected.",
+  EXPECT_EQ(u"Toggle hotspot. Hotspot is on, 2 devices connected.",
             hotspot_feature_tile_->icon_button()->GetTooltipText());
   EXPECT_STREQ(kHotspotOnIcon.name, GetVectorIconName());
 
@@ -175,7 +175,7 @@ TEST_F(HotspotFeaturePodControllerTest, PressIconWhenHotspotEnabled) {
   EXPECT_TRUE(hotspot_feature_tile_->IsToggled());
   EXPECT_EQ(u"Hotspot", hotspot_feature_tile_->label()->GetText());
   EXPECT_EQ(u"On", hotspot_feature_tile_->sub_label()->GetText());
-  EXPECT_EQ(u"Toggle Hotspot. Hotspot is on, no device connected.",
+  EXPECT_EQ(u"Toggle hotspot. Hotspot is on, no device connected.",
             hotspot_feature_tile_->icon_button()->GetTooltipText());
   EXPECT_EQ(u"Show hotspot details. Hotspot is on.",
             hotspot_feature_tile_->GetTooltipText());
@@ -252,9 +252,9 @@ TEST_F(HotspotFeaturePodControllerTest,
   EXPECT_FALSE(hotspot_feature_tile_->IsToggled());
   EXPECT_EQ(u"Hotspot", hotspot_feature_tile_->label()->GetText());
   EXPECT_EQ(u"Off", hotspot_feature_tile_->sub_label()->GetText());
-  EXPECT_EQ(u"Toggle Hotspot. Hotspot is off.",
+  EXPECT_EQ(u"Toggle hotspot. Hotspot is off.",
             hotspot_feature_tile_->icon_button()->GetTooltipText());
-  EXPECT_EQ(u"Toggle Hotspot. Hotspot is off.",
+  EXPECT_EQ(u"Toggle hotspot. Hotspot is off.",
             hotspot_feature_tile_->GetTooltipText());
   EXPECT_STREQ(kHotspotOffIcon.name, GetVectorIconName());
 
@@ -276,9 +276,9 @@ TEST_F(HotspotFeaturePodControllerTest,
   EXPECT_FALSE(hotspot_feature_tile_->IsToggled());
   EXPECT_EQ(u"Hotspot", hotspot_feature_tile_->label()->GetText());
   EXPECT_EQ(u"Off", hotspot_feature_tile_->sub_label()->GetText());
-  EXPECT_EQ(u"Toggle Hotspot. Hotspot is off.",
+  EXPECT_EQ(u"Toggle hotspot. Hotspot is off.",
             hotspot_feature_tile_->icon_button()->GetTooltipText());
-  EXPECT_EQ(u"Toggle Hotspot. Hotspot is off.",
+  EXPECT_EQ(u"Toggle hotspot. Hotspot is off.",
             hotspot_feature_tile_->GetTooltipText());
   EXPECT_STREQ(kHotspotOffIcon.name, GetVectorIconName());
 
@@ -384,9 +384,9 @@ TEST_F(HotspotFeaturePodControllerTest, LockScreen) {
   EXPECT_FALSE(hotspot_feature_tile_->IsToggled());
   EXPECT_EQ(u"Hotspot", hotspot_feature_tile_->label()->GetText());
   EXPECT_EQ(u"Off", hotspot_feature_tile_->sub_label()->GetText());
-  EXPECT_EQ(u"Toggle Hotspot. Hotspot is off.",
+  EXPECT_EQ(u"Toggle hotspot. Hotspot is off.",
             hotspot_feature_tile_->icon_button()->GetTooltipText());
-  EXPECT_EQ(u"Toggle Hotspot. Hotspot is off.",
+  EXPECT_EQ(u"Toggle hotspot. Hotspot is off.",
             hotspot_feature_tile_->GetTooltipText());
   EXPECT_STREQ(kHotspotOffIcon.name, GetVectorIconName());
 
