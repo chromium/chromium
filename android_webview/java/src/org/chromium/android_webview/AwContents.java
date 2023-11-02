@@ -3599,11 +3599,17 @@ public class AwContents implements SmartClipProvider {
 
                 // We may have any number of fg <-> bg transitions happen in the meantime. Make
                 // sure that we only reclaim memory when we've spent enough continuous time in
-                // background.
-                Runnable task = () -> {
-                    mHasPendingReclaimTask = false;
-                    afterWindowHiddenTask();
-                };
+                // background. Use a weak ref to make sure we don't prevent AwContents from being
+                // GC-eligible while this task is in the queue.
+                WeakReference<AwContents> weakAwc = new WeakReference(this);
+                Runnable task =
+                        () -> {
+                            AwContents awc = weakAwc.get();
+                            if (awc != null) {
+                                awc.mHasPendingReclaimTask = false;
+                                awc.afterWindowHiddenTask();
+                            }
+                        };
                 long delayMs = FUNCTOR_RECLAIM_DELAY_MS - timeNotVisibleMs;
                 postDelayedTaskWithOverride(task, delayMs);
                 return;
