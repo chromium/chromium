@@ -57,7 +57,11 @@ class MultipartDataPipeGetter : public network::mojom::DataPipeGetter {
     void CloseHandles();
 
     base::File file_;
-    raw_ptr<uint8_t> data_ = nullptr;
+
+    // This field is not a raw_ptr<> because it always points to a mmap'd
+    // region of memory outside of the PA heap. Thus, there would be overhead
+    // involved with using a raw_ptr<> but no safety gains.
+    RAW_PTR_EXCLUSION uint8_t* data_ = nullptr;
     size_t length_ = 0;
   };
 #else
