@@ -267,8 +267,8 @@ class EventRewriterTest : public ChromeAshTestBase {
         std::make_unique<ui::KeyboardDeviceIdEventRewriter>(
             keyboard_capability_.get());
     event_rewriter_ash_ = std::make_unique<ui::EventRewriterAsh>(
-        delegate_.get(), keyboard_capability_.get(), nullptr, false,
-        &fake_ime_keyboard_);
+        delegate_.get(), keyboard_capability_.get(),
+        Shell::Get()->sticky_keys_controller(), false, &fake_ime_keyboard_);
 
     source_.AddEventRewriter(keyboard_device_id_event_rewriter_.get());
     source_.AddEventRewriter(event_rewriter_ash_.get());
@@ -277,6 +277,9 @@ class EventRewriterTest : public ChromeAshTestBase {
   void TearDown() override {
     source_.RemoveEventRewriter(event_rewriter_ash_.get());
     source_.RemoveEventRewriter(keyboard_device_id_event_rewriter_.get());
+
+    event_rewriter_ash_.reset();
+    keyboard_device_id_event_rewriter_.reset();
 
     input_device_settings_controller_mock_.reset();
     input_device_settings_controller_resetter_.reset();
@@ -369,6 +372,27 @@ class EventRewriterTest : public ChromeAshTestBase {
         kKeyboardDeviceId);
 
     return keyboard;
+  }
+
+  std::vector<std::unique_ptr<ui::Event>> TakeEvents() {
+    return sink_.TakeEvents();
+  }
+
+  void SendKeyEvent(ui::EventType type,
+                    ui::KeyboardCode key_code,
+                    ui::DomCode code,
+                    ui::DomKey key,
+                    int flags) {
+    ui::KeyEvent press(type, key_code, code, flags, key, ui::EventTimeForNow());
+    ui::EventDispatchDetails details = source_.Send(&press);
+    CHECK(!details.dispatcher_destroyed);
+  }
+
+  void SendActivateStickyKeyPattern(ui::KeyboardCode key_code,
+                                    ui::DomCode code,
+                                    ui::DomKey key) {
+    SendKeyEvent(ui::ET_KEY_PRESSED, key_code, code, key, ui::EF_NONE);
+    SendKeyEvent(ui::ET_KEY_RELEASED, key_code, code, key, ui::EF_NONE);
   }
 
   void TestKeyboard(const std::string& name,
@@ -4423,8 +4447,7 @@ TEST_F(EventRewriterTest, TestRewriteKeyEventSentByXSendEvent) {
                           ui::DomCode::CONTROL_LEFT, ui::EF_FINAL,
                           ui::DomKey::CONTROL, ui::EventTimeForNow());
     source().Send(&keyevent);
-    auto events =
-        static_cast<TestEventSink*>(source().GetEventSink())->TakeEvents();
+    auto events = TakeEvents();
     // Control should NOT be remapped to Alt if EF_FINAL is set.
     ASSERT_EQ(1u, events.size());
     ASSERT_TRUE(events[0]->IsKeyEvent());
@@ -4450,141 +4473,15 @@ TEST_F(EventRewriterTest, TestRewriteNonNativeEvent) {
   press.set_flags(ui::EF_CONTROL_DOWN);
 
   source().Send(&press);
-  auto events =
-      static_cast<TestEventSink*>(source().GetEventSink())->TakeEvents();
+  auto events = TakeEvents();
   ASSERT_EQ(1u, events.size());
   // Control should be remapped to Alt.
   EXPECT_EQ(ui::EF_ALT_DOWN,
             events[0]->flags() & (ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN));
 }
 
-// Tests of event rewriting that depend on the Ash window manager.
-class EventRewriterAshTest : public ChromeAshTestBase {
- public:
-  EventRewriterAshTest()
-      : source_(&sink_),
-        fake_user_manager_(new FakeChromeUserManager),
-        user_manager_enabler_(base::WrapUnique(fake_user_manager_.get())) {}
-
-  EventRewriterAshTest(const EventRewriterAshTest&) = delete;
-  EventRewriterAshTest& operator=(const EventRewriterAshTest&) = delete;
-
-  ~EventRewriterAshTest() override {}
-
-  ui::EventDispatchDetails Send(ui::Event* event) {
-    return source_.Send(event);
-  }
-
-  void SendKeyEvent(ui::EventType type,
-                    ui::KeyboardCode key_code,
-                    ui::DomCode code,
-                    ui::DomKey key) {
-    SendKeyEvent(type, key_code, code, key, ui::EF_NONE);
-  }
-
-  void SendKeyEvent(ui::EventType type,
-                    ui::KeyboardCode key_code,
-                    ui::DomCode code,
-                    ui::DomKey key,
-                    int flags) {
-    ui::KeyEvent press(type, key_code, code, flags, key, ui::EventTimeForNow());
-    ui::EventDispatchDetails details = Send(&press);
-    CHECK(!details.dispatcher_destroyed);
-  }
-
-  void SendActivateStickyKeyPattern(ui::KeyboardCode key_code,
-                                    ui::DomCode code,
-                                    ui::DomKey key) {
-    SendKeyEvent(ui::ET_KEY_PRESSED, key_code, code, key);
-    SendKeyEvent(ui::ET_KEY_RELEASED, key_code, code, key);
-  }
-
- protected:
-  sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
-
-  void InitModifierKeyPref(IntegerPrefMember* int_pref,
-                           const std::string& pref_name,
-                           ui::mojom::ModifierKey remap_from,
-                           ui::mojom::ModifierKey remap_to) {
-    if (!features::IsInputDeviceSettingsSplitEnabled()) {
-      if (int_pref->GetPrefName() !=
-          pref_name) {  // skip if already initialized.
-        int_pref->Init(pref_name, prefs());
-      }
-      int_pref->SetValue(static_cast<int>(remap_to));
-      return;
-    }
-
-    if (remap_from == remap_to) {
-      keyboard_settings->modifier_remappings.erase(remap_from);
-      return;
-    }
-
-    keyboard_settings->modifier_remappings[remap_from] = remap_to;
-  }
-
-  std::vector<std::unique_ptr<ui::Event>> TakeEvents() {
-    return sink_.TakeEvents();
-  }
-
-  void SetUp() override {
-    ChromeAshTestBase::SetUp();
-
-    input_device_settings_controller_resetter_ = std::make_unique<
-        InputDeviceSettingsController::ScopedResetterForTest>();
-    input_device_settings_controller_mock_ =
-        std::make_unique<MockInputDeviceSettingsController>();
-    keyboard_settings = mojom::KeyboardSettings::New();
-    EXPECT_CALL(*input_device_settings_controller_mock_,
-                GetKeyboardSettings(testing::_))
-        .WillRepeatedly(testing::Return(keyboard_settings.get()));
-
-    sticky_keys_controller_ = Shell::Get()->sticky_keys_controller();
-    delegate_ = std::make_unique<EventRewriterDelegateImpl>(nullptr);
-    delegate_->set_pref_service_for_testing(prefs());
-    rewriter_ = std::make_unique<ui::EventRewriterAsh>(
-        delegate_.get(), keyboard_capability_.get(), sticky_keys_controller_,
-        false, &fake_ime_keyboard_);
-    Preferences::RegisterProfilePrefs(prefs_.registry());
-    source_.AddEventRewriter(rewriter_.get());
-    sticky_keys_controller_->Enable(true);
-  }
-
-  void TearDown() override {
-    input_device_settings_controller_mock_.reset();
-    input_device_settings_controller_resetter_.reset();
-    rewriter_.reset();
-    ChromeAshTestBase::TearDown();
-  }
-
-  ui::test::TestEventSource& source() { return source_; }
-  EventRewriterDelegateImpl* delegate() { return delegate_.get(); }
-
- protected:
-  raw_ptr<StickyKeysController, DanglingUntriaged | ExperimentalAsh>
-      sticky_keys_controller_;
-  std::unique_ptr<MockInputDeviceSettingsController>
-      input_device_settings_controller_mock_;
-  mojom::KeyboardSettingsPtr keyboard_settings;
-
- private:
-  std::unique_ptr<EventRewriterDelegateImpl> delegate_;
-  std::unique_ptr<ui::KeyboardCapability> keyboard_capability_;
-  input_method::FakeImeKeyboard fake_ime_keyboard_;
-  std::unique_ptr<ui::EventRewriterAsh> rewriter_;
-  std::unique_ptr<InputDeviceSettingsController::ScopedResetterForTest>
-      input_device_settings_controller_resetter_;
-
-  TestEventSink sink_;
-  ui::test::TestEventSource source_;
-
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      fake_user_manager_;  // Not owned.
-  user_manager::ScopedUserManager user_manager_enabler_;
-  sync_preferences::TestingPrefServiceSyncable prefs_;
-};
-
-TEST_F(EventRewriterAshTest, TopRowKeysAreFunctionKeys) {
+TEST_F(EventRewriterTest, TopRowKeysAreFunctionKeys) {
+  Preferences::RegisterProfilePrefs(prefs()->registry());
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(1));
   wm::ActivateWindow(window.get());
 
@@ -4598,7 +4495,7 @@ TEST_F(EventRewriterAshTest, TopRowKeysAreFunctionKeys) {
   send_function_keys_pref.Init(prefs::kSendFunctionKeys, prefs());
   send_function_keys_pref.SetValue(true);
   keyboard_settings->top_row_are_fkeys = true;
-  ui::EventDispatchDetails details = Send(&press_f1);
+  ui::EventDispatchDetails details = source().Send(&press_f1);
   ASSERT_FALSE(details.dispatcher_destroyed);
   {
     auto events = TakeEvents();
@@ -4612,7 +4509,7 @@ TEST_F(EventRewriterAshTest, TopRowKeysAreFunctionKeys) {
   // rewritten to the back key.
   send_function_keys_pref.SetValue(false);
   keyboard_settings->top_row_are_fkeys = false;
-  details = Send(&press_f1);
+  details = source().Send(&press_f1);
   ASSERT_FALSE(details.dispatcher_destroyed);
   {
     auto events = TakeEvents();
@@ -4904,7 +4801,8 @@ TEST_F(EventRewriterTest, DeprecatedAltClickGeneratesNotification) {
   }
 }
 
-TEST_F(EventRewriterAshTest, StickyKeyEventDispatchImpl) {
+TEST_F(EventRewriterTest, StickyKeyEventDispatchImpl) {
+  Shell::Get()->sticky_keys_controller()->Enable(true);
   // Test the actual key event dispatch implementation.
   SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
                                ui::DomKey::CONTROL);
@@ -4920,7 +4818,7 @@ TEST_F(EventRewriterAshTest, StickyKeyEventDispatchImpl) {
   ui::KeyEvent press(ui::ET_KEY_PRESSED, ui::VKEY_C, ui::DomCode::US_C,
                      ui::EF_NONE, ui::DomKey::Constant<'c'>::Character,
                      ui::EventTimeForNow());
-  ui::EventDispatchDetails details = Send(&press);
+  ui::EventDispatchDetails details = source().Send(&press);
   {
     auto events = TakeEvents();
     ASSERT_EQ(2u, events.size());
@@ -4936,7 +4834,7 @@ TEST_F(EventRewriterAshTest, StickyKeyEventDispatchImpl) {
   ui::KeyEvent release(ui::ET_KEY_RELEASED, ui::VKEY_C, ui::DomCode::US_C,
                        ui::EF_NONE, ui::DomKey::Constant<'c'>::Character,
                        ui::EventTimeForNow());
-  details = Send(&release);
+  details = source().Send(&release);
   ASSERT_FALSE(details.dispatcher_destroyed);
   {
     auto events = TakeEvents();
@@ -4947,7 +4845,8 @@ TEST_F(EventRewriterAshTest, StickyKeyEventDispatchImpl) {
   }
 }
 
-TEST_F(EventRewriterAshTest, MouseEventDispatchImpl) {
+TEST_F(EventRewriterTest, MouseEventDispatchImpl) {
+  Shell::Get()->sticky_keys_controller()->Enable(true);
   SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
                                ui::DomKey::CONTROL);
   std::ignore = TakeEvents();
@@ -4957,7 +4856,7 @@ TEST_F(EventRewriterAshTest, MouseEventDispatchImpl) {
   ui::MouseEvent press(ui::ET_MOUSE_PRESSED, location, location,
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                        ui::EF_LEFT_MOUSE_BUTTON);
-  ui::EventDispatchDetails details = Send(&press);
+  ui::EventDispatchDetails details = source().Send(&press);
   ASSERT_FALSE(details.dispatcher_destroyed);
   {
     auto events = TakeEvents();
@@ -4971,7 +4870,7 @@ TEST_F(EventRewriterAshTest, MouseEventDispatchImpl) {
   ui::MouseEvent release(ui::ET_MOUSE_RELEASED, location, location,
                          ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                          ui::EF_LEFT_MOUSE_BUTTON);
-  details = Send(&release);
+  details = source().Send(&release);
   ASSERT_FALSE(details.dispatcher_destroyed);
   {
     auto events = TakeEvents();
@@ -4984,7 +4883,8 @@ TEST_F(EventRewriterAshTest, MouseEventDispatchImpl) {
   }
 }
 
-TEST_F(EventRewriterAshTest, MouseWheelEventDispatchImpl) {
+TEST_F(EventRewriterTest, MouseWheelEventDispatchImpl) {
+  Shell::Get()->sticky_keys_controller()->Enable(true);
   // Test positive mouse wheel event is correctly modified and modifier release
   // event is sent.
   SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
@@ -4996,7 +4896,7 @@ TEST_F(EventRewriterAshTest, MouseWheelEventDispatchImpl) {
       gfx::Vector2d(0, ui::MouseWheelEvent::kWheelDelta), location, location,
       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
       ui::EF_LEFT_MOUSE_BUTTON);
-  ui::EventDispatchDetails details = Send(&positive);
+  ui::EventDispatchDetails details = source().Send(&positive);
   ASSERT_FALSE(details.dispatcher_destroyed);
   {
     auto events = TakeEvents();
@@ -5018,7 +4918,7 @@ TEST_F(EventRewriterAshTest, MouseWheelEventDispatchImpl) {
       gfx::Vector2d(0, -ui::MouseWheelEvent::kWheelDelta), location, location,
       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
       ui::EF_LEFT_MOUSE_BUTTON);
-  details = Send(&negative);
+  details = source().Send(&negative);
   ASSERT_FALSE(details.dispatcher_destroyed);
   {
     auto events = TakeEvents();
@@ -5033,7 +4933,7 @@ TEST_F(EventRewriterAshTest, MouseWheelEventDispatchImpl) {
 
 // Tests that if modifier keys are remapped, the flags of a mouse wheel event
 // will be rewritten properly.
-TEST_F(EventRewriterAshTest, MouseWheelEventModifiersRewritten) {
+TEST_F(EventRewriterTest, MouseWheelEventModifiersRewritten) {
   // Generate a mouse wheel event that has a CONTROL_DOWN modifier flag and
   // expect that no rewriting happens as no modifier remapping is active.
   gfx::Point location(0, 0);
@@ -5041,7 +4941,7 @@ TEST_F(EventRewriterAshTest, MouseWheelEventModifiersRewritten) {
       gfx::Vector2d(0, ui::MouseWheelEvent::kWheelDelta), location, location,
       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON | ui::EF_CONTROL_DOWN,
       ui::EF_LEFT_MOUSE_BUTTON);
-  ui::EventDispatchDetails details = Send(&positive);
+  ui::EventDispatchDetails details = source().Send(&positive);
   ASSERT_FALSE(details.dispatcher_destroyed);
   {
     auto events = TakeEvents();
@@ -5058,7 +4958,7 @@ TEST_F(EventRewriterAshTest, MouseWheelEventModifiersRewritten) {
 
   // Sends the same events once again and expect that it will be rewritten to
   // ALT_DOWN.
-  details = Send(&positive);
+  details = source().Send(&positive);
   ASSERT_FALSE(details.dispatcher_destroyed);
   {
     auto events = TakeEvents();
@@ -5070,7 +4970,9 @@ TEST_F(EventRewriterAshTest, MouseWheelEventModifiersRewritten) {
 }
 
 // Tests edge cases of key event rewriting (see https://crbug.com/913209).
-TEST_F(EventRewriterAshTest, KeyEventRewritingEdgeCases) {
+TEST_F(EventRewriterTest, KeyEventRewritingEdgeCases) {
+  Preferences::RegisterProfilePrefs(prefs()->registry());
+
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kAltClickAndSixPackCustomization);
@@ -5078,7 +4980,7 @@ TEST_F(EventRewriterAshTest, KeyEventRewritingEdgeCases) {
   // Edge case 1: Press the Launcher button first. Then press the Up Arrow
   // button.
   SendKeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_COMMAND, ui::DomCode::META_LEFT,
-               ui::DomKey::META);
+               ui::DomKey::META, ui::EF_NONE);
   SendKeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UP, ui::DomCode::ARROW_UP,
                ui::DomKey::ARROW_UP, ui::EF_COMMAND_DOWN);
   {
@@ -5089,7 +4991,7 @@ TEST_F(EventRewriterAshTest, KeyEventRewritingEdgeCases) {
   // When releasing the Launcher button, the rewritten event should be released
   // as well.
   SendKeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_COMMAND, ui::DomCode::META_LEFT,
-               ui::DomKey::META);
+               ui::DomKey::META, ui::EF_NONE);
   {
     auto events = TakeEvents();
     ASSERT_EQ(2u, events.size());
@@ -5099,9 +5001,9 @@ TEST_F(EventRewriterAshTest, KeyEventRewritingEdgeCases) {
 
   // Edge case 2: Press the Up Arrow button first. Then press the Launch button.
   SendKeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UP, ui::DomCode::ARROW_UP,
-               ui::DomKey::ARROW_UP);
+               ui::DomKey::ARROW_UP, ui::EF_NONE);
   SendKeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_COMMAND, ui::DomCode::META_LEFT,
-               ui::DomKey::META);
+               ui::DomKey::META, ui::EF_NONE);
   {
     auto events = TakeEvents();
     EXPECT_EQ(2u, events.size());
@@ -5117,7 +5019,8 @@ TEST_F(EventRewriterAshTest, KeyEventRewritingEdgeCases) {
   }
 }
 
-TEST_F(EventRewriterAshTest, ScrollEventDispatchImpl) {
+TEST_F(EventRewriterTest, ScrollEventDispatchImpl) {
+  Shell::Get()->sticky_keys_controller()->Enable(true);
   // Test scroll event is correctly modified.
   SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
                                ui::DomKey::CONTROL);
@@ -5128,7 +5031,7 @@ TEST_F(EventRewriterAshTest, ScrollEventDispatchImpl) {
                          ui::EventTimeForNow(), 0 /* flag */, 0 /* x_offset */,
                          1 /* y_offset */, 0 /* x_offset_ordinal */,
                          1 /* y_offset_ordinal */, 2 /* finger */);
-  ui::EventDispatchDetails details = Send(&scroll);
+  ui::EventDispatchDetails details = source().Send(&scroll);
   ASSERT_FALSE(details.dispatcher_destroyed);
   {
     auto events = TakeEvents();
@@ -5142,7 +5045,7 @@ TEST_F(EventRewriterAshTest, ScrollEventDispatchImpl) {
       ui::ET_SCROLL_FLING_START, location, location, ui::EventTimeForNow(),
       0 /* flag */, 0 /* x_offset */, 0 /* y_offset */,
       0 /* x_offset_ordinal */, 0 /* y_offset_ordinal */, 2 /* finger */);
-  details = Send(&fling_start);
+  details = source().Send(&fling_start);
   {
     auto events = TakeEvents();
     ASSERT_EQ(2u, events.size());
@@ -5156,7 +5059,7 @@ TEST_F(EventRewriterAshTest, ScrollEventDispatchImpl) {
   // Test scroll direction change causes that modifier release event is sent.
   SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
                                ui::DomKey::CONTROL);
-  details = Send(&scroll);
+  details = source().Send(&scroll);
   ASSERT_FALSE(details.dispatcher_destroyed);
   std::ignore = TakeEvents();
 
@@ -5164,7 +5067,7 @@ TEST_F(EventRewriterAshTest, ScrollEventDispatchImpl) {
                           ui::EventTimeForNow(), 0 /* flag */, 0 /* x_offset */,
                           -1 /* y_offset */, 0 /* x_offset_ordinal */,
                           -1 /* y_offset_ordinal */, 2 /* finger */);
-  details = Send(&scroll2);
+  details = source().Send(&scroll2);
   ASSERT_FALSE(details.dispatcher_destroyed);
   {
     auto events = TakeEvents();
@@ -5177,15 +5080,17 @@ TEST_F(EventRewriterAshTest, ScrollEventDispatchImpl) {
   }
 }
 
-class StickyKeysOverlayTest : public EventRewriterAshTest {
+class StickyKeysOverlayTest : public EventRewriterTest {
  public:
   StickyKeysOverlayTest() : overlay_(nullptr) {}
 
   ~StickyKeysOverlayTest() override {}
 
   void SetUp() override {
-    EventRewriterAshTest::SetUp();
-    overlay_ = sticky_keys_controller_->GetOverlayForTest();
+    EventRewriterTest::SetUp();
+    auto* sticky_keys_controller = Shell::Get()->sticky_keys_controller();
+    sticky_keys_controller->Enable(true);
+    overlay_ = sticky_keys_controller->GetOverlayForTest();
     ASSERT_TRUE(overlay_);
   }
 
@@ -5367,7 +5272,8 @@ TEST_F(StickyKeysOverlayTest, ModifierVisibility) {
   EXPECT_FALSE(overlay_->GetModifierVisible(ui::EF_MOD3_DOWN));
 
   // Turn all modifiers on.
-  sticky_keys_controller_->SetModifiersEnabled(true, true);
+  auto* sticky_keys_controller = Shell::Get()->sticky_keys_controller();
+  sticky_keys_controller->SetModifiersEnabled(true, true);
   EXPECT_TRUE(overlay_->GetModifierVisible(ui::EF_CONTROL_DOWN));
   EXPECT_TRUE(overlay_->GetModifierVisible(ui::EF_SHIFT_DOWN));
   EXPECT_TRUE(overlay_->GetModifierVisible(ui::EF_ALT_DOWN));
@@ -5376,22 +5282,22 @@ TEST_F(StickyKeysOverlayTest, ModifierVisibility) {
   EXPECT_TRUE(overlay_->GetModifierVisible(ui::EF_MOD3_DOWN));
 
   // Turn off Mod3.
-  sticky_keys_controller_->SetModifiersEnabled(false, true);
+  sticky_keys_controller->SetModifiersEnabled(false, true);
   EXPECT_TRUE(overlay_->GetModifierVisible(ui::EF_ALTGR_DOWN));
   EXPECT_FALSE(overlay_->GetModifierVisible(ui::EF_MOD3_DOWN));
 
   // Turn off AltGr.
-  sticky_keys_controller_->SetModifiersEnabled(true, false);
+  sticky_keys_controller->SetModifiersEnabled(true, false);
   EXPECT_FALSE(overlay_->GetModifierVisible(ui::EF_ALTGR_DOWN));
   EXPECT_TRUE(overlay_->GetModifierVisible(ui::EF_MOD3_DOWN));
 
   // Turn off AltGr and Mod3.
-  sticky_keys_controller_->SetModifiersEnabled(false, false);
+  sticky_keys_controller->SetModifiersEnabled(false, false);
   EXPECT_FALSE(overlay_->GetModifierVisible(ui::EF_ALTGR_DOWN));
   EXPECT_FALSE(overlay_->GetModifierVisible(ui::EF_MOD3_DOWN));
 }
 
-class ExtensionRewriterInputTest : public EventRewriterAshTest {
+class ExtensionRewriterInputTest : public EventRewriterTest {
  public:
   ExtensionRewriterInputTest() = default;
   ExtensionRewriterInputTest(const ExtensionRewriterInputTest&) = delete;
@@ -5406,11 +5312,11 @@ class ExtensionRewriterInputTest : public EventRewriterAshTest {
 
   void SetExtensionCommands(
       base::flat_set<std::pair<ui::KeyboardCode, int>> commands) {
-    delegate()->SetExtensionCommandsOverrideForTesting(std::move(commands));
+    delegate_->SetExtensionCommandsOverrideForTesting(std::move(commands));
   }
 
   void RemoveAllExtensionShortcuts() {
-    delegate()->SetExtensionCommandsOverrideForTesting(absl::nullopt);
+    delegate_->SetExtensionCommandsOverrideForTesting(absl::nullopt);
   }
 
   void ExpectEventRewrittenTo(const KeyTestCase& test) {
