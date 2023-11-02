@@ -394,7 +394,7 @@ bool PopupViewViews::SelectNextHorizontalCell() {
   if (selected_cell && HasPopupRowViewAt(selected_cell->first)) {
     PopupRowView& row = GetPopupRowViewAt(selected_cell->first);
     if (selected_cell->second == PopupRowView::CellType::kContent &&
-        row.GetControlView()) {
+        row.GetExpandChildSuggestionsView()) {
       SetSelectedCell(
           CellIndex{selected_cell->first, PopupRowView::CellType::kControl},
           PopupCellSelectionSource::kKeyboard);

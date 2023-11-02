@@ -52,16 +52,6 @@ void PopupCellView::SetSelected(bool selected) {
   RefreshStyle();
 }
 
-void PopupCellView::SetChecked(bool checked) {
-  if (checked_ == checked) {
-    return;
-  }
-
-  checked_ = checked;
-  NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged,
-                           /*send_native_event=*/true);
-}
-
 void PopupCellView::SetAccessibilityDelegate(
     std::unique_ptr<AccessibilityDelegate> a11y_delegate) {
   a11y_delegate_ = std::move(a11y_delegate);
@@ -73,7 +63,7 @@ void PopupCellView::TrackLabel(views::Label* label) {
 
 void PopupCellView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (a11y_delegate_) {
-    a11y_delegate_->GetAccessibleNodeData(GetSelected(), checked_, node_data);
+    a11y_delegate_->GetAccessibleNodeData(GetSelected(), node_data);
   }
 }
 

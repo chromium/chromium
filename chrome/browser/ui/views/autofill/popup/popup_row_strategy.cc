@@ -18,7 +18,6 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/views/new_badge_label.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -53,9 +52,6 @@ constexpr PopupItemId kItemTypesUsingLeadingIcons[] = {
     PopupItemId::kPasswordAccountStorageReSignin,
     PopupItemId::kPasswordAccountStorageOptInAndGenerate};
 
-constexpr int kExpandableControlCellInsetPadding = 16;
-constexpr int kExpandableControlCellIconSize = 6;
-
 // The size of a close or delete icon.
 constexpr int kCloseIconSize = 16;
 
@@ -85,7 +81,6 @@ class ContentItemAccessibilityDelegate
   ~ContentItemAccessibilityDelegate() override = default;
 
   void GetAccessibleNodeData(bool is_selected,
-                             bool is_checked,
                              ui::AXNodeData* node_data) const override;
 
  private:
@@ -121,7 +116,6 @@ ContentItemAccessibilityDelegate::ContentItemAccessibilityDelegate(
 
 void ContentItemAccessibilityDelegate::GetAccessibleNodeData(
     bool is_selected,
-    bool is_checked,
     ui::AXNodeData* node_data) const {
   DCHECK(node_data);
   // Options are selectable.
@@ -131,32 +125,6 @@ void ContentItemAccessibilityDelegate::GetAccessibleNodeData(
 
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet, set_index_);
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kSetSize, set_size_);
-}
-
-// ************** ExpandableControlCellAccessibilityDelegate  ******************
-class ExpandableControlCellAccessibilityDelegate
-    : public PopupCellView::AccessibilityDelegate {
- public:
-  ExpandableControlCellAccessibilityDelegate() = default;
-  ~ExpandableControlCellAccessibilityDelegate() override = default;
-
-  void GetAccessibleNodeData(bool is_selected,
-                             bool is_checked,
-                             ui::AXNodeData* node_data) const override;
-};
-
-// Sets the checked state according to `is_checked`,
-// `is_selected` is ignored as the first one is more important and updating
-// two states within hundreds of milliseconds can be confusing.
-void ExpandableControlCellAccessibilityDelegate::GetAccessibleNodeData(
-    bool is_selected,
-    bool is_checked,
-    ui::AXNodeData* node_data) const {
-  node_data->role = ax::mojom::Role::kToggleButton;
-  node_data->SetNameChecked(l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_EXPANDABLE_SUGGESTION_CONTROLL_A11Y_NAME));
-  node_data->SetCheckedState(is_checked ? ax::mojom::CheckedState::kTrue
-                                        : ax::mojom::CheckedState::kFalse);
 }
 
 }  // namespace
@@ -199,26 +167,6 @@ std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateContent() {
 
   auto view = std::make_unique<PopupCellView>();
   AddContentLabelsAndCallbacks(*view);
-  return view;
-}
-
-std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateControl() {
-  const Suggestion& kSuggestion =
-      GetController()->GetSuggestionAt(GetLineNumber());
-  if (kSuggestion.children.empty()) {
-    return nullptr;
-  }
-
-  std::unique_ptr<PopupCellView> view =
-      views::Builder<PopupCellView>(std::make_unique<PopupCellView>())
-          .SetAccessibilityDelegate(
-              std::make_unique<ExpandableControlCellAccessibilityDelegate>())
-          .Build();
-  view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(kExpandableControlCellInsetPadding)));
-  view->AddChildView(popup_cell_utils::ImageViewFromVectorIcon(
-      vector_icons::kSubmenuArrowIcon, kExpandableControlCellIconSize));
   return view;
 }
 
@@ -339,10 +287,6 @@ std::unique_ptr<PopupCellView> PopupComposeSuggestionStrategy::CreateContent() {
   return view;
 }
 
-std::unique_ptr<PopupCellView> PopupComposeSuggestionStrategy::CreateControl() {
-  return nullptr;
-}
-
 /************************ PopupPasswordSuggestionStrategy *******************/
 
 PopupPasswordSuggestionStrategy::PopupPasswordSuggestionStrategy(
@@ -412,11 +356,6 @@ PopupPasswordSuggestionStrategy::CreateAndTrackSubtextViews(
   std::vector<std::unique_ptr<views::View>> result;
   result.push_back(std::move(label));
   return result;
-}
-
-std::unique_ptr<PopupCellView>
-PopupPasswordSuggestionStrategy::CreateControl() {
-  return nullptr;
 }
 
 /************************** PopupFooterStrategy ******************************/
@@ -501,10 +440,6 @@ std::unique_ptr<PopupCellView> PopupFooterStrategy::CreateContent() {
   view->RefreshStyle();
 
   return view;
-}
-
-std::unique_ptr<PopupCellView> PopupFooterStrategy::CreateControl() {
-  return nullptr;
 }
 
 }  // namespace autofill

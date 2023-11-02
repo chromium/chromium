@@ -144,15 +144,38 @@ class PopupRowView : public views::View, public views::ViewObserver {
 
   // Returns the view representing the content area of the row.
   PopupCellView& GetContentView() { return *content_view_; }
-  // Returns the view representing the control area of the row. Can be null.
-  PopupCellView* GetControlView() { return control_view_.get(); }
+
+  // Returns the view representing the suggestions expanding control of the row.
+  views::View* GetExpandChildSuggestionsView() {
+    return expand_child_suggestions_view_.get();
+  }
 
  private:
-  void RunOnAcceptedForEvent(const ui::Event& event);
+  // If the suggestion has child suggestions the row view adds this view to
+  // provide a control for the sub-popup. It implements visualization and event
+  // handling only, `PopupViewViews` controls the logic of opening/closing.
+  class ExpandChildSuggestionsView : public views::View {
+   public:
+    ExpandChildSuggestionsView();
+    ExpandChildSuggestionsView(const ExpandChildSuggestionsView&) = delete;
+    ExpandChildSuggestionsView& operator=(const ExpandChildSuggestionsView&) =
+        delete;
+    ~ExpandChildSuggestionsView() override = default;
 
-  // Returns the cell view or `nullptr` if it was not created.
-  const PopupCellView* GetCellView(CellType type) const;
-  PopupCellView* GetCellView(CellType type);
+    // views::View:
+    void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+
+    // Sets the a11y checked state. It should reflect the sub-popup open state.
+    void SetChecked(bool checked);
+
+   private:
+    // This property controls the a11y `ax::mojom::CheckedState` attribute.
+    // The value is controlled by external clients (see `SetChecked()`) and
+    // expected to be synced with the sub-popup open state.
+    bool checked_ = false;
+  };
+
+  void RunOnAcceptedForEvent(const ui::Event& event);
 
   AccessibilitySelectionDelegate& GetA11ySelectionDelegate() {
     return a11y_selection_delegate_.get();
@@ -183,7 +206,7 @@ class PopupRowView : public views::View, public views::ViewObserver {
   raw_ptr<PopupCellView> content_view_ = nullptr;
   // The cell wrapping the control area of the row.
   // TODO(crbug.com/1411172): Add keyboard event handling.
-  raw_ptr<PopupCellView> control_view_ = nullptr;
+  raw_ptr<ExpandChildSuggestionsView> expand_child_suggestions_view_ = nullptr;
 
   // Overriding event handles for the content and control views.
   std::unique_ptr<ui::EventHandler> content_event_handler_;

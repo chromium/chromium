@@ -43,9 +43,8 @@ class PopupCellView : public views::View {
     virtual ~AccessibilityDelegate() = default;
 
     // Sets the a11y information in `node_data` based on whether the cell in
-    // question `is_selected`, or `is_checked`.
+    // question `is_selected`
     virtual void GetAccessibleNodeData(bool is_selected,
-                                       bool is_checked,
                                        ui::AXNodeData* node_data) const = 0;
   };
 
@@ -59,10 +58,6 @@ class PopupCellView : public views::View {
   // Gets and sets the selected state of the cell.
   bool GetSelected() const { return selected_; }
   virtual void SetSelected(bool selected);
-
-  // Sets the a11y checked state. It should be used for the control cell only
-  // and refrects the sub-popup open/closed state.
-  void SetChecked(bool checked);
 
   // Sets the accessibility delegate that is consulted when providing accessible
   // node data.
@@ -89,9 +84,6 @@ class PopupCellView : public views::View {
  protected:
   // The selection state.
   bool selected_ = false;
-  // This property controls the a11y `ax::mojom::CheckedState` attribute. It is
-  // used for the control cell only to mirror the sub-popup open/closed state.
-  bool checked_ = false;
 
  private:
   // Computes the actual `TimeTicks` at which the event occurred (taking latency

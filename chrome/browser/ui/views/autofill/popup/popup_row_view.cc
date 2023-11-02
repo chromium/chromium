@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/user_education/scoped_new_badge_tracker.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_cell_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_strategy.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
@@ -26,7 +27,10 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/feature_engagement/public/feature_list.h"
+#include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/event_utils.h"
@@ -34,8 +38,11 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/insets_outsets_base.h"
 #include "ui/gfx/geometry/outsets_f.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/metadata/type_conversion.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
 namespace autofill {
@@ -55,12 +62,10 @@ int GetHorizontalMargin() {
 class EnterExitHandler : public ui::EventHandler {
  public:
   EnterExitHandler(base::RepeatingClosure enter_callback,
-                   base::RepeatingClosure exit_callback)
-      : enter_callback_(std::move(enter_callback)),
-        exit_callback_(std::move(exit_callback)) {}
+                   base::RepeatingClosure exit_callback);
   EnterExitHandler(const EnterExitHandler&) = delete;
   EnterExitHandler& operator=(const EnterExitHandler&) = delete;
-  ~EnterExitHandler() override = default;
+  ~EnterExitHandler() override;
 
   void OnEvent(ui::Event* event) override;
 
@@ -69,6 +74,17 @@ class EnterExitHandler : public ui::EventHandler {
   base::RepeatingClosure exit_callback_;
 };
 
+constexpr int kExpandableControlCellInsetPadding = 16;
+constexpr int kExpandableControlCellIconSize = 6;
+
+}  // namespace
+
+EnterExitHandler::EnterExitHandler(base::RepeatingClosure enter_callback,
+                                   base::RepeatingClosure exit_callback)
+    : enter_callback_(std::move(enter_callback)),
+      exit_callback_(std::move(exit_callback)) {}
+
+EnterExitHandler::~EnterExitHandler() = default;
 void EnterExitHandler::OnEvent(ui::Event* event) {
   switch (event->type()) {
     case ui::ET_MOUSE_ENTERED:
@@ -89,7 +105,33 @@ void EnterExitHandler::OnEvent(ui::Event* event) {
   }
 }
 
-}  // namespace
+PopupRowView::ExpandChildSuggestionsView::ExpandChildSuggestionsView() {
+  SetNotifyEnterExitOnChild(true);
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal,
+      gfx::Insets(kExpandableControlCellInsetPadding)));
+  AddChildView(popup_cell_utils::ImageViewFromVectorIcon(
+      vector_icons::kSubmenuArrowIcon, kExpandableControlCellIconSize));
+}
+
+void PopupRowView::ExpandChildSuggestionsView::GetAccessibleNodeData(
+    ui::AXNodeData* node_data) {
+  node_data->role = ax::mojom::Role::kToggleButton;
+  node_data->SetNameChecked(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_EXPANDABLE_SUGGESTION_CONTROLL_A11Y_NAME));
+  node_data->SetCheckedState(checked_ ? ax::mojom::CheckedState::kTrue
+                                      : ax::mojom::CheckedState::kFalse);
+}
+
+void PopupRowView::ExpandChildSuggestionsView::SetChecked(bool checked) {
+  if (checked_ == checked) {
+    return;
+  }
+
+  checked_ = checked;
+  NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged,
+                           /*send_native_event=*/true);
+}
 
 PopupRowView::ScopedNewBadgeTrackerWithAcceptAction::
     ScopedNewBadgeTrackerWithAcceptAction(
@@ -232,14 +274,15 @@ PopupRowView::PopupRowView(
       set_exit_enter_callbacks(CellType::kContent, *content_view_);
   layout->SetFlexForView(content_view_.get(), 1);
 
-  if (std::unique_ptr<PopupCellView> control_view =
-          strategy_->CreateControl()) {
-    control_view_ = AddChildView(std::move(control_view));
-    control_view_->SetFocusBehavior(FocusBehavior::ALWAYS);
-    control_view_->AddObserver(this);
-    control_event_handler_ =
-        set_exit_enter_callbacks(CellType::kControl, *control_view_);
-    layout->SetFlexForView(control_view_.get(), 0);
+  if (controller_ && line_number_ < controller_->GetLineCount() &&
+      !controller_->GetSuggestionAt(line_number_).children.empty()) {
+    expand_child_suggestions_view_ =
+        AddChildView(std::make_unique<ExpandChildSuggestionsView>());
+    expand_child_suggestions_view_->SetFocusBehavior(FocusBehavior::ALWAYS);
+    expand_child_suggestions_view_->AddObserver(this);
+    control_event_handler_ = set_exit_enter_callbacks(
+        CellType::kControl, *expand_child_suggestions_view_);
+    layout->SetFlexForView(expand_child_suggestions_view_.get(), 0);
   }
 }
 
@@ -297,41 +340,45 @@ void PopupRowView::OnPaint(gfx::Canvas* canvas) {
 }
 
 void PopupRowView::OnViewFocused(views::View* view) {
-  if (view == content_view_ || view == control_view_) {
-    CellType type =
-        view == content_view_ ? CellType::kContent : CellType::kControl;
-    // Focus may come not only from the keyboard (e.g. from devices used for
-    // a11y), but for selection purposes these non-mouse sources are similar
-    // enough to treat them equally as a keyboard.
-    selection_delegate_->SetSelectedCell(
-        PopupViewViews::CellIndex{line_number_, type},
-        PopupCellSelectionSource::kKeyboard);
-  }
+  CHECK(view == content_view_ || view == expand_child_suggestions_view_);
+
+  CellType type =
+      view == content_view_ ? CellType::kContent : CellType::kControl;
+  // Focus may come not only from the keyboard (e.g. from devices used for
+  // a11y), but for selection purposes these non-mouse sources are similar
+  // enough to treat them equally as a keyboard.
+  selection_delegate_->SetSelectedCell(
+      PopupViewViews::CellIndex{line_number_, type},
+      PopupCellSelectionSource::kKeyboard);
 }
 
-void PopupRowView::SetSelectedCell(absl::optional<CellType> cell) {
-  if (cell == selected_cell_) {
+void PopupRowView::SetSelectedCell(absl::optional<CellType> new_cell) {
+  if (new_cell == selected_cell_) {
     return;
   }
 
-  PopupCellView* old_view =
-      selected_cell_ ? GetCellView(*selected_cell_) : nullptr;
-  if (old_view) {
-    old_view->SetSelected(false);
-    if (selected_cell_ == CellType::kContent && controller_) {
+  // If the previous cell was content, set it as unselected.
+  if (selected_cell_ == CellType::kContent) {
+    content_view_->SetSelected(false);
+    if (controller_) {
       controller_->SelectSuggestion(absl::nullopt);
     }
   }
 
-  PopupCellView* new_view = cell ? GetCellView(*cell) : nullptr;
-  if (new_view) {
-    new_view->SetSelected(true);
-    if (cell == CellType::kContent && controller_) {
+  if (new_cell == CellType::kContent) {
+    if (controller_) {
       controller_->SelectSuggestion(line_number_);
     }
-    GetA11ySelectionDelegate().NotifyAXSelection(*new_view);
+    content_view_->SetSelected(true);
+    GetA11ySelectionDelegate().NotifyAXSelection(*content_view_);
     NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
-    selected_cell_ = cell;
+    selected_cell_ = new_cell;
+  } else if (new_cell == CellType::kControl && expand_child_suggestions_view_) {
+    expand_child_suggestions_view_->GetViewAccessibility()
+        .SetPopupFocusOverride();
+    expand_child_suggestions_view_->NotifyAccessibilityEvent(
+        ax::mojom::Event::kFocus, true);
+    selected_cell_ = new_cell;
   } else {
     // Set the selected cell to none in case an invalid choice was made (e.g.
     // selecting a control cell when none exists) or the cell was reset
@@ -346,17 +393,17 @@ void PopupRowView::SetChildSuggestionsDisplayed(
     bool child_suggestions_displayed) {
   child_suggestions_displayed_ = child_suggestions_displayed;
 
-  if (PopupCellView* view = GetCellView(CellType::kControl)) {
-    view->SetChecked(child_suggestions_displayed);
+  if (expand_child_suggestions_view_) {
+    expand_child_suggestions_view_->SetChecked(child_suggestions_displayed);
   }
 
   UpdateBackground();
 }
 
 gfx::RectF PopupRowView::GetControlCellBounds() const {
-  const PopupCellView* view = GetCellView(CellType::kControl);
   // The view is expected to be present.
-  gfx::RectF bounds = gfx::RectF(view->GetBoundsInScreen());
+  gfx::RectF bounds =
+      gfx::RectF(expand_child_suggestions_view_->GetBoundsInScreen());
 
   // Depending on the RTL expand the bounds on the outer side only, so that
   // the inner sides don't have gaps which may cause unnecessary mouse events
@@ -414,27 +461,14 @@ void PopupRowView::RunOnAcceptedForEvent(const ui::Event& event) {
   controller_->AcceptSuggestion(line_number_, time);
 }
 
-const PopupCellView* PopupRowView::GetCellView(CellType type) const {
-  switch (type) {
-    case CellType::kContent:
-      return content_view_.get();
-    case CellType::kControl:
-      return control_view_.get();
-  }
-}
-
-PopupCellView* PopupRowView::GetCellView(CellType type) {
-  return const_cast<PopupCellView*>(std::as_const(*this).GetCellView(type));
-}
-
 void PopupRowView::UpdateBackground() {
-  bool highlighted = child_suggestions_displayed_;
-  if (PopupCellView* control_cell = GetCellView(CellType::kControl)) {
-    highlighted = highlighted || control_cell->GetSelected();
-  }
-  ui::ColorId kBackgroundColorId = highlighted
-                                       ? ui::kColorDropdownBackgroundSelected
-                                       : ui::kColorDropdownBackground;
+  // The whole row is highlighted when:
+  // * The subpopup is open, or
+  // * The expanding control view is being hovered.
+  ui::ColorId kBackgroundColorId =
+      child_suggestions_displayed_ || (selected_cell_ == CellType::kControl)
+          ? ui::kColorDropdownBackgroundSelected
+          : ui::kColorDropdownBackground;
   SetBackground(views::CreateThemedRoundedRectBackground(
       kBackgroundColorId, ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
                               views::Emphasis::kMedium)));

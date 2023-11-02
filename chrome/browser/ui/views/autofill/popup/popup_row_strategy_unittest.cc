@@ -184,16 +184,6 @@ TEST_P(PopupRowStrategyParametrizedTest,
             kTestdata.set_index);
 }
 
-TEST_P(PopupRowStrategyParametrizedTest, HasControlArea) {
-  const RowStrategyTestdata kTestdata = GetParam();
-
-  SetSuggestions(kTestdata.popup_item_ids);
-  std::unique_ptr<PopupRowStrategy> strategy =
-      CreateStrategy(kTestdata.strategy_type, kTestdata.line_number);
-
-  EXPECT_THAT(strategy->CreateControl(), IsNull());
-}
-
 INSTANTIATE_TEST_SUITE_P(All,
                          PopupRowStrategyParametrizedTest,
                          ::testing::ValuesIn(kTestcases));

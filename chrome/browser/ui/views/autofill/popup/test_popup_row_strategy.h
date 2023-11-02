@@ -21,25 +21,21 @@ class TestAccessibilityDelegate : public PopupCellView::AccessibilityDelegate {
   ~TestAccessibilityDelegate() override = default;
 
   void GetAccessibleNodeData(bool is_selected,
-                             bool is_permanently_highlighted,
                              ui::AXNodeData* node_data) const override;
 };
 
 // A `PopupRowStrategy` used solely in tests.
 class TestPopupRowStrategy : public PopupRowStrategy {
  public:
-  TestPopupRowStrategy(int line_number, bool has_control);
+  explicit TestPopupRowStrategy(int line_number);
   ~TestPopupRowStrategy() override;
 
   std::unique_ptr<PopupCellView> CreateContent() override;
-  // Creates the control view. Returns `nullptr` if `has_control_` is false.
-  std::unique_ptr<PopupCellView> CreateControl() override;
 
   int GetLineNumber() const override;
 
  private:
   const int line_number_;
-  const bool has_control_;
 };
 
 }  // namespace autofill
