@@ -136,22 +136,12 @@ enum AuthenticationButtonType {
 
 - (void)updatePrimaryActionButtonStyle {
   if (![self.delegate unifiedConsentCoordinatorHasIdentity]) {
-    if (IsUIButtonConfigurationEnabled()) {
-      DCHECK(self.primaryActionButton.configuration);
-      UIButtonConfiguration* buttonConfiguration =
-          self.primaryActionButton.configuration;
-      buttonConfiguration.image = nil;
-      buttonConfiguration.title =
-          l10n_util::GetNSString(IDS_IOS_ACCOUNT_UNIFIED_CONSENT_ADD_ACCOUNT);
-      self.primaryActionButton.configuration = buttonConfiguration;
-    } else {
-      // User does not have an account on the device.
-      [self.primaryActionButton
-          setTitle:l10n_util::GetNSString(
-                       IDS_IOS_ACCOUNT_UNIFIED_CONSENT_ADD_ACCOUNT)
-          forState:UIControlStateNormal];
-      [self.primaryActionButton setImage:nil forState:UIControlStateNormal];
-    }
+    UIButtonConfiguration* buttonConfiguration =
+        self.primaryActionButton.configuration;
+    buttonConfiguration.image = nil;
+    buttonConfiguration.title =
+        l10n_util::GetNSString(IDS_IOS_ACCOUNT_UNIFIED_CONSENT_ADD_ACCOUNT);
+    self.primaryActionButton.configuration = buttonConfiguration;
     self.primaryActionButton.tag = AuthenticationButtonTypeAddAccount;
     self.primaryActionButton.accessibilityIdentifier =
         kAddAccountAccessibilityIdentifier;
@@ -165,55 +155,20 @@ enum AuthenticationButtonType {
     // Set button "more" down directional arrow image.
     UIImage* buttonImage = [[UIImage imageNamed:@"signin_confirmation_more"]
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-
-    if (IsUIButtonConfigurationEnabled()) {
-      DCHECK(self.primaryActionButton.configuration);
       UIButtonConfiguration* buttonConfiguration =
           self.primaryActionButton.configuration;
       buttonConfiguration.image = buttonImage;
       buttonConfiguration.title = l10n_util::GetNSString(
           IDS_IOS_ACCOUNT_CONSISTENCY_CONFIRMATION_SCROLL_BUTTON);
-      self.primaryActionButton.configuration = buttonConfiguration;
-    } else {
-      [self.primaryActionButton
-          setTitle:l10n_util::GetNSString(
-                       IDS_IOS_ACCOUNT_CONSISTENCY_CONFIRMATION_SCROLL_BUTTON)
-          forState:UIControlStateNormal];
-      [self.primaryActionButton setImage:buttonImage
-                                forState:UIControlStateNormal];
-    }
-
-    if (IsUIButtonConfigurationEnabled()) {
-      UIButtonConfiguration* buttonConfiguration =
-          self.primaryActionButton.configuration;
       buttonConfiguration.imagePadding = kImageInset;
       self.primaryActionButton.configuration = buttonConfiguration;
-    } else {
-      if (UIApplication.sharedApplication.userInterfaceLayoutDirection ==
-          UIUserInterfaceLayoutDirectionLeftToRight) {
-        UIEdgeInsets imageEdgeInsets = UIEdgeInsetsMake(0, -kImageInset, 0, 0);
-        SetImageEdgeInsets(self.primaryActionButton, imageEdgeInsets);
-      } else {
-        UIEdgeInsets imageEdgeInsets = UIEdgeInsetsMake(0, 0, 0, -kImageInset);
-        SetImageEdgeInsets(self.primaryActionButton, imageEdgeInsets);
-      }
-    }
   } else {
-    if (IsUIButtonConfigurationEnabled()) {
-      DCHECK(self.primaryActionButton.configuration);
-      UIButtonConfiguration* buttonConfiguration =
-          self.primaryActionButton.configuration;
-      buttonConfiguration.image = nil;
-      buttonConfiguration.title =
-          l10n_util::GetNSString(self.acceptSigninButtonStringId);
-      self.primaryActionButton.configuration = buttonConfiguration;
-    } else {
-      // By default display 'Yes I'm in' button.
-      [self.primaryActionButton
-          setTitle:l10n_util::GetNSString(self.acceptSigninButtonStringId)
-          forState:UIControlStateNormal];
-      [self.primaryActionButton setImage:nil forState:UIControlStateNormal];
-    }
+    UIButtonConfiguration* buttonConfiguration =
+        self.primaryActionButton.configuration;
+    buttonConfiguration.image = nil;
+    buttonConfiguration.title =
+        l10n_util::GetNSString(self.acceptSigninButtonStringId);
+    self.primaryActionButton.configuration = buttonConfiguration;
     self.primaryActionButton.tag = AuthenticationButtonTypeConfirmation;
     self.primaryActionButton.accessibilityIdentifier =
         kConfirmationAccessibilityIdentifier;
@@ -279,15 +234,11 @@ enum AuthenticationButtonType {
   self.containerView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:self.containerView];
 
-  if (IsUIButtonConfigurationEnabled()) {
-    UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration plainButtonConfiguration];
-    self.primaryActionButton =
-        [UIButton buttonWithConfiguration:buttonConfiguration
-                            primaryAction:nil];
-  } else {
-    self.primaryActionButton = [[UIButton alloc] init];
-  }
+  UIButtonConfiguration* primaryButtonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  self.primaryActionButton =
+      [UIButton buttonWithConfiguration:primaryButtonConfiguration
+                          primaryAction:nil];
 
   [self.primaryActionButton addTarget:self
                                action:@selector(onPrimaryActionButtonPressed:)
@@ -295,15 +246,11 @@ enum AuthenticationButtonType {
   [self updatePrimaryActionButtonStyle];
   self.primaryActionButton.translatesAutoresizingMaskIntoConstraints = NO;
 
-  if (IsUIButtonConfigurationEnabled()) {
-    UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration plainButtonConfiguration];
-    self.secondaryActionButton =
-        [UIButton buttonWithConfiguration:buttonConfiguration
-                            primaryAction:nil];
-  } else {
-    self.secondaryActionButton = [[UIButton alloc] init];
-  }
+  UIButtonConfiguration* secondaryButtonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  self.secondaryActionButton =
+      [UIButton buttonWithConfiguration:secondaryButtonConfiguration
+                          primaryAction:nil];
 
   [self.secondaryActionButton
              addTarget:self
@@ -548,28 +495,17 @@ enum AuthenticationButtonType {
       button.backgroundColor = [UIColor colorNamed:kBlueColor];
       button.layer.cornerRadius = kButtonCornerRadius;
 
-      if (IsUIButtonConfigurationEnabled()) {
-        UIButtonConfiguration* buttonConfiguration = button.configuration;
-        buttonConfiguration.baseForegroundColor =
-            [UIColor colorNamed:kSolidButtonTextColor];
-        button.configuration = buttonConfiguration;
-      } else {
-        [button setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
-                     forState:UIControlStateNormal];
-      }
+      UIButtonConfiguration* buttonConfiguration = button.configuration;
+      buttonConfiguration.baseForegroundColor =
+          [UIColor colorNamed:kSolidButtonTextColor];
+      button.configuration = buttonConfiguration;
       break;
     }
     case SECONDARY_ACTION_STYLE: {
       // Set the blue text button styling.
-      if (IsUIButtonConfigurationEnabled()) {
-        UIButtonConfiguration* buttonConfiguration = button.configuration;
-        buttonConfiguration.baseForegroundColor =
-            [UIColor colorNamed:kBlueColor];
-        button.configuration = buttonConfiguration;
-      } else {
-        [button setTitleColor:[UIColor colorNamed:kBlueColor]
-                     forState:UIControlStateNormal];
-      }
+      UIButtonConfiguration* buttonConfiguration = button.configuration;
+      buttonConfiguration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
+      button.configuration = buttonConfiguration;
       break;
     }
   }
@@ -587,29 +523,19 @@ enum AuthenticationButtonType {
   CGFloat horizontalContentInset = constants.ButtonTitleContentHorizontalInset;
   CGFloat verticalContentInset = constants.ButtonTitleContentVerticalInset;
 
-  if (IsUIButtonConfigurationEnabled()) {
-    UIButtonConfiguration* buttonConfiguration = button.configuration;
-    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-        verticalContentInset, horizontalContentInset, verticalContentInset,
-        horizontalContentInset);
-    NSString* title = button.configuration.title;
-    if (title) {
-      UIFont* font = [UIFont preferredFontForTextStyle:fontStyle];
-      NSDictionary* attributes = @{NSFontAttributeName : font};
-      NSAttributedString* attributedTitle =
-          [[NSAttributedString alloc] initWithString:title
-                                          attributes:attributes];
-      buttonConfiguration.attributedTitle = attributedTitle;
-    }
-    button.configuration = buttonConfiguration;
-  } else {
-    UIEdgeInsets contentEdgeInsets =
-        UIEdgeInsetsMake(verticalContentInset, horizontalContentInset,
-                         verticalContentInset, horizontalContentInset);
-    SetContentEdgeInsets(button, contentEdgeInsets);
-    button.titleLabel.font = [UIFont preferredFontForTextStyle:fontStyle];
-    button.titleLabel.numberOfLines = 0;
+  UIButtonConfiguration* buttonConfiguration = button.configuration;
+  buttonConfiguration.contentInsets =
+      NSDirectionalEdgeInsetsMake(verticalContentInset, horizontalContentInset,
+                                  verticalContentInset, horizontalContentInset);
+  NSString* title = button.configuration.title;
+  if (title) {
+    UIFont* font = [UIFont preferredFontForTextStyle:fontStyle];
+    NSDictionary* attributes = @{NSFontAttributeName : font};
+    NSAttributedString* attributedTitle =
+        [[NSAttributedString alloc] initWithString:title attributes:attributes];
+    buttonConfiguration.attributedTitle = attributedTitle;
   }
+  button.configuration = buttonConfiguration;
 }
 
 #pragma mark - Events
