@@ -671,10 +671,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 isTabLaunchedFromExternalApp && shouldSuppressPSDialogForExternalAppLaunches;
 
         if (!shouldSuppressPSDialog) {
-            didTriggerPromo = PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
-                    mActivity, new SettingsLauncherImpl(),
-                    mTabModelSelectorSupplier.get().isIncognitoSelected(),
-                    getBottomSheetController());
+            didTriggerPromo =
+                    PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
+                            mActivity,
+                            new SettingsLauncherImpl(),
+                            mTabModelSelectorSupplier.get().isIncognitoSelected());
         }
         RecordHistogram.recordBooleanHistogram(histogramName, shouldSuppressPSDialog);
 
