@@ -762,6 +762,8 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      // Animation properites are never incremental.
+      supports_incremental_style: false,
       valid_for_keyframe: false,
     },
     {
@@ -771,6 +773,8 @@
         "animation-delay-start", "animation-delay-end"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      // Animation properites are never incremental.
+      supports_incremental_style: false,
       valid_for_keyframe: false,
       runtime_flag: "CSSAnimationDelayStartEnd",
     },
@@ -785,6 +789,8 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      // Animation properites are never incremental.
+      supports_incremental_style: false,
       valid_for_keyframe: false,
       runtime_flag: "CSSAnimationDelayStartEnd",
     },
@@ -799,6 +805,8 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      // Animation properites are never incremental.
+      supports_incremental_style: false,
       valid_for_keyframe: false,
       runtime_flag: "CSSAnimationDelayStartEnd",
     },
@@ -815,6 +823,8 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      // Animation properites are never incremental.
+      supports_incremental_style: false,
       valid_for_keyframe: false,
     },
     {
@@ -829,6 +839,8 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      // Animation properites are never incremental.
+      supports_incremental_style: false,
       valid_for_keyframe: false,
     },
     {
@@ -843,6 +855,8 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      // Animation properites are never incremental.
+      supports_incremental_style: false,
       valid_for_keyframe: false,
     },
     {
@@ -859,6 +873,8 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      // Animation properites are never incremental.
+      supports_incremental_style: false,
       valid_for_keyframe: false,
     },
     {
@@ -874,6 +890,8 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      // Animation properites are never incremental.
+      supports_incremental_style: false,
       valid_for_keyframe: false,
     },
     {
@@ -888,6 +906,8 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      // Animation properites are never incremental.
+      supports_incremental_style: false,
       valid_for_keyframe: false,
     },
     {
@@ -900,6 +920,8 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      // Animation properites are never incremental.
+      supports_incremental_style: false,
       valid_for_keyframe: false,
       runtime_flag: "ScrollTimeline",
     },
@@ -913,6 +935,8 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      // Animation properites are never incremental.
+      supports_incremental_style: false,
       valid_for_keyframe: false,
       runtime_flag: "ScrollTimeline",
     },
@@ -929,6 +953,8 @@
       valid_for_marker: true,
       runtime_flag: "ScrollTimeline",
       is_animation_property: true,
+      // Animation properites are never incremental.
+      supports_incremental_style: false,
     },
     {
       name: "animation-timing-function",
@@ -954,6 +980,8 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      // Animation properites are never incremental.
+      supports_incremental_style: false,
     },
     {
       name: "transition-delay",
@@ -966,6 +994,8 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      // Animation properites are never incremental.
+      supports_incremental_style: false,
     },
     {
       name: "transition-duration",
@@ -978,6 +1008,8 @@
       },
       valid_for_marker: true,
       is_animation_property: true,
+      // Animation properites are never incremental.
+      supports_incremental_style: false,
     },
     {
       name: "transition-property",
@@ -990,6 +1022,8 @@
       typedom_types: ["Keyword"],
       valid_for_marker: true,
       is_animation_property: true,
+      // Animation properites are never incremental.
+      supports_incremental_style: false,
     },
     {
       name: "transition-behavior",
@@ -1002,6 +1036,8 @@
       },
       valid_for_marker: true,
       is_animation_property: true,
+      // Animation properites are never incremental.
+      supports_incremental_style: false,
       runtime_flag: "CSSTransitionDiscrete",
     },
     {
@@ -1027,6 +1063,8 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      // Animation properites are never incremental.
+      supports_incremental_style: false,
     },
 
     // High Priority and all other font properties.
@@ -1100,6 +1138,8 @@
       valid_for_marker: true,
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
+      // See comment on font.
+      supports_incremental_style: false,
     },
     {
       name: "font-kerning",
@@ -1117,6 +1157,8 @@
       valid_for_marker: true,
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
+      // See comment on font.
+      supports_incremental_style: false,
     },
     {
       name: "font-optical-sizing",
@@ -1132,6 +1174,8 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_marker: true,
+      // See comment on font.
+      supports_incremental_style: false,
     },
     {
       name: "font-palette",
@@ -1147,6 +1191,8 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_marker: true,
+      // See comment on font.
+      supports_incremental_style: false,
     },
     {
       name: "font-size",
@@ -1166,6 +1212,8 @@
       valid_for_marker: true,
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
+      // See comment on font.
+      supports_incremental_style: false,
     },
     {
       name: "font-size-adjust",
@@ -1182,6 +1230,8 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_marker: true,
+      // See comment on font.
+      supports_incremental_style: false,
     },
     {
       name: "font-stretch",
@@ -1204,6 +1254,8 @@
       valid_for_marker: true,
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
+      // See comment on font.
+      supports_incremental_style: false,
     },
     {
       name: "font-style",
@@ -1223,6 +1275,8 @@
       valid_for_marker: true,
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
+      // See comment on font.
+      supports_incremental_style: false,
     },
     {
       name: "font-variant-ligatures",
@@ -1245,6 +1299,8 @@
       valid_for_marker: true,
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
+      // See comment on font.
+      supports_incremental_style: false,
     },
     {
       name: "font-variant-caps",
@@ -1264,6 +1320,8 @@
       valid_for_marker: true,
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
+      // See comment on font.
+      supports_incremental_style: false,
     },
     {
       name: "font-variant-east-asian",
@@ -1283,6 +1341,8 @@
       valid_for_marker: true,
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
+      // See comment on font.
+      supports_incremental_style: false,
     },
     {
       name: "font-variant-numeric",
@@ -1303,6 +1363,8 @@
       valid_for_marker: true,
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
+      // See comment on font.
+      supports_incremental_style: false,
     },
     {
       name: "font-variant-alternates",
@@ -1322,6 +1384,8 @@
       valid_for_marker: true,
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
+      // See comment on font.
+      supports_incremental_style: false,
     },
     {
       name: "font-weight",
@@ -1341,6 +1405,8 @@
       valid_for_marker: true,
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
+      // See comment on font.
+      supports_incremental_style: false,
     },
     {
       name: "font-synthesis-weight",
@@ -1355,6 +1421,8 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_marker: true,
+      // See comment on font.
+      supports_incremental_style: false,
     },
     {
       name: "font-synthesis-style",
@@ -1369,6 +1437,8 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_marker: true,
+      // See comment on font.
+      supports_incremental_style: false,
     },
     {
       name: "font-synthesis-small-caps",
@@ -1383,6 +1453,8 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_marker: true,
+      // See comment on font.
+      supports_incremental_style: false,
     },
     {
       name: "font-feature-settings",
@@ -1401,6 +1473,8 @@
       computable: false,
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
+      // See comment on font.
+      supports_incremental_style: false,
     },
     {
       name: "font-variation-settings",
@@ -1420,6 +1494,8 @@
       computable: false,
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
+      // See comment on font.
+      supports_incremental_style: false,
     },
     {
       name: "font-variant-position",
@@ -1436,6 +1512,8 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_marker: true,
+      // See comment on font.
+      supports_incremental_style: false,
     },
     {
       name: "-webkit-font-smoothing",
@@ -1526,6 +1604,9 @@
       style_builder_custom_functions: ["initial", "inherit", "value"],
       priority: "High",
       valid_for_formatted_text: true,
+      // Incremental code does not call DidChangeWritingMode(), which influences
+      // the font.
+      supports_incremental_style: false,
     },
     {
       name: "-webkit-writing-mode",
@@ -3768,6 +3849,8 @@
         resolver: "inline",
       },
       runtime_flag: "CSSLogicalOverflow",
+      // See comment on overflow-x.
+      supports_incremental_style: false,
     },
     {
       name: "-internal-overflow-inline",
@@ -3783,6 +3866,8 @@
         resolver: "block",
       },
       runtime_flag: "CSSLogicalOverflow",
+      // See comment on overflow-x.
+      supports_incremental_style: false,
     },
     {
       name: "-internal-overflow-block",
@@ -6874,6 +6959,7 @@
         "animation-fill-mode", "animation-play-state", "animation-name"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      supports_incremental_style: false,
       valid_for_keyframe: false,
     },
     {
@@ -6888,6 +6974,7 @@
         "animation-timeline", "animation-range-start", "animation-range-end"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      supports_incremental_style: false,
       valid_for_keyframe: false,
       runtime_flag: 'ScrollTimeline',
     },
@@ -6904,6 +6991,7 @@
         "animation-timeline", "animation-range-start", "animation-range-end"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      supports_incremental_style: false,
       valid_for_keyframe: false,
       runtime_flag: 'CSSAnimationDelayStartEnd',
     },
@@ -6913,6 +7001,7 @@
         "animation-range-start", "animation-range-end",
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      supports_incremental_style: false,
       valid_for_keyframe: false,
       runtime_flag: 'ScrollTimeline',
     },
@@ -7184,6 +7273,9 @@
         "font-kerning", "font-feature-settings", "font-variation-settings"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      // Changes to anything related to fonts require that we call style.UpdateFont(),
+      // which the incremental path does not do.
+      supports_incremental_style: false,
     },
     {
       name: "font-variant",
@@ -7194,11 +7286,15 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       is_descriptor: true,
       computable: true,
+      // See comment on font.
+      supports_incremental_style: false,
     },
     {
       name: "font-synthesis",
       longhands: ["font-synthesis-weight", "font-synthesis-style", "font-synthesis-small-caps"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      // See comment on font.
+      supports_incremental_style: false,
     },
     {
       name: "grid",
@@ -7339,6 +7435,8 @@
       name: "overflow",
       longhands: ["overflow-x", "overflow-y"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      // See comment on overflow-x.
+      supports_incremental_style: false,
     },
     {
       name: "overscroll-behavior",
@@ -7444,6 +7542,8 @@
         "transition-behavior",
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      // Animation properites are never incremental.
+      supports_incremental_style: false,
     },
     {
       name: "view-timeline",
