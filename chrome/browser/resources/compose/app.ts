@@ -17,6 +17,7 @@ import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {CrScrollableMixin} from '//resources/cr_elements/cr_scrollable_mixin.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {Debouncer, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
@@ -114,9 +115,19 @@ export class ComposeAppElement extends ComposeAppElementBase {
         type: Array,
         value: () => {
           return [
-            Length.kUnset,
-            Length.kShorter,
-            Length.kLonger,
+            {
+              value: Length.kUnset,
+              label: loadTimeData.getString('lengthMenuTitle'),
+              hidden: true,
+            },
+            {
+              value: Length.kShorter,
+              label: loadTimeData.getString('shorterOption'),
+            },
+            {
+              value: Length.kLonger,
+              label: loadTimeData.getString('longerOption'),
+            },
           ];
         },
       },
@@ -124,9 +135,19 @@ export class ComposeAppElement extends ComposeAppElementBase {
         type: Array,
         value: () => {
           return [
-            Tone.kUnset,
-            Tone.kCasual,
-            Tone.kFormal,
+            {
+              value: Tone.kUnset,
+              label: loadTimeData.getString('toneMenuTitle'),
+              hidden: true,
+            },
+            {
+              value: Tone.kCasual,
+              label: loadTimeData.getString('casualToneOption'),
+            },
+            {
+              value: Tone.kFormal,
+              label: loadTimeData.getString('formalToneOption'),
+            },
           ];
         },
       },
@@ -273,28 +294,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private onToneChanged_() {
     this.selectedTone_ = Number(this.$.toneMenu.value) as Tone;
     this.onSubmit_();
-  }
-
-  private getLengthOptionLabel_(value: Length): string {
-    switch (value) {
-      case Length.kUnset:
-        return this.i18n('lengthMenuTitle');
-      case Length.kShorter:
-        return this.i18n('shorterOption');
-      case Length.kLonger:
-        return this.i18n('longerOption');
-    }
-  }
-
-  private getToneOptionLabel_(value: Tone): string {
-    switch (value) {
-      case Tone.kUnset:
-        return this.i18n('toneMenuTitle');
-      case Tone.kCasual:
-        return this.i18n('casualToneOption');
-      case Tone.kFormal:
-        return this.i18n('formalToneOption');
-    }
   }
 
   private onFileBugClick_(e: Event) {

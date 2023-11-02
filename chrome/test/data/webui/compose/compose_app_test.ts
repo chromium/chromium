@@ -456,8 +456,10 @@ suite('ComposeApp', () => {
     testProxy.resetResolver('compose');
 
     assertTrue(isVisible(app.$.lengthMenu), 'Length menu should be visible.');
+    assertEquals(
+        2, app.$.lengthMenu.querySelectorAll('option:not([hidden])').length);
 
-    app.$.lengthMenu.value = Length.kShorter as unknown as string;
+    app.$.lengthMenu.value = `${Length.kShorter}`;
     app.$.lengthMenu.dispatchEvent(new CustomEvent('change'));
 
     const args = await testProxy.whenCalled('compose');
@@ -467,7 +469,11 @@ suite('ComposeApp', () => {
 
     testProxy.resetResolver('compose');
 
-    app.$.toneMenu.value = Tone.kCasual as unknown as string;
+    assertTrue(isVisible(app.$.toneMenu), 'Tone menu should be visible.');
+    assertEquals(
+        2, app.$.toneMenu.querySelectorAll('option:not([hidden])').length);
+
+    app.$.toneMenu.value = `${Tone.kCasual}`;
     app.$.toneMenu.dispatchEvent(new CustomEvent('change'));
 
     const args2 = await testProxy.whenCalled('compose');
