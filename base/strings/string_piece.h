@@ -14,7 +14,6 @@
 // violations. Preserve the includes for now. As code is migrated away from this
 // header, we can incrementally fix the IWYU violations.
 #include "base/check.h"
-#include "base/check_op.h"
 #include "base/strings/string_piece_forward.h"
 
 #endif  // BASE_STRINGS_STRING_PIECE_H_
