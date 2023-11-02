@@ -184,7 +184,30 @@ void HWNDMessageHandlerHeadless::Show(ui::WindowShowState show_state,
                                       const gfx::Rect& pixel_restore_bounds) {
   TRACE_EVENT0("views", "HWNDMessageHandlerHeadless::Show");
 
-  // TODO(kvitekp): this needs to handle min/max/restore show states!
+  bool activate = true;
+
+  switch (show_state) {
+    case ui::SHOW_STATE_MINIMIZED:
+      Minimize();
+      activate = false;
+      break;
+    case ui::SHOW_STATE_MAXIMIZED:
+      if (window_state_ != WindowState::kMaximized) {
+        if (!pixel_restore_bounds.IsEmpty()) {
+          bounds_ = pixel_restore_bounds;
+        }
+        Maximize();
+      }
+      break;
+    case ui::SHOW_STATE_FULLSCREEN:
+      SetFullscreen(true, display::kInvalidDisplayId);
+      break;
+    case ui::SHOW_STATE_INACTIVE:
+      activate = false;
+      break;
+    default:
+      break;
+  }
 
   // In headless mode the platform window is always hidden, so instead of
   // showing it just maintain a local flag to track the expected headless
@@ -195,7 +218,7 @@ void HWNDMessageHandlerHeadless::Show(ui::WindowShowState show_state,
     delegate_->HandleVisibilityChanged(/*visible=*/true);
   }
 
-  if (show_state != ui::SHOW_STATE_INACTIVE) {
+  if (activate) {
     Activate();
   }
 }
