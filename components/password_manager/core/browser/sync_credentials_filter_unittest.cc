@@ -14,7 +14,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
@@ -43,6 +42,21 @@ namespace password_manager {
 namespace {
 
 const char kEnterpriseURL[] = "https://enterprise.test/";
+
+PasswordForm SimpleGAIAChangePasswordForm() {
+  PasswordForm form;
+  form.url = GURL("https://myaccount.google.com/");
+  form.signon_realm = "https://myaccount.google.com/";
+  return form;
+}
+
+PasswordForm SimpleForm(const char* signon_realm, const char* username) {
+  PasswordForm form;
+  form.signon_realm = signon_realm;
+  form.url = GURL(signon_realm);
+  form.username_value = base::ASCIIToUTF16(username);
+  return form;
+}
 
 class FakePasswordManagerClient : public StubPasswordManagerClient {
  public:
@@ -295,6 +309,39 @@ TEST_P(CredentialsFilterTest, IsSyncAccountEmailIncognito) {
   EXPECT_TRUE(filter_->IsSyncAccountEmail("user@gmail.com"));
   EXPECT_TRUE(filter_->IsSyncAccountEmail("us.er@gmail.com"));
   EXPECT_TRUE(filter_->IsSyncAccountEmail("user@googlemail.com"));
+}
+
+TEST_P(CredentialsFilterTest, IsCredentialMatchingSyncFeatureAccount) {
+  const struct {
+    PasswordForm form;
+    std::string fake_sync_username;
+    bool expected_result;
+  } kTestCases[] = {
+      {SimpleGaiaForm("sync_user@example.org"), "sync_user@example.org", true},
+      {SimpleGaiaForm("non_sync_user@example.org"), "sync_user@example.org",
+       false},
+      {SimpleNonGaiaForm("sync_user@example.org"), "sync_user@example.org",
+       false},
+      {SimpleGaiaForm(""), "sync_user@example.org", true},
+      {SimpleNonGaiaForm(""), "sync_user@example.org", false},
+      {SimpleGAIAChangePasswordForm(), "sync_user@example.org", true},
+      {SimpleForm("https://subdomain.google.com/", "sync_user@example.org"),
+       "sync_user@example.org", true},
+      {SimpleForm("https://subdomain.google.com/", ""), "sync_user@example.org",
+       true},
+  };
+
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
+    SCOPED_TRACE(testing::Message() << "i=" << i);
+    SetSyncingPasswords(true);
+    FakeSigninAs(kTestCases[i].fake_sync_username);
+
+    EXPECT_EQ(
+        kTestCases[i].expected_result,
+        SyncCredentialsFilter::IsCredentialMatchingSyncFeatureAccountForTest(
+            kTestCases[i].form.url, kTestCases[i].form.username_value,
+            sync_service(), identity_manager()));
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(, CredentialsFilterTest, ::testing::Bool());

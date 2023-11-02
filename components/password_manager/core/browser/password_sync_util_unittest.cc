@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/sync_username_test_base.h"
@@ -16,27 +15,10 @@
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::ASCIIToUTF16;
-
 namespace password_manager {
 namespace sync_util {
 
 using PasswordSyncUtilTest = SyncUsernameTestBase;
-
-PasswordForm SimpleGAIAChangePasswordForm() {
-  PasswordForm form;
-  form.url = GURL("https://myaccount.google.com/");
-  form.signon_realm = "https://myaccount.google.com/";
-  return form;
-}
-
-PasswordForm SimpleForm(const char* signon_realm, const char* username) {
-  PasswordForm form;
-  form.signon_realm = signon_realm;
-  form.url = GURL(signon_realm);
-  form.username_value = ASCIIToUTF16(username);
-  return form;
-}
 
 TEST_F(PasswordSyncUtilTest,
        GetAccountEmailIfSyncFeatureEnabledIncludingPasswords) {
@@ -71,37 +53,6 @@ TEST_F(PasswordSyncUtilTest,
     EXPECT_EQ(kTestCases[i].expected_result,
               GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(
                   kTestCases[i].sync_service, kTestCases[i].identity_manager));
-  }
-}
-
-TEST_F(PasswordSyncUtilTest, IsSyncAccountCredential) {
-  const struct {
-    PasswordForm form;
-    std::string fake_sync_username;
-    bool expected_result;
-  } kTestCases[] = {
-      {SimpleGaiaForm("sync_user@example.org"), "sync_user@example.org", true},
-      {SimpleGaiaForm("non_sync_user@example.org"), "sync_user@example.org",
-       false},
-      {SimpleNonGaiaForm("sync_user@example.org"), "sync_user@example.org",
-       false},
-      {SimpleGaiaForm(""), "sync_user@example.org", true},
-      {SimpleNonGaiaForm(""), "sync_user@example.org", false},
-      {SimpleGAIAChangePasswordForm(), "sync_user@example.org", true},
-      {SimpleForm("https://subdomain.google.com/", "sync_user@example.org"),
-       "sync_user@example.org", true},
-      {SimpleForm("https://subdomain.google.com/", ""), "sync_user@example.org",
-       true},
-  };
-
-  for (size_t i = 0; i < std::size(kTestCases); ++i) {
-    SCOPED_TRACE(testing::Message() << "i=" << i);
-    SetSyncingPasswords(true);
-    FakeSigninAs(kTestCases[i].fake_sync_username);
-    EXPECT_EQ(kTestCases[i].expected_result,
-              IsSyncAccountCredential(kTestCases[i].form.url,
-                                      kTestCases[i].form.username_value,
-                                      sync_service(), identity_manager()));
   }
 }
 

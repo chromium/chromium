@@ -48,25 +48,6 @@ std::string GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(
       .email;
 }
 
-bool IsSyncAccountCredential(const GURL& url,
-                             const std::u16string& username,
-                             const syncer::SyncService* sync_service,
-                             const signin::IdentityManager* identity_manager) {
-  if (!url.DomainIs("google.com"))
-    return false;
-
-  // The empty username can mean that Chrome did not detect it correctly. For
-  // reasons described in http://crbug.com/636292#c1, the username is suspected
-  // to be the sync username unless proven otherwise.
-  if (username.empty())
-    return true;
-
-  return gaia::AreEmailsSame(
-      base::UTF16ToUTF8(username),
-      GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(sync_service,
-                                                            identity_manager));
-}
-
 bool IsSyncAccountEmail(const std::string& username,
                         const signin::IdentityManager* identity_manager,
                         signin::ConsentLevel consent_level) {

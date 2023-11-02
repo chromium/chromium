@@ -33,15 +33,6 @@ std::string GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(
     const syncer::SyncService* sync_service,
     const signin::IdentityManager* identity_manager);
 
-// Returns true if `url` is google.com domain and `username` corresponds to the
-// account specified by GetAccountEmailIfSyncFeatureEnabledIncludingPasswords.
-// Returns false if GetAccountEmailIfSyncFeatureEnabledIncludingPasswords does
-// not specify any account.
-bool IsSyncAccountCredential(const GURL& url,
-                             const std::u16string& username,
-                             const syncer::SyncService* sync_service,
-                             const signin::IdentityManager* identity_manager);
-
 // If `username` matches the signed-in account.
 bool IsSyncAccountEmail(const std::string& username,
                         const signin::IdentityManager* identity_manager,
