@@ -902,6 +902,8 @@ bool ThreadGroupImpl::WorkerThreadDelegateImpl::CanGetWorkLockRequired(
   const bool is_on_idle_workers_set = outer_->IsOnIdleSetLockRequired(worker);
   DCHECK_EQ(is_on_idle_workers_set, outer_->idle_workers_set_.Contains(worker));
 
+  // This occurs when the when WorkerThread::Delegate::WaitForWork() times out
+  // (i.e. when the worker's wakes up after GetSleepTimeout()).
   if (is_on_idle_workers_set) {
     if (CanCleanupLockRequired(worker))
       CleanupLockRequired(executor, worker);
