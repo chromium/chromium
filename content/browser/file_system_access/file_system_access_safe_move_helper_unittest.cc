@@ -395,11 +395,7 @@ TEST_F(FileSystemAccessSafeMoveHelperTest, LocalToLocalSameExtension) {
 
   InitializeHelperWithUrls(source_url, dest_url);
 
-  EXPECT_NE(
-      helper_->RequireAfterWriteChecksForTesting(),
-      base::FeatureList::IsEnabled(
-          features::
-              kFileSystemAccessSkipAfterWriteChecksIfUnchangingExtension));
+  EXPECT_FALSE(helper_->RequireAfterWriteChecksForTesting());
   EXPECT_TRUE(helper_->RequireQuarantineForTesting());
 }
 
@@ -573,12 +569,6 @@ TEST_F(FileSystemAccessSafeMoveHelperAfterWriteChecksTest, Block) {
 
 TEST_F(FileSystemAccessSafeMoveHelperAfterWriteChecksTest,
        LocalNoExtensionChange) {
-  if (!base::FeatureList::IsEnabled(
-          features::
-              kFileSystemAccessSkipAfterWriteChecksIfUnchangingExtension)) {
-    return;
-  }
-
   auto source_url = file_system_context_->CreateCrackedFileSystemURL(
       kTestStorageKey, storage::kFileSystemTypeLocal,
       dir_.GetPath().AppendASCII("source.txt"));
@@ -607,12 +597,6 @@ TEST_F(FileSystemAccessSafeMoveHelperAfterWriteChecksTest,
 
 TEST_F(FileSystemAccessSafeMoveHelperAfterWriteChecksTest,
        LocalNoExtensionChangeSecurityCheckFailed) {
-  if (!base::FeatureList::IsEnabled(
-          features::
-              kFileSystemAccessSkipAfterWriteChecksIfUnchangingExtension)) {
-    return;
-  }
-
   auto source_url = file_system_context_->CreateCrackedFileSystemURL(
       kTestStorageKey, storage::kFileSystemTypeLocal,
       dir_.GetPath().AppendASCII("source.txt"));

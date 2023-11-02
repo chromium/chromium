@@ -17,8 +17,6 @@ namespace content::features {
 // Alphabetical:
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFileSystemAccessDragAndDropCheckBlocklist);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
-    kFileSystemAccessSkipAfterWriteChecksIfUnchangingExtension);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kFileSystemAccessDirectoryIterationSymbolicLinkCheck);
 
 }  // namespace content::features

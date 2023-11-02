@@ -17,13 +17,6 @@ BASE_FEATURE(kFileSystemAccessDragAndDropCheckBlocklist,
              "FileSystemAccessDragAndDropCheckBlocklist",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// TODO(crbug.com/1247850): Remove this flag eventually.
-// When enabled, move operations within the same file system that do not change
-// the file extension will not be subject to safe browsing checks.
-BASE_FEATURE(kFileSystemAccessSkipAfterWriteChecksIfUnchangingExtension,
-             "FileSystemAccessSkipAfterWriteChecksIfUnchangingExtension",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // TODO(crbug.com/1421735): Remove this flag eventually.
 // When enabled, GetFile() and GetEntries() on the directory handle resolve
 // symbolic link (if any) and check the path against the blocklis, on POSIX.

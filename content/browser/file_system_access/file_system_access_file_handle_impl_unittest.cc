@@ -945,10 +945,7 @@ class FileSystemAccessFileHandleImplMovePermissionsTest
     // On Windows, CreateTemporaryFileInDir() creates files with the '.tmp'
     // extension. When this feature flag is enabled, Safe Browsing checks are
     // not run on same-file-system moves in which the extension does not change.
-    if (!base::FeatureList::IsEnabled(
-            features::
-                kFileSystemAccessSkipAfterWriteChecksIfUnchangingExtension) ||
-        source.Extension() != FILE_PATH_LITERAL(".tmp") ||
+    if (source.Extension() != FILE_PATH_LITERAL(".tmp") ||
         target.Extension() != FILE_PATH_LITERAL(".tmp")) {
       EXPECT_CALL(permission_context_,
                   PerformAfterWriteChecks_(testing::_, testing::_, testing::_))
