@@ -52,7 +52,8 @@ ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderMetadata(
       env, ui::OptionalSkColorToJavaColor(metadata.brand_text_color),
       ui::OptionalSkColorToJavaColor(metadata.brand_background_color),
       java_brand_icon_url,
-      url::GURLAndroid::FromNativeGURL(env, metadata.config_url));
+      url::GURLAndroid::FromNativeGURL(env, metadata.config_url),
+      url::GURLAndroid::FromNativeGURL(env, metadata.idp_login_url));
 }
 
 ScopedJavaLocalRef<jobject> ConvertToJavaIdentityCredentialTokenError(
@@ -292,8 +293,11 @@ void AccountSelectionViewAndroid::OnDismiss(JNIEnv* env, jint dismiss_reason) {
   delegate_->OnDismiss(static_cast<DismissReason>(dismiss_reason));
 }
 
-void AccountSelectionViewAndroid::OnSignInToIdp(JNIEnv* env) {
-  delegate_->OnSigninToIdP();
+void AccountSelectionViewAndroid::OnSignInToIdp(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& idp_login_url) {
+  GURL login_url = *url::GURLAndroid::ToNativeGURL(env, idp_login_url);
+  delegate_->OnSigninToIdP(login_url);
 }
 
 void AccountSelectionViewAndroid::OnMoreDetails(JNIEnv* env) {

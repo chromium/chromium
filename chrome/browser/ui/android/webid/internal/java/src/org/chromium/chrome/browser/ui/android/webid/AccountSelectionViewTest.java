@@ -70,6 +70,7 @@ public class AccountSelectionViewTest {
     private static final String TEST_RP_ETLD_PLUS_ONE = JUnitTestGURLs.URL_1.getSpec();
     private static final GURL TEST_PROFILE_PIC = JUnitTestGURLs.EXAMPLE_URL;
     private static final GURL TEST_CONFIG_URL = JUnitTestGURLs.URL_1;
+    private static final GURL TEST_LOGIN_URL = JUnitTestGURLs.URL_2;
 
     private static final Account ANA =
             new Account("Ana", "ana@email.example", "Ana Doe", "Ana", TEST_PROFILE_PIC, true);
@@ -86,7 +87,11 @@ public class AccountSelectionViewTest {
 
     private static final IdentityProviderMetadata TEST_IDP_METADATA =
             new IdentityProviderMetadata(
-                    Color.BLUE, Color.GREEN, "https://icon-url.example", TEST_CONFIG_URL);
+                    Color.BLUE,
+                    Color.GREEN,
+                    "https://icon-url.example",
+                    TEST_CONFIG_URL,
+                    TEST_LOGIN_URL);
 
     private class RpContext {
         public String mValue;
@@ -420,7 +425,8 @@ public class AccountSelectionViewTest {
                         expectedTextColor,
                         /* brandBackgroundColor= */ Color.GREEN,
                         "https://icon-url.example",
-                        TEST_CONFIG_URL);
+                        TEST_CONFIG_URL,
+                        TEST_LOGIN_URL);
 
         mModel.set(
                 ItemProperties.CONTINUE_BUTTON,

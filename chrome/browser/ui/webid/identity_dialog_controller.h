@@ -77,7 +77,7 @@ class IdentityDialogController
   void OnAccountSelected(const GURL& idp_config_url,
                          const Account& account) override;
   void OnDismiss(DismissReason dismiss_reason) override;
-  void OnSigninToIdP() override;
+  void OnSigninToIdP(const GURL& idp_login_url) override;
   void OnMoreDetails() override;
   gfx::NativeView GetNativeView() override;
   content::WebContents* GetWebContents() override;

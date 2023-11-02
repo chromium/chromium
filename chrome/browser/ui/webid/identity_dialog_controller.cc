@@ -82,8 +82,8 @@ void IdentityDialogController::ShowErrorDialog(
                                  error);
 }
 
-void IdentityDialogController::OnSigninToIdP() {
-  std::move(on_signin_).Run();
+void IdentityDialogController::OnSigninToIdP(const GURL& idp_login_url) {
+  std::move(on_signin_).Run(idp_login_url);
 }
 
 void IdentityDialogController::OnMoreDetails() {

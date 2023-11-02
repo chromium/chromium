@@ -95,6 +95,7 @@ public class AccountSelectionControllerTest {
     private static final GURL TEST_URL_PRIVACY_POLICY = JUnitTestGURLs.RED_2;
     private static final GURL TEST_IDP_BRAND_ICON_URL = JUnitTestGURLs.RED_3;
     private static final GURL TEST_CONFIG_URL = JUnitTestGURLs.URL_2;
+    private static final GURL TEST_LOGIN_URL = JUnitTestGURLs.URL_3;
     private static final GURL TEST_ERROR_URL = JUnitTestGURLs.URL_2;
     private static final GURL TEST_EMPTY_ERROR_URL = new GURL("");
 
@@ -157,7 +158,8 @@ public class AccountSelectionControllerTest {
                         Color.BLACK,
                         Color.BLACK,
                         TEST_IDP_BRAND_ICON_URL.getSpec(),
-                        TEST_CONFIG_URL);
+                        TEST_CONFIG_URL,
+                        TEST_LOGIN_URL);
     }
 
     @Before
@@ -254,7 +256,8 @@ public class AccountSelectionControllerTest {
     @Test
     public void testNoBrandIconUrl() {
         IdentityProviderMetadata idpMetadataNoBrandIconUrl =
-                new IdentityProviderMetadata(Color.BLACK, Color.BLACK, "", TEST_CONFIG_URL);
+                new IdentityProviderMetadata(
+                        Color.BLACK, Color.BLACK, "", TEST_CONFIG_URL, TEST_LOGIN_URL);
         mMediator.showAccounts(
                 TEST_ETLD_PLUS_ONE,
                 TEST_ETLD_PLUS_ONE_1,
@@ -720,7 +723,7 @@ public class AccountSelectionControllerTest {
                     .get(ContinueButtonProperties.PROPERTIES)
                     .mOnClickListener
                     .onResult(null);
-            verify(mMockDelegate, times(++count)).onSignInToIdp();
+            verify(mMockDelegate, times(++count)).onSignInToIdp(TEST_LOGIN_URL);
         }
     }
 

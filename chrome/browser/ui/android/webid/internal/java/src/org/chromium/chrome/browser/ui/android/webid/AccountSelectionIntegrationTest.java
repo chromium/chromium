@@ -86,7 +86,7 @@ public class AccountSelectionIntegrationTest {
     private static final Account BOB = new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC, false);
 
     private static final IdentityProviderMetadata IDP_METADATA =
-            new IdentityProviderMetadata(Color.BLACK, Color.BLACK, null, null);
+            new IdentityProviderMetadata(Color.BLACK, Color.BLACK, null, null, null);
 
     private static final String TEST_ERROR_CODE = "invalid_request";
     private static final IdentityCredentialTokenError TOKEN_ERROR =
