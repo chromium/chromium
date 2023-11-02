@@ -38,19 +38,19 @@ const struct {
 } kTestCases[] = {
     {session_manager::SessionState::OOBE,
      crosapi::mojom::SessionState::kInOobeScreen,
-     extensions::api::login_state::SessionState::SESSION_STATE_IN_OOBE_SCREEN},
+     extensions::api::login_state::SessionState::kInOobeScreen},
     {session_manager::SessionState::LOGIN_PRIMARY,
      crosapi::mojom::SessionState::kInLoginScreen,
-     extensions::api::login_state::SessionState::SESSION_STATE_IN_LOGIN_SCREEN},
+     extensions::api::login_state::SessionState::kInLoginScreen},
     {session_manager::SessionState::ACTIVE,
      crosapi::mojom::SessionState::kInSession,
-     extensions::api::login_state::SessionState::SESSION_STATE_IN_SESSION},
+     extensions::api::login_state::SessionState::kInSession},
     {session_manager::SessionState::LOCKED,
      crosapi::mojom::SessionState::kInLockScreen,
-     extensions::api::login_state::SessionState::SESSION_STATE_IN_LOCK_SCREEN},
+     extensions::api::login_state::SessionState::kInLockScreen},
     {session_manager::SessionState::UNKNOWN,
      crosapi::mojom::SessionState::kUnknown,
-     extensions::api::login_state::SessionState::SESSION_STATE_UNKNOWN},
+     extensions::api::login_state::SessionState::kUnknown},
 };
 
 bool WasSessionStateChangedEventDispatched(
