@@ -732,7 +732,7 @@ void DCLayerOverlayProcessor::UpdateDamageRect(
         // We only support at most two overlays. The size of
         // damages_to_be_removed will not be bigger than 2. We should revisit
         // this damages_to_be_removed for-loop if we try to support many
-        // overlays. See capabilities.supports_two_yuv_hardware_overlays.
+        // overlays. See capabilities.allowed_yuv_overlay_count.
         for (const auto index_to_be_removed :
              current_frame_state.damages_to_be_removed) {
           // The overlay damages and the damages right below them will not be

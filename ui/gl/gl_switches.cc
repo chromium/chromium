@@ -225,6 +225,14 @@ BASE_FEATURE(kDirectCompositionLetterboxVideoOptimization,
              "DirectCompositionLetterboxVideoOptimization",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Do not consider hardware YUV overlay count when promoting quads to DComp
+// visuals. If there are more videos than hardware overlay planes, there may be
+// a performance hit compared to drawing all the videos into a single swap
+// chain. This feature is intended for testing and debugging.
+BASE_FEATURE(kDirectCompositionUnlimitedOverlays,
+             "DirectCompositionUnlimitedOverlays",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allow dual GPU rendering through EGL where supported, i.e., allow a WebGL
 // or WebGPU context to be on the high performance GPU if preferred and Chrome
 // internal rendering to be on the low power GPU.
