@@ -213,16 +213,6 @@ void V4L2StatelessVideoDecoderBackend::OnOutputBufferDequeued(
   }
 
   PumpOutputSurfaces();
-
-  // If we were waiting for an output buffer to be available, schedule a
-  // decode task.
-  if (pause_reason_ == PauseReason::kWaitSubFrameDecoded) {
-    pause_reason_ = PauseReason::kNone;
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&V4L2StatelessVideoDecoderBackend::DoDecodeWork,
-                       weak_this_));
-  }
 }
 
 scoped_refptr<V4L2DecodeSurface>
@@ -482,11 +472,6 @@ bool V4L2StatelessVideoDecoderBackend::PumpDecodeTask() {
       case AcceleratedVideoDecoder::kRanOutOfSurfaces:
         DVLOGF(3) << "Ran out of surfaces. Resume when buffer is returned.";
         pause_reason_ = PauseReason::kRanOutOfSurfaces;
-        return true;
-
-      case AcceleratedVideoDecoder::kNeedContextUpdate:
-        DVLOGF(3) << "Awaiting context update";
-        pause_reason_ = PauseReason::kWaitSubFrameDecoded;
         return true;
 
       case AcceleratedVideoDecoder::kDecodeError:

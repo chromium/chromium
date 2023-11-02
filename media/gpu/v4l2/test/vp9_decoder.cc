@@ -432,9 +432,6 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(const int frame_number,
     case Vp9Parser::kInvalidStream:
       LOG_ASSERT(false) << "Failed to parse frame.";
       return Vp9Decoder::kError;
-    case Vp9Parser::kAwaitingRefresh:
-      LOG_ASSERT(false) << "Unsupported parser return value.";
-      return Vp9Decoder::kError;
     case Vp9Parser::kEOStream:
       return Vp9Decoder::kEOStream;
     case Vp9Parser::kOk:

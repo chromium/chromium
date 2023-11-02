@@ -675,7 +675,7 @@ Vp9Parser::Result Vp9Parser::ParseNextFrame(
 
   if (parsing_compressed_header_) {
     if (ParseCompressedHeader(frame_info, &result)) {
-      DCHECK(result != kAwaitingRefresh || curr_frame_info_.IsValid());
+      DCHECK(curr_frame_info_.IsValid());
       return result;
     }
   }

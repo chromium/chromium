@@ -279,7 +279,6 @@ class MEDIA_EXPORT Vp9Parser {
     kOk,
     kInvalidStream,
     kEOStream,
-    kAwaitingRefresh,
   };
 
   // The parsing context to keep track of references.
@@ -384,7 +383,6 @@ class MEDIA_EXPORT Vp9Parser {
   // frame decrypt config.
   // Return kOk if a frame has successfully been parsed,
   //        kEOStream if there is no more data in the current stream buffer,
-  //        kAwaitingRefresh if this frame awaiting frame context update, or
   //        kInvalidStream on error.
   Result ParseNextFrame(Vp9FrameHeader* fhdr,
                         gfx::Size* allocate_size,

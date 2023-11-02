@@ -436,9 +436,6 @@ void VaapiVideoDecoder::HandleDecodeTask() {
       // video frames to the frame pool.
       SetState(State::kWaitingForOutput);
       break;
-    case AcceleratedVideoDecoder::kNeedContextUpdate:
-      SetErrorState("context updates not supported");
-      break;
     case AcceleratedVideoDecoder::kDecodeError:
       UMA_HISTOGRAM_BOOLEAN("Media.VaapiVideoDecoder.DecodeError", true);
       SetErrorState("error decoding stream");

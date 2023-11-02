@@ -274,10 +274,6 @@ void V4L2StatelessVideoDecoder::ProcessCompressedBuffer(
           VLOGF(2) << "AcceleratedVideoDecoder::kRanOutOfSurfaces";
           NOTREACHED();
           break;
-        case AcceleratedVideoDecoder::kNeedContextUpdate:
-          VLOGF(2) << "AcceleratedVideoDecoder::kNeedContextUpdate";
-          NOTIMPLEMENTED();
-          break;
         case AcceleratedVideoDecoder::kDecodeError:
           VLOGF(2) << "AcceleratedVideoDecoder::kDecodeError";
           NOTREACHED();

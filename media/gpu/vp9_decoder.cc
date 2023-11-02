@@ -190,10 +190,6 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
           DVLOG(1) << "Error parsing stream";
           SetError();
           return kDecodeError;
-
-        case Vp9Parser::kAwaitingRefresh:
-          DVLOG(4) << "Awaiting context update";
-          return kNeedContextUpdate;
       }
     }
 
