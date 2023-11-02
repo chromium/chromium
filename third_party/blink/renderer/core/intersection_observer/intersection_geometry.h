@@ -128,7 +128,7 @@ class CORE_EXPORT IntersectionGeometry {
   gfx::Rect RootIntRect() const { return ToPixelSnappedRect(root_rect_); }
 
   double IntersectionRatio() const { return intersection_ratio_; }
-  unsigned ThresholdIndex() const { return threshold_index_; }
+  wtf_size_t ThresholdIndex() const { return threshold_index_; }
 
   bool DidComputeGeometry() const { return flags_ & kDidComputeGeometry; }
   bool IsIntersecting() const { return threshold_index_ > 0; }
@@ -177,9 +177,9 @@ class CORE_EXPORT IntersectionGeometry {
     const LayoutObject* GetRootLayoutObject(const Node* root_node) const;
     void ComputeRelationship(bool root_is_implicit);
   };
-  RootAndTarget PrepareComputeGeometry(const Node* root_node,
-                                       const Element& target_element,
-                                       CachedRects* cached_rects);
+
+  void UpdateShouldUseCachedRects(const RootAndTarget& root_and_target,
+                                  CachedRects* cached_rects);
 
   void ComputeGeometry(const RootGeometry& root_geometry,
                        const RootAndTarget& root_and_target,
@@ -214,7 +214,7 @@ class CORE_EXPORT IntersectionGeometry {
   gfx::Vector2dF min_scroll_delta_to_update_;
   unsigned flags_;
   double intersection_ratio_ = 0;
-  unsigned threshold_index_ = 0;
+  wtf_size_t threshold_index_ = 0;
 };
 
 }  // namespace blink

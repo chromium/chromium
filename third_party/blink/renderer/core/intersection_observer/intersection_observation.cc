@@ -32,19 +32,7 @@ IntersectionObservation::IntersectionObservation(IntersectionObserver& observer,
                                                  Element& target)
     : observer_(observer),
       target_(&target),
-      last_run_time_(-observer.GetEffectiveDelay()),
-      last_is_visible_(false),
-      needs_update_(true),
-      // Note that the spec says the initial value of last_threshold_index_
-      // should be -1, but since last_threshold_index_ is unsigned, we use a
-      // different sentinel value.
-      last_threshold_index_(kMaxThresholdIndex - 1) {
-  if (!observer.RootIsImplicit() ||
-      RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    // TODO(crbug.com/1400495): Avoid unique_ptr for IntersectionOptimization.
-    cached_rects_ = std::make_unique<IntersectionGeometry::CachedRects>();
-  }
-}
+      last_run_time_(-observer.GetEffectiveDelay()) {}
 
 int64_t IntersectionObservation::ComputeIntersection(
     unsigned compute_flags,
@@ -68,8 +56,7 @@ int64_t IntersectionObservation::ComputeIntersection(
   IntersectionGeometry geometry(
       observer_->root(), *Target(), observer_->RootMargin(),
       observer_->thresholds(), observer_->TargetMargin(),
-      observer_->ScrollMargin(), geometry_flags, root_geometry,
-      cached_rects_.get());
+      observer_->ScrollMargin(), geometry_flags, root_geometry, &cached_rects_);
   ProcessIntersectionGeometry(geometry, timestamp);
   last_run_time_ = timestamp;
   needs_update_ = false;
@@ -77,8 +64,8 @@ int64_t IntersectionObservation::ComputeIntersection(
 }
 
 gfx::Vector2dF IntersectionObservation::MinScrollDeltaToUpdate() const {
-  if (cached_rects_ && cached_rects_->valid) {
-    return cached_rects_->min_scroll_delta_to_update;
+  if (cached_rects_.valid) {
+    return cached_rects_.min_scroll_delta_to_update;
   }
   return gfx::Vector2dF();
 }
@@ -107,11 +94,6 @@ void IntersectionObservation::Disconnect() {
   observer_.Clear();
 }
 
-void IntersectionObservation::InvalidateCachedRects() {
-  if (cached_rects_)
-    cached_rects_->valid = false;
-}
-
 void IntersectionObservation::Trace(Visitor* visitor) const {
   visitor->Trace(observer_);
   visitor->Trace(entries_);
@@ -120,10 +102,7 @@ void IntersectionObservation::Trace(Visitor* visitor) const {
 
 bool IntersectionObservation::CanUseCachedRectsForTesting() const {
   // This is to avoid the side effects of IntersectionGeometry.
-  IntersectionGeometry::CachedRects cached_rects_copy;
-  if (cached_rects_) {
-    cached_rects_copy = *cached_rects_;
-  }
+  IntersectionGeometry::CachedRects cached_rects_copy = cached_rects_;
 
   absl::optional<IntersectionGeometry::RootGeometry> root_geometry;
   IntersectionGeometry geometry(observer_->root(), *target_,
@@ -132,7 +111,7 @@ bool IntersectionObservation::CanUseCachedRectsForTesting() const {
                                 /* target_margin */ {},
                                 /* scroll_margin */ {},
                                 /* flags */ 0, root_geometry,
-                                cached_rects_ ? &cached_rects_copy : nullptr);
+                                &cached_rects_copy);
 
   return geometry.CanUseCachedRectsForTesting();
 }
@@ -200,15 +179,15 @@ unsigned IntersectionObservation::GetIntersectionGeometryFlags(
 void IntersectionObservation::ProcessIntersectionGeometry(
     const IntersectionGeometry& geometry,
     DOMHighResTimeStamp timestamp) {
-  CHECK_LT(geometry.ThresholdIndex(), kMaxThresholdIndex - 1);
+  CHECK_LT(geometry.ThresholdIndex(), kNotFound);
 
   if (last_threshold_index_ != geometry.ThresholdIndex() ||
       last_is_visible_ != geometry.IsVisible()) {
     entries_.push_back(MakeGarbageCollected<IntersectionObserverEntry>(
         geometry, timestamp, Target()));
     Observer()->ReportUpdates(*this);
-    SetLastThresholdIndex(geometry.ThresholdIndex());
-    SetWasVisible(geometry.IsVisible());
+    last_threshold_index_ = geometry.ThresholdIndex();
+    last_is_visible_ = geometry.IsVisible();
   }
 }
 

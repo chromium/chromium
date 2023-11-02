@@ -69,7 +69,6 @@ class CORE_EXPORT IntersectionObservation final
 
   IntersectionObserver* Observer() const { return observer_.Get(); }
   Element* Target() const { return target_.Get(); }
-  unsigned LastThresholdIndex() const { return last_threshold_index_; }
   // Returns 1 if the geometry was recalculated, otherwise 0. This could be a
   // bool, but int64_t matches IntersectionObserver::ComputeIntersections().
   int64_t ComputeIntersection(
@@ -79,7 +78,7 @@ class CORE_EXPORT IntersectionObservation final
   gfx::Vector2dF MinScrollDeltaToUpdate() const;
   void TakeRecords(HeapVector<Member<IntersectionObserverEntry>>&);
   void Disconnect();
-  void InvalidateCachedRects();
+  void InvalidateCachedRects() { cached_rects_.valid = false; }
 
   void Trace(Visitor*) const;
 
@@ -93,22 +92,22 @@ class CORE_EXPORT IntersectionObservation final
   // generate a notification and schedule it for delivery.
   void ProcessIntersectionGeometry(const IntersectionGeometry& geometry,
                                    DOMHighResTimeStamp timestamp);
-  void SetLastThresholdIndex(unsigned index) { last_threshold_index_ = index; }
-  void SetWasVisible(bool last_is_visible) {
-    last_is_visible_ = last_is_visible ? 1 : 0;
-  }
 
   Member<IntersectionObserver> observer_;
   WeakMember<Element> target_;
   HeapVector<Member<IntersectionObserverEntry>> entries_;
   DOMHighResTimeStamp last_run_time_;
 
-  std::unique_ptr<IntersectionGeometry::CachedRects> cached_rects_;
+  IntersectionGeometry::CachedRects cached_rects_;
 
-  unsigned last_is_visible_ : 1;
-  unsigned needs_update_ : 1;
-  unsigned last_threshold_index_ : 30;
-  static const unsigned kMaxThresholdIndex = static_cast<unsigned>(0x40000000);
+  wtf_size_t last_threshold_index_ = kNotFound;
+  bool last_is_visible_ = false;
+
+  // Ensures update even if kExplicitRootObserversNeedUpdate or
+  // kImplicitRootObserversNeedUpdate is not specified in flags.
+  // It ensures the initial update, and if a needed update is skipped for some
+  // reason, the flag will be true until the update is done.
+  bool needs_update_ = true;
 };
 
 }  // namespace blink

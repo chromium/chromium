@@ -216,10 +216,12 @@ IntersectionGeometry::IntersectionGeometry(
   // Only one of root_margin or target_margin can be specified.
   DCHECK(root_margin.empty() || target_margin.empty());
 
-  if (!root_node)
+  if (!root_node) {
     flags_ |= kRootIsImplicit;
-  RootAndTarget root_and_target =
-      PrepareComputeGeometry(root_node, target_element, cached_rects);
+  }
+
+  RootAndTarget root_and_target(root_node, target_element);
+  UpdateShouldUseCachedRects(root_and_target, cached_rects);
   if (root_and_target.relationship == RootAndTarget::kInvalid) {
     return;
   }
@@ -335,54 +337,49 @@ void IntersectionGeometry::RootAndTarget::ComputeRelationship(
   }
 }
 
-IntersectionGeometry::RootAndTarget
-IntersectionGeometry::PrepareComputeGeometry(const Node* root_node,
-                                             const Element& target_element,
-                                             CachedRects* cached_rects) {
-  if (cached_rects) {
-    if (cached_rects->valid) {
-      flags_ |= kShouldUseCachedRects;
-    }
-    cached_rects->valid = false;
+void IntersectionGeometry::UpdateShouldUseCachedRects(
+    const RootAndTarget& root_and_target,
+    CachedRects* cached_rects) {
+  if (!cached_rects || !cached_rects->valid) {
+    return;
   }
-  RootAndTarget root_and_target(root_node, target_element);
 
-  if (ShouldUseCachedRects()) {
-    CHECK(!RootIsImplicit() ||
-          RuntimeEnabledFeatures::IntersectionOptimizationEnabled());
+  cached_rects->valid = false;
+
+  if (root_and_target.relationship == RootAndTarget::kInvalid) {
+    return;
+  }
+
+  // TODO(wangxianzhu): Allow cached rects in IntersectionOptimization with
+  // implicit root. For now this is blocked by some under-invalidation bugs.
+  if (RootIsImplicit()) {
+    return;
+  }
+
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    // TODO(wangxianzhu): Allow cached rects in IntersectionOptimization with
+    // intermediate clippers.
+    if (root_and_target.relationship != RootAndTarget::kNotScrollable &&
+        root_and_target.relationship != RootAndTarget::kScrollableByRootOnly) {
+      return;
+    }
+  } else {
     // Cached rects can only be used if there are no scrollable objects in the
     // hierarchy between target and root (a scrollable root is ok). The reason
     // is that a scroll change in an intermediate scroller would change the
     // intersection geometry, but it would not properly trigger an invalidation
     // of the cached rects.
-    auto legacy_can_use_cached_rects = [root_node, &target_element]() {
-      if (LayoutObject* target = target_element.GetLayoutObject()) {
-        PaintLayer* root_layer = target->GetDocument().GetLayoutView()->Layer();
-        if (!root_layer) {
-          return false;
-        }
-        if (LayoutBox* scroller = target->DeprecatedEnclosingScrollableBox()) {
-          if (scroller->GetNode() == root_node) {
-            return true;
-          }
-        }
-      }
-      return false;
-    };
-    if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()
-            // TODO(wangxianzhu): Don't use cached rects for implicit root for
-            // now because that would expose some under-invalidaiton bugs.
-            //
-            ? (RootIsImplicit() ||
-               (root_and_target.relationship != RootAndTarget::kNotScrollable &&
-                root_and_target.relationship !=
-                    RootAndTarget::kScrollableByRootOnly))
-            : !legacy_can_use_cached_rects()) {
-      flags_ &= ~kShouldUseCachedRects;
+    PaintLayer* root_layer = root_and_target.target->View()->Layer();
+    if (!root_layer) {
+      return;
+    }
+    if (root_and_target.target->DeprecatedEnclosingScrollableBox() !=
+        root_and_target.root) {
+      return;
     }
   }
 
-  return root_and_target;
+  flags_ |= kShouldUseCachedRects;
 }
 
 void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
@@ -722,10 +719,10 @@ bool IntersectionGeometry::ClipToRoot(const LayoutObject* root,
   return does_intersect;
 }
 
-unsigned IntersectionGeometry::FirstThresholdGreaterThan(
+wtf_size_t IntersectionGeometry::FirstThresholdGreaterThan(
     float ratio,
     const Vector<float>& thresholds) const {
-  unsigned result = 0;
+  wtf_size_t result = 0;
   while (result < thresholds.size() && thresholds[result] <= ratio)
     ++result;
   return result;
