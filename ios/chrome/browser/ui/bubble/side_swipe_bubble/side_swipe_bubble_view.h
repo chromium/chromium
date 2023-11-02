@@ -49,6 +49,7 @@ typedef NS_ENUM(NSInteger, BubbleArrowDirection);
 
 /// Starts the view animation after `delay`. This should only be called when the
 /// view is in the view hierarchy.
+/// Note: `delay` would NOT be honored with reduced animation.
 - (void)startAnimationAfterDelay:(base::TimeDelta)delay;
 
 @end

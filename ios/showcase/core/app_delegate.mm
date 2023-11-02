@@ -7,12 +7,17 @@
 #import "base/command_line.h"
 #import "base/i18n/icu_util.h"
 #import "base/memory/ptr_util.h"
+#import "base/message_loop/message_pump_type.h"
 #import "base/path_service.h"
+#import "base/task/single_thread_task_executor.h"
+#import "base/task/thread_pool/thread_pool_instance.h"
 #import "ios/showcase/core/showcase_model.h"
 #import "ios/showcase/core/showcase_view_controller.h"
 #import "ui/base/resource/resource_bundle.h"
 
-@implementation AppDelegate
+@implementation AppDelegate {
+  base::SingleThreadTaskExecutor* _task_executor;
+}
 @synthesize window = _window;
 
 - (void)setupUI {
@@ -31,6 +36,9 @@
   ui::ResourceBundle::InitSharedInstanceWithLocale(
       std::string(), nullptr, ui::ResourceBundle::LOAD_COMMON_RESOURCES);
   CHECK(base::i18n::InitializeICU());
+  base::ThreadPoolInstance::Get()->CreateAndStartWithDefaultParams("Showcase");
+  _task_executor =
+      new base::SingleThreadTaskExecutor(base::MessagePumpType::UI);
 
   self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
   [self setupUI];

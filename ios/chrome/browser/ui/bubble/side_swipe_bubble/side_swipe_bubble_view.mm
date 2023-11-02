@@ -6,6 +6,7 @@
 
 #import "base/i18n/rtl.h"
 #import "base/ios/block_types.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/ui/bubble/bubble_constants.h"
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
@@ -220,7 +221,8 @@ double GetRelativeTimeForKeyframeAnimation(base::TimeDelta time) {
     _bubbleView.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
     _bubbleView.accessibilityIdentifier = kSideSwipeBubbleViewBubbleAXId;
     [self addSubview:_bubbleView];
-    [_bubbleView setArrowHidden:YES animated:NO];
+    [_bubbleView setArrowHidden:!UIAccessibilityIsReduceMotionEnabled()
+                       animated:NO];
 
     // Gesture indicator ellipsis.
     _gestureIndicator = CreateInitialGestureIndicator();
@@ -280,8 +282,15 @@ double GetRelativeTimeForKeyframeAnimation(base::TimeDelta time) {
 }
 
 - (void)startAnimationAfterDelay:(base::TimeDelta)delay {
+  __weak SideSwipeBubbleView* weakSelf = self;
+  ProceduralBlock timeoutAction = ^{
+    [weakSelf dismissWithReason:IPHDismissalReasonType::kTimedOut];
+  };
   if (UIAccessibilityIsReduceMotionEnabled()) {
-    // TODO(crbug.com/1467873): Show static image.
+    // Dismiss after the same timeout as with animation enabled.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, base::BindOnce(timeoutAction),
+        kAnimationDuration * kMaxAnimationRepeatCount);
     return;
   }
   double gestureIndicatorSizeChangeDuration =
@@ -293,7 +302,6 @@ double GetRelativeTimeForKeyframeAnimation(base::TimeDelta time) {
   double startShrinkingTime =
       GetRelativeTimeForKeyframeAnimation(kStartShrinkingGestureIndicator);
 
-  __weak SideSwipeBubbleView* weakSelf = self;
   ProceduralBlock keyframes = ^{
     [UIView
         addKeyframeWithRelativeStartTime:0
@@ -330,7 +338,7 @@ double GetRelativeTimeForKeyframeAnimation(base::TimeDelta time) {
       }
       completion:^(BOOL completed) {
         if (completed) {
-          [weakSelf dismissWithReason:IPHDismissalReasonType::kTimedOut];
+          timeoutAction();
         }
       }];
 }
