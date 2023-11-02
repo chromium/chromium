@@ -9878,8 +9878,8 @@ bool WebContentsImpl::ShowPopupMenu(RenderFrameHostImpl* render_frame_host,
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::ShowPopupMenu",
                         "render_frame_host", render_frame_host);
   DCHECK(render_frame_host->IsActive());
-  if (show_poup_menu_callback_) {
-    std::move(show_poup_menu_callback_).Run(bounds);
+  if (show_popup_menu_callback_) {
+    std::move(show_popup_menu_callback_).Run(bounds);
     return true;
   }
   return false;

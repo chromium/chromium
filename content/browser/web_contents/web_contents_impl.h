@@ -1369,7 +1369,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   void set_show_popup_menu_callback_for_testing(
       base::OnceCallback<void(const gfx::Rect&)> callback) {
-    show_poup_menu_callback_ = std::move(callback);
+    show_popup_menu_callback_ = std::move(callback);
   }
 
   // Sets the value in tests to ensure expected ordering and correctness.
@@ -2382,7 +2382,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   viz::FrameSinkId xr_render_target_;
 
-  base::OnceCallback<void(const gfx::Rect&)> show_poup_menu_callback_;
+  base::OnceCallback<void(const gfx::Rect&)> show_popup_menu_callback_;
 
   // Allows the app in the current WebContents to opt-in to exposing
   // information to apps that capture it.

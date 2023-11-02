@@ -4886,7 +4886,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
                 ~network::mojom::WebSandboxFlags::kAutomaticFeatures);
   EXPECT_EQ(
       manager.GetNavigationHandle()->SandboxFlagsInherited(),
-      //`allow-scripts allow-poupups`:
+      //`allow-scripts allow-popups`:
       network::mojom::WebSandboxFlags::kAll &
           ~network::mojom::WebSandboxFlags::kScripts &
           ~network::mojom::WebSandboxFlags::kPopups &
