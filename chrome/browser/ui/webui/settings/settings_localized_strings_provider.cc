@@ -1147,10 +1147,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       "manageCreditCardsLabel",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_PAYMENTS_MANAGE_CREDIT_CARDS,
-          base::FeatureList::IsEnabled(
-              autofill::features::kAutofillUpdateChromeSettingsLinkToGPayWeb)
-              ? chrome::kPaymentMethodsURLForGPayWeb
-              : chrome::kPaymentMethodsURL));
+          base::UTF8ToUTF16(autofill::payments::GetManageInstrumentsUrl().spec())));
   html_source->AddString("managePaymentMethodsUrl",
                          autofill::payments::GetManageInstrumentsUrl().spec());
   html_source->AddString("addressesAndPaymentMethodsLearnMoreURL",
