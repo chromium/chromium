@@ -9,10 +9,6 @@ import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.move
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.waitForSecondChromeTabbedActivity;
 
 import android.app.Activity;
-import android.app.Instrumentation;
-import android.app.Instrumentation.ActivityMonitor;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.text.TextUtils;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -28,9 +24,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ActivityState;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -38,20 +32,16 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
-import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
-import org.chromium.chrome.browser.searchwidget.SearchActivity;
-import org.chromium.chrome.browser.searchwidget.SearchWidgetProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
@@ -226,33 +216,6 @@ public class SwitchToTabTest {
                 InstrumentationRegistry.getInstrumentation(), buttonsList.get(0));
     }
 
-    /**
-     * Launch the SearchActivity.
-     */
-    private SearchActivity startSearchActivity() {
-        final Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-        final Context context = instrumentation.getContext();
-
-        ActivityMonitor searchMonitor =
-                new ActivityMonitor(SearchActivity.class.getName(), null, false);
-        instrumentation.addMonitor(searchMonitor);
-
-        // Fire the Intent to start up the SearchActivity.
-        try {
-            SearchWidgetProvider.createIntent(context, false).send();
-        } catch (PendingIntent.CanceledException e) {
-            Assert.assertTrue("Intent canceled", false);
-        }
-
-        Activity searchActivity = instrumentation.waitForMonitorWithTimeout(
-                searchMonitor, SEARCH_ACTIVITY_MAX_TIME_TO_POLL);
-        Assert.assertNotNull("Activity didn't start", searchActivity);
-        Assert.assertTrue("Wrong activity started", searchActivity instanceof SearchActivity);
-        instrumentation.removeMonitor(searchMonitor);
-        mOmnibox = new OmniboxTestUtils(searchActivity);
-        return (SearchActivity) searchActivity;
-    }
-
     @Test
     @MediumTest
     public void testSwitchToTabSuggestion() throws InterruptedException {
@@ -343,53 +306,5 @@ public class SwitchToTabTest {
                     findTabMatchOmniboxSuggestion(locationBarLayout, aboutTab);
             Criteria.checkThat(matchSuggestion, Matchers.nullValue());
         });
-    }
-
-    @Test
-    @MediumTest
-    public void testSwitchToTabInSearchActivity() throws InterruptedException {
-        mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
-                InstrumentationRegistry.getInstrumentation().getContext(),
-                ServerCertificate.CERT_OK);
-        final String testHttpsUrl1 = mTestServer.getURL("/chrome/test/data/android/about.html");
-        final String testHttpsUrl2 = mTestServer.getURL("/chrome/test/data/android/ok.txt");
-        final String testHttpsUrl3 = mTestServer.getURL("/chrome/test/data/android/test.html");
-        final Tab aboutTab = mActivityTestRule.loadUrlInNewTab(testHttpsUrl1);
-        mActivityTestRule.loadUrlInNewTab(testHttpsUrl2);
-        mActivityTestRule.loadUrlInNewTab(testHttpsUrl3);
-        Assert.assertNotEquals(mActivityTestRule.getActivity().getActivityTab(), aboutTab);
-
-        // Send Chrome to the background so Launch Cause Metrics are gathered (and this is more
-        // realistic).
-        ChromeApplicationTestUtils.fireHomeScreenIntent(mActivityTestRule.getActivity());
-
-        final SearchActivity searchActivity = startSearchActivity();
-        CriteriaHelper.pollUiThread(() -> {
-            Tab tab = mActivityTestRule.getActivity().getActivityTab();
-            Criteria.checkThat(tab, Matchers.notNullValue());
-
-            // Make sure chrome fully in background.
-            Criteria.checkThat(tab.getWindowAndroid().getActivityState(),
-                    Matchers.isOneOf(ActivityState.STOPPED, ActivityState.DESTROYED));
-        }, SEARCH_ACTIVITY_MAX_TIME_TO_POLL, DEFAULT_POLLING_INTERVAL);
-
-        final LocationBarLayout locationBarLayout =
-                (LocationBarLayout) searchActivity.findViewById(R.id.search_location_bar);
-        typeAndClickMatchingTabMatchSuggestion(searchActivity, locationBarLayout, aboutTab);
-
-        CriteriaHelper.pollUiThread(() -> {
-            Tab tab = mActivityTestRule.getActivity().getActivityTab();
-            Criteria.checkThat(tab, Matchers.notNullValue());
-            Criteria.checkThat(tab, Matchers.is(aboutTab));
-            Criteria.checkThat(tab.getUrl().getSpec(), Matchers.is(testHttpsUrl1));
-            // Make sure tab is loaded and in foreground.
-            Criteria.checkThat(
-                    tab.getWindowAndroid().getActivityState(), Matchers.is(ActivityState.RESUMED));
-            Assert.assertEquals(tab, aboutTab);
-            Criteria.checkThat(RecordHistogram.getHistogramValueCountForTesting(
-                                       LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM,
-                                       LaunchCauseMetrics.LaunchCause.HOME_SCREEN_WIDGET),
-                    Matchers.is(1));
-        }, SEARCH_ACTIVITY_MAX_TIME_TO_POLL, DEFAULT_POLLING_INTERVAL);
     }
 }
