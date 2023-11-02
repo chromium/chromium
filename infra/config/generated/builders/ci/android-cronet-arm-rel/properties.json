@@ -45,7 +45,7 @@
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "android-cronet-arm-rel",
+          "builder": "android_cronet",
           "group": "tryserver.chromium.android"
         }
       ]
