@@ -1,7 +1,7 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Run web platform tests as described in //docs/testing/web_platform_tests_wptrunner.md"""
+"""Run web platform tests as described in //docs/testing/run_web_platform_tests.md"""
 
 import argparse
 import contextlib
