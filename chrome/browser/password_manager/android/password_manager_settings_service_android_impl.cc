@@ -187,7 +187,7 @@ void PasswordManagerSettingsServiceAndroidImpl::TurnOffAutoSignIn() {
   absl::optional<SyncingAccount> account = absl::nullopt;
   // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
   // Android.
-  if (IsSyncFeatureEnabledIncludingPasswords(sync_service_)) {
+  if (is_password_sync_enabled_) {
     account = SyncingAccount(sync_service_->GetAccountInfo().email);
   }
   // TODO(crbug.com/1492135): Implement retries for writing to GMSCore.
@@ -297,8 +297,6 @@ void PasswordManagerSettingsServiceAndroidImpl::OnStateChanged(
 
   // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
   // Android.
-  // TODO(crbug.com/1493631): Consider using is_password_sync_enabled_ where
-  // possible, instead of calling IsSyncFeatureEnabledIncludingPasswords.
   is_password_sync_enabled_ = IsSyncFeatureEnabledIncludingPasswords(sync);
 
   if (is_password_sync_enabled_ && IsUnenrolledFromUPM(pref_service_)) {
@@ -337,16 +335,13 @@ void PasswordManagerSettingsServiceAndroidImpl::UpdateSettingFetchState(
 
 void PasswordManagerSettingsServiceAndroidImpl::FetchSettings() {
   CHECK(bridge_helper_);
+  // This code would not be executed for syncing users who are unenrolled.
+  CHECK(!is_password_sync_enabled_ || !IsUnenrolledFromUPM(pref_service_));
   absl::optional<SyncingAccount> account = absl::nullopt;
-  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
-  // Android.
-  bool is_syncing_passwords =
-      IsSyncFeatureEnabledIncludingPasswords(sync_service_);
-  CHECK(!(is_syncing_passwords && IsUnenrolledFromUPM(pref_service_)));
   bool is_final_fetch_for_local_user_without_upm =
-      fetch_after_sync_status_change_in_progress_ && !is_syncing_passwords &&
-      !UsesUPMForLocalM2(pref_service_);
-  if (is_syncing_passwords || is_final_fetch_for_local_user_without_upm) {
+      fetch_after_sync_status_change_in_progress_ &&
+      !is_password_sync_enabled_ && !UsesUPMForLocalM2(pref_service_);
+  if (is_password_sync_enabled_ || is_final_fetch_for_local_user_without_upm) {
     // Note: This method also handles the case where the previously-syncing
     // account has just signed out. So the account can't be queried via
     // `sync_service_->GetAccountInfo().email` but instead needs to be retrieved
