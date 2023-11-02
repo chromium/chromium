@@ -90,7 +90,6 @@ class WiredDisplayMediaRouteProvider : public mojom::MediaRouteProvider,
   void GetState(GetStateCallback callback) override;
 
   // display::DisplayObserver:
-  void OnDidProcessDisplayChanges() override;
   void OnDisplayAdded(const display::Display& new_display) override;
   void OnDisplayRemoved(const display::Display& old_display) override;
   void OnDisplayMetricsChanged(const display::Display& display,
