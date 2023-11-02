@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -1023,6 +1024,37 @@ TEST_F(FormStructureRationalizerTest, RationalizeCreditCardNumberOffsets_) {
                         HasTypeAndOffset(CREDIT_CARD_NUMBER, 0),
                         HasTypeAndOffset(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 0),
                         HasTypeAndOffset(CREDIT_CARD_NUMBER, 0)));
+}
+
+// Tests that if there are multiple address between fields and atleast one of
+// them is wrongly classified as `ADDRESS_HOME_BETWEEN_STREETS` would be
+// rationalized into (`ADDRESS_HOME_BETWEEN_STREETS_1,
+// `ADDRESS_HOME_BETWEEN_STREETS_2`).
+TEST_F(FormStructureRationalizerTest, RationalizeAddressBetweenStreets) {
+  // TODO(crbug.com/1441904): Remove once launched.
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableSupportForBetweenStreets};
+  EXPECT_THAT(
+      *BuildFormStructure(
+          {
+              {.field_type = NAME_FULL},
+              {.field_type = ADDRESS_HOME_BETWEEN_STREETS},
+              {.field_type = ADDRESS_HOME_BETWEEN_STREETS_2},
+          },
+          /*run_heuristics=*/false),
+      AreFields(HasType(NAME_FULL), HasType(ADDRESS_HOME_BETWEEN_STREETS_1),
+                HasType(ADDRESS_HOME_BETWEEN_STREETS_2)));
+
+  EXPECT_THAT(
+      *BuildFormStructure(
+          {
+              {.field_type = NAME_FULL},
+              {.field_type = ADDRESS_HOME_BETWEEN_STREETS},
+              {.field_type = ADDRESS_HOME_BETWEEN_STREETS_1},
+          },
+          /*run_heuristics=*/false),
+      AreFields(HasType(NAME_FULL), HasType(ADDRESS_HOME_BETWEEN_STREETS_1),
+                HasType(ADDRESS_HOME_BETWEEN_STREETS_2)));
 }
 
 struct RationalizeAutocompleteTestParam {

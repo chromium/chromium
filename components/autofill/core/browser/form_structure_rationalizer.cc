@@ -572,6 +572,45 @@ void FormStructureRationalizer::RationalizeStreetAddressAndAddressLine(
   }
 }
 
+void FormStructureRationalizer::RationalizeBetweenStreetFields(
+    LogManager* log_manager) {
+  if (fields_->size() < 2 ||
+      !base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForBetweenStreets)) {
+    return;
+  }
+  for (auto field = fields_->begin(); field != fields_->end() - 1; ++field) {
+    const bool first_is_between_streets =
+        (*field)->ComputedType().GetStorableType() ==
+        ADDRESS_HOME_BETWEEN_STREETS;
+    if (!first_is_between_streets) {
+      continue;
+    }
+
+    // Rationalize a preceding street address belonging to the same section
+    // unless it's a server override.
+    AutofillField& next_field = **(field + 1);
+    const bool second_is_between_streets_1_or_2 =
+        next_field.ComputedType().GetStorableType() !=
+            ADDRESS_HOME_BETWEEN_STREETS_1 ||
+        next_field.ComputedType().GetStorableType() !=
+            ADDRESS_HOME_BETWEEN_STREETS_2;
+    if (!second_is_between_streets_1_or_2) {
+      continue;
+    }
+    LOG_AF(log_manager) << LoggingScope::kRationalization
+                        << LogMessage::kRationalization
+                        << "Address Home Between Streets Rationalization: "
+                           "Converting sequence of (home_between_street,  "
+                           "home_between_street_1) or (home_between_street, "
+                           "home_between_street_2) to (home_between_street_1, "
+                           "home_between_street_2)";
+    (**field).SetTypeTo(AutofillType(ADDRESS_HOME_BETWEEN_STREETS_1));
+    next_field.SetTypeTo(AutofillType(ADDRESS_HOME_BETWEEN_STREETS_2));
+    break;
+  }
+}
+
 void FormStructureRationalizer::RationalizePhoneNumberTrunkTypes(
     LogManager* log_manager) {
   if (!base::FeatureList::IsEnabled(
@@ -945,6 +984,7 @@ void FormStructureRationalizer::RationalizeFieldTypePredictions(
   RationalizeMultiOriginCreditCardFields(main_origin, log_manager);
   RationalizeCreditCardNumberOffsets(log_manager);
   RationalizeStreetAddressAndAddressLine(log_manager);
+  RationalizeBetweenStreetFields(log_manager);
   RationalizePhoneNumberTrunkTypes(log_manager);
   for (const auto& field : *fields_)
     field->SetTypeTo(field->Type());

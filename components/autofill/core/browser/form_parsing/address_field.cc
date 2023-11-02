@@ -496,7 +496,8 @@ bool AddressField::ParseAddressFieldSequence(
         continue;
       }
 
-      if (between_streets_line_1_ && !between_streets_line_2_ &&
+      if ((between_streets_ || between_streets_line_1_) &&
+          !between_streets_line_2_ &&
           ParseFieldSpecifics(
               scanner, kBetweenStreetsLine2Re, kBetweenStreetsMatchType,
               between_streets_line_2_patterns, &between_streets_line_2_,
