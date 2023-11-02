@@ -6,9 +6,11 @@
 #include <memory>
 
 #include "ash/public/cpp/accessibility_controller.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
+#include "chrome/browser/ash/app_mode/crash_recovery_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_update_service.h"
@@ -22,6 +24,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
@@ -82,24 +85,36 @@ class KioskSystemSession::LacrosWatcher
   // `crosapi::BrowserManagerObserver`:
   void OnStateChanged() override {
     if (!crosapi::BrowserManager::Get()->IsRunningOrWillRun()) {
-      LOG(WARNING) << "Lacros crashed, restarting Kiosk session";
+      LOG(WARNING) << "Lacros crashed, restarting Kiosk app in Lacros";
       RestartKioskSession();
     }
   }
 
  private:
   void RestartKioskSession() {
-    // Restart the kiosk session. We do not need to create a new
-    // `KioskSystemSession`, because ash did not crash in this flow.
-    ash::LaunchAppOrDie(profile_, kiosk_app_id_,
-                        /*should_start_kiosk_system_session=*/false);
+    recovery_launcher_ =
+        std::make_unique<CrashRecoveryLauncher>(*profile_, kiosk_app_id_);
+    recovery_launcher_->Start(
+        base::BindOnce(&LacrosWatcher::OnKioskRelaunchComplete,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void OnKioskRelaunchComplete(bool success,
+                               const absl::optional<std::string>& _) {
+    recovery_launcher_.reset();
+    if (!success) {
+      LOG(WARNING) << "Unable to restart kiosk, ending kiosk session";
+      chrome::AttemptUserExit();
+    }
   }
 
   const raw_ptr<Profile> profile_;
   const ash::KioskAppId kiosk_app_id_;
+  std::unique_ptr<CrashRecoveryLauncher> recovery_launcher_;
   base::ScopedObservation<crosapi::BrowserManager,
                           crosapi::BrowserManagerObserver>
       observation_{this};
+  base::WeakPtrFactory<LacrosWatcher> weak_ptr_factory_{this};
 };
 
 KioskSystemSession::KioskSystemSession(
