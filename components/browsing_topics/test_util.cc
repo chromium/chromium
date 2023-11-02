@@ -248,6 +248,13 @@ void TestAnnotator::UseModelInfo(
   model_info_ = model_info;
 }
 
+void TestAnnotator::SetModelAvailable(bool model_available) {
+  model_available_ = model_available;
+  if (model_available_) {
+    model_available_callbacks_.Notify();
+  }
+}
+
 void TestAnnotator::BatchAnnotate(BatchAnnotationCallback callback,
                                   const std::vector<std::string>& inputs) {
   std::vector<Annotation> annotations;
@@ -265,7 +272,10 @@ void TestAnnotator::BatchAnnotate(BatchAnnotationCallback callback,
 }
 
 void TestAnnotator::NotifyWhenModelAvailable(base::OnceClosure callback) {
-  // Always run the callback so that tests do not hang.
+  if (!model_available_) {
+    model_available_callbacks_.AddUnsafe(std::move(callback));
+    return;
+  }
   std::move(callback).Run();
 }
 

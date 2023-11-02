@@ -286,6 +286,49 @@ TEST_F(BrowsingTopicsCalculatorTest, TopicsMetadata) {
       /*expected_bucket_count=*/2);
 }
 
+// Regression test for crbug/1495959.
+TEST_F(BrowsingTopicsCalculatorTest, ModelAvailableAfterDelay) {
+  test_annotator_.SetModelAvailable(false);
+
+  base::Time begin_time = base::Time::Now();
+
+  AddHistoryEntries({kHost1, kHost2, kHost3, kHost4, kHost5, kHost6},
+                    begin_time);
+
+  task_environment_.AdvanceClock(base::Seconds(1));
+
+  // This PostTask will run when the |CalculateTopics| run loop starts and will
+  // signal to the calculator that the model is ready, triggering it to start.
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](TestAnnotator* annotator) {
+            annotator->UseModelInfo(*optimization_guide::TestModelInfoBuilder()
+                                         .SetVersion(1)
+                                         .Build());
+            annotator->UseAnnotations({
+                {kHost1, {1, 2, 3, 4, 5, 6}},
+                {kHost2, {2, 3, 4, 5, 6}},
+                {kHost3, {3, 4, 5, 6}},
+                {kHost4, {4, 5, 6}},
+                {kHost5, {5, 6}},
+                {kHost6, {6}},
+            });
+            annotator->SetModelAvailable(true);
+          },
+          &test_annotator_));
+
+  EpochTopics result = CalculateTopics();
+  ExpectResultTopicsEqual(result.top_topics_and_observing_domains(),
+                          {{Topic(6), {}},
+                           {Topic(5), {}},
+                           {Topic(4), {}},
+                           {Topic(3), {}},
+                           {Topic(2), {}}});
+
+  EXPECT_EQ(result.padded_top_topics_start_index(), 5u);
+}
+
 TEST_F(BrowsingTopicsCalculatorTest, TopTopicsRankedByFrequency) {
   base::Time begin_time = base::Time::Now();
 
