@@ -8,9 +8,9 @@ import {FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
 import {FeedbackAppPostSubmitAction, SendReportStatus} from 'chrome://os-feedback/feedback_types.js';
 import {setFeedbackServiceProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {eventToPromise, isVisible} from '../test_util.js';
 
 /** @type {string} */
@@ -54,6 +54,7 @@ export function confirmationPageTest() {
     page = /** @type {!ConfirmationPageElement} */ (
         document.createElement('confirmation-page'));
     assertTrue(!!page);
+    page.isUserLoggedIn = true;
     document.body.appendChild(page);
     return flushTasks();
   }
@@ -201,24 +202,27 @@ export function confirmationPageTest() {
   });
 
   /**
-   * Test that when the user is not logged in, the community link should be
-   * invisible.
+   * Test that when the user is not logged in, the help resources section should
+   * be invisible.
    */
-  test('userNotLoggedIn_ShouldHideCommunityLink', async () => {
+  test('userNotLoggedIn_ShouldHideHelpResourcesSection', async () => {
     await initializePage();
-    page.sendReportStatus = SendReportStatus.kSuccess;
     page.isUserLoggedIn = false;
 
     const helpResourcesSection = getElement(page, '#helpResources');
-    const helpLinks = helpResourcesSection.querySelectorAll('cr-link-row');
-    assertTrue(!!helpLinks);
-    assertEquals(3, helpLinks.length);
-    const communityLink = helpLinks[2];
+    assertFalse(isVisible(helpResourcesSection));
+  });
 
-    assertFalse(isVisible(communityLink));
-
+  /**
+   * Test that when the user is logged in, the help resources section should be
+   * visible.
+   */
+  test('userLoggedIn_ShouldShowHelpResourcesSection', async () => {
+    await initializePage();
     page.isUserLoggedIn = true;
-    assertTrue(isVisible(communityLink));
+
+    const helpResourcesSection = getElement(page, '#helpResources');
+    assertTrue(isVisible(helpResourcesSection));
   });
 
   /**

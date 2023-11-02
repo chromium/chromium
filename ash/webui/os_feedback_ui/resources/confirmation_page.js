@@ -82,19 +82,10 @@ export class ConfirmationPageElement extends ConfirmationPageElementBase {
   /**
    * The page shows different information when the device is offline.
    * @returns {boolean}
-   * @private
+   * @protected
    */
   isOffline_() {
     return this.sendReportStatus === SendReportStatus.kDelayed;
-  }
-
-  /**
-   * Hide the community link when offline or the user is not logged in.
-   * @returns {boolean}
-   * @protected
-   */
-  hideCommunityLink_() {
-    return this.isOffline_() || !this.isUserLoggedIn;
   }
 
   /**
