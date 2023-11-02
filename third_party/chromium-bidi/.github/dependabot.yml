@@ -37,10 +37,14 @@ updates:
       all:
         patterns:
           - '*'
-    # XXX: Update rollup major version.
-    # Rollup v4 requires node 18. Chromium uses node 16 (https://crbug.com/1408209).
-    # https://github.com/GoogleChromeLabs/chromium-bidi/pull/1438#issuecomment-1764534973
+
     ignore:
+      # XXX: Update rollup major version.
+      # Rollup v4 requires node 18. Chromium uses node 16 (https://crbug.com/1408209).
+      # https://github.com/GoogleChromeLabs/chromium-bidi/pull/1438#issuecomment-1764534973
       - dependency-name: rollup
         versions: ['>=4.0.0']
         update-types: ['version-update:semver-major']
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
+      - dependency-name: devtools-protocol
