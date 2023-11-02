@@ -96,7 +96,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 // A collection view of items in a grid format.
 @property(nonatomic, weak) UICollectionView* collectionView;
 // The collection view's data source.
-@property(nonatomic, strong) DiffableDataSource* diffableDataSource;
+@property(nonatomic, strong) GridDiffableDataSource* diffableDataSource;
 // The cell registration for grid cells.
 @property(nonatomic, strong)
     UICollectionViewCellRegistration* gridCellRegistration;
@@ -346,7 +346,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   [self updateSuggestedActionsSection];
 
   // Reconfigure all tabs.
-  Snapshot* snapshot = self.diffableDataSource.snapshot;
+  GridSnapshot* snapshot = self.diffableDataSource.snapshot;
   [snapshot reconfigureItemsWithIdentifiers:snapshot.itemIdentifiers];
   [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
 
@@ -542,7 +542,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 #pragma mark - UICollectionView Diffable Data Source Helpers
 
 - (void)reloadDataSource {
-  Snapshot* snapshot = [[Snapshot alloc] init];
+  GridSnapshot* snapshot = [[GridSnapshot alloc] init];
   [snapshot appendSectionsWithIdentifiers:@[ kGridOpenTabsSectionIdentifier ]];
   for (TabSwitcherItem* item in self.items) {
     GridItemIdentifier* itemIdentifier =
@@ -1078,7 +1078,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 
   __weak __typeof(self) weakSelf = self;
   [self
-      performModelAndViewUpdates:^(Snapshot* snapshot) {
+      performModelAndViewUpdates:^(GridSnapshot* snapshot) {
         [weakSelf applyModelAndViewUpdatesForInsertionOfItem:item
                                                      atIndex:index
                                               selectedItemID:selectedItemID
@@ -1101,7 +1101,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 
   __weak __typeof(self) weakSelf = self;
   [self
-      performModelAndViewUpdates:^(Snapshot* snapshot) {
+      performModelAndViewUpdates:^(GridSnapshot* snapshot) {
         [weakSelf applyModelAndViewUpdatesForRemovalOfItemWithID:removedItemID
                                                   selectedItemID:selectedItemID
                                                         snapshot:snapshot];
@@ -1138,7 +1138,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   TabSwitcherItem* existingItem = self.items[index];
   self.items[index] = newItem;
 
-  Snapshot* snapshot = self.diffableDataSource.snapshot;
+  GridSnapshot* snapshot = self.diffableDataSource.snapshot;
   GridItemIdentifier* existingItemIdentifier =
       [GridItemIdentifier tabIdentifier:existingItem];
   if (existingItemID == newItem.identifier) {
@@ -1169,7 +1169,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 
   __weak __typeof(self) weakSelf = self;
   [self
-      performModelAndViewUpdates:^(Snapshot* snapshot) {
+      performModelAndViewUpdates:^(GridSnapshot* snapshot) {
         [weakSelf applyModelAndViewUpdatesForMoveOfItemWithID:itemID
                                                     fromIndex:fromIndex
                                                       toIndex:toIndex
@@ -1233,7 +1233,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   // In search mode if there is already a search query, and the suggested
   // actions section is not yet added, add it. Otherwise remove the section if
   // it exists and the search mode is not active.
-  Snapshot* snapshot = self.diffableDataSource.snapshot;
+  GridSnapshot* snapshot = self.diffableDataSource.snapshot;
   if (self.mode == TabGridModeSearch && self.searchText.length) {
     if (!self.showingSuggestedActions) {
       [snapshot appendSectionsWithIdentifiers:@[
@@ -1259,11 +1259,11 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 
 // Performs model and view updates together.
 - (void)performModelAndViewUpdates:
-            (void (^)(Snapshot* snapshot))modelAndViewUpdates
+            (void (^)(GridSnapshot* snapshot))modelAndViewUpdates
                         completion:(ProceduralBlock)completion {
   self.updating = YES;
   // Synchronize model and diffable snapshot updates.
-  Snapshot* snapshot = self.diffableDataSource.snapshot;
+  GridSnapshot* snapshot = self.diffableDataSource.snapshot;
   modelAndViewUpdates(snapshot);
   __weak __typeof(self) weakSelf = self;
   [self.diffableDataSource applySnapshot:snapshot
@@ -1284,7 +1284,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
                                            atIndex:(NSUInteger)index
                                     selectedItemID:
                                         (web::WebStateID)selectedItemID
-                                          snapshot:(Snapshot*)snapshot {
+                                          snapshot:(GridSnapshot*)snapshot {
   // Consistency check: `item`'s ID is not in `items`.
   // (using DCHECK rather than DCHECK_EQ to avoid a checked_cast on NSNotFound).
   DCHECK([self indexOfItemWithID:item.identifier] == NSNotFound);
@@ -1355,7 +1355,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
             (web::WebStateID)removedItemID
                                         selectedItemID:
                                             (web::WebStateID)selectedItemID
-                                              snapshot:(Snapshot*)snapshot {
+                                              snapshot:(GridSnapshot*)snapshot {
   NSUInteger index = [self indexOfItemWithID:removedItemID];
   TabSwitcherItem* removedItem = self.items[index];
   [self.items removeObjectAtIndex:index];
@@ -1386,7 +1386,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 - (void)applyModelAndViewUpdatesForMoveOfItemWithID:(web::WebStateID)itemID
                                           fromIndex:(NSUInteger)fromIndex
                                             toIndex:(NSUInteger)toIndex
-                                           snapshot:(Snapshot*)snapshot {
+                                           snapshot:(GridSnapshot*)snapshot {
   TabSwitcherItem* toItem = self.items[toIndex];
   TabSwitcherItem* item = self.items[fromIndex];
   [self.items removeObjectAtIndex:fromIndex];
@@ -1632,7 +1632,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
       self.collectionView.dragInteractionEnabled = YES;
     }
     // Reconfigure the item.
-    Snapshot* snapshot = self.diffableDataSource.snapshot;
+    GridSnapshot* snapshot = self.diffableDataSource.snapshot;
     GridItemIdentifier* itemIdentifier =
         [GridItemIdentifier tabIdentifier:self.items[index]];
     [snapshot reconfigureItemsWithIdentifiers:@[ itemIdentifier ]];

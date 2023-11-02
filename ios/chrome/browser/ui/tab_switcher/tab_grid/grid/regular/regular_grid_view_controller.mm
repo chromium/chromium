@@ -290,7 +290,7 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   // underlying regular Tab Grid moves tabs up.
   // Note: this could be revisited when supporting iPad, as the user could have
   // closed all inactive tabs in a different window.
-  Snapshot* snapshot = self.diffableDataSource.snapshot;
+  GridSnapshot* snapshot = self.diffableDataSource.snapshot;
   [snapshot reloadSectionsWithIdentifiers:@[ kGridOpenTabsSectionIdentifier ]];
   [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
 

@@ -13,9 +13,10 @@ extern NSString* const kGridOpenTabsSectionIdentifier;
 
 // To ease the use of generics with the diffable data source, define a Snapshot
 // type.
-typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
+typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*>
+    GridSnapshot;
 typedef UICollectionViewDiffableDataSource<NSString*, GridItemIdentifier*>
-    DiffableDataSource;
+    GridDiffableDataSource;
 
 @interface BaseGridViewController (
     Subclassing) <UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
@@ -24,7 +25,7 @@ typedef UICollectionViewDiffableDataSource<NSString*, GridItemIdentifier*>
 @property(nonatomic, weak, readonly) UICollectionView* collectionView;
 
 // The collection view's data source.
-@property(nonatomic, strong) DiffableDataSource* diffableDataSource;
+@property(nonatomic, strong) GridDiffableDataSource* diffableDataSource;
 
 // Tracks if the items are in a batch action, which are the "Close All" or
 // "Undo" the close all.
