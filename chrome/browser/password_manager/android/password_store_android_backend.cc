@@ -331,6 +331,7 @@ bool IsRetriableOperation(PasswordStoreOperation operation) {
     case PasswordStoreOperation::kRemoveLoginsCreatedBetweenAsync:
     case PasswordStoreOperation::kDisableAutoSignInForOriginsAsync:
     case PasswordStoreOperation::kGetGroupedMatchingLoginsAsync:
+    case PasswordStoreOperation::kGetAllLoginsWithBrandingInfoAsync:
       return false;
   }
   NOTREACHED() << "Operation code not handled";
@@ -363,6 +364,8 @@ std::string GetOperationName(PasswordStoreOperation operation) {
       return "DisableAutoSignInForOriginsAsync";
     case PasswordStoreOperation::kGetGroupedMatchingLoginsAsync:
       return "GetGroupedMatchingLoginsAsync";
+    case PasswordStoreOperation::kGetAllLoginsWithBrandingInfoAsync:
+      return "GetAllLoginsWithBrandingInfoAsync";
   }
   NOTREACHED() << "Operation code not handled";
   return "";
@@ -613,8 +616,15 @@ void PasswordStoreAndroidBackend::GetAllLoginsAsync(
 
 void PasswordStoreAndroidBackend::GetAllLoginsWithAffiliationAndBrandingAsync(
     LoginsOrErrorReply callback) {
-  // TODO(crbug.com/1480412): Invoke new API to get all passwords with branding
-  // info instead of calling affiliation service.
+  if (bridge_helper_->CanUseGetAllLoginsWithBrandingInfoAPI()) {
+    JobId job_id = bridge_helper_->GetAllLoginsWithBrandingInfo(
+        GetAccount(GetSyncingAccount(sync_service_)));
+    QueueNewJob(job_id, std::move(callback),
+                MetricInfix("GetAllLoginsWithBrandingInfoAsync"),
+                PasswordStoreOperation::kGetAllLoginsWithBrandingInfoAsync,
+                /*delay=*/base::Seconds(0));
+    return;
+  }
   auto affiliation_injection = base::BindOnce(
       &PasswordStoreAndroidBackend::InjectAffiliationAndBrandingInformation,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback));
@@ -994,6 +1004,7 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
         case PasswordStoreOperation::kRemoveLoginsCreatedBetweenAsync:
         case PasswordStoreOperation::kDisableAutoSignInForOriginsAsync:
         case PasswordStoreOperation::kGetGroupedMatchingLoginsAsync:
+        case PasswordStoreOperation::kGetAllLoginsWithBrandingInfoAsync:
           NOTREACHED();
           return;
       }

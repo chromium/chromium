@@ -173,6 +173,7 @@ class MockPasswordStoreAndroidBackendBridgeHelper
     : public PasswordStoreAndroidBackendBridgeHelper {
  public:
   MOCK_METHOD(bool, CanUseGetAffiliatedPasswordsAPI, (), (override));
+  MOCK_METHOD(bool, CanUseGetAllLoginsWithBrandingInfoAPI, (), (override));
   MOCK_METHOD(void, SetConsumer, (base::WeakPtr<Consumer>), (override));
   MOCK_METHOD(JobId, GetAllLogins, (Account), (override));
   MOCK_METHOD(JobId, GetAllLoginsWithBrandingInfo, (Account), (override));
@@ -1509,6 +1510,8 @@ TEST_F(PasswordStoreAndroidBackendTest,
   EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
 
   base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge_helper(), CanUseGetAllLoginsWithBrandingInfoAPI)
+      .WillOnce(Return(false));
   backend().GetAllLoginsWithAffiliationAndBrandingAsync(mock_reply.Get());
   RunUntilIdle();
 
@@ -1518,6 +1521,43 @@ TEST_F(PasswordStoreAndroidBackendTest,
   consumer().OnCompleteWithLogins(kJobId,
                                   UnwrapForms(std::move(returned_forms)));
 
+  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_results)));
+  RunUntilIdle();
+}
+
+TEST_F(PasswordStoreAndroidBackendTest,
+       CallsBridgeForGetAllLoginsWithAffiliationAndBrandingInformation) {
+  backend().InitBackend(/*affiliated_match_helper=*/nullptr,
+                        PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::RepeatingClosure(), base::DoNothing());
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  std::string TestURL1("https://example.com/");
+  PasswordFormDigest form_digest(PasswordForm::Scheme::kHtml, TestURL1,
+                                 GURL(TestURL1));
+
+  EXPECT_CALL(*bridge_helper(), CanUseGetAllLoginsWithBrandingInfoAPI)
+      .WillOnce(Return(true));
+  EXPECT_CALL(*bridge_helper(), GetAllLoginsWithBrandingInfo(_))
+      .WillOnce(Return(kJobId));
+  backend().GetAllLoginsWithAffiliationAndBrandingAsync(mock_reply.Get());
+
+  PasswordForm android_form = CreateTestLogin(
+      kTestUsername, kTestPassword, kTestAndroidRealm, kTestDateCreated);
+  android_form.app_display_name = kTestAndroidName;
+  android_form.app_icon_url = GURL(kTestAndroidIconURL);
+  PasswordForm form =
+      CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
+
+  std::vector<std::unique_ptr<PasswordForm>> expected_results;
+  expected_results.push_back(std::make_unique<PasswordForm>(android_form));
+  expected_results.push_back(std::make_unique<PasswordForm>(form));
+
+  std::vector<std::unique_ptr<PasswordForm>> returned_forms;
+  returned_forms.push_back(std::make_unique<PasswordForm>(android_form));
+  returned_forms.push_back(std::make_unique<PasswordForm>(form));
+
+  consumer().OnCompleteWithLogins(kJobId,
+                                  UnwrapForms(std::move(returned_forms)));
   EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_results)));
   RunUntilIdle();
 }

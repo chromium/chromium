@@ -119,8 +119,11 @@ class PasswordStoreAndroidBackendDispatcherBridge {
   // would return false.
   static bool CanCreateBackend();
 
-  // Returns true if GMS Core supports new GetAffiliatedPasswordsAPI API.
+  // Returns true if GMS Core supports new GetAffiliatedPasswords API.
   static bool CanUseGetAffiliatedPasswordsAPI();
+
+  // Returns true if GMS Core supports new GetAllLoginsWithBrandingInfo API.
+  static bool CanUseGetAllLoginsWithBrandingInfoAPI();
 };
 
 }  // namespace password_manager

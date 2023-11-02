@@ -69,6 +69,10 @@ BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValues);
 BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValuesPredictions);
 BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValuesVoting);
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kUseGMSCoreForBrandingInfo);
+#endif
+
 // All features parameters in alphabetical order.
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop

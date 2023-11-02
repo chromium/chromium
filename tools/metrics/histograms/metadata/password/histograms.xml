@@ -58,6 +58,8 @@ chromium-metrics-reviews@google.com.
       summary="DisableAutoSignInForOriginsAsync()"/>
   <variant name="FillMatchingLoginsAsync" summary="FillMatchingLoginsAsync()"/>
   <variant name="GetAllLoginsAsync" summary="GetAllLoginsAsync()"/>
+  <variant name="GetAllLoginsWithBrandingInfoAsync"
+      summary="GetAllLoginsWithBrandingInfoAsync()"/>
   <variant name="GetAutofillableLoginsAsync"
       summary="GetAutofillableLoginsAsync()"/>
   <variant name="GetGroupedMatchingLoginsAsync"
@@ -2844,6 +2846,8 @@ chromium-metrics-reviews@google.com.
     <variant name=""/>
     <variant name=".AddLoginAsync" summary="for AddLoginAsync"/>
     <variant name=".GetAllLoginsAsync" summary="for GetAllLoginsAsync"/>
+    <variant name=".GetAllLoginsWithBrandingInfoAsync"
+        summary="for GetAllLoginsWithBrandingInfoAsync"/>
     <variant name=".GetAutofillableLoginsAsync"
         summary="for GetAutofillableLoginsAsync"/>
     <variant name=".GetGroupedMatchingLoginsAsync"
@@ -2869,6 +2873,8 @@ chromium-metrics-reviews@google.com.
     <variant name=""/>
     <variant name=".AddLoginAsync" summary="for AddLoginAsync"/>
     <variant name=".GetAllLoginsAsync" summary="for GetAllLoginsAsync"/>
+    <variant name=".GetAllLoginsWithBrandingInfoAsync"
+        summary="for GetAllLoginsWithBrandingInfoAsync"/>
     <variant name=".GetAutofillableLoginsAsync"
         summary="for GetAutofillableLoginsAsync"/>
     <variant name=".GetGroupedMatchingLoginsAsync"
@@ -2895,6 +2901,8 @@ chromium-metrics-reviews@google.com.
         summary="retrieving/adding/updating or removing logins from"/>
     <variant name=".AddLoginAsync" summary="adding a login to"/>
     <variant name=".GetAllLoginsAsync" summary="retrieving all logins from"/>
+    <variant name=".GetAllLoginsWithBrandingInfoAsync"
+        summary="for GetAllLoginsWithBrandingInfoAsync"/>
     <variant name=".GetAutofillableLoginsAsync"
         summary="retrieving autofillable logins from"/>
     <variant name=".GetGroupedMatchingLoginsAsync"

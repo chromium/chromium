@@ -75,8 +75,9 @@ enum class PasswordStoreOperation {
   // Operation that is non-modifying, but not safe to retry because it is
   // user-visible.
   kGetGroupedMatchingLoginsAsync = 12,
+  kGetAllLoginsWithBrandingInfoAsync = 13,
 
-  kMaxValue = kGetGroupedMatchingLoginsAsync,
+  kMaxValue = kGetAllLoginsWithBrandingInfoAsync,
 };
 
 // Android-specific password store backend that delegates every request to

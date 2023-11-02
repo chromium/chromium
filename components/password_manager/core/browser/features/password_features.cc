@@ -209,4 +209,13 @@ BASE_FEATURE(kUsernameFirstFlowWithIntermediateValuesVoting,
              "UsernameFirstFlowWithIntermediateValuesVoting",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// Feature enables usage of a new API to obtain all passwords with branding info
+// directly from GMS Core. This feature also completely disables fetching of
+// Affiliations by Chrome.
+BASE_FEATURE(kUseGMSCoreForBrandingInfo,
+             "UseGMSCoreForBrandingInfo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 }  // namespace password_manager::features

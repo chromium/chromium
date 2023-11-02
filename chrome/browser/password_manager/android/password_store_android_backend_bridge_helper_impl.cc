@@ -84,6 +84,12 @@ bool PasswordStoreAndroidBackendBridgeHelperImpl::
       CanUseGetAffiliatedPasswordsAPI();
 }
 
+bool PasswordStoreAndroidBackendBridgeHelperImpl::
+    CanUseGetAllLoginsWithBrandingInfoAPI() {
+  return PasswordStoreAndroidBackendDispatcherBridge::
+      CanUseGetAllLoginsWithBrandingInfoAPI();
+}
+
 void PasswordStoreAndroidBackendBridgeHelperImpl::SetConsumer(
     base::WeakPtr<Consumer> consumer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
