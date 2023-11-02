@@ -65,21 +65,25 @@
 </template>
 <div class="hr"></div>
 <div id="appsSection">
-  <h2 id="appsSectionTitle">
-    $i18n{privacyHubAppsSectionTitle}
-  </h2>
-  <div id="appList" class="list-frame">
-    <template is="dom-repeat" items="[[appList_]]" as="app">
-      <div class="settings-box">
-        <div class="list-item start settings-box-text">
-          [[app.name]]
-        </div>
-        <cr-toggle
-            checked="[[isMicrophonePermissionEnabled_(app)]]">
-        </cr-toggle>
-      </div>
-    </template>
-  </div>
+  <h2 id="appsSectionTitle">$i18n{privacyHubAppsSectionTitle}</h2>
+  <template is="dom-if" if="[[prefs.ash.user.microphone_allowed.value]]"
+      restamp>
+    <div class="list-frame">
+      <template id="appList" is="dom-repeat" items="[[appList_]]" as="app">
+          <settings-privacy-hub-app-permission-row
+              class="list-item"
+              app="[[app]]"
+              permission-type="kMicrophone">
+          </settings-privacy-hub-app-permission-row>
+      </template>
+    </div>
+  </template>
+  <template is="dom-if" if="[[!prefs.ash.user.microphone_allowed.value]]"
+      restamp>
+    <div id="noAppHasAccessText" class="settings-box-text subsection">
+      $i18n{noAppCanUseMicText}
+    </div>
+  </template>
 </div>
 <div class="hr"></div>
 <div id="websitesSection">

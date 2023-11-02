@@ -5,23 +5,32 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {MediaDevicesProxy, PrivacyHubBrowserProxyImpl, SettingsPrivacyHubMicrophoneSubpage} from 'chrome://os-settings/lazy_load.js';
-import {CrLinkRowElement, CrToggleElement, PaperTooltipElement, Router} from 'chrome://os-settings/os_settings.js';
+import {appPermissionHandlerMojom, CrLinkRowElement, CrToggleElement, PaperTooltipElement, Router, setAppPermissionProviderForTesting} from 'chrome://os-settings/os_settings.js';
+import {PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {createTriStatePermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {DomRepeat, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {FakeMediaDevices} from '../fake_media_devices.js';
 
+import {FakeAppPermissionHandler} from './fake_app_permission_handler.js';
 import {TestPrivacyHubBrowserProxy} from './test_privacy_hub_browser_proxy.js';
 
+type App = appPermissionHandlerMojom.App;
+
 suite('<settings-privacy-hub-microphone-subpage>', () => {
+  let fakeHandler: FakeAppPermissionHandler;
   let privacyHubMicrophoneSubpage: SettingsPrivacyHubMicrophoneSubpage;
   let privacyHubBrowserProxy: TestPrivacyHubBrowserProxy;
   let mediaDevices: FakeMediaDevices;
 
   setup(() => {
+    fakeHandler = new FakeAppPermissionHandler();
+    setAppPermissionProviderForTesting(fakeHandler);
+
     privacyHubBrowserProxy = new TestPrivacyHubBrowserProxy();
     PrivacyHubBrowserProxyImpl.setInstanceForTesting(privacyHubBrowserProxy);
 
@@ -274,6 +283,100 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
         }
       });
 
+  function getNoAppHasAccessTextSection(): HTMLDivElement|null {
+    return privacyHubMicrophoneSubpage.shadowRoot!.querySelector(
+        '#noAppHasAccessText');
+  }
+
+  function getAppList(): DomRepeat|null {
+    return privacyHubMicrophoneSubpage.shadowRoot!.querySelector('#appList');
+  }
+
+  test('Apps section when microphone allowed', () => {
+    assertEquals(
+        privacyHubMicrophoneSubpage.i18n('privacyHubAppsSectionTitle'),
+        privacyHubMicrophoneSubpage.shadowRoot!
+            .querySelector('#appsSectionTitle')!.textContent!.trim());
+    assertTrue(!!getAppList());
+    assertNull(getNoAppHasAccessTextSection());
+  });
+
+  test('Apps section when microphone not allowed', async () => {
+    mediaDevices.addDevice('audioinput', 'Fake Microphone');
+    await waitAfterNextRender(privacyHubMicrophoneSubpage);
+    // Disable microphone access.
+    getMicrophoneCrToggle().click();
+    await waitAfterNextRender(privacyHubMicrophoneSubpage);
+
+    assertNull(getAppList());
+    assertTrue(!!getNoAppHasAccessTextSection());
+    assertEquals(
+        privacyHubMicrophoneSubpage.i18n('noAppCanUseMicText'),
+        getNoAppHasAccessTextSection()!.textContent!.trim());
+  });
+
+  function createApp(
+      id: string, name: string, permissionType: PermissionType,
+      permissionValue: TriState): App {
+    const app: App = {id, name, permissions: {}};
+    app.permissions[permissionType] = createTriStatePermission(
+        permissionType, permissionValue, /*is_managed=*/ false);
+    return app;
+  }
+
+  function initializeObserver(): Promise<void> {
+    return fakeHandler.whenCalled('addObserver');
+  }
+
+  function simulateAppUpdate(app: App): void {
+    fakeHandler.getObserverRemote().onAppUpdated(app);
+  }
+
+  function simulateAppRemoval(id: string): void {
+    fakeHandler.getObserverRemote().onAppRemoved(id);
+  }
+
+  test('AppList displays all apps with microphone permission', async () => {
+    const app1 = createApp(
+        'app1_id', 'app1_name', PermissionType.kMicrophone, TriState.kAllow);
+    const app2 = createApp(
+        'app2_id', 'app2_name', PermissionType.kCamera, TriState.kAllow);
+    const app3 = createApp(
+        'app3_id', 'app3_name', PermissionType.kMicrophone, TriState.kAsk);
+
+    await initializeObserver();
+    simulateAppUpdate(app1);
+    simulateAppUpdate(app2);
+    simulateAppUpdate(app3);
+    await flushTasks();
+
+    assertEquals(2, getAppList()!.items!.length);
+  });
+
+  test('Removed app are removed from appList', async () => {
+    const app1 = createApp(
+        'app1_id', 'app1_name', PermissionType.kMicrophone, TriState.kAllow);
+    const app2 = createApp(
+        'app2_id', 'app2_name', PermissionType.kCamera, TriState.kAllow);
+
+    await initializeObserver();
+    simulateAppUpdate(app1);
+    simulateAppUpdate(app2);
+    await flushTasks();
+
+    assertEquals(1, getAppList()!.items!.length);
+
+    simulateAppRemoval(app2.id);
+    await flushTasks();
+
+    assertEquals(1, getAppList()!.items!.length);
+
+    simulateAppRemoval(app1.id);
+    await flushTasks();
+
+    assertEquals(0, getAppList()!.items!.length);
+  });
+
   function getManagePermissionsInChromeRow(): CrLinkRowElement {
     const managePermissionsInChromeRow =
         privacyHubMicrophoneSubpage.shadowRoot!.querySelector<CrLinkRowElement>(
@@ -289,7 +392,6 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
     assertTrue(!!noWebsiteHasAccessTextRow);
     return noWebsiteHasAccessTextRow;
   }
-
 
   test('Websites section texts', async () => {
     assertEquals(

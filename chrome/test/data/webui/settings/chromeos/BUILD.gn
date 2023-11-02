@@ -268,8 +268,10 @@ build_webui_tests("build") {
     "os_printing_page/printing_settings_card_test.ts",
     "os_printing_page/test_cups_printers_browser_proxy.ts",
 
+    "os_privacy_page/fake_app_permission_handler.ts",
     "os_privacy_page/manage_users_subpage_test.ts",
     "os_privacy_page/os_privacy_page_test.ts",
+    "os_privacy_page/privacy_hub_app_permission_row_test.ts",
     "os_privacy_page/privacy_hub_microphone_subpage_test.ts",
     "os_privacy_page/privacy_hub_subpage_test.ts",
     "os_privacy_page/smart_privacy_subpage_test.ts",

@@ -22,6 +22,9 @@ interface AppPermissionsHandler {
 
   // Returns app list.
   GetApps() => (array<App> apps);
+
+  // Updates permission of the app specified by the `app_id`.
+  SetPermission(string app_id, app_management.mojom.Permission permission);
 };
 
 // Frontend interface.

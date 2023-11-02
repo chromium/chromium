@@ -167,6 +167,7 @@ export {MainPageContainerElement} from './main_page_container/main_page_containe
 export {PageDisplayerElement} from './main_page_container/page_displayer.js';
 export {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from './metrics_recorder.js';
 export * as appNotificationHandlerMojom from './mojom-webui/app_notification_handler.mojom-webui.js';
+export * as appPermissionHandlerMojom from './mojom-webui/app_permission_handler.mojom-webui.js';
 export * as crosAudioConfigMojom from './mojom-webui/cros_audio_config.mojom-webui.js';
 export * as displaySettingsProviderMojom from './mojom-webui/display_settings_provider.mojom-webui.js';
 export * as personalizationSearchMojom from './mojom-webui/personalization_search.mojom-webui.js';
@@ -217,8 +218,10 @@ export {AccountManagerSettingsCardElement} from './os_people_page/account_manage
 export {AdditionalAccountsSettingsCardElement} from './os_people_page/additional_accounts_settings_card.js';
 export {OsSettingsPeoplePageElement} from './os_people_page/os_people_page.js';
 export {MetricsConsentBrowserProxy, MetricsConsentBrowserProxyImpl, MetricsConsentState} from './os_privacy_page/metrics_consent_browser_proxy.js';
+export {setAppPermissionProviderForTesting} from './os_privacy_page/mojo_interface_provider.js';
 export {OsSettingsPrivacyPageElement} from './os_privacy_page/os_privacy_page.js';
 export {DataAccessPolicyState, PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './os_privacy_page/peripheral_data_access_browser_proxy.js';
+export {SettingsPrivacyHubAppPermissionRow} from './os_privacy_page/privacy_hub_app_permission_row.js';
 export {OsResetBrowserProxy, OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.js';
 export {OsSettingsSearchPageElement} from './os_search_page/os_search_page.js';
 export {SearchAndAssistantSettingsCardElement} from './os_search_page/search_and_assistant_settings_card.js';

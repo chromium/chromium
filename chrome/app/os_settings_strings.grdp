@@ -6274,6 +6274,9 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_APPS_SECTION_TITLE" translateable="false" desc="The title of the Apps section of the privacy hub sensor subpages.">
     Apps
   </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_APP_CAN_USE_MIC_TEXT" translateable="false" desc="The text displayed in the Apps section of the microphone subpage when microphone is not allowed.">
+    No app is allowed to use your microphone
+  </message>
   <message name="IDS_OS_SETTINGS_REVAMP_SECURE_DNS" desc="Text for secure DNS toggle in Privacy options for ChromeOS">
     Encrypt URLs entered into the browser
   </message>

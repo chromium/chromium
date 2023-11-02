@@ -895,6 +895,10 @@ TEST_F(
    'os_privacy_page/manage_users_subpage_test.js'
  ],
  [
+   'OsPrivacyPagePrivacyHubAppPermissionRow',
+   'os_privacy_page/privacy_hub_app_permission_row_test.js'
+ ],
+ [
    'OsPrivacyPagePrivacyHubMicrophoneSubpage',
    'os_privacy_page/privacy_hub_microphone_subpage_test.js',
    {

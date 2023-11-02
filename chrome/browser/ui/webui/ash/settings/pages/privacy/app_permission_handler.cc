@@ -73,6 +73,11 @@ void AppPermissionHandler::GetApps(
   std::move(callback).Run(GetAppList());
 }
 
+void AppPermissionHandler::SetPermission(const std::string& app_id,
+                                         apps::PermissionPtr permission) {
+  app_service_proxy_->SetPermission(app_id, std::move(permission));
+}
+
 void AppPermissionHandler::OnAppUpdate(const apps::AppUpdate& update) {
   if (!HasRelevantPermission(update)) {
     // This app is irrelevant for the Privacy controls sensor subpages.
