@@ -45,6 +45,7 @@ class PasswordStoreAndroidBackendBridgeHelper {
   // executed asynchronously and could be uniquely identified within the bridge
   // helper instance using the returned JobId.
   [[nodiscard]] virtual JobId GetAllLogins(Account account) = 0;
+  [[nodiscard]] virtual JobId GetAllLoginsWithBrandingInfo(Account account) = 0;
   [[nodiscard]] virtual JobId GetAutofillableLogins(Account account) = 0;
   [[nodiscard]] virtual JobId GetLoginsForSignonRealm(
       const std::string& signon_realm,

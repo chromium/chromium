@@ -53,6 +53,14 @@ class PasswordStoreAndroidBackendDispatcherBridgeImpl {
     }
 
     @CalledByNative
+    void getAllLoginsWithBrandingInfo(@JobId int jobId, String syncingAccount) {
+        mBackend.getAllLoginsWithBrandingInfo(
+                getAccount(syncingAccount),
+                passwords -> mBackendReceiverBridge.onCompleteWithBrandedLogins(jobId, passwords),
+                exception -> handleAndroidBackendExceptionOnUiThread(jobId, exception));
+    }
+
+    @CalledByNative
     void getAutofillableLogins(@JobId int jobId, String syncingAccount) {
         mBackend.getAutofillableLogins(getAccount(syncingAccount),
                 passwords

@@ -95,6 +95,14 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::GetAllLogins(
       GetJavaStringFromAccount(std::move(account)));
 }
 
+void PasswordStoreAndroidBackendDispatcherBridgeImpl::
+    GetAllLoginsWithBrandingInfo(JobId job_id, Account account) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  Java_PasswordStoreAndroidBackendDispatcherBridgeImpl_getAllLoginsWithBrandingInfo(
+      base::android::AttachCurrentThread(), java_object_, job_id.value(),
+      GetJavaStringFromAccount(std::move(account)));
+}
+
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::GetAutofillableLogins(
     JobId job_id,
     Account account) {

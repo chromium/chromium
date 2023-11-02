@@ -186,4 +186,17 @@ std::vector<PasswordForm> PasswordVectorFromListResult(
   return forms;
 }
 
+std::vector<PasswordForm> PasswordVectorFromListResult(
+    const ListPasswordsWithUiInfoResult& list_result) {
+  std::vector<PasswordForm> forms;
+  for (const auto& password : list_result.passwords_with_ui_info()) {
+    PasswordForm form =
+        PasswordFromProtoWithLocalData(password.password_data());
+    form.app_display_name = password.ui_info().display_name();
+    form.app_icon_url = GURL(password.ui_info().icon_url());
+    forms.push_back(std::move(form));
+  }
+  return forms;
+}
+
 }  // namespace password_manager

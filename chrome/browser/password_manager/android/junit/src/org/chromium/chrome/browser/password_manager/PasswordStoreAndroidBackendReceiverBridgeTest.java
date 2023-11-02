@@ -27,6 +27,8 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.password_manager.core.browser.proto.ListAffiliatedPasswordsResult;
 import org.chromium.components.password_manager.core.browser.proto.ListAffiliatedPasswordsResult.AffiliatedPassword;
 import org.chromium.components.password_manager.core.browser.proto.ListPasswordsResult;
+import org.chromium.components.password_manager.core.browser.proto.ListPasswordsWithUiInfoResult;
+import org.chromium.components.password_manager.core.browser.proto.ListPasswordsWithUiInfoResult.PasswordWithUiInfo;
 import org.chromium.components.password_manager.core.browser.proto.PasswordWithLocalData;
 import org.chromium.components.sync.protocol.PasswordSpecificsData;
 
@@ -76,6 +78,20 @@ public class PasswordStoreAndroidBackendReceiverBridgeTest {
         mBackendReceiverBridge.onCompleteWithLogins(sTestJobId, kExpectedList);
         verify(mBackendReceiverBridgeJniMock)
                 .onCompleteWithLogins(sFakeNativePointer, sTestJobId, kExpectedList);
+    }
+
+    @Test
+    public void testOnCompleteWithBrandedLoginsCallsBridge() {
+        PasswordWithUiInfo password =
+                PasswordWithUiInfo.newBuilder().setPasswordData(sTestPwdWithLocalData).build();
+
+        ListPasswordsWithUiInfoResult.Builder passwordsResult =
+                ListPasswordsWithUiInfoResult.newBuilder().addPasswordsWithUiInfo(password);
+        final byte[] kExpectedList = passwordsResult.build().toByteArray();
+
+        mBackendReceiverBridge.onCompleteWithBrandedLogins(sTestJobId, kExpectedList);
+        verify(mBackendReceiverBridgeJniMock)
+                .onCompleteWithBrandedLogins(sFakeNativePointer, sTestJobId, kExpectedList);
     }
 
     @Test

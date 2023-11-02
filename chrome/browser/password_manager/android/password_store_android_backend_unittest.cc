@@ -175,6 +175,7 @@ class MockPasswordStoreAndroidBackendBridgeHelper
   MOCK_METHOD(bool, CanUseGetAffiliatedPasswordsAPI, (), (override));
   MOCK_METHOD(void, SetConsumer, (base::WeakPtr<Consumer>), (override));
   MOCK_METHOD(JobId, GetAllLogins, (Account), (override));
+  MOCK_METHOD(JobId, GetAllLoginsWithBrandingInfo, (Account), (override));
   MOCK_METHOD(JobId, GetAutofillableLogins, (Account), (override));
   MOCK_METHOD(JobId,
               GetLoginsForSignonRealm,

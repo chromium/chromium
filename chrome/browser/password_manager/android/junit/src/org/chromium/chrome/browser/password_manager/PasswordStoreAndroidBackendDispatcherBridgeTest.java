@@ -37,6 +37,8 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.password_manager.core.browser.proto.ListAffiliatedPasswordsResult;
 import org.chromium.components.password_manager.core.browser.proto.ListAffiliatedPasswordsResult.AffiliatedPassword;
 import org.chromium.components.password_manager.core.browser.proto.ListPasswordsResult;
+import org.chromium.components.password_manager.core.browser.proto.ListPasswordsWithUiInfoResult;
+import org.chromium.components.password_manager.core.browser.proto.ListPasswordsWithUiInfoResult.PasswordWithUiInfo;
 import org.chromium.components.password_manager.core.browser.proto.PasswordWithLocalData;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.sync.protocol.PasswordSpecificsData;
@@ -144,6 +146,44 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
         Exception kExpectedException =
                 new ApiException(
                         new Status(new ConnectionResult(ConnectionResult.API_UNAVAILABLE), ""));
+        failureCallback.getValue().onResult(kExpectedException);
+        verify(mBackendReceiverBridgeMock)
+                .handleAndroidBackendException(kTestTaskId, kExpectedException);
+    }
+
+    @Test
+    public void testGetAllLoginsWithBrandingInfoOnSuccess() {
+        final int kTestTaskId = 1337;
+
+        // Ensure the backend is called with a valid success callback.
+        mBackendDispatcherBridge.getAllLoginsWithBrandingInfo(kTestTaskId, sTestAccountEmail);
+        ArgumentCaptor<Callback<byte[]>> successCallback = ArgumentCaptor.forClass(Callback.class);
+        verify(mBackendMock)
+                .getAllLoginsWithBrandingInfo(eq(sTestAccount), successCallback.capture(), any());
+        assertNotNull(successCallback.getValue());
+
+        PasswordWithUiInfo password =
+                PasswordWithUiInfo.newBuilder().setPasswordData(sTestPwdWithLocalData).build();
+        ListPasswordsWithUiInfoResult.Builder passwordsResult =
+                ListPasswordsWithUiInfoResult.newBuilder().addPasswordsWithUiInfo(password);
+        byte[] kExpectedList = passwordsResult.build().toByteArray();
+        successCallback.getValue().onResult(kExpectedList);
+        verify(mBackendReceiverBridgeMock).onCompleteWithBrandedLogins(kTestTaskId, kExpectedList);
+    }
+
+    @Test
+    public void testGetAllLoginsWithBrandingInfoFailure() {
+        final int kTestTaskId = 42069;
+
+        // Ensure the backend is called with a valid failure callback.
+        mBackendDispatcherBridge.getAllLoginsWithBrandingInfo(kTestTaskId, sTestAccountEmail);
+        ArgumentCaptor<Callback<Exception>> failureCallback =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mBackendMock)
+                .getAllLoginsWithBrandingInfo(eq(sTestAccount), any(), failureCallback.capture());
+        assertNotNull(failureCallback.getValue());
+
+        Exception kExpectedException = new Exception("Sample failure");
         failureCallback.getValue().onResult(kExpectedException);
         verify(mBackendReceiverBridgeMock)
                 .handleAndroidBackendException(kTestTaskId, kExpectedException);

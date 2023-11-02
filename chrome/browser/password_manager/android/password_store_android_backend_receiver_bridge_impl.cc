@@ -25,32 +25,16 @@ namespace {
 
 using JobId = PasswordStoreAndroidBackendReceiverBridge::JobId;
 
+template <typename ProtoType>
 std::vector<PasswordForm> CreateFormsVector(
     const base::android::JavaRef<jbyteArray>& passwords) {
   std::vector<uint8_t> serialized_result;
   base::android::JavaByteArrayToByteVector(base::android::AttachCurrentThread(),
                                            passwords, &serialized_result);
-  ListPasswordsResult list_passwords_result;
+  ProtoType list_passwords_result;
   bool parsing_succeeds = list_passwords_result.ParseFromArray(
       serialized_result.data(), serialized_result.size());
   DCHECK(parsing_succeeds);
-  auto forms = PasswordVectorFromListResult(list_passwords_result);
-  for (auto& form : forms) {
-    // TODO(crbug.com/1348950): Set proper in_store value for GMS Core storage.
-    form.in_store = PasswordForm::Store::kProfileStore;
-  }
-  return forms;
-}
-
-std::vector<PasswordForm> CreateFormsVectorWithAffiliationInfo(
-    const base::android::JavaRef<jbyteArray>& passwords) {
-  std::vector<uint8_t> serialized_result;
-  base::android::JavaByteArrayToByteVector(base::android::AttachCurrentThread(),
-                                           passwords, &serialized_result);
-  ListAffiliatedPasswordsResult list_passwords_result;
-  bool parsing_succeeds = list_passwords_result.ParseFromArray(
-      serialized_result.data(), serialized_result.size());
-  CHECK(parsing_succeeds);
   auto forms = PasswordVectorFromListResult(list_passwords_result);
   for (auto& form : forms) {
     // TODO(crbug.com/1348950): Set proper in_store value for GMS Core storage.
@@ -97,7 +81,19 @@ void PasswordStoreAndroidBackendReceiverBridgeImpl::OnCompleteWithLogins(
     const base::android::JavaParamRef<jbyteArray>& passwords) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(consumer_);
-  consumer_->OnCompleteWithLogins(JobId(job_id), CreateFormsVector(passwords));
+  consumer_->OnCompleteWithLogins(
+      JobId(job_id), CreateFormsVector<ListPasswordsResult>(passwords));
+}
+
+void PasswordStoreAndroidBackendReceiverBridgeImpl::OnCompleteWithBrandedLogins(
+    JNIEnv* env,
+    jint job_id,
+    const base::android::JavaParamRef<jbyteArray>& passwords) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  DCHECK(consumer_);
+  consumer_->OnCompleteWithLogins(
+      JobId(job_id),
+      CreateFormsVector<ListPasswordsWithUiInfoResult>(passwords));
 }
 
 void PasswordStoreAndroidBackendReceiverBridgeImpl::
@@ -108,7 +104,8 @@ void PasswordStoreAndroidBackendReceiverBridgeImpl::
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   CHECK(consumer_);
   consumer_->OnCompleteWithLogins(
-      JobId(job_id), CreateFormsVectorWithAffiliationInfo(passwords));
+      JobId(job_id),
+      CreateFormsVector<ListAffiliatedPasswordsResult>(passwords));
 }
 
 void PasswordStoreAndroidBackendReceiverBridgeImpl::OnError(

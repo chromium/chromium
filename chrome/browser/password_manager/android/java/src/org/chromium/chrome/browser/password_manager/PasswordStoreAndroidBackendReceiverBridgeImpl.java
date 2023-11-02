@@ -58,6 +58,12 @@ class PasswordStoreAndroidBackendReceiverBridgeImpl {
                 mNativeBackendReceiverBridge, jobId, passwords);
     }
 
+    void onCompleteWithBrandedLogins(@JobId int jobId, byte[] passwords) {
+        if (mNativeBackendReceiverBridge == 0) return;
+        PasswordStoreAndroidBackendReceiverBridgeImplJni.get()
+                .onCompleteWithBrandedLogins(mNativeBackendReceiverBridge, jobId, passwords);
+    }
+
     void onCompleteWithAffiliatedLogins(@JobId int jobId, byte[] passwords) {
         if (mNativeBackendReceiverBridge == 0) return;
         PasswordStoreAndroidBackendReceiverBridgeImplJni.get().onCompleteWithAffiliatedLogins(
@@ -86,6 +92,12 @@ class PasswordStoreAndroidBackendReceiverBridgeImpl {
     interface Natives {
         void onCompleteWithLogins(long nativePasswordStoreAndroidBackendReceiverBridgeImpl,
                 @JobId int jobId, byte[] passwords);
+
+        void onCompleteWithBrandedLogins(
+                long nativePasswordStoreAndroidBackendReceiverBridgeImpl,
+                @JobId int jobId,
+                byte[] passwords);
+
         void onCompleteWithAffiliatedLogins(
                 long nativePasswordStoreAndroidBackendReceiverBridgeImpl, @JobId int jobId,
                 byte[] passwords);
