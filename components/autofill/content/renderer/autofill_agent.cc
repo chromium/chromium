@@ -729,15 +729,14 @@ void AutofillAgent::ClearPreviewedForm() {
   if (last_queried_element_.IsNull()) {
     return;
   }
-
-  if (password_autofill_agent_->DidClearAutofillSelection(
+  // |password_generation_agent_| can be null in android_webview & weblayer.
+  if (password_generation_agent_ &&
+      password_generation_agent_->DidClearGenerationSuggestion(
           last_queried_element_)) {
     return;
   }
 
-  // |password_generation_agent_| can be null in android_webview & weblayer.
-  if (password_generation_agent_ &&
-      password_generation_agent_->DidClearGenerationSuggestion(
+  if (password_autofill_agent_->DidClearAutofillSelection(
           last_queried_element_)) {
     return;
   }
