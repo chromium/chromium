@@ -310,15 +310,17 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
   EXPECT_TRUE(network_context2.is_connected());
 }
 
-void IncrementInt(int* i) {
+void IncrementIntExpectingCrash(int* i, bool crashed) {
   *i = *i + 1;
+  EXPECT_TRUE(crashed);
 }
 
 // This test verifies basic functionality of RegisterNetworkServiceCrashHandler
 // and UnregisterNetworkServiceCrashHandler.
 IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, CrashHandlers) {
-  if (IsInProcessNetworkService())
+  if (IsInProcessNetworkService()) {
     return;
+  }
   mojo::Remote<network::mojom::NetworkContext> network_context(
       CreateNetworkContext());
   EXPECT_TRUE(network_context.is_bound());
@@ -327,11 +329,11 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, CrashHandlers) {
   int counter1 = 0;
   int counter2 = 0;
   base::CallbackListSubscription subscription1 =
-      RegisterNetworkServiceCrashHandler(
-          base::BindRepeating(&IncrementInt, base::Unretained(&counter1)));
+      RegisterNetworkServiceProcessGoneHandler(base::BindRepeating(
+          &IncrementIntExpectingCrash, base::Unretained(&counter1)));
   base::CallbackListSubscription subscription2 =
-      RegisterNetworkServiceCrashHandler(
-          base::BindRepeating(&IncrementInt, base::Unretained(&counter2)));
+      RegisterNetworkServiceProcessGoneHandler(base::BindRepeating(
+          &IncrementIntExpectingCrash, base::Unretained(&counter2)));
 
   // Crash the NetworkService process.
   SimulateNetworkServiceCrash();

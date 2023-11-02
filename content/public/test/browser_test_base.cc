@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/base_switches.h"
+#include "base/callback_list.h"
 #include "base/command_line.h"
 #include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
@@ -918,9 +919,14 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
     }
     initial_web_contents_.reset();
 
-    OnRestartNetworkServiceForTesting(
-        base::BindRepeating(&BrowserTestBase::ForceInitializeNetworkProcess,
-                            base::Unretained(this)));
+    base::CallbackListSubscription on_network_service_restarted_subscription =
+        RegisterNetworkServiceProcessGoneHandler(base::BindRepeating(
+            [](BrowserTestBase* browser_test_base, bool crashed) {
+              if (!crashed) {
+                browser_test_base->ForceInitializeNetworkProcess();
+              }
+            },
+            base::Unretained(this)));
 
     SetUpOnMainThread();
 
@@ -951,7 +957,12 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
     TearDownOnMainThread();
     AssertThatNetworkServiceDidNotCrash();
 
-    OnRestartNetworkServiceForTesting(base::NullCallback());
+    // The subscription should be reset after asserting that the network service
+    // did not crash, otherwise a network service restart task might be
+    // processed in AssertThatNetworkServiceDidNotCrash() and the network
+    // service will not be correctly initialized, which causes
+    // AssertThatNetworkServiceDidNotCrash() to incorrectly report crashes.
+    on_network_service_restarted_subscription = {};
   }
 
   PostRunTestOnMainThread();

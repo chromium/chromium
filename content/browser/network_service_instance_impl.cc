@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/base_paths.h"
+#include "base/callback_list.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/environment.h"
@@ -115,7 +116,6 @@ mojo::Remote<network::mojom::NetworkService>* g_network_service_remote =
     nullptr;
 network::NetworkConnectionTracker* g_network_connection_tracker;
 bool g_network_service_is_responding = false;
-base::Time g_last_network_service_crash;
 
 // A directory name that is created below the http cache path and passed to the
 // network context when creating a network context with cache enabled.
@@ -468,18 +468,17 @@ void BindNetworkChangeManagerReceiver(
   GetNetworkService()->GetNetworkChangeManager(std::move(receiver));
 }
 
-base::RepeatingClosureList& GetCrashHandlersList() {
-  static base::NoDestructor<base::RepeatingClosureList> s_list;
+base::RepeatingCallbackList<void(bool)>& GetProcessGoneHandlersList() {
+  static base::NoDestructor<base::RepeatingCallbackList<void(bool)>> s_list;
   return *s_list;
 }
 
-void OnNetworkServiceCrash() {
+void OnNetworkServiceProcessGone(bool crashed) {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   DCHECK(g_network_service_remote);
   DCHECK(g_network_service_remote->is_bound());
-  DCHECK(!g_network_service_remote->is_connected());
-  g_last_network_service_crash = base::Time::Now();
-  GetCrashHandlersList().Notify();
+  DCHECK(!crashed || !g_network_service_remote->is_connected());
+  GetProcessGoneHandlersList().Notify(crashed);
 }
 
 // Parses the desired granularity of NetLog capturing specified by the command
@@ -547,11 +546,6 @@ int64_t GetNetMaximumFileSizeFromCommandLine(
   return max_size_bytes;
 }
 
-base::RepeatingClosure& OnNetworkServiceRestartedCbStorage() {
-  static base::SequenceLocalStorageSlot<base::RepeatingClosure> restarted_cb;
-  return restarted_cb.GetOrCreateValue();
-}
-
 }  // namespace
 
 class NetworkServiceInstancePrivate {
@@ -593,7 +587,7 @@ network::mojom::NetworkService* GetNetworkService() {
         mojo::PendingReceiver<network::mojom::NetworkService> receiver =
             g_network_service_remote->BindNewPipeAndPassReceiver();
         g_network_service_remote->set_disconnect_handler(
-            base::BindOnce(&OnNetworkServiceCrash));
+            base::BindOnce(&OnNetworkServiceProcessGone, /*crashed=*/true));
         if (IsInProcessNetworkService()) {
           CreateInProcessNetworkService(std::move(receiver));
         } else {
@@ -719,12 +713,12 @@ network::mojom::NetworkService* GetNetworkService() {
   return g_network_service_remote->get();
 }
 
-base::CallbackListSubscription RegisterNetworkServiceCrashHandler(
-    base::RepeatingClosure handler) {
+base::CallbackListSubscription RegisterNetworkServiceProcessGoneHandler(
+    NetworkServiceProcessGoneHandler handler) {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   DCHECK(!handler.is_null());
 
-  return GetCrashHandlersList().Add(std::move(handler));
+  return GetProcessGoneHandlersList().Add(std::move(handler));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -802,14 +796,7 @@ void ShutDownNetworkService() {
 void RestartNetworkService() {
   ShutDownNetworkService();
   GetNetworkService();
-  if (OnNetworkServiceRestartedCbStorage()) {
-    OnNetworkServiceRestartedCbStorage().Run();
-  }
-}
-
-void OnRestartNetworkServiceForTesting(base::RepeatingClosure on_restart) {
-  DCHECK(!OnNetworkServiceRestartedCbStorage() || !on_restart);
-  OnNetworkServiceRestartedCbStorage() = std::move(on_restart);
+  OnNetworkServiceProcessGone(/*crashed=*/false);
 }
 
 namespace {
