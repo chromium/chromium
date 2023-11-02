@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {MediaDevicesProxy, PrivacyHubBrowserProxyImpl, SettingsPrivacyHubSubpage} from 'chrome://os-settings/lazy_load.js';
-import {CrToggleElement, MetricsConsentBrowserProxyImpl, OsSettingsPrivacyPageElement, PaperTooltipElement, Router, routes, SecureDnsMode, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrLinkRowElement, CrToggleElement, MetricsConsentBrowserProxyImpl, OsSettingsPrivacyPageElement, PaperTooltipElement, Router, routes, SecureDnsMode, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -802,12 +802,12 @@ suite('<settings-privacy-hub-subpage> app permissions', () => {
   test('Navigate to the microphone subpage', async () => {
     createSubpage();
 
-    const microphoneSubpageLinkWrapper =
-        privacyHubSubpage.shadowRoot!.querySelector<HTMLButtonElement>(
-            '#microphoneSubpageLinkWrapper');
-    assertTrue(!!microphoneSubpageLinkWrapper);
+    const microphoneSubpageLink =
+        privacyHubSubpage.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#microphoneSubpageLink');
+    assertTrue(!!microphoneSubpageLink);
 
-    microphoneSubpageLinkWrapper.click();
+    microphoneSubpageLink.click();
     await waitAfterNextRender(privacyHubSubpage);
 
     assertEquals(

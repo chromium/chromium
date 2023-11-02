@@ -8,8 +8,8 @@
     padding-top: 8px;
   }
 
-  #microphoneSubpageLinkWrapper:hover {
-    background-color: var(--cr-hover-background-color);
+  .separator {
+    margin: 0;
   }
 </style>
 
@@ -91,29 +91,13 @@
     </div>
   </template>
   <template is="dom-if" if="[[showAppPermissions_]]">
-    <div class="settings-box no-padding">
-      <div id ="microphoneSubpageLinkWrapper"
-          class="link-wrapper" actionable on-click="onMicrophoneWrapperClick_">
-        <iron-icon
-            id="microphoneIcon"
-            icon="app-management:microphone">
-        </iron-icon>
-        <div
-            id="microphoneSectionTitle"
-            class="middle settings-box-text"
-            aria-hidden="true">
-          $i18n{microphoneToggleTitle}
-          <div class="secondary" id="microphoneSectionSubtext">
-            $i18n{microphoneToggleSubtext}
-          </div>
-        </div>
-        <cr-icon-button
-            id="microphoneSubpageArrow"
-            class="subpage-arrow"
-            aria-label="$i18n{microphoneToggleTitle}"
-            on-click="onMicrophoneSubpageArrowClick_">
-        </cr-icon-button>
-      </div>
+    <div id="microphoneRow" class="settings-box no-padding">
+      <cr-link-row id="microphoneSubpageLink"
+          start-icon="app-management:microphone"
+          label="$i18n{microphoneToggleTitle}"
+          sub-label="$i18n{microphoneToggleSubtext}"
+          on-click="onMicrophoneSubpageLinkClick_">
+      </cr-link-row>
       <div class="separator"></div>
       <div id="microphoneToggleWrapper">
         <cr-toggle

@@ -307,17 +307,8 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
         (event.target as SettingsToggleButtonElement).checked);
   }
 
-  private navigateToMicrophoneSubpage_(): void {
+  private onMicrophoneSubpageLinkClick_(): void {
     Router.getInstance().navigateTo(routes.PRIVACY_HUB_MICROPHONE);
-  }
-
-  private onMicrophoneWrapperClick_(): void {
-    this.navigateToMicrophoneSubpage_();
-  }
-
-  private onMicrophoneSubpageArrowClick_(e: Event): void {
-    this.navigateToMicrophoneSubpage_();
-    e.stopPropagation();
   }
 
   private onGeolocationAreaClick_(): void {
