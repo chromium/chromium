@@ -117,15 +117,15 @@ class MockScrollableAreaForAnimatorTest
     return ScrollableArea::GetScrollOffset();
   }
 
-  void SetScrollOffset(const ScrollOffset& offset,
+  bool SetScrollOffset(const ScrollOffset& offset,
                        mojom::blink::ScrollType type,
                        mojom::blink::ScrollBehavior behavior =
                            mojom::blink::ScrollBehavior::kInstant,
                        ScrollCallback on_finish = ScrollCallback()) override {
     if (animator)
       animator->SetCurrentOffset(offset);
-    ScrollableArea::SetScrollOffset(offset, type, behavior,
-                                    std::move(on_finish));
+    return ScrollableArea::SetScrollOffset(offset, type, behavior,
+                                           std::move(on_finish));
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTimerTaskRunner() const final {

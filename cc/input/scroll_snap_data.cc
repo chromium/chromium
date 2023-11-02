@@ -372,6 +372,21 @@ bool SnapContainerData::FindSnapPositionForMutualSnap(
   return found;
 }
 
+std::set<ElementId> SnapContainerData::FindSnappedTargetsAtScrollOffset(
+    const SnapContainerData* container_data,
+    const gfx::PointF& scroll_offset) {
+  std::set<ElementId> snapped_target_ids;
+  if (container_data) {
+    for (size_t i = 0; i < container_data->size(); i++) {
+      const auto& area = container_data->at(i);
+      if (container_data->IsSnappedToArea(area, scroll_offset)) {
+        snapped_target_ids.insert(area.element_id);
+      }
+    }
+  }
+  return snapped_target_ids;
+}
+
 absl::optional<SnapSearchResult>
 SnapContainerData::GetTargetSnapAreaSearchResult(
     const SnapSelectionStrategy& strategy,
@@ -767,6 +782,52 @@ bool SnapContainerData::IsSnapportCoveredOnAxis(
            current_offset <= bottom + kSnapportCoveredTolerance;
   }
 }
+
+constexpr float kSnappedToTolerance = 0.5;
+bool SnapContainerData::IsSnappedToArea(
+    const SnapAreaData& area,
+    const gfx::PointF& scroll_offset) const {
+  bool covered_on_y =
+      IsSnapportCoveredOnAxis(SearchAxis::kY, scroll_offset.y(), area.rect);
+  bool covered_on_x =
+      IsSnapportCoveredOnAxis(SearchAxis::kX, scroll_offset.x(), area.rect);
+  bool snaps_on_x = scroll_snap_type_.axis == SnapAxis::kX ||
+                    scroll_snap_type_.axis == SnapAxis::kBoth;
+  bool snaps_on_y = scroll_snap_type_.axis == SnapAxis::kY ||
+                    scroll_snap_type_.axis == SnapAxis::kBoth;
+  if ((snaps_on_x && covered_on_x) && (snaps_on_y && covered_on_y)) {
+    return true;
+  }
+
+  if (snaps_on_y &&
+      area.scroll_snap_align.alignment_block != SnapAlignment::kNone) {
+    SnapSearchResult snap_result_y = GetSnapSearchResult(SearchAxis::kY, area);
+    if (((std::abs(snap_result_y.snap_offset() - scroll_offset.y()) <
+          kSnappedToTolerance) ||
+         covered_on_y) &&
+        gfx::RangeF(scroll_offset.x())
+            .IsBoundedBy(snap_result_y.visible_range())) {
+      return true;
+    }
+  }
+  if (snaps_on_x &&
+      area.scroll_snap_align.alignment_inline != SnapAlignment::kNone) {
+    SnapSearchResult snap_result_x = GetSnapSearchResult(SearchAxis::kX, area);
+    if (((std::abs(snap_result_x.snap_offset() - scroll_offset.x()) <
+          kSnappedToTolerance) ||
+         covered_on_x) &&
+        gfx::RangeF(scroll_offset.y())
+            .IsBoundedBy(snap_result_x.visible_range())) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+SnappedTargetData::SnappedTargetData() = default;
+SnappedTargetData::SnappedTargetData(const SnappedTargetData& other) = default;
+SnappedTargetData::~SnappedTargetData() = default;
 
 std::ostream& operator<<(std::ostream& ostream, const SnapAreaData& area_data) {
   return ostream << area_data.rect.ToString();

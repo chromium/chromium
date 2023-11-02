@@ -1456,6 +1456,7 @@ class CORE_EXPORT Document : public ContainerNode,
       HeapVector<Member<MediaQueryListListener>>&);
   void EnqueueVisualViewportScrollEvent();
   void EnqueueVisualViewportResizeEvent();
+  void EnqueueSnapChangedEvent(Node* target, HeapVector<Member<Node>>& targets);
 
   void DispatchEventsForPrinting();
 

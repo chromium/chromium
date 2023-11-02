@@ -73,6 +73,8 @@ void SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
     if (old_snap_container_data) {
       snap_container.SetNeedsPaintPropertyUpdate();
       scrollable_area->SetSnapContainerData(absl::nullopt);
+      scrollable_area->UpdateSnappedTargetsAndEnqueueSnapChanged();
+      scrollable_area->SetSnappedTargetData(absl::nullopt);
     }
     return;
   }

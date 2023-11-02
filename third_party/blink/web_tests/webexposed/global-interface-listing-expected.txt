@@ -1920,6 +1920,7 @@ interface Document : Node
     getter onselectionchange
     getter onselectstart
     getter onslotchange
+    getter onsnapchanged
     getter onstalled
     getter onsubmit
     getter onsuspend
@@ -2140,6 +2141,7 @@ interface Document : Node
     setter onselectionchange
     setter onselectstart
     setter onslotchange
+    setter onsnapchanged
     setter onstalled
     setter onsubmit
     setter onsuspend
@@ -3710,6 +3712,7 @@ interface HTMLElement : Element
     getter onselectionchange
     getter onselectstart
     getter onslotchange
+    getter onsnapchanged
     getter onstalled
     getter onsubmit
     getter onsuspend
@@ -3845,6 +3848,7 @@ interface HTMLElement : Element
     setter onselectionchange
     setter onselectstart
     setter onslotchange
+    setter onsnapchanged
     setter onstalled
     setter onsubmit
     setter onsuspend
@@ -5758,6 +5762,7 @@ interface MathMLElement : Element
     getter onselectionchange
     getter onselectstart
     getter onslotchange
+    getter onsnapchanged
     getter onstalled
     getter onsubmit
     getter onsuspend
@@ -5869,6 +5874,7 @@ interface MathMLElement : Element
     setter onselectionchange
     setter onselectstart
     setter onslotchange
+    setter onsnapchanged
     setter onstalled
     setter onsubmit
     setter onsuspend
@@ -8096,6 +8102,7 @@ interface SVGElement : Element
     getter onselectionchange
     getter onselectstart
     getter onslotchange
+    getter onsnapchanged
     getter onstalled
     getter onsubmit
     getter onsuspend
@@ -8209,6 +8216,7 @@ interface SVGElement : Element
     setter onselectionchange
     setter onselectstart
     setter onslotchange
+    setter onsnapchanged
     setter onstalled
     setter onsubmit
     setter onsuspend
@@ -9281,6 +9289,10 @@ interface SharedWorker : EventTarget
     getter port
     method constructor
     setter onerror
+interface SnapEvent : Event
+    attribute @@toStringTag
+    getter snapTargets
+    method constructor
 interface SoftNavigationEntry : PerformanceEntry
     attribute @@toStringTag
     method constructor
@@ -12565,6 +12577,7 @@ namespace console
     getter onselectionchange
     getter onselectstart
     getter onslotchange
+    getter onsnapchanged
     getter onstalled
     getter onstorage
     getter onsubmit
@@ -12793,6 +12806,7 @@ namespace console
     setter onselectionchange
     setter onselectstart
     setter onslotchange
+    setter onsnapchanged
     setter onstalled
     setter onstorage
     setter onsubmit

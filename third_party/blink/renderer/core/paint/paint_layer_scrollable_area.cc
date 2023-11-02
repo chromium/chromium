@@ -1860,6 +1860,18 @@ bool PaintLayerScrollableArea::SetTargetSnapAreaElementIds(
   return false;
 }
 
+const cc::SnappedTargetData* PaintLayerScrollableArea::GetSnappedTargetData()
+    const {
+  return RareData() && RareData()->snapped_target_data_
+             ? &RareData()->snapped_target_data_.value()
+             : nullptr;
+}
+
+void PaintLayerScrollableArea::SetSnappedTargetData(
+    absl::optional<cc::SnappedTargetData> data) {
+  EnsureRareData().snapped_target_data_ = data;
+}
+
 absl::optional<gfx::PointF>
 PaintLayerScrollableArea::GetSnapPositionAndSetTarget(
     const cc::SnapSelectionStrategy& strategy) {
@@ -3054,6 +3066,29 @@ DOMNodeId PaintLayerScrollableArea::ScrollCornerDisplayItemClient::OwnerNodeId()
     const {
   return static_cast<const DisplayItemClient*>(scrollable_area_->GetLayoutBox())
       ->OwnerNodeId();
+}
+
+void PaintLayerScrollableArea::UpdateSnappedTargetsAndEnqueueSnapChanged() {
+  if (!RuntimeEnabledFeatures::CSSSnapChangedEventEnabled()) {
+    return;
+  }
+  const cc::SnappedTargetData* snapped_target_data = GetSnappedTargetData();
+  std::set<cc::ElementId> new_targets =
+      cc::SnapContainerData::FindSnappedTargetsAtScrollOffset(
+          GetSnapContainerData(), ScrollPosition());
+  bool snapchanged =
+      snapped_target_data
+          ? snapped_target_data->GetSnappedTargetIds() != new_targets
+          : new_targets.size();
+
+  if (snapchanged) {
+    if (!EnsureRareData().snapped_target_data_) {
+      RareData()->snapped_target_data_ = cc::SnappedTargetData();
+    }
+    RareData()->snapped_target_data_->SetSnappedTargetIds(
+        std::move(new_targets));
+    EnqueueSnapChangedEvent();
+  }
 }
 
 }  // namespace blink

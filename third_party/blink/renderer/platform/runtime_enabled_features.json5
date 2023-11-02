@@ -1106,6 +1106,8 @@
     {
       // https://drafts.csswg.org/css-scroll-snap-2/#snap-events
       name: "CSSScrollSnapEvents",
+      status: "test",
+      implied_by: ["CSSSnapChangedEvent"],
     },
     {
       // https://drafts.csswg.org/css-scroll-snap-2#scroll-start
@@ -1128,6 +1130,11 @@
     {
       name: "CSSSignRelatedFunctions",
       status: "experimental",
+    },
+    {
+      // https://drafts.csswg.org/css-scroll-snap-2/#snap-events
+      name: "CSSSnapChangedEvent",
+      status: "test",
     },
     {
       name: "CSSSnapContainerQueries",

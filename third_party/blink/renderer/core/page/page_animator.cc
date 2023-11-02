@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -218,6 +219,7 @@ void PageAnimator::ServiceScriptedAnimations(
   run_for_all_active_controllers_with_timing([&](wtf_size_t i) {
     active_controllers[i]->DispatchEvents([](const Event* event) {
       return event->type() == event_type_names::kScroll ||
+             event->type() == event_type_names::kSnapchanged ||
              event->type() == event_type_names::kScrollend;
     });
   });

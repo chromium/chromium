@@ -176,6 +176,7 @@
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/before_unload_event.h"
 #include "third_party/blink/renderer/core/events/event_factory.h"
 #include "third_party/blink/renderer/core/events/event_util.h"
@@ -310,6 +311,7 @@
 #include "third_party/blink/renderer/core/script/detect_javascript_frameworks.h"
 #include "third_party/blink/renderer/core/script/script_runner.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
+#include "third_party/blink/renderer/core/scroll/snap_event.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
 #include "third_party/blink/renderer/core/svg/svg_script_element.h"
@@ -5789,6 +5791,14 @@ void Document::EnqueueOverscrollEventForNode(Node* target,
       overscroll_accumulated_delta_y_);
   overscroll_event->SetTarget(target);
   scripted_animation_controller_->EnqueuePerFrameEvent(overscroll_event);
+}
+
+void Document::EnqueueSnapChangedEvent(Node* target,
+                                       HeapVector<Member<Node>>& snap_targets) {
+  Event* snapchanged_event =
+      SnapEvent::Create(event_type_names::kSnapchanged, snap_targets);
+  snapchanged_event->SetTarget(target);
+  scripted_animation_controller_->EnqueuePerFrameEvent(snapchanged_event);
 }
 
 void Document::EnqueueResizeEvent() {

@@ -5,6 +5,8 @@
 #ifndef CC_INPUT_SCROLL_SNAP_DATA_H_
 #define CC_INPUT_SCROLL_SNAP_DATA_H_
 
+#include <set>
+#include <utility>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -219,6 +221,29 @@ struct SnapPositionData {
   absl::optional<gfx::RangeF> covered_range_y;
 };
 
+class CC_EXPORT SnappedTargetData {
+ public:
+  SnappedTargetData();
+  SnappedTargetData(const SnappedTargetData&);
+  ~SnappedTargetData();
+  const std::set<ElementId>& GetSnappedTargetIds() const {
+    return snapped_target_ids_;
+  }
+  void SetSnappedTargetIds(const std::set<ElementId>& ids) {
+    snapped_target_ids_ = std::move(ids);
+  }
+
+ private:
+  // The set of snap areas an associated snap container was considered snapped
+  // to at the last snap position. While the snap computation logic picks only
+  // one snap target per axis, multiple areas might be at the same scroll offset
+  // and be considered snapped to so |snapped_target_ids_| will be a superset of
+  // |SnapContainerData::target_snap_area_element_ids_|.
+  // TODO(awogbemila): move SnapContainerData::target_snap_area_element_ids_
+  // into SnappedTargetData.
+  std::set<ElementId> snapped_target_ids_;
+};
+
 // Snap container is a scroll container that at least one snap area assigned to
 // it.  If the snap-type is not 'none', then it can be snapped to one of its
 // snap areas when a scroll happens.
@@ -280,6 +305,10 @@ class CC_EXPORT SnapContainerData {
     proximity_range_ = range;
   }
   gfx::PointF proximity_range() const { return proximity_range_; }
+
+  static std::set<ElementId> FindSnappedTargetsAtScrollOffset(
+      const SnapContainerData* container_data,
+      const gfx::PointF& scroll_offset);
 
  private:
   // Finds the best SnapArea candidate that's optimal for the given selection
@@ -345,6 +374,9 @@ class CC_EXPORT SnapContainerData {
       SearchAxis axis,
       const SnapSearchResult& aligned_candidate,
       float intended_position) const;
+
+  bool IsSnappedToArea(const SnapAreaData& area,
+                       const gfx::PointF& scroll_offset) const;
 
   // Specifies whether a scroll container is a scroll snap container, how
   // strictly it snaps, and which axes are considered.

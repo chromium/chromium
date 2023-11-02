@@ -515,6 +515,7 @@ _CONFIG = [
             'cc::SnapAreaData',
             'cc::SnapAxis',
             'cc::SnapContainerData',
+            'cc::SnappedTargetData',
             'cc::SnapFlingClient',
             'cc::SnapFlingController',
             'cc::SnapPositionData',
