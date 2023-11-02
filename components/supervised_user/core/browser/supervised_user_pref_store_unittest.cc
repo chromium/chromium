@@ -5,6 +5,7 @@
 #include <set>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
@@ -13,6 +14,7 @@
 #include "components/safe_search_api/safe_search_util.h"
 #include "components/supervised_user/core/browser/supervised_user_pref_store.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync/base/pref_names.h"
@@ -113,10 +115,19 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   EXPECT_FALSE(fixture.changed_prefs()->FindDictByDottedPath(
       prefs::kSupervisedUserManualHosts));
 
-  // kForceGoogleSafeSearch defaults to true for supervised users.
-  EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
-                  policy::policy_prefs::kForceGoogleSafeSearch),
-              Optional(true));
+  // kForceGoogleSafeSearch defaults to true if the relevant feature flag is
+  // enabled.
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kForceGoogleSafeSearchForSupervisedUsers)) {
+    EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
+                    policy::policy_prefs::kForceGoogleSafeSearch),
+                Optional(true));
+  } else {
+    EXPECT_FALSE(
+        fixture.changed_prefs()
+            ->FindBoolByDottedPath(policy::policy_prefs::kForceGoogleSafeSearch)
+            .has_value());
+  }
 
   // kForceYouTubeRestrict defaults to 'moderate' for supervised users on
   // Android and ChromeOS only.

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -19,6 +20,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_search_api/safe_search_util.h"
+#include "components/supervised_user/core/common/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -47,10 +49,13 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBrowserTest, LocalPolicies) {
 
   if (GetSignInMode() ==
       supervised_user::SupervisionMixin::SignInMode::kSupervised) {
-    EXPECT_TRUE(
-        prefs->GetBoolean(policy::policy_prefs::kForceGoogleSafeSearch));
-    EXPECT_FALSE(prefs->IsUserModifiablePreference(
-        policy::policy_prefs::kForceGoogleSafeSearch));
+    EXPECT_EQ(prefs->GetBoolean(policy::policy_prefs::kForceGoogleSafeSearch),
+              base::FeatureList::IsEnabled(
+                  supervised_user::kForceGoogleSafeSearchForSupervisedUsers));
+    EXPECT_EQ(prefs->IsUserModifiablePreference(
+                  policy::policy_prefs::kForceGoogleSafeSearch),
+              !base::FeatureList::IsEnabled(
+                  supervised_user::kForceGoogleSafeSearchForSupervisedUsers));
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
     EXPECT_EQ(prefs->GetInteger(policy::policy_prefs::kForceYouTubeRestrict),
               safe_search_api::YOUTUBE_RESTRICT_MODERATE);
