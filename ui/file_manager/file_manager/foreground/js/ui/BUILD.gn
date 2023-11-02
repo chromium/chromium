@@ -312,22 +312,6 @@ js_unittest("file_table_unittest") {
   ]
 }
 
-js_unittest("file_table_list_unittest") {
-  deps = [
-    ":a11y_announce",
-    ":file_list_selection_model",
-    ":file_table",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//chrome/test/data/webui/chromeos:chai_assert",
-    "//ui/file_manager/file_manager/background/js:mock_volume_manager",
-    "//ui/file_manager/file_manager/common/js:files_app_entry_types",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/foreground/js:file_list_model",
-    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
-    "//ui/file_manager/file_manager/foreground/js/metadata:mock_metadata",
-  ]
-}
-
 js_library("file_tap_handler") {
   deps = [ "//ash/webui/common/resources:assert" ]
 }

@@ -372,8 +372,6 @@ ts_templates = [
 ]
 
 ts_test_files = [
-  "file_manager/foreground/elements/files_toast_unittest.ts",
-
   # Common.
   "file_manager/common/js/entry_utils_unittest.ts",
   "file_manager/common/js/file_types_base_unittest.ts",
@@ -439,7 +437,10 @@ ts_test_files = [
   "file_manager/foreground/js/file_transfer_controller_unittest.ts",
   "file_manager/foreground/js/task_controller_unittest.ts",
   "file_manager/foreground/js/metadata/dlp_metadata_provider_unittest.ts",
+
+  # UI:
   "file_manager/foreground/js/ui/file_grid_unittest.ts",
+  "file_manager/foreground/js/ui/file_table_list_unittest.ts",
   "file_manager/foreground/js/ui/grid_unittest.ts",
   "file_manager/foreground/js/ui/list_unittest.ts",
   "file_manager/foreground/js/ui/banners/drive_bulk_pinning_banner_unittest.ts",
@@ -447,6 +448,9 @@ ts_test_files = [
   "file_manager/foreground/js/ui/banners/warning_banner_unittest.ts",
   "file_manager/foreground/js/ui/banners/educational_banner_unittest.ts",
   "file_manager/foreground/js/ui/banners/dlp_restricted_banner_unittest.ts",
+
+  # Elements:
+  "file_manager/foreground/elements/files_toast_unittest.ts",
 ]
 
 ts_generated_templates = []
@@ -548,7 +552,6 @@ unittest_files = [
   "file_manager/foreground/js/ui/file_table_unittest.js",
   "file_manager/foreground/js/ui/file_tap_handler_unittest.js",
   "file_manager/foreground/js/ui/install_linux_package_dialog_unittest.js",
-  "file_manager/foreground/js/ui/file_table_list_unittest.js",
   "file_manager/foreground/js/ui/list_selection_model_test_util.js",
   "file_manager/foreground/js/ui/list_selection_model_unittest.js",
   "file_manager/foreground/js/ui/list_single_selection_model_unittest.js",
