@@ -3549,13 +3549,13 @@ StyleRecalcChange Element::RecalcOwnStyle(
       // inherited changes from the parent, as incremental styling would
       // not include those changes. (Incremental styling is disabled by
       // default.)
-    } else {
-      // We are not propagating inherited changes from the parent,
-      // and (if other circumstances allow it;
-      // see CanApplyInlineStyleIncrementally()), incremental style
-      // may be used.
-      new_style_recalc_context.can_use_incremental_style = true;
     }
+  } else {
+    // We are not propagating inherited changes from the parent,
+    // and (if other circumstances allow it;
+    // see CanApplyInlineStyleIncrementally()), incremental style
+    // may be used.
+    new_style_recalc_context.can_use_incremental_style = true;
   }
 
   const ComputedStyle* new_style = nullptr;
