@@ -2323,6 +2323,21 @@
             ]
         }
     ],
+    "BackgroundCrxDownloaderMac": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Dogfood",
+                    "enable_features": [
+                        "BackgroundCrxDownloaderMac"
+                    ]
+                }
+            ]
+        }
+    ],
     "BackgroundTabLoadingFromPerformanceManager": [
         {
             "platforms": [
