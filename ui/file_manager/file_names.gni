@@ -458,8 +458,9 @@ foreach(_t, ts_templates) {
   ts_generated_templates += [ _t + ".ts" ]
 }
 
-# Generated in foregorund/elements folder.
+# Generated in foreground/elements folder.
 ts_generated_templates += [
+  "file_manager/foreground/elements/icons.html.ts",
   "file_manager/foreground/elements/files_format_dialog.html.ts",
   "file_manager/foreground/elements/files_metadata_box.html.ts",
   "file_manager/foreground/elements/files_metadata_entry.html.ts",
@@ -494,7 +495,6 @@ generated_js_files = [
   "file_manager/common/js/file_types_data.js",
 
   # Elements:
-  "file_manager/foreground/elements/icons.js",
   "file_manager/foreground/elements/xf_button.js",
   "file_manager/foreground/elements/xf_display_panel.js",
   "file_manager/foreground/elements/xf_panel_item.js",

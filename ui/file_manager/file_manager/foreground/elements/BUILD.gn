@@ -13,7 +13,6 @@ visibility = [ "//ui/file_manager/file_manager/foreground/*" ]
 html_to_js("web_components") {
   visibility += [ "//ui/file_manager/*" ]
   js_files = [
-    "icons.js",
     "xf_button.js",
     "xf_display_panel.js",
     "xf_panel_item.js",
@@ -30,6 +29,7 @@ html_to_wrapper("polymer_elements") {
     "files_safe_media.html",
     "files_quick_view.html",
     "files_metadata_entry.html",
+    "icons.html",
   ]
   scheme = "relative"
   minify = true

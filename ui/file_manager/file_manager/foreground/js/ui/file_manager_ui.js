@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../../elements/icons.html.js';
+
 import {assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 
 import {DialogType} from '../../../common/js/dialog_type.js';
