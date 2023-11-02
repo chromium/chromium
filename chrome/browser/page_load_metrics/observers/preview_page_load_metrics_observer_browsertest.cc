@@ -264,10 +264,11 @@ IN_PROC_BROWSER_TEST_F(PreviewPageLoadMetricsObserverBrowserTest,
   // Open a preview page.
   helper().InitiatePreview(GetTestURL("/title2.html"));
   helper().WaitUntilLoadFinished();
-  helper().ActivateAndWaitUntilFinished();
+  test::PreviewTestHelper::Waiter waiter = helper().CreateActivationWaiter();
+  helper().PromoteToNewTab();
+  waiter.Wait();
 
   // Flush metrics.
-  helper().CloseAndWaitUntilFinished();
   NavigateAway();
 
   // TotalForegroundDuration.AllVisit should count only non-previewed page.

@@ -29,6 +29,10 @@ class ScopedPreviewFeatureList {
 // Helper class to control the LinkPreview feature in browser tests.
 class PreviewTestHelper {
  public:
+  class Waiter {
+   public:
+    virtual void Wait() {}
+  };
   explicit PreviewTestHelper(const content::WebContents::Getter& fn);
   ~PreviewTestHelper();
 
@@ -37,9 +41,7 @@ class PreviewTestHelper {
   void PromoteToNewTab();
   void WaitUntilLoadFinished();
 
-  // Tentative helper method until the tab promotion is available.
-  // This will be replaced by PromoteToNewTab()) and PromoteToCurrentTab().
-  void ActivateAndWaitUntilFinished();
+  Waiter CreateActivationWaiter();
 
   // Tentative helper method until the primary page navigation closes existing
   // preview pages.

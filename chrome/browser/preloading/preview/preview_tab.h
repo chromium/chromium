@@ -51,11 +51,6 @@ class PreviewTab final : public content::WebContentsDelegate {
  private:
   class PreviewWidget;
   class WebContentsObserver;
-  enum class Status {
-    kPreview,
-    kActivating,
-    kActivated,
-  };
 
   void AttachTabHelpersForInit();
 
@@ -67,7 +62,6 @@ class PreviewTab final : public content::WebContentsDelegate {
   bool IsInPreviewMode() const override;
   void CancelPreviewByMojoBinderPolicy(
       const std::string& interface_name) override;
-  void DidActivatePreviewedPage() override;
 
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<WebContentsObserver> observer_;
@@ -77,7 +71,6 @@ class PreviewTab final : public content::WebContentsDelegate {
   // PrerenderManager.
   std::unique_ptr<content::PrerenderHandle> prerender_handle_;
   GURL url_;
-  Status status_ = Status::kPreview;
 };
 
 #endif  // CHROME_BROWSER_PRELOADING_PREVIEW_PREVIEW_TAB_H_

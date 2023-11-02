@@ -170,8 +170,7 @@ content::PreloadingEligibility PreviewTab::IsPrerender2Supported(
 }
 
 bool PreviewTab::IsInPreviewMode() const {
-  return status_ != Status::kActivated &&
-         base::FeatureList::IsEnabled(blink::features::kLinkPreviewNavigation);
+  return base::FeatureList::IsEnabled(blink::features::kLinkPreviewNavigation);
 }
 
 void PreviewTab::PromoteToNewTab(content::WebContents& initiator_web_contents) {
@@ -222,15 +221,10 @@ void PreviewTab::Activate(base::WeakPtr<content::WebContents> web_contents) {
     return;
   }
 
-  status_ = Status::kActivating;
   web_contents->ActivatePreviewPage();
 }
 
 void PreviewTab::CancelPreviewByMojoBinderPolicy(
     const std::string& interface_name) {
   // TODO(b:299240273): Navigate to an error page.
-}
-
-void PreviewTab::DidActivatePreviewedPage() {
-  status_ = Status::kActivated;
 }

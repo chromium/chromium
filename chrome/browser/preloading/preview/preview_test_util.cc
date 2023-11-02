@@ -13,39 +13,50 @@ namespace test {
 
 namespace {
 
-class PageLoadWaiter final : public content::WebContentsObserver {
+class EventWaiter final : public PreviewTestHelper::Waiter,
+                          public content::WebContentsObserver {
  public:
-  explicit PageLoadWaiter(content::WebContents* web_contents)
-      : WebContentsObserver(web_contents) {
+  enum class Event {
+    kLoad,
+    kActivation,
+    kClose,
+  };
+  EventWaiter(content::WebContents* web_contents, Event event)
+      : WebContentsObserver(web_contents), event_(event) {
     CHECK(web_contents);
-    load_finished_ = !web_contents->IsLoading();
+    if (event == Event::kLoad) {
+      done_ = !web_contents->IsLoading();
+    }
   }
 
-  void Wait() { run_loop_.Run(); }
-
-  bool load_finished() { return load_finished_; }
-  bool activation_finished() { return activation_finished_; }
-  bool close_finished() { return close_finished_; }
+  // PreviewtestHelper::Waiter:
+  void Wait() override {
+    if (!done_) {
+      run_loop_.Run();
+    }
+  }
 
  private:
   // content::WebContentsObserver:
   void DocumentOnLoadCompletedInPrimaryMainFrame() override {
-    load_finished_ = true;
-    run_loop_.Quit();
+    if (event_ == Event::kLoad) {
+      run_loop_.Quit();
+    }
   }
   void DidActivatePreviewedPage(base::TimeTicks activation_time) override {
-    activation_finished_ = true;
-    run_loop_.Quit();
+    if (event_ == Event::kActivation) {
+      run_loop_.Quit();
+    }
   }
   void WebContentsDestroyed() override {
-    close_finished_ = true;
-    run_loop_.Quit();
+    if (event_ == Event::kClose) {
+      run_loop_.Quit();
+    }
   }
 
   base::RunLoop run_loop_;
-  bool load_finished_ = false;
-  bool activation_finished_ = false;
-  bool close_finished_ = false;
+  Event event_;
+  bool done_ = false;
 };
 
 }  // namespace
@@ -78,30 +89,22 @@ void PreviewTestHelper::PromoteToNewTab() {
 void PreviewTestHelper::WaitUntilLoadFinished() {
   base::WeakPtr<content::WebContents> web_contents =
       GetManager().GetWebContentsForPreviewTab();
-  PageLoadWaiter page_load_waiter(web_contents.get());
-  while (!page_load_waiter.load_finished()) {
-    page_load_waiter.Wait();
-  }
+  EventWaiter event_waiter(web_contents.get(), EventWaiter::Event::kLoad);
+  event_waiter.Wait();
 }
 
-void PreviewTestHelper::ActivateAndWaitUntilFinished() {
+PreviewTestHelper::Waiter PreviewTestHelper::CreateActivationWaiter() {
   base::WeakPtr<content::WebContents> web_contents =
       GetManager().GetWebContentsForPreviewTab();
-  PageLoadWaiter page_load_waiter(web_contents.get());
-  GetManager().ActivateForTesting();
-  while (!page_load_waiter.activation_finished()) {
-    page_load_waiter.Wait();
-  }
+  return EventWaiter(web_contents.get(), EventWaiter::Event::kActivation);
 }
 
 void PreviewTestHelper::CloseAndWaitUntilFinished() {
   base::WeakPtr<content::WebContents> web_contents =
       GetManager().GetWebContentsForPreviewTab();
-  PageLoadWaiter page_load_waiter(web_contents.get());
+  EventWaiter event_waiter(web_contents.get(), EventWaiter::Event::kClose);
   GetManager().CloseForTesting();
-  while (!page_load_waiter.close_finished()) {
-    page_load_waiter.Wait();
-  }
+  event_waiter.Wait();
 }
 
 PreviewManager& PreviewTestHelper::GetManager() {

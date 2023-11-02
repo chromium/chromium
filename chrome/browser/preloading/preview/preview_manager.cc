@@ -43,11 +43,6 @@ PreviewManager::GetWebContentsForPreviewTab() {
   return tab_->GetWebContents();
 }
 
-void PreviewManager::ActivateForTesting() {
-  CHECK(tab_);
-  tab_->Activate(tab_->GetWebContents());
-}
-
 void PreviewManager::CloseForTesting() {
   CHECK(tab_);
   tab_.reset();
