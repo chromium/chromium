@@ -27,6 +27,7 @@ from blinkpy.web_tests.controllers.web_test_finder import WebTestFinder
 from blinkpy.web_tests.models.test_expectations import TestExpectations
 from blinkpy.web_tests.port import factory
 from blinkpy.wpt_tests.product import make_product_registry
+from blinkpy.wpt_tests.test_loader import TestLoader
 
 path_finder.bootstrap_wpt_imports()
 import mozlog
@@ -324,8 +325,8 @@ class WPTAdapter:
             runner_options.timeout_multiplier = self.options.timeout_multiplier
         elif (self.options.enable_sanitizer
               or self.options.configuration == 'Debug'):
-            runner_options.timeout_multiplier = 2
-            logger.info('Defaulting to 2x timeout multiplier because '
+            runner_options.timeout_multiplier = 5
+            logger.info('Defaulting to 5x timeout multiplier because '
                         'the build is debug or sanitized')
 
         if self.using_upstream_wpt:
@@ -532,9 +533,7 @@ class WPTAdapter:
             self._create_extra_run_info(self.fs.join(tmp_dir, 'mozinfo.json'),
                                         tests_root)
 
-            # TODO(crbug.com/1482887): Once wdspec tests use baselines, call
-            # `TestLoader.install(...)` here to load expectations from
-            # `*-expected.txt` instead of from `*.ini` files.
+            TestLoader.install(self.port, self._expectations)
             stack.enter_context(
                 self.process_and_upload_results(runner_options, tmp_dir))
             self.port.setup_test_run()  # Start Xvfb, if necessary.

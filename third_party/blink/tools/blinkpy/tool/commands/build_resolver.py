@@ -144,7 +144,7 @@ class BuildResolver:
         # TODO(crbug.com/1123077): After the switch to wptrunner, stop checking
         # the `blink_wpt_tests` step.
         run_web_tests_pattern = re.compile(
-            r'[\w_-]*blink_(web|wpt)_tests.*\(with patch\)[^|]*')
+            r'[\w_-]*(webdriver|blink_(web|wpt))_tests.*\(with patch\)[^|]*')
         output_props = raw_build.get('output', {}).get('properties', {})
         # Buildbucket's `FAILURE` status encompasses both normal test failures
         # (i.e., needs rebaseline) and unrelated compile or result merge

@@ -52,7 +52,7 @@ class TestResultsFetcher:
     """
 
     _test_id_pattern = re.compile(
-        r'ninja://\S*blink_(web|wpt)_tests/(?P<name>\S+)')
+        r'ninja://\S*(blink|chrome)_(web|wpt)_tests/(?P<name>\S+)')
 
     def __init__(self, web, luci_auth):
         self.web = web

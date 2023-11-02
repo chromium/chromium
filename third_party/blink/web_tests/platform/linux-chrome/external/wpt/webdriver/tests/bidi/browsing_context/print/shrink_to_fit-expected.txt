@@ -1,0 +1,8 @@
+This is a wdspec test.
+[FAIL] test_shrink_to_fit[default]
+  AssertionError: assert {'type': 'array', 'value': [{'type': 'string', 'value': 'Block 1Block 2Block 3Block 4'}, {'type': 'string', 'value': ''}]} == {'type': 'array', 'value': [{'type': 'string', 'value': 'Block 1Block 2Block 3Block 4'}]}
+[FAIL] test_shrink_to_fit[True]
+  AssertionError: assert {'type': 'array', 'value': [{'type': 'string', 'value': 'Block 1Block 2Block 3Block 4'}, {'type': 'string', 'value': ''}]} == {'type': 'array', 'value': [{'type': 'string', 'value': 'Block 1Block 2Block 3Block 4'}]}
+[FAIL] test_shrink_to_fit[False]
+  AssertionError: assert {'type': 'array', 'value': [{'type': 'string', 'value': 'Block 1Block 2Block 3Block 4'}, {'type': 'string', 'value': ''}]} == {'type': 'array', 'value': [{'type': 'string', 'value': 'Block 1Block 2Block 3'}, {'type': 'string', 'value': 'Block 4'}]}
+Harness: the test ran to completion.

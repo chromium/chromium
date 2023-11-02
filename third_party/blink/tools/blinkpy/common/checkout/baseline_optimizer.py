@@ -222,8 +222,9 @@ class BaselineOptimizer:
                 self.location(path) for path in search_path
             ]
             if not self._skips_test(port, nonvirtual_test):
-                skipped_ports_by_test[nonvirtual_test].append(port)
                 yield nonvirtual_locations
+            else:
+                skipped_ports_by_test[nonvirtual_test].append(port)
             for virtual_test in virtual_tests:
                 if self._skips_test(port, virtual_test):
                     skipped_ports_by_test[virtual_test].append(port)

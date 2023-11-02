@@ -363,7 +363,7 @@ class WPTAdapterTest(unittest.TestCase):
             '--enable-sanitizer'
         ])
         with adapter.test_env() as options:
-            self.assertEqual(options.timeout_multiplier, 2)
+            self.assertAlmostEqual(options.timeout_multiplier, 5)
             run_info = self._read_run_info(options)
             self.assertTrue(run_info['sanitizer_enabled'])
 

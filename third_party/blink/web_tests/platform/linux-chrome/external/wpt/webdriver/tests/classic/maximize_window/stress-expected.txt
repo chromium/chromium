@@ -1,0 +1,12 @@
+This is a wdspec test.
+[FAIL] test_stress[0]
+  assert (100, 100) > (100, 100)
+[FAIL] test_stress[1]
+  assert (100, 100) > (100, 100)
+[FAIL] test_stress[2]
+  assert (100, 100) > (100, 100)
+[FAIL] test_stress[3]
+  assert (100, 100) > (100, 100)
+[FAIL] test_stress[4]
+  assert (100, 100) > (100, 100)
+Harness: the test ran to completion.

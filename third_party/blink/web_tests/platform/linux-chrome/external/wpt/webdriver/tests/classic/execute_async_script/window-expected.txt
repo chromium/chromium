@@ -1,0 +1,8 @@
+This is a wdspec test.
+[FAIL] test_web_reference[frame]
+  AssertionError: javascript error (500): javascript error: circular reference
+[FAIL] test_web_reference[window]
+  AssertionError: javascript error (500): javascript error: circular reference
+[FAIL] test_window_open
+  AssertionError: javascript error (500): javascript error: circular reference
+Harness: the test ran to completion.

@@ -1,0 +1,12 @@
+This is a wdspec test.
+[FAIL] test_device_pixel_ratio_only[1]
+  TypeError: set_viewport() got an unexpected keyword argument 'device_pixel_ratio'
+[FAIL] test_device_pixel_ratio_only[2]
+  TypeError: set_viewport() got an unexpected keyword argument 'device_pixel_ratio'
+[FAIL] test_device_pixel_ratio_with_viewport[1]
+  TypeError: set_viewport() got an unexpected keyword argument 'device_pixel_ratio'
+[FAIL] test_device_pixel_ratio_with_viewport[2]
+  TypeError: set_viewport() got an unexpected keyword argument 'device_pixel_ratio'
+[FAIL] test_reset_device_pixel_ratio
+  TypeError: set_viewport() got an unexpected keyword argument 'device_pixel_ratio'
+Harness: the test ran to completion.

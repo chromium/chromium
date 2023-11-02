@@ -63,7 +63,8 @@ class OptimizeBaselines(AbstractParallelRebaselineCommand):
             _log.error("No port names match '%s'", options.platform)
             return 1
 
-        self._host_port = tool.port_factory.get(options=options)
+        for option, value in vars(options).items():
+            self._host_port.set_option_default(option, value)
         test_set = self._get_test_set(options, args)
         if not test_set:
             _log.error('No tests to optimize. Ensure all listed tests exist.')

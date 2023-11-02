@@ -134,7 +134,11 @@ class AbstractRebaseliningCommand(Command):
 
     @functools.cached_property
     def _host_port(self):
-        return self._tool.port_factory.get()
+        # TODO(crbug.com/1498195): This may be changed to `--no-wdspec`.
+        return self._tool.port_factory.get(options=optparse.Values({
+            'test_types':
+            ['testharness', 'reftest', 'wdspec', 'crashtest', 'print-reftest']
+        }))
 
     def _file_name_for_actual_result(self, test_name, suffix):
         # output_filename takes extensions starting with '.'.
@@ -259,8 +263,14 @@ class TestBaselineSet(collections.abc.Set):
             step_name: The name of the build step this test was run for.
             port_name: This specifies what platform the baseline is for.
         """
-        port_name = port_name or self._builders.port_name_for_builder_name(
-            build.builder_name)
+        if not port_name:
+            product = self._builders.product_for_build_step(
+                build.builder_name, step_name)
+            if product == 'content_shell':
+                port_name = self._builders.port_name_for_builder_name(
+                    build.builder_name)
+            else:
+                port_name = product
         self._build_steps.add((build.builder_name, step_name))
         build_step = (build, step_name, port_name)
         self._test_map[test].append(build_step)
@@ -592,7 +602,8 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         results = sorted(set(result.actual_results()))
         result_tags = ' '.join(RESULT_TAGS[result] for result in results)
         reason = self._rebaseline_failures[task].value
-        return f'[ {specifier} ] {task.test} [ {result_tags} ]  # {reason}'
+        line = f'{task.test} [ {result_tags} ]  # {reason}'
+        return f'[ {specifier} ] {line}' if specifier else line
 
     def unstaged_baselines(self):
         """Returns absolute paths for unstaged (including untracked) baselines."""

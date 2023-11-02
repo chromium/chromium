@@ -2071,3 +2071,8 @@ crbug.com/1476305 external/wpt/subapps/* [ Skip ]
 # Web-animations tests that use short-lived animations for performance reasons
 # can be problematic on debug builds.
 crbug.com/1197087 [ Debug ] external/wpt/web-animations/interfaces/Animation/finished.html [ Skip ]
+
+# At the moment, no plans to run wdspec tests for anything other than Chrome on
+# Linux due to resource constraints.
+[ Mac ] external/wpt/webdriver/tests/* [ Skip ]
+[ Win ] external/wpt/webdriver/tests/* [ Skip ]

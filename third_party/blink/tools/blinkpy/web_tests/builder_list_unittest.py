@@ -197,7 +197,7 @@ class BuilderListTest(unittest.TestCase):
 
     def test_all_port_names(self):
         builders = self.sample_builder_list()
-        self.assertEqual(['port-a', 'port-b', 'port-c'],
+        self.assertEqual(['chrome', 'port-a', 'port-b', 'port-c'],
                          builders.all_port_names())
 
     def test_all_flag_specific_options(self):

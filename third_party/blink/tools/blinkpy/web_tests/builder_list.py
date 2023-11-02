@@ -189,7 +189,14 @@ class BuilderList:
         return sorted(builders)
 
     def all_port_names(self):
-        return sorted({b['port_name'] for b in self._builders.values()})
+        port_names = set()
+        for builder_name, builder in self._builders.items():
+            port_names.add(builder['port_name'])
+            for step in self.step_names_for_builder(builder_name):
+                product = self.product_for_build_step(builder_name, step)
+                if product != 'content_shell':
+                    port_names.add(product)
+        return sorted(port_names)
 
     def bucket_for_builder(self, builder_name):
         return self._builders[builder_name].get('bucket', '')
@@ -233,8 +240,11 @@ class BuilderList:
             'uses_wptrunner', False)
 
     def product_for_build_step(self, builder_name: str, step_name: str) -> str:
-        steps = self._steps(builder_name)
-        return steps[step_name].get('product', 'content_shell')
+        try:
+            steps = self._steps(builder_name)
+            return steps[step_name].get('product', 'content_shell')
+        except KeyError:
+            return 'content_shell'
 
     def has_experimental_steps(self, builder_name):
         steps = self.step_names_for_builder(builder_name)
