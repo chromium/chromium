@@ -319,7 +319,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
                                     LocalFrame*,
                                     bool is_reload);
 
-  virtual void CloseWindowSoon() = 0;
+  virtual void CloseWindow() = 0;
 
   bool OpenJavaScriptAlert(LocalFrame*, const String&);
   bool OpenJavaScriptConfirm(LocalFrame*, const String&);

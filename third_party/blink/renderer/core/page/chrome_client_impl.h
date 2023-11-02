@@ -137,7 +137,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   // box. The value is cleared after being read.
   void SetBeforeUnloadConfirmPanelResultForTesting(bool result_success);
 
-  void CloseWindowSoon() override;
+  void CloseWindow() override;
   bool OpenJavaScriptAlertDelegate(LocalFrame*, const String&) override;
   bool OpenJavaScriptConfirmDelegate(LocalFrame*, const String&) override;
   bool OpenJavaScriptPromptDelegate(LocalFrame*,

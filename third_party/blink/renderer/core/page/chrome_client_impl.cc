@@ -436,9 +436,9 @@ void ChromeClientImpl::SetBeforeUnloadConfirmPanelResultForTesting(
   before_unload_confirm_panel_result_for_testing_ = result;
 }
 
-void ChromeClientImpl::CloseWindowSoon() {
+void ChromeClientImpl::CloseWindow() {
   DCHECK(web_view_);
-  web_view_->CloseWindowSoon();
+  web_view_->CloseWindow();
 }
 
 bool ChromeClientImpl::OpenJavaScriptAlertDelegate(LocalFrame* frame,

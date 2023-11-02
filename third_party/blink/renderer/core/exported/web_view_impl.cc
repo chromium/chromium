@@ -536,28 +536,10 @@ void WebViewImpl::SetNoStatePrefetchClient(
                                      *page_, no_state_prefetch_client));
 }
 
-void WebViewImpl::CloseWindowSoon() {
-  // Ask the RenderViewHost with a local main frame to initiate close.  We
-  // could be called from deep in Javascript.  If we ask the RenderViewHost to
-  // close now, the window could be closed before the JS finishes executing,
-  // thanks to nested message loops running and handling the resulting
-  // disconnecting `page_broadcast_`. So instead, post a message back to the
-  // message loop, which won't run until the JS is complete, and then the
-  // RouteCloseEvent/RequestClose request can be sent.
-  GetPage()
-      ->GetPageScheduler()
-      ->GetAgentGroupScheduler()
-      .DefaultTaskRunner()
-      ->PostTask(FROM_HERE,
-                 WTF::BindOnce(&WebViewImpl::DoDeferredCloseWindowSoon,
-                               weak_ptr_factory_.GetWeakPtr()));
-}
-
-void WebViewImpl::DoDeferredCloseWindowSoon() {
+void WebViewImpl::CloseWindow() {
   // Have the browser process a close request. We should have either a
   // |local_main_frame_host_remote_| or |remote_main_frame_host_remote_|.
   // This method will not execute if Close has been called as WeakPtrs
-  // will be invalidated in Close.
   if (GetPage()->MainFrame()->IsLocalFrame()) {
     DCHECK(local_main_frame_host_remote_);
     local_main_frame_host_remote_->RequestClose();

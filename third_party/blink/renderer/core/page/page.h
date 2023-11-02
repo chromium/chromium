@@ -460,8 +460,14 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
     return attribution_support_;
   }
 
+  // Called on a new Page, passing an old Page as the parameter, when doing a
+  // LocalFrame <-> LocalFrame swap when committing a navigation, to ensure that
+  // the close task will still be processed after the swap.
+  void TakeCloseTaskHandler(Page* old_page);
+
  private:
   friend class ScopedPagePauser;
+  class CloseTaskHandler;
 
   void InitGroup();
 
@@ -623,6 +629,8 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   BrowsingContextGroupInfo browsing_context_group_info_;
 
   network::mojom::AttributionSupport attribution_support_;
+
+  Member<CloseTaskHandler> close_task_handler_;
 };
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<Page>;

@@ -255,6 +255,30 @@ Page::~Page() {
   DCHECK(!main_frame_);
 }
 
+// Closing a window/FrameTree happens asynchronously. It's important to keep
+// track of the "current" Page because it might change, e.g. if a navigation
+// committed in between the time the task gets posted but before the task runs.
+// This class keeps track of the "current" Page and ensures that the window
+// close happens on the correct Page.
+class Page::CloseTaskHandler : public GarbageCollected<Page::CloseTaskHandler> {
+ public:
+  explicit CloseTaskHandler(WeakMember<Page> page) : page_(page) {}
+  ~CloseTaskHandler() = default;
+
+  void DoDeferredClose() {
+    if (page_) {
+      page_->GetChromeClient().CloseWindow();
+    }
+  }
+
+  void SetPage(Page* page) { page_ = page; }
+
+  void Trace(Visitor* visitor) const { visitor->Trace(page_); }
+
+ private:
+  WeakMember<Page> page_;
+};
+
 void Page::CloseSoon() {
   // Make sure this Page can no longer be found by JS.
   is_closing_ = true;
@@ -263,7 +287,25 @@ void Page::CloseSoon() {
   if (auto* main_local_frame = DynamicTo<LocalFrame>(main_frame_.Get()))
     main_local_frame->Loader().StopAllLoaders(/*abort_client=*/true);
 
-  GetChromeClient().CloseWindowSoon();
+  // If the client is a popup, immediately close the window. This preserves the
+  // previous behavior where we do the closing synchronously.
+  if (GetChromeClient().IsPopup()) {
+    GetChromeClient().CloseWindow();
+    return;
+  }
+  // If the client is a WebView, post a task to close the window asynchronously.
+  // This is because we could be called from deep in Javascript.  If we ask the
+  // WebView to close now, the window could be closed before the JS finishes
+  // executing, thanks to nested message loops running and handling the
+  // resulting disconnecting PageBroadcast. So instead, post a message back to
+  // the message loop, which won't run until the JS is complete, and then the
+  // close request can be sent.
+  if (!close_task_handler_) {
+    close_task_handler_ = MakeGarbageCollected<Page::CloseTaskHandler>(this);
+  }
+  GetPageScheduler()->GetAgentGroupScheduler().DefaultTaskRunner()->PostTask(
+      FROM_HERE, WTF::BindOnce(&Page::CloseTaskHandler::DoDeferredClose,
+                               WrapWeakPersistent(close_task_handler_.Get())));
 }
 
 ViewportDescription Page::GetViewportDescription() const {
@@ -337,6 +379,18 @@ void Page::SetMainFrame(Frame* main_frame) {
   main_frame_ = main_frame;
 
   page_scheduler_->SetIsMainFrameLocal(main_frame->IsLocalFrame());
+}
+
+void Page::TakeCloseTaskHandler(Page* old_page) {
+  // Setting the CloseTaskHandler using this function should only be done
+  // when transferring the CloseTaskHandler from a previous Page to the new
+  // Page during LocalFrame <-> LocalFrame swap. The new Page should not have
+  // a CloseTaskHandler yet at this point.
+  CHECK(!close_task_handler_);
+  close_task_handler_ = old_page->close_task_handler_;
+  if (close_task_handler_) {
+    close_task_handler_->SetPage(this);
+  }
 }
 
 LocalFrame* Page::DeprecatedLocalMainFrame() const {
@@ -980,6 +1034,7 @@ void Page::Trace(Visitor* visitor) const {
   visitor->Trace(agent_group_scheduler_);
   visitor->Trace(v8_compile_hints_producer_);
   visitor->Trace(v8_compile_hints_consumer_);
+  visitor->Trace(close_task_handler_);
   Supplementable<Page>::Trace(visitor);
 }
 
@@ -996,6 +1051,11 @@ void Page::WillStopCompositing() {
 }
 
 void Page::WillBeDestroyed() {
+  if (close_task_handler_) {
+    close_task_handler_->SetPage(nullptr);
+    close_task_handler_ = nullptr;
+  }
+
   Frame* main_frame = main_frame_;
 
   // TODO(https://crbug.com/838348): Sadly, there are situations where Blink may

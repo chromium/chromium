@@ -549,7 +549,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // Called when some JS code has instructed the window associated to the main
   // frame to close, which will result in a request to the browser to close the
   // Widget associated to it.
-  void CloseWindowSoon();
+  void CloseWindow();
 
   // Controls whether pressing Tab key advances focus to links.
   bool TabsToLinks() const;

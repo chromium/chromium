@@ -168,7 +168,7 @@ class PagePopupChromeClient final : public EmptyChromeClient {
   bool IsPopup() override { return true; }
 
  private:
-  void CloseWindowSoon() override {
+  void CloseWindow() override {
     // This skips past the PopupClient by calling ClosePopup() instead of
     // Cancel().
     popup_->ClosePopup();

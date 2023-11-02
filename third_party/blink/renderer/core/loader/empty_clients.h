@@ -150,7 +150,7 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
   bool OpenBeforeUnloadConfirmPanelDelegate(LocalFrame*, bool) override {
     return true;
   }
-  void CloseWindowSoon() override {}
+  void CloseWindow() override {}
   Page* CreateWindowDelegate(LocalFrame*,
                              const FrameLoadRequest&,
                              const AtomicString&,
