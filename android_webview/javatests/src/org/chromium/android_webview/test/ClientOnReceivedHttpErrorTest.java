@@ -16,6 +16,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
@@ -31,14 +33,20 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /** Tests for the ContentViewClient.onReceivedHttpError() method. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class ClientOnReceivedHttpErrorTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class ClientOnReceivedHttpErrorTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private VerifyOnReceivedHttpErrorCallClient mContentsClient;
     private AwTestContainerView mTestContainerView;
     private AwContents mAwContents;
     private TestWebServer mWebServer;
+
+    public ClientOnReceivedHttpErrorTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -179,6 +187,7 @@ public class ClientOnReceivedHttpErrorTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @SkipMutations(reason = "This test depends on AwSettings.setImagesEnabled(true)")
     public void testForSubresource() throws Throwable {
         List<Pair<String, String>> headers = new ArrayList<Pair<String, String>>();
         headers.add(Pair.create("Content-Type", "text/html; charset=utf-8"));

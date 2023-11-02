@@ -15,6 +15,8 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClient;
@@ -30,21 +32,25 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.concurrent.GuardedBy;
 
 /** Tests for certain edge cases related to integrating with the Android view system. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AndroidViewIntegrationTest {
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AndroidViewIntegrationTest extends AwParameterizedTest {
     @Rule
-    public AwActivityTestRule mActivityTestRule =
-            new AwActivityTestRule() {
-                @Override
-                public TestDependencyFactory createTestDependencyFactory() {
-                    return new TestDependencyFactory() {
-                        @Override
-                        public AwLayoutSizer createLayoutSizer() {
-                            return new TestAwLayoutSizer();
-                        }
-                    };
-                }
-            };
+    public AwActivityTestRule mActivityTestRule;
+
+    public AndroidViewIntegrationTest(AwSettingsMutation param) {
+        mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
+            @Override
+            public TestDependencyFactory createTestDependencyFactory() {
+                return new TestDependencyFactory() {
+                    @Override
+                    public AwLayoutSizer createLayoutSizer() {
+                        return new TestAwLayoutSizer();
+                    }
+                };
+            }
+        };
+    }
 
     private static final String TAG = "AndroidViewTest"; // 20 max characters
     // TODO(crbug.com/949391): turn this off once we can get some details about flakes.
@@ -383,6 +389,7 @@ public class AndroidViewIntegrationTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @SkipMutations(reason = "This test depends on AwSettings.setUseWideViewPort(false)")
     public void testViewSizedCorrectlyInWrapContentMode() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
         mTestContainerView = createCustomTestContainerViewOnMainSync(contentsClient, View.VISIBLE);
@@ -413,6 +420,7 @@ public class AndroidViewIntegrationTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @SkipMutations(reason = "This test depends on AwSettings.setUseWideViewPort(false)")
     public void testViewSizedCorrectlyInWrapContentModeWithDynamicContents() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
         mTestContainerView = createCustomTestContainerViewOnMainSync(contentsClient, View.VISIBLE);
@@ -441,6 +449,7 @@ public class AndroidViewIntegrationTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @SkipMutations(reason = "This test depends on AwSettings.setUseWideViewPort(false)")
     public void testReceivingSizeAfterLoadUpdatesLayout() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
         mTestContainerView = createDetachedTestContainerViewOnMainSync(contentsClient);

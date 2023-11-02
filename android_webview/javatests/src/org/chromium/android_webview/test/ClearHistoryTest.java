@@ -11,6 +11,8 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.base.test.util.Feature;
@@ -20,9 +22,11 @@ import org.chromium.content_public.browser.test.util.HistoryUtils;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
 
 /** Tests for a wanted clearHistory method. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class ClearHistoryTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class ClearHistoryTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private static final String[] URLS = new String[3];
 
@@ -31,6 +35,10 @@ public class ClearHistoryTest {
             URLS[i] =
                     UrlUtils.encodeHtmlDataUri("<html><head></head><body>" + i + "</body></html>");
         }
+    }
+
+    public ClearHistoryTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
     }
 
     @Test

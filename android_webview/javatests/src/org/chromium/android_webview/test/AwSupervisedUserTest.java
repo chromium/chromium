@@ -17,6 +17,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.JsReplyProxy;
@@ -46,9 +48,10 @@ import java.util.concurrent.TimeoutException;
  * the call to GMS core which would check if the current user can load
  * a particular url.
  */
-@RunWith(AwJUnit4ClassRunner.class)
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @Batch(Batch.PER_CLASS)
-public class AwSupervisedUserTest {
+public class AwSupervisedUserTest extends AwParameterizedTest {
     private static final String SAFE_SITE_TITLE = "Safe site";
     private static final String SAFE_SITE_PATH = "/safe.html";
     private static final String SAFE_SITE_IFRAME_TITLE = "IFrame safe site";
@@ -79,12 +82,17 @@ public class AwSupervisedUserTest {
         return sb.toString();
     }
 
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private OnProgressChangedClient mContentsClient = new OnProgressChangedClient();
     private AwContents mAwContents;
     private TestWebServer mWebServer;
     private IFrameLoadedListener mIFrameLoadedListener = new IFrameLoadedListener();
+
+    public AwSupervisedUserTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() throws Exception {

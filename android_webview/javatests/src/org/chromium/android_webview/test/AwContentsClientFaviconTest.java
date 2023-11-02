@@ -17,6 +17,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.util.CommonResources;
@@ -26,9 +28,11 @@ import java.io.InputStream;
 import java.net.URL;
 
 /** Tests for the Favicon and TouchIcon related APIs. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AwContentsClientFaviconTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AwContentsClientFaviconTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private static final String FAVICON1_URL = "/favicon1.png";
     private static final String FAVICON1_PAGE_URL = "/favicon1.html";
@@ -56,6 +60,10 @@ public class AwContentsClientFaviconTest {
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
     private TestWebServer mWebServer;
+
+    public AwContentsClientFaviconTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() throws Exception {

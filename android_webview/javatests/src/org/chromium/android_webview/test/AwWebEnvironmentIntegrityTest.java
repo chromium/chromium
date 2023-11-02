@@ -17,6 +17,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.TestAwContentsClient.ShouldInterceptRequestHelper;
@@ -43,10 +45,12 @@ import java.util.concurrent.TimeoutException;
  * {@link org.chromium.chrome.browser.environment_integrity.EnvironmentIntegrityTest}
  * and only supposed to test WebView-specific differences.
  */
-@RunWith(AwJUnit4ClassRunner.class)
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @Batch(Batch.PER_CLASS)
-public class AwWebEnvironmentIntegrityTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+public class AwWebEnvironmentIntegrityTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
@@ -63,6 +67,10 @@ public class AwWebEnvironmentIntegrityTest {
 
     private static final byte[] TOKEN = {1, 2, 3, 4};
     private static final String TOKEN_BASE64 = "AQIDBA==";
+
+    public AwWebEnvironmentIntegrityTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() throws Exception {

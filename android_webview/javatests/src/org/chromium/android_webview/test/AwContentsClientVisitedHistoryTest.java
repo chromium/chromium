@@ -10,6 +10,8 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.TestAwContentsClient.DoUpdateVisitedHistoryHelper;
@@ -19,10 +21,14 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.util.TestWebServer;
 
-/** Tests for AwContentsClient.getVisitedHistory and AwContents.doUpdateVisitedHistory callbacks. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AwContentsClientVisitedHistoryTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+/**
+ * Tests for AwContentsClient.getVisitedHistory and AwContents.doUpdateVisitedHistory callbacks.
+ */
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AwContentsClientVisitedHistoryTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private static class GetVisitedHistoryHelper extends CallbackHelper {
         private Callback<String[]> mCallback;
@@ -65,6 +71,10 @@ public class AwContentsClientVisitedHistoryTest {
 
     private VisitedHistoryTestAwContentsClient mContentsClient =
             new VisitedHistoryTestAwContentsClient();
+
+    public AwContentsClientVisitedHistoryTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Test
     @Feature({"AndroidWebView"})

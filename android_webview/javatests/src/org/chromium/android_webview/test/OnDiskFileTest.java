@@ -13,6 +13,8 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwContents;
@@ -24,18 +26,22 @@ import org.chromium.net.test.util.TestWebServer;
 import java.io.File;
 
 /** Test suite for files WebView creates on disk. This includes HTTP cache and the cookies file. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class OnDiskFileTest {
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class OnDiskFileTest extends AwParameterizedTest {
     @Rule
-    public AwActivityTestRule mActivityTestRule =
-            new AwActivityTestRule() {
-                @Override
-                public boolean needsBrowserProcessStarted() {
-                    // We need to control when the browser process starts, so that we can delete the
-                    // file-under-test before the test starts up.
-                    return false;
-                }
-            };
+    public AwActivityTestRule mActivityTestRule;
+
+    public OnDiskFileTest(AwSettingsMutation param) {
+        mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
+            @Override
+            public boolean needsBrowserProcessStarted() {
+                // We need to control when the browser process starts, so that we can delete the
+                // file-under-test before the test starts up.
+                return false;
+            }
+        };
+    }
 
     @Test
     @SmallTest

@@ -12,6 +12,8 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedLoginRequestHelper;
@@ -22,11 +24,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Tests for the AwContentsClient.onReceivedLoginRequest callback. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AwContentsClientAutoLoginTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AwContentsClientAutoLoginTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient = new TestAwContentsClient();
+
+    public AwContentsClientAutoLoginTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     private void autoLoginTestHelper(
             final String testName,
@@ -34,7 +42,7 @@ public class AwContentsClientAutoLoginTest {
             final String expectedRealm,
             final String expectedAccount,
             final String expectedArgs)
-            throws Throwable {
+    throws Throwable {
         AwTestContainerView testView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         AwContents awContents = testView.getAwContents();

@@ -16,6 +16,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwContents;
@@ -44,12 +46,11 @@ import java.util.Map;
  * server may not be able to start if the same test is run multiple times in quick succession.
  */
 @Batch(Batch.PER_CLASS)
-@RunWith(AwJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    "origin-trial-public-key=dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=",
-    "enable-features=PersistentOriginTrials,WebViewXRequestedWithHeaderControl"
-})
-public class XRWOriginTrialTest {
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+@CommandLineFlags.Add({"origin-trial-public-key=dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=",
+        "enable-features=PersistentOriginTrials,WebViewXRequestedWithHeaderControl"})
+public class XRWOriginTrialTest extends AwParameterizedTest {
     private static final String ORIGIN_TRIAL_HEADER = "Origin-Trial";
     private static final String CRITICAL_ORIGIN_TRIAL_HEADER = "Critical-Origin-Trial";
     private static final String XRW_HEADER = "X-Requested-With";
@@ -58,10 +59,15 @@ public class XRWOriginTrialTest {
 
     private static final String REQUEST_PATH = "/";
 
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
+
+    public XRWOriginTrialTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() throws Exception {

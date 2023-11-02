@@ -20,6 +20,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
@@ -43,16 +45,22 @@ import java.util.concurrent.TimeUnit;
  * A test suite for WebView's network-related configuration. This tests WebView's default settings,
  * which are configured by either AwURLRequestContextGetter or NetworkContext.
  */
-@RunWith(AwJUnit4ClassRunner.class)
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @Batch(Batch.PER_CLASS)
-public class AwNetworkConfigurationTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+public class AwNetworkConfigurationTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private AwTestContainerView mTestContainerView;
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
 
     private EmbeddedTestServer mTestServer;
+
+    public AwNetworkConfigurationTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() {

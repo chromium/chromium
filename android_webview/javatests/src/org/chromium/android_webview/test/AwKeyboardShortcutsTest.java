@@ -14,6 +14,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.mockito.Mockito;
 
 import org.chromium.android_webview.AwContents;
@@ -25,15 +27,22 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 
 /** {@link org.chromium.android_webview.AwKeyboardShortcuts} tests. */
-@RunWith(AwJUnit4ClassRunner.class)
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @Features.EnableFeatures({AwFeatures.WEBVIEW_ZOOM_KEYBOARD_SHORTCUTS})
 @Batch(Batch.PER_CLASS)
-public class AwKeyboardShortcutsTest {
-    @Rule public TestRule mProcessor = new Features.InstrumentationProcessor();
+public class AwKeyboardShortcutsTest extends AwParameterizedTest {
+    @Rule
+    public TestRule mProcessor = new Features.InstrumentationProcessor();
 
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private AwContents mAwContents;
+
+    public AwKeyboardShortcutsTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() {
@@ -51,6 +60,7 @@ public class AwKeyboardShortcutsTest {
     @DisableIf.Build(
             sdk_is_less_than = Build.VERSION_CODES.O,
             message = "This test is disabled on Android N because of https://crbug.com/1414082")
+    @SkipMutations(reason = "This test depends on AwSettings.setSupportZoom(true)")
     public void testCtrlPlusZoomIn() {
         executeCtrlPlus();
         Mockito.verify(mAwContents, Mockito.times(1)).zoomIn();
@@ -62,6 +72,7 @@ public class AwKeyboardShortcutsTest {
     @DisableIf.Build(
             sdk_is_less_than = Build.VERSION_CODES.O,
             message = "This test is disabled on Android N because of https://crbug.com/1414082")
+    @SkipMutations(reason = "This test depends on AwSettings.setSupportZoom(true)")
     public void testCtrlShiftPlusZoomIn() {
         executeCtrlShiftPlus();
         Mockito.verify(mAwContents, Mockito.times(1)).zoomIn();
@@ -73,6 +84,7 @@ public class AwKeyboardShortcutsTest {
     @DisableIf.Build(
             sdk_is_less_than = Build.VERSION_CODES.O,
             message = "This test is disabled on Android N because of https://crbug.com/1414082")
+    @SkipMutations(reason = "This test depends on AwSettings.setSupportZoom(true)")
     public void testCtrlEqualsZoomIn() {
         executeCtrlEquals();
         Mockito.verify(mAwContents, Mockito.times(1)).zoomIn();
@@ -84,6 +96,7 @@ public class AwKeyboardShortcutsTest {
     @DisableIf.Build(
             sdk_is_less_than = Build.VERSION_CODES.O,
             message = "This test is disabled on Android N because of https://crbug.com/1414082")
+    @SkipMutations(reason = "This test depends on AwSettings.setSupportZoom(true)")
     public void testCtrlShiftEqualsZoomIn() {
         executeCtrlShiftEquals();
         Mockito.verify(mAwContents, Mockito.times(1)).zoomIn();
@@ -95,6 +108,7 @@ public class AwKeyboardShortcutsTest {
     @DisableIf.Build(
             sdk_is_less_than = Build.VERSION_CODES.O,
             message = "This test is disabled on Android N because of https://crbug.com/1414082")
+    @SkipMutations(reason = "This test depends on AwSettings.setSupportZoom(true)")
     public void testKeyEventZoomInZoomIn() {
         executeZoomInKey();
         Mockito.verify(mAwContents, Mockito.times(1)).zoomIn();
@@ -106,6 +120,7 @@ public class AwKeyboardShortcutsTest {
     @DisableIf.Build(
             sdk_is_less_than = Build.VERSION_CODES.O,
             message = "This test is disabled on Android N because of https://crbug.com/1414082")
+    @SkipMutations(reason = "This test depends on AwSettings.setSupportZoom(true)")
     public void testCtrlMinusZoomOut() {
         executeCtrlMinus();
         Mockito.verify(mAwContents, Mockito.times(1)).zoomOut();
@@ -117,6 +132,7 @@ public class AwKeyboardShortcutsTest {
     @DisableIf.Build(
             sdk_is_less_than = Build.VERSION_CODES.O,
             message = "This test is disabled on Android N because of https://crbug.com/1414082")
+    @SkipMutations(reason = "This test depends on AwSettings.setSupportZoom(true)")
     public void testKeyEventZoomOutZoomOut() {
         executeZoomOutKey();
         Mockito.verify(mAwContents, Mockito.times(1)).zoomOut();

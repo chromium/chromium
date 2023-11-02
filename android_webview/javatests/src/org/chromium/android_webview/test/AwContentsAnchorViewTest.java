@@ -15,18 +15,29 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwViewAndroidDelegate;
 import org.chromium.base.test.util.Feature;
 import org.chromium.ui.display.DisplayAndroid;
 
-/** Tests anchor views are correctly added/removed when their container view is updated. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AwContentsAnchorViewTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+/**
+ * Tests anchor views are correctly added/removed when their container view is updated.
+ */
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AwContentsAnchorViewTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private FrameLayout mContainerView;
     private AwViewAndroidDelegate mViewDelegate;
+
+    public AwContentsAnchorViewTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
+
 
     @Before
     public void setUp() {

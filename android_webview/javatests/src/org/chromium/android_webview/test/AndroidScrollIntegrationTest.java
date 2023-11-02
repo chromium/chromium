@@ -19,6 +19,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
@@ -42,30 +44,33 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** Integration tests for synchronous scrolling. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AndroidScrollIntegrationTest {
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AndroidScrollIntegrationTest extends AwParameterizedTest {
     private static final double EPSILON = 1e-5;
 
     @Rule
-    public AwActivityTestRule mActivityTestRule =
-            new AwActivityTestRule() {
-                @Override
-                public TestDependencyFactory createTestDependencyFactory() {
-                    return new TestDependencyFactory() {
-                        @Override
-                        public AwScrollOffsetManager createScrollOffsetManager(
-                                AwScrollOffsetManager.Delegate delegate) {
-                            return new AwScrollOffsetManager(delegate);
-                        }
+    public AwActivityTestRule mActivityTestRule;
 
-                        @Override
-                        public AwTestContainerView createAwTestContainerView(
-                                AwTestRunnerActivity activity, boolean allowHardwareAcceleration) {
-                            return new ScrollTestContainerView(activity, allowHardwareAcceleration);
-                        }
-                    };
-                }
-            };
+    public AndroidScrollIntegrationTest(AwSettingsMutation param) {
+        mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
+            @Override
+            public TestDependencyFactory createTestDependencyFactory() {
+                return new TestDependencyFactory() {
+                    @Override
+                    public AwScrollOffsetManager createScrollOffsetManager(
+                            AwScrollOffsetManager.Delegate delegate) {
+                        return new AwScrollOffsetManager(delegate);
+                    }
+                    @Override
+                    public AwTestContainerView createAwTestContainerView(
+                            AwTestRunnerActivity activity, boolean allowHardwareAcceleration) {
+                        return new ScrollTestContainerView(activity, allowHardwareAcceleration);
+                    }
+                };
+            }
+        };
+    }
 
     private TestWebServer mWebServer;
 

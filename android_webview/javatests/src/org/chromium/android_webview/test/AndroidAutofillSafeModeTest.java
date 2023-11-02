@@ -17,6 +17,8 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.autofill.AndroidAutofillSafeModeAction;
 import org.chromium.android_webview.common.SafeModeAction;
@@ -29,13 +31,20 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 import java.util.Set;
 
 /** Tests for WebView AndroidAutofillSafeMode. */
-@RunWith(AwJUnit4ClassRunner.class)
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @MinAndroidSdkLevel(Build.VERSION_CODES.O)
 @RequiresApi(Build.VERSION_CODES.O)
-public class AndroidAutofillSafeModeTest {
+public class AndroidAutofillSafeModeTest extends AwParameterizedTest {
     public static final String TAG = "AndroidAutofillTest";
 
-    @Rule public AwActivityTestRule mRule = new AwActivityTestRule();
+    @Rule
+    public AwActivityTestRule mRule;
+
+    public AndroidAutofillSafeModeTest(AwSettingsMutation param) {
+        this.mRule = new AwActivityTestRule(param.getMutation());
+    }
+
 
     @After
     public void tearDown() {

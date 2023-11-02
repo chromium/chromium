@@ -16,6 +16,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.test.util.MemoryMetricsLoggerUtilsJni;
 import org.chromium.base.test.util.Feature;
@@ -23,14 +25,20 @@ import org.chromium.base.test.util.HistogramWatcher;
 
 /** Tests for memory_metrics_logger.cc. */
 @JNINamespace("android_webview")
-@RunWith(AwJUnit4ClassRunner.class)
-public class MemoryMetricsLoggerTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class MemoryMetricsLoggerTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private HistogramWatcher mHistogramExpectationBrowser;
     private HistogramWatcher mHistogramExpectationRendererMulti;
     private HistogramWatcher mHistogramExpectationRendererSingle;
     private HistogramWatcher mHistogramExpectationTotal;
+
+    public MemoryMetricsLoggerTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() throws Exception {

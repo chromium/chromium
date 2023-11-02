@@ -15,6 +15,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.util.CommonResources;
@@ -28,9 +30,11 @@ import org.chromium.net.test.util.TestWebServer;
  * Tests for the {@link android.webkit.WebView#saveState} and
  * {@link android.webkit.WebView#restoreState} APIs.
  */
-@RunWith(AwJUnit4ClassRunner.class)
-public class SaveRestoreStateTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class SaveRestoreStateTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private static class TestVars {
         public final TestAwContentsClient contentsClient;
@@ -65,6 +69,10 @@ public class SaveRestoreStateTest {
     };
 
     private String mUrls[];
+
+    public SaveRestoreStateTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() throws Exception {

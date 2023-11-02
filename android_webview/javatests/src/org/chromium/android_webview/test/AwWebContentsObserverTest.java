@@ -12,6 +12,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwWebContentsObserver;
@@ -23,10 +25,14 @@ import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
-/** Tests for the AwWebContentsObserver class. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AwWebContentsObserverTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+/**
+ * Tests for the AwWebContentsObserver class.
+ */
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AwWebContentsObserverTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
     private AwTestContainerView mTestContainerView;
@@ -36,6 +42,10 @@ public class AwWebContentsObserverTest {
     private GURL mExampleURLWithFragment;
     private GURL mSyncURL;
     private GURL mUnreachableWebDataUrl;
+
+    public AwWebContentsObserverTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() {

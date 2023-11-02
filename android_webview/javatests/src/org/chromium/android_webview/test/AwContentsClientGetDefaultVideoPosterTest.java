@@ -16,6 +16,8 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.DefaultVideoPosterRequestHandler;
 import org.chromium.base.test.util.CallbackHelper;
@@ -27,9 +29,11 @@ import java.io.InputStream;
 import java.util.concurrent.TimeoutException;
 
 /** Tests for AwContentClient.GetDefaultVideoPoster. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AwContentsClientGetDefaultVideoPosterTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AwContentsClientGetDefaultVideoPosterTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private static final String TAG = "AwContentsClientGetDefaultVideoPosterTest";
 
@@ -65,9 +69,14 @@ public class AwContentsClientGetDefaultVideoPosterTest {
         }
     }
 
+    public AwContentsClientGetDefaultVideoPosterTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
+
     @Test
     @Feature({"AndroidWebView"})
     @SmallTest
+    @SkipMutations(reason = "This test depends on AwSettings.setImagesEnabled(true)")
     public void testGetDefaultVideoPoster() throws Throwable {
         DefaultVideoPosterClient contentsClient =
                 new DefaultVideoPosterClient(
@@ -83,6 +92,7 @@ public class AwContentsClientGetDefaultVideoPosterTest {
     @Test
     @Feature({"AndroidWebView"})
     @SmallTest
+    @SkipMutations(reason = "This test depends on AwSettings.setImagesEnabled(true)")
     public void testDefaultVideoPosterCSP() throws Throwable {
         DefaultVideoPosterClient contentsClient =
                 new DefaultVideoPosterClient(

@@ -19,6 +19,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClient.AwWebResourceError;
@@ -40,9 +42,11 @@ import java.util.concurrent.TimeUnit;
  * supports one version of the callback, so the distinction between this and
  * ClientOnReceivedErrorTest.java is no longer as significant.
  */
-@RunWith(AwJUnit4ClassRunner.class)
-public class ClientOnReceivedError2Test {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class ClientOnReceivedError2Test extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private VerifyOnReceivedErrorCallClient mContentsClient;
     private AwTestContainerView mTestContainerView;
@@ -52,6 +56,10 @@ public class ClientOnReceivedError2Test {
     // URLs which do not exist on the public internet (because they use the ".test" TLD).
     private static final String BAD_HTML_URL = "http://fake.domain.test/a.html";
     private static final String BAD_IMAGE_URL = "http://fake.domain.test/a.png";
+
+    public ClientOnReceivedError2Test(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() {
@@ -243,6 +251,7 @@ public class ClientOnReceivedError2Test {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @SkipMutations(reason = "This test depends on AwSettings.setImagesEnabled(true)")
     public void testImageSubresource() throws Throwable {
         final String pageHtml =
                 CommonResources.makeHtmlPageFrom("", "<img src='" + BAD_IMAGE_URL + "' />");

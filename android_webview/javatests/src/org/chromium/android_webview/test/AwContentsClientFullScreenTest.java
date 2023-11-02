@@ -19,6 +19,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.android_webview.test.util.JavascriptEventObserver;
@@ -43,9 +45,11 @@ import java.util.concurrent.TimeoutException;
  * we pick a div containing a video and custom html controls since this is a
  * very common use case.
  */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AwContentsClientFullScreenTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AwContentsClientFullScreenTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private static final String VIDEO_TEST_URL =
             "file:///android_asset/full_screen_video_test.html";
@@ -62,6 +66,10 @@ public class AwContentsClientFullScreenTest {
 
     private FullScreenVideoTestAwContentsClient mContentsClient;
     private AwTestContainerView mTestContainerView;
+
+    public AwContentsClientFullScreenTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() {

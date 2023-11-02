@@ -22,6 +22,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.util.AwTestTouchUtils;
@@ -34,10 +36,14 @@ import org.chromium.net.test.util.TestWebServer;
 
 import java.util.concurrent.TimeUnit;
 
-/** Test for getHitTestResult, requestFocusNodeHref, and requestImageRef methods */
-@RunWith(AwJUnit4ClassRunner.class)
-public class WebKitHitTestTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+/**
+ * Test for getHitTestResult, requestFocusNodeHref, and requestImageRef methods
+ */
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class WebKitHitTestTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
     private AwTestContainerView mTestView;
@@ -47,6 +53,10 @@ public class WebKitHitTestTest {
     private static final String HREF = "http://foo/";
     private static final String ANCHOR_TEXT = "anchor text";
     private int mServerResponseCount;
+
+    public WebKitHitTestTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() throws Exception {

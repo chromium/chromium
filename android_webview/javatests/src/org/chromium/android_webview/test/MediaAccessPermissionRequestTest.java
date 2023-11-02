@@ -12,6 +12,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.permission.AwPermissionRequest;
@@ -23,9 +25,11 @@ import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.util.TestWebServer;
 
 /** Test MediaAccessPermissionRequest. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class MediaAccessPermissionRequestTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class MediaAccessPermissionRequestTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private static class OnPermissionRequestHelper extends CallbackHelper {
         private boolean mCanceled;
@@ -59,6 +63,10 @@ public class MediaAccessPermissionRequestTest {
 
     private TestWebServer mTestWebServer;
     private String mWebRTCPage;
+
+    public MediaAccessPermissionRequestTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() throws Exception {

@@ -16,6 +16,8 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.JsReplyProxy;
@@ -39,11 +41,15 @@ import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /** Test suite for JavaScript Java interaction. */
-@RunWith(AwJUnit4ClassRunner.class)
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @Batch(Batch.PER_CLASS)
-public class JsJavaInteractionTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
-    @ClassRule public static EmbeddedTestServerRule sTestServerRule = new EmbeddedTestServerRule();
+public class JsJavaInteractionTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
+
+    @ClassRule
+    public static EmbeddedTestServerRule sTestServerRule = new EmbeddedTestServerRule();
 
     private static final String RESOURCE_PATH = "/android_webview/test/data";
     private static final String POST_MESSAGE_SIMPLE_HTML =
@@ -132,6 +138,10 @@ public class JsJavaInteractionTest {
         public boolean hasNoMoreOnPostMessage() {
             return mQueue.isEmpty();
         }
+    }
+
+    public JsJavaInteractionTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
     }
 
     @Before
@@ -1076,6 +1086,7 @@ public class JsJavaInteractionTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "JsJavaInteraction"})
+    @SkipMutations(reason = "This test depends on AwSettings.setAllowUniversalAccessFromFileURLs(false)")
     public void testFileSchemeUrl_setAllowFileAccessFromFile_false() throws Throwable {
         // The default value is false on JELLY_BEAN and above, but we explicitly set this to
         // false to readability.
@@ -1113,6 +1124,7 @@ public class JsJavaInteractionTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "JsJavaInteraction"})
+    @SkipMutations(reason = "This test depends on AwSettings.setAllowUniversalAccessFromFileURLs(false)")
     public void testContentSchemeUrl_setAllowFileAccessFromFileURLs_false() throws Throwable {
         mAwContents.getSettings().setAllowContentAccess(true);
         // The default value is false on JELLY_BEAN and above, but we explicitly set this to

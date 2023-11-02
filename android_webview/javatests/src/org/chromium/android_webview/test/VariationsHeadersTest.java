@@ -10,20 +10,28 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.components.variations.VariationsSwitches;
 
-/** Tests that the variations headers are correctly set. */
-@RunWith(AwJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    VariationsSwitches.DISABLE_FIELD_TRIAL_TESTING_CONFIG,
-    VariationsSwitches.FORCE_VARIATION_IDS + "=4,10,34"
-})
-public class VariationsHeadersTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+/**
+ * Tests that the variations headers are correctly set.
+ */
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+@CommandLineFlags.Add({VariationsSwitches.DISABLE_FIELD_TRIAL_TESTING_CONFIG,
+        VariationsSwitches.FORCE_VARIATION_IDS + "=4,10,34"})
+public class VariationsHeadersTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
+
+    public VariationsHeadersTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @MediumTest
     @Test

@@ -12,6 +12,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwQuotaManagerBridge;
@@ -22,15 +24,21 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.net.test.util.TestWebServer;
 
 /** Tests for the AwQuotaManagerBridge. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AwQuotaManagerBridgeTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AwQuotaManagerBridgeTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
     private AwTestContainerView mTestView;
     private AwContents mAwContents;
     private TestWebServer mWebServer;
     private String mOrigin;
+
+    public AwQuotaManagerBridgeTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() throws Exception {

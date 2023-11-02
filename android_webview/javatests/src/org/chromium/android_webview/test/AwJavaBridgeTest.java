@@ -14,15 +14,19 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Test suite for the WebView specific JavaBridge features. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AwJavaBridgeTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AwJavaBridgeTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient = new TestAwContentsClient();
     private AwTestContainerView mTestContainerView;
@@ -30,6 +34,10 @@ public class AwJavaBridgeTest {
     // The system retains a strong ref to the last focused view (in InputMethodManager)
     // so allow for 1 'leaked' instance.
     private static final int MAX_IDLE_INSTANCES = 1;
+
+    public AwJavaBridgeTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() {

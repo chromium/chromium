@@ -24,6 +24,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwContents;
@@ -70,21 +72,24 @@ import java.util.Arrays;
  *
  * Ensures that interstitials can be successfully created for malicous pages.
  */
-@RunWith(AwJUnit4ClassRunner.class)
-public class SafeBrowsingTest {
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class SafeBrowsingTest extends AwParameterizedTest {
     @Rule
-    public AwActivityTestRule mActivityTestRule =
-            new AwActivityTestRule() {
+    public AwActivityTestRule mActivityTestRule;
 
-                /**
-                 * Creates a special BrowserContext that has a safebrowsing api handler which always
-                 * says sites are malicious
-                 */
-                @Override
-                public AwBrowserContext createAwBrowserContextOnUiThread() {
-                    return new MockAwBrowserContext();
-                }
-            };
+    public SafeBrowsingTest(AwSettingsMutation param) {
+        mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
+            /**
+             * Creates a special BrowserContext that has a safebrowsing api handler which always says
+             * sites are malicious
+             */
+            @Override
+            public AwBrowserContext createAwBrowserContextOnUiThread() {
+                return new MockAwBrowserContext();
+            }
+        };
+    }
 
     @Rule public TestRule mProcessor = new Features.InstrumentationProcessor();
 

@@ -15,6 +15,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.WebviewErrorCode;
@@ -31,15 +33,21 @@ import java.util.concurrent.TimeUnit;
  * of the callback, so the distinction between this and ClientOnReceivedError2Test.java is no longer
  * as significant.
  */
-@RunWith(AwJUnit4ClassRunner.class)
-public class ClientOnReceivedErrorTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class ClientOnReceivedErrorTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
 
     // URLs which do not exist on the public internet (because they use the ".test" TLD).
     private static final String BAD_HTML_URL = "http://fake.domain.test/a.html";
+
+    public ClientOnReceivedErrorTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() {

@@ -19,6 +19,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.variations.VariationsServiceMetricsHelper;
@@ -37,15 +39,17 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /** Test VariationsSeedLoader. */
-@RunWith(AwJUnit4ClassRunner.class)
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @OnlyRunIn(SINGLE_PROCESS)
-public class VariationsSeedLoaderTest {
+public class VariationsSeedLoaderTest extends AwParameterizedTest {
     private static final long CURRENT_TIME_MILLIS = 1234567890;
     private static final long EXPIRED_TIMESTAMP = 0;
     private static final long TIMEOUT_MILLIS = 10000;
 
     // Needed for tests that test histograms, which rely on native code.
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     /**
      * Helper class to interact with {@link TestLoader}. This can be used to retrieve whether
@@ -126,6 +130,10 @@ public class VariationsSeedLoaderTest {
     }
 
     private Handler mMainHandler;
+
+    public VariationsSeedLoaderTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     // Create a TestLoader, run it on the UI thread, and block until it's finished. The return value
     // indicates whether the loader decided to request a new seed.

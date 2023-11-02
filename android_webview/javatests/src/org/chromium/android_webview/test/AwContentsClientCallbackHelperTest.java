@@ -18,6 +18,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwContentsClientCallbackHelper;
@@ -34,11 +36,13 @@ import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer
 import java.util.concurrent.Callable;
 
 /** Test suite for AwContentsClientCallbackHelper. */
-@RunWith(AwJUnit4ClassRunner.class)
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @OnlyRunIn(SINGLE_PROCESS) // These are unit tests. No need to repeat for multiprocess.
 @Batch(Batch.PER_CLASS)
-public class AwContentsClientCallbackHelperTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+public class AwContentsClientCallbackHelperTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private static class TestCancelCallbackPoller
             implements AwContentsClientCallbackHelper.CancelCallbackPoller {
@@ -79,6 +83,10 @@ public class AwContentsClientCallbackHelperTest {
     private AwContentsClientCallbackHelper mClientHelper;
     private TestCancelCallbackPoller mCancelCallbackPoller;
     private Looper mLooper;
+
+    public AwContentsClientCallbackHelperTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() {

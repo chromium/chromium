@@ -12,6 +12,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
@@ -21,9 +23,11 @@ import org.chromium.net.test.util.TestWebServer;
 import java.util.List;
 
 /** Tests Service Worker Client related APIs. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AwServiceWorkerClientTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AwServiceWorkerClientTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
@@ -48,6 +52,10 @@ public class AwServiceWorkerClientTest {
 
     private static final String SW_HTML = "fetch('fetch.html');";
     private static final String FETCH_HTML = ";)";
+
+    public AwServiceWorkerClientTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() throws Exception {

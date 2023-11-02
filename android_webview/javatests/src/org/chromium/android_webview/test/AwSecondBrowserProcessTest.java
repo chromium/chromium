@@ -21,6 +21,8 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.common.services.ServiceHelper;
@@ -35,16 +37,20 @@ import java.util.concurrent.TimeUnit;
  * the same application. Chromium is not designed for that, and attempting to do that
  * can cause data files corruption.
  */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AwSecondBrowserProcessTest {
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AwSecondBrowserProcessTest extends AwParameterizedTest {
     @Rule
-    public AwActivityTestRule mActivityTestRule =
-            new AwActivityTestRule() {
-                @Override
-                public boolean needsBrowserProcessStarted() {
-                    return false;
-                }
-            };
+    public AwActivityTestRule mActivityTestRule;
+
+    public AwSecondBrowserProcessTest(AwSettingsMutation param) {
+        mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
+            @Override
+            public boolean needsBrowserProcessStarted() {
+                return false;
+            }
+        };
+    }
 
     private CountDownLatch mSecondBrowserProcessLatch;
     private int mSecondBrowserServicePid;

@@ -18,6 +18,8 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwCookieManager;
@@ -48,9 +50,11 @@ import java.util.regex.Pattern;
  * mobile is always true because there is some test bots don't set to use mobile user-agent.
  */
 @DoNotBatch(reason = "These tests conflict with each other.")
-@RunWith(AwJUnit4ClassRunner.class)
-public class ClientHintsTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class ClientHintsTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private static final String[] USER_AGENT_CLIENT_HINTS = {
         "sec-ch-ua",
@@ -79,6 +83,10 @@ public class ClientHintsTest {
             this.mHttpHeaderClientHints = httpHeaderClientHints;
             this.mJsClientHints = jsClientHints;
         }
+    }
+
+    public ClientHintsTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
     }
 
     @Test
@@ -332,12 +340,11 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
-    @CommandLineFlags.Add({
-        "enable-features=UserAgentClientHint,ClientHintsFormFactor",
-        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
-    })
+    @CommandLineFlags.Add({"enable-features=UserAgentClientHint,ClientHintsFormFactor",
+            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    @SkipMutations(reason = "This test depends on AwSettings.setUserAgentString()")
     public void testEnableUserAgentClientHintsJavaScript() throws Throwable {
-        verifyClientHintsJavaScript(/* useCustomUserAgent= */ false);
+        verifyClientHintsJavaScript(/*useCustomUserAgent=*/false);
     }
 
     @Test
@@ -923,6 +930,7 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @SkipMutations(reason = "This test depends on AwSettings.setUserAgentString()")
     public void testDefaultUserAgentDefaultReductionOverride() throws Throwable {
         String defaultUserAgent = getDefaultUserAgent();
         // Verify user-agent minor version not reduced.
@@ -937,6 +945,7 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @SkipMutations(reason = "This test depends on AwSettings.setUserAgentString()")
     @CommandLineFlags.Add({"enable-features=ReduceUserAgentMinorVersion"})
     public void testDefaultUserAgentEnableReductionOverride() throws Throwable {
         String defaultUserAgent = getDefaultUserAgent();

@@ -15,6 +15,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
@@ -31,9 +33,11 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 
 /** Tests for the ContentViewClient.onPageStarted() method. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class ClientOnPageStartedTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class ClientOnPageStartedTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
@@ -43,6 +47,10 @@ public class ClientOnPageStartedTest {
     private Semaphore mHangingRequestSemaphore;
     private String mHangingUrl;
     private String mRedirectToHangingUrl;
+
+    public ClientOnPageStartedTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setupTestServer() throws Exception {

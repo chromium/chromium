@@ -13,6 +13,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwProxyController;
@@ -25,9 +27,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 
 /** AwProxyController tests. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AwProxyControllerTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AwProxyControllerTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private static final String MATCH_ALL_SCHEMES = "*";
     private static final String DIRECT = "direct://";
@@ -40,6 +44,10 @@ public class AwProxyControllerTest {
     private TestWebServer mProxyServer;
     private String mContentUrl;
     private String mProxyUrl;
+
+    public AwProxyControllerTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setup() throws Exception {

@@ -19,6 +19,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.base.test.util.CallbackHelper;
@@ -48,9 +50,10 @@ import java.util.concurrent.TimeUnit;
  * ContentCapture task is run in best effort priority, we will see if this is real problem for
  * testing.
  */
-@RunWith(AwJUnit4ClassRunner.class)
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @CommandLineFlags.Add({"enable-features=ContentCapture"})
-public class AwContentCaptureTest {
+public class AwContentCaptureTest extends AwParameterizedTest {
     private static class TestAwContentCaptureConsumer implements ContentCaptureConsumer {
         private static final long DEFAULT_TIMEOUT_IN_SECONDS = 30;
 
@@ -220,7 +223,8 @@ public class AwContentCaptureTest {
     private static final String MAIN_FRAME_FILE = "/main_frame.html";
     private static final String SECOND_PAGE = "/second_page.html";
 
-    @Rule public AwActivityTestRule mRule = new AwActivityTestRule();
+    @Rule
+    public AwActivityTestRule mRule;
 
     private TestWebServer mWebServer;
 
@@ -230,6 +234,10 @@ public class AwContentCaptureTest {
     private TestAwContentCaptureConsumer mConsumer;
     private TestAwContentCaptureConsumer mSecondConsumer;
     private OnscreenContentProvider mOnscreenContentProvider;
+
+    public AwContentCaptureTest(AwSettingsMutation param) {
+        this.mRule = new AwActivityTestRule(param.getMutation());
+    }
 
     private void loadUrlSync(String url) {
         try {

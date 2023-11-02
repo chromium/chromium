@@ -14,6 +14,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
@@ -24,9 +26,11 @@ import java.util.Arrays;
 import java.util.List;
 
 /** Tests for the WebViewClient.onUnhandledKeyEvent() method. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AwContentsClientOnUnhandledKeyEventTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AwContentsClientOnUnhandledKeyEventTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private KeyEventTestAwContentsClient mContentsClient;
     private AwTestContainerView mTestContainerView;
@@ -56,6 +60,10 @@ public class AwContentsClientOnUnhandledKeyEventTest {
             mHelper.onUnhandledKeyEvent(event);
             super.onUnhandledKeyEvent(event);
         }
+    }
+
+    public AwContentsClientOnUnhandledKeyEventTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
     }
 
     @Before

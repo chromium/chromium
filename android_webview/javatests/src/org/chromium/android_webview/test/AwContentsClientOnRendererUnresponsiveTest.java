@@ -16,6 +16,8 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwRenderProcess;
@@ -30,9 +32,11 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 /** Tests for AwContentsClient.onRenderProcessGone callback. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AwContentsClientOnRendererUnresponsiveTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AwContentsClientOnRendererUnresponsiveTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private static final String TAG = "AwRendererUnresponsive";
 
@@ -167,6 +171,10 @@ public class AwContentsClientOnRendererUnresponsiveTest {
                 process.terminate();
             }
         }
+    }
+
+    public AwContentsClientOnRendererUnresponsiveTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
     }
 
     private void sendInputEvent(final AwContents awContents) {

@@ -18,6 +18,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwThreadUtils;
@@ -34,33 +36,35 @@ import java.util.concurrent.CountDownLatch;
  * Test suite for actions that should cause java exceptions to be
  * propagated to the embedding application.
  */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AwUncaughtExceptionTest {
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AwUncaughtExceptionTest extends AwParameterizedTest {
     // Initialization of WebView is delayed until a background thread
     // is started. This gives us the chance to process the uncaught
     // exception off the UI thread. An uncaught exception on the UI
     // thread appears to cause the test to fail to exit.
     @Rule
-    public AwActivityTestRule mActivityTestRule =
-            new AwActivityTestRule() {
-                @Override
-                public boolean needsAwBrowserContextCreated() {
-                    return false;
-                }
+    public AwActivityTestRule mActivityTestRule;
 
-                @Override
-                public boolean needsBrowserProcessStarted() {
-                    return false;
-                }
-
-                @Override
-                public boolean needsAwContentsCleanup() {
-                    // State of VM might be hosed after throwing and not catching exceptions.
-                    // Do not assume it is safe to destroy AwContents by posting to the UI thread.
-                    // Instead explicitly destroy any AwContents created in this test.
-                    return false;
-                }
-            };
+    public AwUncaughtExceptionTest(AwSettingsMutation param) {
+        mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
+            @Override
+            public boolean needsAwBrowserContextCreated() {
+                return false;
+            }
+            @Override
+            public boolean needsBrowserProcessStarted() {
+                return false;
+            }
+            @Override
+            public boolean needsAwContentsCleanup() {
+                // State of VM might be hosed after throwing and not catching exceptions.
+                // Do not assume it is safe to destroy AwContents by posting to the UI thread.
+                // Instead explicitly destroy any AwContents created in this test.
+                return false;
+            }
+        };
+    }
 
     private class BackgroundThread extends Thread {
         private Looper mLooper;

@@ -22,6 +22,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
@@ -65,10 +67,12 @@ import java.util.concurrent.TimeUnit;
  * in a separate browser process, often we'll never reach subsequent uploads, see
  * https://crbug.com/932582).
  */
-@RunWith(AwJUnit4ClassRunner.class)
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @CommandLineFlags.Add({MetricsSwitches.FORCE_ENABLE_METRICS_REPORTING}) // Override sampling logic
-public class AwMetricsIntegrationTest {
-    @Rule public AwActivityTestRule mRule = new AwActivityTestRule();
+public class AwMetricsIntegrationTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mRule;
 
     private AwTestContainerView mTestContainerView;
     private AwContents mAwContents;
@@ -77,6 +81,10 @@ public class AwMetricsIntegrationTest {
 
     // Some short interval, arbitrarily chosen.
     private static final long UPLOAD_INTERVAL_MS = 10;
+
+    public AwMetricsIntegrationTest(AwSettingsMutation param) {
+        this.mRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() throws Exception {

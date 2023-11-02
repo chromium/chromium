@@ -10,6 +10,8 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AndroidProtocolHandler;
 import org.chromium.base.FileUtils;
@@ -20,9 +22,16 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /** Test AndroidProtocolHandler. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AndroidProtocolHandlerTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AndroidProtocolHandlerTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
+
+    public AndroidProtocolHandlerTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
+
 
     @Test
     @SmallTest

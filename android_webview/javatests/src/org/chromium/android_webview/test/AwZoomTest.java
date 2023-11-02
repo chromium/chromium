@@ -16,6 +16,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwSettings;
@@ -26,14 +28,20 @@ import org.chromium.base.test.util.TestThreadUtils;
 import java.util.Locale;
 
 /** A test suite for zooming-related methods and settings. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AwZoomTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AwZoomTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
     private static final float MAXIMUM_SCALE = 2.0f;
     private static final float EPSILON = 0.00001f;
+
+    public AwZoomTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() {
@@ -197,6 +205,7 @@ public class AwZoomTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @SkipMutations(reason = "This test depends on AwSettings.setSupportZoom(true)")
     public void testZoomUsingMultiTouch() throws Throwable {
         AwSettings webSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
         mActivityTestRule.loadDataSync(
@@ -220,6 +229,7 @@ public class AwZoomTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @SkipMutations(reason = "This test depends on AwSettings.setSupportZoom(true)")
     public void testZoomControls() throws Throwable {
         AwSettings webSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
         webSettings.setUseWideViewPort(true);
@@ -258,6 +268,7 @@ public class AwZoomTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @SkipMutations(reason = "This test depends on AwSettings.setSupportZoom(true)")
     public void testZoomControlsUiIsUpdatedOnChanges() throws Throwable {
         AwSettings webSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
         webSettings.setDisplayZoomControls(true);
@@ -288,6 +299,7 @@ public class AwZoomTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @SkipMutations(reason = "This test depends on AwSettings.setSupportZoom(true)")
     public void testZoomControlsOnNonZoomableContent() throws Throwable {
         AwSettings webSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
         mActivityTestRule.loadDataSync(
@@ -313,6 +325,7 @@ public class AwZoomTest {
     @DisableHardwareAcceleration
     @SmallTest
     @Feature({"AndroidWebView"})
+    @SkipMutations(reason = "This test depends on AwSettings.setSupportZoom(true)")
     public void testZoomControlsOnOrientationChange() throws Throwable {
         AwSettings webSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
         mActivityTestRule.loadDataSync(

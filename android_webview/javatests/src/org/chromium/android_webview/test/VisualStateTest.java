@@ -19,6 +19,8 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContents.VisualStateCallback;
@@ -46,9 +48,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** Visual state related tests. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class VisualStateTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class VisualStateTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private static final String WAIT_FOR_JS_TEST_URL =
             "file:///android_asset/visual_state_waits_for_js_test.html";
@@ -118,6 +122,10 @@ public class VisualStateTest {
                     TaskTraits.UI_DEFAULT, () -> stream.allowReads(), IMAGE_LOADING_DELAY_MS);
             return stream;
         }
+    }
+
+    public VisualStateTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
     }
 
     @Test
@@ -216,6 +224,7 @@ public class VisualStateTest {
     @Test
     @Feature({"AndroidWebView"})
     @SmallTest
+    @SkipMutations(reason = "This test depends on AwSettings.setImagesEnabled(true)")
     public void testOnPageCommitVisible() throws Throwable {
         // This test loads a page with a blue background color. It then waits for the DOM tree
         // in blink to contain the contents of the blue page (which happens when the onPageFinished

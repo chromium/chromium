@@ -16,6 +16,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.base.test.util.Feature;
@@ -27,9 +29,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /** Tests if resubmission of post data is handled properly. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AwContentsClientOnFormResubmissionTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AwContentsClientOnFormResubmissionTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private static class TestAwContentsClient
             extends org.chromium.android_webview.test.TestAwContentsClient {
@@ -84,6 +88,10 @@ public class AwContentsClientOnFormResubmissionTest {
     // The mock client.
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
+
+    public AwContentsClientOnFormResubmissionTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() throws Exception {

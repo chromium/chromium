@@ -21,6 +21,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.util.CommonResources;
@@ -48,9 +50,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** The tests for content postMessage API. */
 @Batch(Batch.PER_CLASS)
-@RunWith(AwJUnit4ClassRunner.class)
-public class PostMessageTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class PostMessageTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private static final String SOURCE_ORIGIN = "";
     // Timeout to failure, in milliseconds
@@ -135,6 +139,10 @@ public class PostMessageTest {
     private AwTestContainerView mTestContainerView;
     private AwContents mAwContents;
     private TestWebServer mWebServer;
+
+    public PostMessageTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() throws Exception {

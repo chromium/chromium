@@ -19,6 +19,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
@@ -35,15 +37,21 @@ import org.chromium.base.test.util.Feature;
 import java.util.Set;
 
 /** Tests for AwSafeBrowsingSafeModeAction. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class SafeBrowsingSafeModeTest {
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class SafeBrowsingSafeModeTest extends AwParameterizedTest {
     private static final String WEB_UI_MALWARE_URL = "chrome://safe-browsing/match?type=malware";
 
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
     private AwTestContainerView mContainerView;
     private AwContents mAwContents;
+
+    public SafeBrowsingSafeModeTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() {

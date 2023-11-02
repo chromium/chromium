@@ -12,6 +12,8 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.JsPromptResultReceiver;
@@ -26,9 +28,11 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Tests for callbacks implementing JS alerts and prompts. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class WebViewModalDialogOverrideTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class WebViewModalDialogOverrideTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private static final String EMPTY_PAGE =
             "<!doctype html>" + "<title>Modal Dialog Test</title><p>Testcase.</p>";
@@ -37,6 +41,10 @@ public class WebViewModalDialogOverrideTest {
                     + "<head><script>window.onbeforeunload=function() {"
                     + "return 'Are you sure?';"
                     + "};</script></head></body>";
+
+    public WebViewModalDialogOverrideTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     /*
      * Verify that when the AwContentsClient calls handleJsAlert.

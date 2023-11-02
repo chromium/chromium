@@ -11,6 +11,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.permission.AwPermissionRequest;
@@ -24,9 +26,11 @@ import org.chromium.base.test.util.Feature;
  * Although, WebView requires Lollipop for the onPermissionRequest() API,
  * this test intercepts this path and thus can run on KitKat.
  */
-@RunWith(AwJUnit4ClassRunner.class)
-public class KeySystemTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class KeySystemTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     /**
      * AwContentsClient subclass that allows permissions requests for the
@@ -46,6 +50,10 @@ public class KeySystemTest {
 
     private TestAwContentsClient mContentsClient = new EmeAllowingAwContentsClient();
     private AwContents mAwContents;
+
+    public KeySystemTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() throws Exception {

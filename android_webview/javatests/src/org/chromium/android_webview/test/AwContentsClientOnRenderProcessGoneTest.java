@@ -16,6 +16,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwRenderProcess;
@@ -35,15 +37,21 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /** Tests for AwContentsClient.onRenderProcessGone callback. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AwContentsClientOnRenderProcessGoneTest {
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AwContentsClientOnRenderProcessGoneTest extends AwParameterizedTest {
     private static final String TAG = "AwRendererGone";
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private TestWebServer mWebServer;
     private TestAwContentsClient mContentsClient;
     private AwTestContainerView mTestView;
     private AwContents mAwContents;
+
+    public AwContentsClientOnRenderProcessGoneTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() throws Exception {

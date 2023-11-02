@@ -20,6 +20,8 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserProcess;
@@ -40,12 +42,19 @@ import java.util.List;
 import java.util.Set;
 
 /** Tests the management of multiple AwBrowserContexts (profiles) */
-@RunWith(AwJUnit4ClassRunner.class)
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @DoNotBatch(reason = "Tests focus on manipulation of global profile state")
-public class MultiProfileTest {
-    @Rule public MultiProfileTestRule mRule = new MultiProfileTestRule();
+public class MultiProfileTest extends AwParameterizedTest {
+    @Rule
+    public MultiProfileTestRule mRule;
 
-    private TestAwContentsClient mContentsClient = mRule.getContentsClient();
+    private TestAwContentsClient mContentsClient;
+
+    public MultiProfileTest(AwSettingsMutation param) {
+        this.mRule = new MultiProfileTestRule(param.getMutation());
+        this.mContentsClient = mRule.getContentsClient();
+    }
 
     @After
     public void tearDown() {

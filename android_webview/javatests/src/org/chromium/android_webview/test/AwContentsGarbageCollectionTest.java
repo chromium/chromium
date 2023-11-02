@@ -26,6 +26,8 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.gfx.AwGLFunctor;
@@ -52,21 +54,25 @@ import java.util.concurrent.Callable;
  * accidentally prevents AwContents from garbage collected, leading to leaks.
  * See crbug.com/544098 for why @DisableHardwareAcceleration is needed.
  */
-@RunWith(AwJUnit4ClassRunner.class)
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @DoNotBatch(reason = "GC tests require full restarts")
-public class AwContentsGarbageCollectionTest {
+public class AwContentsGarbageCollectionTest extends AwParameterizedTest {
     @Rule
-    public AwActivityTestRule mActivityTestRule =
-            new AwActivityTestRule() {
-                @Override
-                public TestDependencyFactory createTestDependencyFactory() {
-                    if (mOverriddenFactory == null) {
-                        return new TestDependencyFactory();
-                    } else {
-                        return mOverriddenFactory;
-                    }
+    public AwActivityTestRule mActivityTestRule;
+
+    public AwContentsGarbageCollectionTest(AwSettingsMutation param) {
+        mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
+            @Override
+            public TestDependencyFactory createTestDependencyFactory() {
+                if (mOverriddenFactory == null) {
+                    return new TestDependencyFactory();
+                } else {
+                    return mOverriddenFactory;
                 }
-            };
+            }
+        };
+    }
 
     private TestDependencyFactory mOverriddenFactory;
 

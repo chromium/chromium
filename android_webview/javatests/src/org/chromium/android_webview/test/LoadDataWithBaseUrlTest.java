@@ -15,6 +15,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwCookieManager;
@@ -40,14 +42,20 @@ import java.util.List;
  * Tests for the {@link android.webkit.WebView#loadDataWithBaseURL(String, String, String, String,
  * String)} method.
  */
-@RunWith(AwJUnit4ClassRunner.class)
-public class LoadDataWithBaseUrlTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class LoadDataWithBaseUrlTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
     private AwCookieManager mCookieManager;
     private WebContents mWebContents;
+
+    public LoadDataWithBaseUrlTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() {

@@ -28,6 +28,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.BrowserSafeModeActionList;
 import org.chromium.android_webview.common.SafeModeAction;
@@ -69,8 +71,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Test WebView SafeMode. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class SafeModeTest {
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class SafeModeTest extends AwParameterizedTest {
     // The package name of the test shell. This is acting both as the client app and the WebView
     // provider.
     public static final String TEST_WEBVIEW_PACKAGE_NAME = "org.chromium.android_webview.shell";
@@ -276,7 +279,12 @@ public class SafeModeTest {
         }
     }
 
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
+
+    public SafeModeTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() throws Throwable {

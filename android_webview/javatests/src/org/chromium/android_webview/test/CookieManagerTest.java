@@ -23,6 +23,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwCookieManager;
@@ -56,9 +58,11 @@ import java.util.TimeZone;
 
 /** Tests for the CookieManager. */
 @DoNotBatch(reason = "The cookie manager is global state")
-@RunWith(AwJUnit4ClassRunner.class)
-public class CookieManagerTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class CookieManagerTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     @IntDef({
         CookieLifetime.OUTLIVE_THE_TEST_SEC,
@@ -86,6 +90,10 @@ public class CookieManagerTest {
     private AwContents mAwContents;
 
     private static final String SECURE_COOKIE_HISTOGRAM_NAME = "Android.WebView.SecureCookieAction";
+
+    public CookieManagerTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() {

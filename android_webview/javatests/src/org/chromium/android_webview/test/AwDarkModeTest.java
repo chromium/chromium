@@ -17,6 +17,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwDarkMode;
@@ -33,21 +35,27 @@ import org.chromium.net.test.util.TestWebServer;
 import java.util.concurrent.Callable;
 
 /** The integration test for the dark mode. */
-@RunWith(AwJUnit4ClassRunner.class)
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @MinAndroidSdkLevel(Build.VERSION_CODES.P)
-public class AwDarkModeTest {
+public class AwDarkModeTest extends AwParameterizedTest {
     private static final String FILE = "/main.html";
     private static final String DATA =
             "<html><head><meta name=\"color-scheme\" content=\"dark light\"></head>"
                     + "<body>DarkMode</body></html>";
 
-    @Rule public AwActivityTestRule mRule = new AwActivityTestRule();
+    @Rule
+    public AwActivityTestRule mRule;
 
     private TestWebServer mWebServer;
     private AwTestContainerView mTestContainerView;
     private TestAwContentsClient mContentsClient;
     private CallbackHelper mCallbackHelper = new CallbackHelper();
     private AwContents mAwContents;
+
+    public AwDarkModeTest(AwSettingsMutation param) {
+        this.mRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() throws Exception {

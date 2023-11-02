@@ -16,11 +16,15 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.services.ComponentsProviderPathUtil;
 import org.chromium.android_webview.services.ComponentsProviderService;
 import org.chromium.android_webview.test.AwActivityTestRule;
-import org.chromium.android_webview.test.AwJUnit4ClassRunner;
+import org.chromium.android_webview.test.AwJUnit4ClassRunnerWithParameters;
+import org.chromium.android_webview.test.AwParameterizedTest;
+import org.chromium.android_webview.test.AwSettingsMutation;
 import org.chromium.android_webview.test.util.EmbeddedComponentLoaderFactory;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
@@ -39,9 +43,10 @@ import java.util.concurrent.TimeUnit;
  *
  * Some test assertion are made in test/browser/embedded_component_loader_test_helper.cc
  */
-@RunWith(AwJUnit4ClassRunner.class)
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @JNINamespace("component_updater")
-public class EmbeddedComponentLoaderTest {
+public class EmbeddedComponentLoaderTest extends AwParameterizedTest {
     private static CallbackHelper sOnComponentLoadedHelper = new CallbackHelper();
     private static CallbackHelper sOnComponentLoadFailedHelper = new CallbackHelper();
     private static List<String> sNativeErrors;
@@ -55,7 +60,12 @@ public class EmbeddedComponentLoaderTest {
                     + "\n}";
 
     // Use AwActivityTestRule to start a browser process and init native library.
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
+
+    public EmbeddedComponentLoaderTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() throws Exception {

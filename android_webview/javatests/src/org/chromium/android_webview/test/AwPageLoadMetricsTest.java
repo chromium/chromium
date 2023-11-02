@@ -14,6 +14,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
@@ -29,15 +31,21 @@ import java.util.concurrent.Callable;
 
 /** Integration test for PageLoadMetrics. */
 @Batch(Batch.PER_CLASS)
-@RunWith(AwJUnit4ClassRunner.class)
-public class AwPageLoadMetricsTest {
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AwPageLoadMetricsTest extends AwParameterizedTest {
     private static final String MAIN_FRAME_FILE = "/main_frame.html";
 
-    @Rule public AwActivityTestRule mRule = new AwActivityTestRule();
+    @Rule
+    public AwActivityTestRule mRule;
 
     private AwTestContainerView mTestContainerView;
     private TestAwContentsClient mContentsClient;
     private TestWebServer mWebServer;
+
+    public AwPageLoadMetricsTest(AwSettingsMutation param) {
+        this.mRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() throws Exception {

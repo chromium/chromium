@@ -11,6 +11,8 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
@@ -22,21 +24,25 @@ import org.chromium.net.AndroidNetworkLibraryTestUtil;
 import org.chromium.net.test.EmbeddedTestServer;
 
 /** AwContentsStatics tests. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AwContentsStaticsTest {
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AwContentsStaticsTest extends AwParameterizedTest {
     private AwContents mAwContents;
     private AwTestContainerView mTestContainer;
     private TestAwContentsClient mContentsClient;
 
     @Rule
-    public AwActivityTestRule mActivityTestRule =
-            new AwActivityTestRule() {
-                /** This is necessary so we can set the cleartext setting before browser startup. */
-                @Override
-                public boolean needsBrowserProcessStarted() {
-                    return false;
-                }
-            };
+    public AwActivityTestRule mActivityTestRule;
+
+    public AwContentsStaticsTest(AwSettingsMutation param) {
+        mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
+            /** This is necessary so we can set the cleartext setting before browser startup. */
+            @Override
+            public boolean needsBrowserProcessStarted() {
+                return false;
+            }
+        };
+    }
 
     private static class ClearClientCertCallbackHelper extends CallbackHelper implements Runnable {
         @Override

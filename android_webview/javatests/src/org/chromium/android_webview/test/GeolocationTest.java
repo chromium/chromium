@@ -16,6 +16,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwGeolocationPermissions;
@@ -34,18 +36,20 @@ import java.util.concurrent.Callable;
  * basic functionality, and tests to ensure the AwContents.onPause
  * and onResume APIs affect Geolocation as expected.
  */
-@RunWith(AwJUnit4ClassRunner.class)
-public class GeolocationTest {
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class GeolocationTest extends AwParameterizedTest {
     @Rule
-    public AwActivityTestRule mActivityTestRule =
-            new AwActivityTestRule() {
-                @Override
-                public TestDependencyFactory createTestDependencyFactory() {
-                    return mOverriddenFactory == null
-                            ? new TestDependencyFactory()
-                            : mOverriddenFactory;
-                }
-            };
+    public AwActivityTestRule mActivityTestRule;
+
+    public GeolocationTest(AwSettingsMutation param) {
+        mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
+            @Override
+            public TestDependencyFactory createTestDependencyFactory() {
+                return mOverriddenFactory == null ? new TestDependencyFactory() : mOverriddenFactory;
+            }
+        };
+    }
 
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;

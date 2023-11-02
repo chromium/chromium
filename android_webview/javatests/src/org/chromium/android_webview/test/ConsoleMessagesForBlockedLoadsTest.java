@@ -17,6 +17,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwConsoleMessage;
 import org.chromium.android_webview.AwContents;
@@ -34,18 +36,24 @@ import java.util.List;
  * Verify that content loading blocks initiated by renderer can be detected
  * by the embedder via WebChromeClient.onConsoleMessage.
  */
-@RunWith(AwJUnit4ClassRunner.class)
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @CommandLineFlags.Add(ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1")
-public class ConsoleMessagesForBlockedLoadsTest {
+public class ConsoleMessagesForBlockedLoadsTest extends AwParameterizedTest {
     public static final String SERVER_HOSTNAME = "example.test";
 
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
     private AwTestContainerView mTestContainerView;
     private TestAwContentsClient.AddMessageToConsoleHelper mOnConsoleMessageHelper;
     private AwContents mAwContents;
     private TestWebServer mWebServer;
+
+    public ConsoleMessagesForBlockedLoadsTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() {

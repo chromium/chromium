@@ -16,6 +16,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClient.FileChooserParamsImpl;
@@ -31,10 +33,12 @@ import java.io.File;
 import java.util.concurrent.TimeoutException;
 
 /** Integration tests for the WebChromeClient.onShowFileChooser method. */
-@RunWith(AwJUnit4ClassRunner.class)
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @DoNotBatch(reason = "Shared dependencies among the tests cause conflicts during batch testing.")
-public class AwFileChooserTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+public class AwFileChooserTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
     private AwTestContainerView mTestContainerView;
 
     private TestAwContentsClient mContentsClient = new TestAwContentsClient();
@@ -52,6 +56,10 @@ public class AwFileChooserTest {
     private static final String EMPTY_STRING = "";
 
     private static final String TAG = "AwFileChooserTest";
+
+    public AwFileChooserTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() throws Exception {

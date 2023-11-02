@@ -15,6 +15,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
@@ -32,21 +34,25 @@ import org.chromium.net.test.util.TestWebServer;
  * This tests various cases around ordering of calls to CookieManager at startup, and thus is
  * separate from the normal CookieManager tests so it can control call ordering carefully.
  */
-@RunWith(AwJUnit4ClassRunner.class)
-public class CookieManagerStartupTest {
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class CookieManagerStartupTest extends AwParameterizedTest {
     @Rule
-    public AwActivityTestRule mActivityTestRule =
-            new AwActivityTestRule() {
-                @Override
-                public boolean needsAwBrowserContextCreated() {
-                    return false;
-                }
+    public AwActivityTestRule mActivityTestRule;
 
-                @Override
-                public boolean needsBrowserProcessStarted() {
-                    return false;
-                }
-            };
+    public CookieManagerStartupTest(AwSettingsMutation param) {
+        mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
+            @Override
+            public boolean needsAwBrowserContextCreated() {
+                return false;
+            }
+
+            @Override
+            public boolean needsBrowserProcessStarted() {
+                return false;
+            }
+        };
+    }
 
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;

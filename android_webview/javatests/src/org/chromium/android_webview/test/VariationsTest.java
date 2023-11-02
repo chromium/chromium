@@ -12,6 +12,8 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwFeatureMap;
 import org.chromium.android_webview.common.AwFeatures;
@@ -33,19 +35,23 @@ import java.io.FileOutputStream;
 import java.util.Date;
 
 /** Tests that seeds saved to disk get loaded correctly on WebView startup. */
-@RunWith(AwJUnit4ClassRunner.class)
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @OnlyRunIn(SINGLE_PROCESS)
-public class VariationsTest {
+public class VariationsTest extends AwParameterizedTest {
     @Rule
-    public AwActivityTestRule mActivityTestRule =
-            new AwActivityTestRule() {
-                @Override
-                public boolean needsBrowserProcessStarted() {
-                    // Don't start the browser process automatically so we can do some setup in the
-                    // test beforehand.
-                    return false;
-                }
-            };
+    public AwActivityTestRule mActivityTestRule;
+
+    public VariationsTest(AwSettingsMutation param) {
+        mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
+            @Override
+            public boolean needsBrowserProcessStarted() {
+                // Don't start the browser process automatically so we can do some setup in the test
+                // beforehand.
+                return false;
+            }
+        };
+    }
 
     private void createAndLoadSeedFile(FeatureAssociation features) throws FileNotFoundException {
         // Disable seed verification so we don't reject the fake seed created below.

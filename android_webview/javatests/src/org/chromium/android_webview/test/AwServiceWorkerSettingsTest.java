@@ -14,6 +14,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwServiceWorkerSettings;
@@ -35,11 +37,13 @@ import java.util.Set;
  * and serve to ensure that service worker settings are applied, even if no
  * {@link android.webkit.ServiceWorkerClient} is supplied.
  */
-@RunWith(AwJUnit4ClassRunner.class)
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @Batch(Batch.PER_CLASS)
-public class AwServiceWorkerSettingsTest {
+public class AwServiceWorkerSettingsTest extends AwParameterizedTest {
     public static final String TAG = "AwSWSettingsTest";
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private TestWebServer mWebServer;
 
@@ -102,6 +106,10 @@ public class AwServiceWorkerSettingsTest {
                     + "});\n";
 
     private static final String FETCH_CONTENT = "fetch_success";
+
+    public AwServiceWorkerSettingsTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() throws Exception {

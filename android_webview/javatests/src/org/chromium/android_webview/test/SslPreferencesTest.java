@@ -14,6 +14,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedSslErrorHelper;
@@ -21,10 +23,14 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 
-/** SslError tests. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class SslPreferencesTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+/**
+ * SslError tests.
+ */
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class SslPreferencesTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private AwTestContainerView mTestContainerView;
     private TestAwContentsClient mContentsClient;
@@ -34,6 +40,10 @@ public class SslPreferencesTest {
 
     private static final String HELLO_WORLD_HTML = "/android_webview/test/data/hello_world.html";
     private static final String HELLO_WORLD_TITLE = "Hello, World!";
+
+    public SslPreferencesTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() {

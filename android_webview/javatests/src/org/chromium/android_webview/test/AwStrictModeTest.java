@@ -14,27 +14,33 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.base.test.util.Feature;
 
 /** Tests ensuring that starting up WebView does not cause any diskRead StrictMode violations. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AwStrictModeTest {
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AwStrictModeTest extends AwParameterizedTest {
     @Rule
-    public AwActivityTestRule mActivityTestRule =
-            new AwActivityTestRule() {
-                @Override
-                public boolean needsAwBrowserContextCreated() {
-                    return false;
-                }
+    public AwActivityTestRule mActivityTestRule;
 
-                @Override
-                public boolean needsBrowserProcessStarted() {
-                    // Don't start the browser process in AwActivityTestRule - we want to start it
-                    // ourselves with strictmode policies turned on.
-                    return false;
-                }
-            };
+    public AwStrictModeTest(AwSettingsMutation param) {
+        mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
+            @Override
+            public boolean needsAwBrowserContextCreated() {
+                return false;
+            }
+
+            @Override
+            public boolean needsBrowserProcessStarted() {
+                // Don't start the browser process in AwActivityTestRule - we want to start it
+                // ourselves with strictmode policies turned on.
+                return false;
+            }
+        };
+    }
 
     private TestAwContentsClient mContentsClient;
     private AwTestContainerView mAwTestContainerView;

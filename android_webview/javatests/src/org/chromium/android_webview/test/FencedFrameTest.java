@@ -20,6 +20,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.common.AwSwitches;
@@ -40,14 +42,20 @@ import java.util.concurrent.TimeoutException;
 /** Test for creating fenced frames in Android WebView. */
 @DoNotBatch(reason = "Test instrumentation only supports one hardware compositing view.")
 @CommandLineFlags.Add(AwSwitches.WEBVIEW_FENCED_FRAMES)
-@RunWith(AwJUnit4ClassRunner.class)
-public class FencedFrameTest {
-    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class FencedFrameTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
     private AwTestContainerView mTestView;
     private AwContents mAwContents;
     private TestWebServer mWebServer;
+
+    public FencedFrameTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() throws Exception {

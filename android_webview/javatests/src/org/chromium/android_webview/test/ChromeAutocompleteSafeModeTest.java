@@ -17,6 +17,8 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.autofill.ChromeAutocompleteSafeModeAction;
 import org.chromium.android_webview.common.SafeModeAction;
@@ -35,12 +37,18 @@ import java.util.Set;
  * In >= O Android Autofill system is used. See AndroidAutofillSafeModeTest
  * for tests of the corresponding SafeMode action.
  */
-@RunWith(AwJUnit4ClassRunner.class)
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @MaxAndroidSdkLevel(Build.VERSION_CODES.N_MR1)
-public class ChromeAutocompleteSafeModeTest {
+public class ChromeAutocompleteSafeModeTest extends AwParameterizedTest {
     public static final String TAG = "AndroidAutofillTest";
 
-    @Rule public AwActivityTestRule mRule = new AwActivityTestRule();
+    @Rule
+    public AwActivityTestRule mRule;
+
+    public ChromeAutocompleteSafeModeTest(AwSettingsMutation param) {
+        this.mRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @After
     public void tearDown() {
@@ -50,6 +58,7 @@ public class ChromeAutocompleteSafeModeTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @SkipMutations(reason = "This test depends on AwSettings.setSaveFormData(true)")
     public void testSafeModeDisabled() throws Throwable {
         AwTestContainerView mTestContainerView =
                 mRule.createAwTestContainerViewOnMainSync(

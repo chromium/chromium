@@ -11,6 +11,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.PlatformServiceBridge;
@@ -29,15 +31,23 @@ import org.chromium.components.metrics.UserActionEventProtos.UserActionEventProt
 import java.net.HttpURLConnection;
 import java.util.Arrays;
 
-/** Instrumentation tests for {@link MetricsFilteringDecorator}. */
-@RunWith(AwJUnit4ClassRunner.class)
+/**
+ * Instrumentation tests for {@link MetricsFilteringDecorator}.
+ */
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @MediumTest
 @Batch(Batch.PER_CLASS)
-public class MetricsFilteringDecoratorTest {
-    @Rule public AwActivityTestRule mRule = new AwActivityTestRule();
+public class MetricsFilteringDecoratorTest extends AwParameterizedTest {
+    @Rule
+    public AwActivityTestRule mRule;
 
     private MetricsTestPlatformServiceBridge mPlatformServiceBridge;
     private AndroidMetricsLogConsumer mUploader;
+
+    public MetricsFilteringDecoratorTest(AwSettingsMutation param) {
+        this.mRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() {
