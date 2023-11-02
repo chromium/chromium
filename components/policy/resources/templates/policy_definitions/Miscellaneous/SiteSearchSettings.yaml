@@ -1,16 +1,24 @@
 caption: Site search settings
 desc: |-
-  This policy provides a list of site searches where the user can search on a specific site. Users can initiate the search by typing the shortcut or @shortcut (e.g. @work) in the address bar.
+  This policy provides a list of sites that users can quickly search using shortcuts in the address bar. Users can initiate a search by typing the shortcut or @shortcut (e.g. @work), followed by Space or Tab, in the address bar.
 
-  The following fields are required for each entry: name, shortcut, url. Shortcuts in the list must be unique and must not contain spaces. Prepending @ to a shortcut is optional, so the resulting shortcut is considered the same as the shortcut without the @; for example "work" and "@work" are considered the same shortcut.
+  The following fields are required for each site: <ph name="NAME_SITE_SEARCH_SETTINGS_FIELD">name</ph>, <ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD">shortcut</ph>, <ph name="URL_SITE_SEARCH_SETTINGS_FIELD">url</ph>.
 
-  For each entry, the url field specifies the URL of the search engine used during a search with the corresponding keyword. The URL must include the string <ph name="SEARCH_TERM_MARKER">‘{searchTerms}’</ph>, replaced in the query by the user's search terms. Invalid entries and entries with duplicate shortcuts are ignored.
+  The <ph name="NAME_SITE_SEARCH_SETTINGS_FIELD">name</ph> field corresponds to the site or search engine name to be shown to the user in the address bar.
+
+  The <ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD">shortcut</ph> can include plain words and characters, but cannot include spaces or start with the @ symbol. Shortcuts must also be unique.
+
+  For each entry, the <ph name="URL_SITE_SEARCH_SETTINGS_FIELD">url</ph> field specifies the URL of the search engine used during a search with the corresponding keyword. The URL must include the string <ph name="SEARCH_TERM_MARKER">'{searchTerms}'</ph>, replaced in the query by the user's search terms. Invalid entries and entries with duplicate shortcuts are ignored.
 
   Site search entries configured as featured are displayed in the address bar when the user types "@". Up to three entries can be selected as featured.
 
-  Users cannot edit or disable site search entries set by policy, but they can add new shortcuts for the same URL. In addition, users cannot create new site search entries with a shortcut previously created via policy.
+  Users cannot edit or disable site search entries set by policy, but they can add new shortcuts for the same URL. In addition, users cannot create new site search entries with a shortcut previously created via this policy.
 
-  In case of conflict with a shortcut previously created by the user, the user setting is respected. However, users can still trigger the option created by policy by typing "@" in the search bar. For example, if the user already defined "work" as a shortcut to URL1 and the policy defines "work" as a shortcut to URL2, then typing "work" in the search bar will trigger a search to URL1, but typing "@work" in the search bar will trigger a search to URL2.
+  In case of a conflict with a shortcut previously created by the user, the user setting takes precedence. However, users can still trigger the option created by the policy by typing "@" in the search bar. For example, if the user already defined "work" as a shortcut to URL1 and the policy defines "work" as a shortcut to URL2, then typing "work" in the search bar will trigger a search to URL1, but typing "@work" in the search bar will trigger a search to URL2.
+
+  On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this policy is only available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain, joined to <ph name="MS_AAD_NAME">Microsoft® Azure® Active Directory®</ph> or enrolled in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>.
+
+  On <ph name="MAC_OS_NAME">macOS</ph>, this policy is only available on instances that are managed via MDM, joined to a domain via MCX or enrolled in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>.
 
 example_value:
 - featured: true
