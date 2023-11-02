@@ -96,7 +96,7 @@ TEST_F(VideoToolboxH265AcceleratorTest, DecodeOne) {
   accelerator_->SubmitDecode(pic);
 
   // Verify sample.
-  CMBlockBufferRef buf = CMSampleBufferGetDataBuffer(sample);
+  CMBlockBufferRef buf = CMSampleBufferGetDataBuffer(sample.get());
   std::vector<uint8_t> data(CMBlockBufferGetDataLength(buf));
   CMBlockBufferCopyDataBytes(buf, 0, CMBlockBufferGetDataLength(buf),
                              data.data());
@@ -152,8 +152,8 @@ TEST_F(VideoToolboxH265AcceleratorTest, DecodeTwo) {
   accelerator_->SubmitDecode(pic1);
 
   // The two samples should have the same configuration.
-  EXPECT_EQ(CMSampleBufferGetFormatDescription(sample0),
-            CMSampleBufferGetFormatDescription(sample1));
+  EXPECT_EQ(CMSampleBufferGetFormatDescription(sample0.get()),
+            CMSampleBufferGetFormatDescription(sample1.get()));
 }
 
 TEST_F(VideoToolboxH265AcceleratorTest, DecodeTwo_Reset) {
@@ -204,8 +204,8 @@ TEST_F(VideoToolboxH265AcceleratorTest, DecodeTwo_Reset) {
   // The accelerator should have made a new configuration. (Technically it
   // should be fine to reuse the old one because the parameter sets did not
   // change.)
-  EXPECT_NE(CMSampleBufferGetFormatDescription(sample0),
-            CMSampleBufferGetFormatDescription(sample1));
+  EXPECT_NE(CMSampleBufferGetFormatDescription(sample0.get()),
+            CMSampleBufferGetFormatDescription(sample1.get()));
 }
 
 TEST_F(VideoToolboxH265AcceleratorTest, DecodeTwo_ConfigChange) {
@@ -251,8 +251,8 @@ TEST_F(VideoToolboxH265AcceleratorTest, DecodeTwo_ConfigChange) {
   accelerator_->SubmitDecode(pic1);
 
   // The two samples should still have the same configurations.
-  EXPECT_EQ(CMSampleBufferGetFormatDescription(sample0),
-            CMSampleBufferGetFormatDescription(sample1));
+  EXPECT_EQ(CMSampleBufferGetFormatDescription(sample0.get()),
+            CMSampleBufferGetFormatDescription(sample1.get()));
 }
 
 }  // namespace media

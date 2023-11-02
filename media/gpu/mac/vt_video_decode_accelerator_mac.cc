@@ -1586,7 +1586,7 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
   // Make sure that the memory is actually allocated.
   // CMBlockBufferReplaceDataBytes() is documented to do this, but prints a
   // message each time starting in Mac OS X 10.10.
-  status = CMBlockBufferAssureBlockMemory(data);
+  status = CMBlockBufferAssureBlockMemory(data.get());
   if (status) {
     NOTIFY_STATUS("CMBlockBufferAssureBlockMemory()", status,
                   SFT_PLATFORM_ERROR);
@@ -1598,15 +1598,15 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
   for (size_t i = 0; i < nalus.size(); i++) {
     H265NALU& nalu_ref = nalus[i];
     uint32_t header = base::HostToNet32(static_cast<uint32_t>(nalu_ref.size));
-    status =
-        CMBlockBufferReplaceDataBytes(&header, data, offset, kNALUHeaderLength);
+    status = CMBlockBufferReplaceDataBytes(&header, data.get(), offset,
+                                           kNALUHeaderLength);
     if (status) {
       NOTIFY_STATUS("CMBlockBufferReplaceDataBytes()", status,
                     SFT_PLATFORM_ERROR);
       return;
     }
     offset += kNALUHeaderLength;
-    status = CMBlockBufferReplaceDataBytes(nalu_ref.data, data, offset,
+    status = CMBlockBufferReplaceDataBytes(nalu_ref.data, data.get(), offset,
                                            nalu_ref.size);
     if (status) {
       NOTIFY_STATUS("CMBlockBufferReplaceDataBytes()", status,
@@ -1619,16 +1619,16 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
   // Package the data in a CMSampleBuffer.
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
   status = CMSampleBufferCreate(kCFAllocatorDefault,
-                                data,        // data_buffer
-                                true,        // data_ready
-                                nullptr,     // make_data_ready_callback
-                                nullptr,     // make_data_ready_refcon
-                                format_,     // format_description
-                                1,           // num_samples
-                                0,           // num_sample_timing_entries
-                                nullptr,     // &sample_timing_array
-                                1,           // num_sample_size_entries
-                                &data_size,  // &sample_size_array
+                                data.get(),     // data_buffer
+                                true,           // data_ready
+                                nullptr,        // make_data_ready_callback
+                                nullptr,        // make_data_ready_refcon
+                                format_.get(),  // format_description
+                                1,              // num_samples
+                                0,              // num_sample_timing_entries
+                                nullptr,        // &sample_timing_array
+                                1,              // num_sample_size_entries
+                                &data_size,     // &sample_size_array
                                 sample.InitializeInto());
   if (status) {
     NOTIFY_STATUS("CMSampleBufferCreate()", status, SFT_PLATFORM_ERROR);
@@ -1643,8 +1643,8 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
   VTDecodeFrameFlags decode_flags =
       kVTDecodeFrame_EnableAsynchronousDecompression;
   status = VTDecompressionSessionDecodeFrame(
-      session_,
-      sample,                          // sample_buffer
+      session_.get(),
+      sample.get(),                    // sample_buffer
       decode_flags,                    // decode_flags
       reinterpret_cast<void*>(frame),  // source_frame_refcon
       nullptr);                        // &info_flags_out
