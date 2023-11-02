@@ -46,6 +46,7 @@ all platforms.
 
 ```
 import("//build/config/sanitizers/sanitizers.gni")
+import("//testing/test.gni")
 
 if (fuzztest_supported) {
   test("hypothetical_fuzztests") {
@@ -197,6 +198,11 @@ Nothing special is required here!
 After a day or two, we should see [ClusterFuzz] starting to run your new fuzzer,
 and it should be visible on [ClusterFuzz Fuzzer Stats]. Look for fuzzers starting
 with `centipede_` and your test target's name.
+
+*** note
+**Note:** This is all very new, and ClusterFuzz isn't reliably spotting these
+new fuzztests yet. We're working on it!
+***
 
 Thanks very much for doing your part in making Chromium more secure!
 
