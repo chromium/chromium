@@ -589,8 +589,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_OnlyCountryInAddresses) {
   // Verify that even though the full address profile was saved, only the
   // country was included in the upload details request to payments.
   EXPECT_EQ(1U, personal_data().GetProfiles().size());
-  AutofillProfile only_country;
-  only_country.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
+  AutofillProfile only_country(AddressCountryCode("US"));
   EXPECT_EQ(1U, payments_client().addresses_in_upload_details().size());
   // AutofillProfile::Compare will ignore the difference in guid between our
   // actual profile being sent and the expected one constructed here.
@@ -1485,9 +1484,8 @@ TEST_F(CreditCardSaveManagerTest,
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoNameAvailable) {
   // Add a profile without a name to the PersonalDataManager.
-  AutofillProfile profile;
+  AutofillProfile profile(AddressCountryCode("US"));
   profile.SetRawInfo(ADDRESS_HOME_ZIP, u"77401");
-  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
   personal_data().AddProfile(profile);
 
   // Set up our credit card form data.
@@ -1844,18 +1842,16 @@ TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_ZipCodesDoNotDiscardWhitespace) {
   // Create two separate profiles with different zip codes. Must directly add
   // instead of submitting a form, because they're deduped on form submit.
-  AutofillProfile profile1;
+  AutofillProfile profile1(AddressCountryCode("US"));
   profile1.set_guid("00000000-0000-0000-0000-000000000001");
   profile1.SetInfo(NAME_FULL, u"Jane Doe", "en-US");
   profile1.SetInfo(ADDRESS_HOME_ZIP, u"H3B2Y5", "en-US");
-  profile1.SetInfo(ADDRESS_HOME_COUNTRY, u"CA", "en-US");
   personal_data().AddProfile(profile1);
 
-  AutofillProfile profile2;
+  AutofillProfile profile2(AddressCountryCode("US"));
   profile2.set_guid("00000000-0000-0000-0000-000000000002");
   profile2.SetInfo(NAME_FULL, u"Jane Doe", "en-US");
   profile2.SetInfo(ADDRESS_HOME_ZIP, u"h3b 2y5", "en-US");
-  profile2.SetInfo(ADDRESS_HOME_COUNTRY, u"CA", "en-US");
   personal_data().AddProfile(profile2);
 
   // Set up our credit card form data.
@@ -3139,7 +3135,7 @@ TEST_F(CreditCardSaveManagerTest, DetectCardholderName) {
 
 TEST_F(CreditCardSaveManagerTest, DetectAddressName) {
   // Set up a new address profile.
-  AutofillProfile profile;
+  AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
   profile.SetInfo(NAME_FULL, u"John Smith", "en-US");
   personal_data().AddProfile(profile);
@@ -3167,7 +3163,7 @@ TEST_F(CreditCardSaveManagerTest, DetectAddressName) {
 
 TEST_F(CreditCardSaveManagerTest, DetectCardholderAndAddressNameIfMatching) {
   // Set up a new address profile.
-  AutofillProfile profile;
+  AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
   profile.SetInfo(NAME_FULL, u"John Smith", "en-US");
   personal_data().AddProfile(profile);
@@ -3196,7 +3192,7 @@ TEST_F(CreditCardSaveManagerTest, DetectCardholderAndAddressNameIfMatching) {
 
 TEST_F(CreditCardSaveManagerTest, DetectNoUniqueNameIfNamesConflict) {
   // Set up a new address profile.
-  AutofillProfile profile;
+  AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
   profile.SetInfo(NAME_FULL, u"John Smith", "en-US");
   personal_data().AddProfile(profile);
@@ -3223,7 +3219,7 @@ TEST_F(CreditCardSaveManagerTest, DetectNoUniqueNameIfNamesConflict) {
 
 TEST_F(CreditCardSaveManagerTest, DetectPostalCode) {
   // Set up a new address profile.
-  AutofillProfile profile;
+  AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
   profile.SetInfo(ADDRESS_HOME_ZIP, u"94043", "en-US");
   personal_data().AddProfile(profile);
@@ -3251,11 +3247,11 @@ TEST_F(CreditCardSaveManagerTest, DetectPostalCode) {
 
 TEST_F(CreditCardSaveManagerTest, DetectNoUniquePostalCodeIfZipsConflict) {
   // Set up two new address profiles with conflicting postal codes.
-  AutofillProfile profile1;
+  AutofillProfile profile1(AddressCountryCode("US"));
   profile1.set_guid("00000000-0000-0000-0000-000000000200");
   profile1.SetInfo(ADDRESS_HOME_ZIP, u"94043", "en-US");
   personal_data().AddProfile(profile1);
-  AutofillProfile profile2;
+  AutofillProfile profile2(AddressCountryCode("US"));
   profile2.set_guid("00000000-0000-0000-0000-000000000201");
   profile2.SetInfo(ADDRESS_HOME_ZIP, u"95051", "en-US");
   personal_data().AddProfile(profile2);
@@ -3279,7 +3275,7 @@ TEST_F(CreditCardSaveManagerTest, DetectNoUniquePostalCodeIfZipsConflict) {
 
 TEST_F(CreditCardSaveManagerTest, DetectAddressLine) {
   // Set up a new address profile.
-  AutofillProfile profile;
+  AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
   profile.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.", "en-US");
   personal_data().AddProfile(profile);
@@ -3307,7 +3303,7 @@ TEST_F(CreditCardSaveManagerTest, DetectAddressLine) {
 
 TEST_F(CreditCardSaveManagerTest, DetectLocality) {
   // Set up a new address profile.
-  AutofillProfile profile;
+  AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
   profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
   personal_data().AddProfile(profile);
@@ -3334,7 +3330,7 @@ TEST_F(CreditCardSaveManagerTest, DetectLocality) {
 
 TEST_F(CreditCardSaveManagerTest, DetectAdministrativeArea) {
   // Set up a new address profile.
-  AutofillProfile profile;
+  AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
   profile.SetInfo(ADDRESS_HOME_STATE, u"California", "en-US");
   personal_data().AddProfile(profile);
@@ -3362,7 +3358,7 @@ TEST_F(CreditCardSaveManagerTest, DetectAdministrativeArea) {
 
 TEST_F(CreditCardSaveManagerTest, DetectCountryCode) {
   // Set up a new address profile.
-  AutofillProfile profile;
+  AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
   profile.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
   personal_data().AddProfile(profile);
@@ -3417,14 +3413,13 @@ TEST_F(CreditCardSaveManagerTest, DetectHasGooglePaymentAccount) {
 
 TEST_F(CreditCardSaveManagerTest, DetectEverythingAtOnce) {
   // Set up a new address profile.
-  AutofillProfile profile;
+  AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
   profile.SetInfo(NAME_FULL, u"John Smith", "en-US");
   profile.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.", "en-US");
   profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
   profile.SetInfo(ADDRESS_HOME_STATE, u"California", "en-US");
   profile.SetInfo(ADDRESS_HOME_ZIP, u"94043", "en-US");
-  profile.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
   personal_data().AddProfile(profile);
 
   // Set up our credit card form data.
@@ -3457,12 +3452,11 @@ TEST_F(CreditCardSaveManagerTest, DetectEverythingAtOnce) {
 
 TEST_F(CreditCardSaveManagerTest, DetectSubsetOfPossibleFields) {
   // Set up a new address profile, taking out address line and state.
-  AutofillProfile profile;
+  AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
   profile.SetInfo(NAME_FULL, u"John Smith", "en-US");
   profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
   profile.SetInfo(ADDRESS_HOME_ZIP, u"94043", "en-US");
-  profile.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
   personal_data().AddProfile(profile);
 
   // Set up our credit card form data.
@@ -3494,19 +3488,19 @@ TEST_F(CreditCardSaveManagerTest, DetectSubsetOfPossibleFields) {
 // populated if even one address profile contains it.
 TEST_F(CreditCardSaveManagerTest, DetectAddressComponentsAcrossProfiles) {
   // Set up four new address profiles, each with a different address component.
-  AutofillProfile profile1;
+  AutofillProfile profile1(AddressCountryCode("US"));
   profile1.set_guid("00000000-0000-0000-0000-000000000200");
   profile1.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.", "en-US");
   personal_data().AddProfile(profile1);
-  AutofillProfile profile2;
+  AutofillProfile profile2(AddressCountryCode("US"));
   profile2.set_guid("00000000-0000-0000-0000-000000000201");
   profile2.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
   personal_data().AddProfile(profile2);
-  AutofillProfile profile3;
+  AutofillProfile profile3(AddressCountryCode("US"));
   profile3.set_guid("00000000-0000-0000-0000-000000000202");
   profile3.SetInfo(ADDRESS_HOME_STATE, u"California", "en-US");
   personal_data().AddProfile(profile3);
-  AutofillProfile profile4;
+  AutofillProfile profile4(AddressCountryCode("US"));
   profile4.set_guid("00000000-0000-0000-0000-000000000203");
   profile4.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
   personal_data().AddProfile(profile4);
@@ -3545,12 +3539,11 @@ TEST_F(CreditCardSaveManagerTest,
   credit_card_save_manager_->SetAppLocale("pt-BR");
 
   // Set up a new address profile without a name or postal code.
-  AutofillProfile profile;
+  AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
   profile.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.", "en-US");
   profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
   profile.SetInfo(ADDRESS_HOME_STATE, u"California", "en-US");
-  profile.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
   personal_data().AddProfile(profile);
 
   // Set up our credit card form data.
@@ -3601,14 +3594,13 @@ TEST_F(
   credit_card_save_manager_->SetAppLocale("pt-BR");
 
   // Set up a new address profile.
-  AutofillProfile profile;
+  AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
   profile.SetInfo(NAME_FULL, u"John Smith", "en-US");
   profile.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.", "en-US");
   profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
   profile.SetInfo(ADDRESS_HOME_STATE, u"California", "en-US");
   profile.SetInfo(ADDRESS_HOME_ZIP, u"94043", "en-US");
-  profile.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
   personal_data().AddProfile(profile);
 
   // Set up our credit card form data.
@@ -3640,12 +3632,11 @@ TEST_F(
   credit_card_save_manager_->SetAppLocale("pt-BR");
 
   // Set up a new address profile without a name or postal code.
-  AutofillProfile profile;
+  AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
   profile.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.", "en-US");
   profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
   profile.SetInfo(ADDRESS_HOME_STATE, u"California", "en-US");
-  profile.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
   personal_data().AddProfile(profile);
 
   // Set up our credit card form data.
@@ -3718,9 +3709,8 @@ TEST_F(CreditCardSaveManagerTest,
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_PaymentsDecidesOfferToSaveIfNoName) {
   // Add a profile without a name to the PersonalDataManager.
-  AutofillProfile profile;
+  AutofillProfile profile(AddressCountryCode("US"));
   profile.SetRawInfo(ADDRESS_HOME_ZIP, u"77401");
-  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
   personal_data().AddProfile(profile);
 
   // Set up our credit card form data.
@@ -3815,13 +3805,12 @@ TEST_F(CreditCardSaveManagerTest,
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_PaymentsDecidesOfferToSaveIfNoZip) {
   // Set up a new address profile without a postal code.
-  AutofillProfile profile;
+  AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
   profile.SetInfo(NAME_FULL, u"Jane Doe", "en-US");
   profile.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.", "en-US");
   profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
   profile.SetInfo(ADDRESS_HOME_STATE, u"California", "en-US");
-  profile.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
   personal_data().AddProfile(profile);
 
   // Set up our credit card form data.
@@ -3862,23 +3851,21 @@ TEST_F(CreditCardSaveManagerTest,
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_PaymentsDecidesOfferToSaveIfConflictingZips) {
   // Set up two new address profiles with conflicting postal codes.
-  AutofillProfile profile1;
+  AutofillProfile profile1(AddressCountryCode("US"));
   profile1.set_guid("00000000-0000-0000-0000-000000000200");
   profile1.SetInfo(NAME_FULL, u"Jane Doe", "en-US");
   profile1.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.", "en-US");
   profile1.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
   profile1.SetInfo(ADDRESS_HOME_STATE, u"California", "en-US");
   profile1.SetInfo(ADDRESS_HOME_ZIP, u"94043", "en-US");
-  profile1.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
   personal_data().AddProfile(profile1);
-  AutofillProfile profile2;
+  AutofillProfile profile2(AddressCountryCode("US"));
   profile2.set_guid("00000000-0000-0000-0000-000000000201");
   profile2.SetInfo(NAME_FULL, u"Jane Doe", "en-US");
   profile2.SetInfo(ADDRESS_HOME_LINE1, u"234 Other Place", "en-US");
   profile2.SetInfo(ADDRESS_HOME_CITY, u"Fake City", "en-US");
   profile2.SetInfo(ADDRESS_HOME_STATE, u"Stateland", "en-US");
   profile2.SetInfo(ADDRESS_HOME_ZIP, u"12345", "en-US");
-  profile2.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
   personal_data().AddProfile(profile2);
 
   // Set up our credit card form data.
@@ -3919,12 +3906,11 @@ TEST_F(CreditCardSaveManagerTest,
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_PaymentsDecidesOfferToSaveIfNothingFound) {
   // Set up a new address profile without a name or postal code.
-  AutofillProfile profile;
+  AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
   profile.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.", "en-US");
   profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
   profile.SetInfo(ADDRESS_HOME_STATE, u"California", "en-US");
-  profile.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
   personal_data().AddProfile(profile);
 
   // Set up our credit card form data.

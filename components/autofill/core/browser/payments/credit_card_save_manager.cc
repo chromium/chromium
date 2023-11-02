@@ -331,10 +331,10 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
   // full addresses even after this function goes out of scope.
   std::vector<AutofillProfile> country_only_profiles;
   for (const AutofillProfile& address : upload_request_.profiles) {
-    AutofillProfile country_only;
-    country_only.SetInfo(ADDRESS_HOME_COUNTRY,
-                         address.GetInfo(ADDRESS_HOME_COUNTRY, app_locale_),
-                         app_locale_);
+    const std::u16string country_code =
+        address.GetRawInfo(ADDRESS_HOME_COUNTRY);
+    AutofillProfile country_only(
+        AddressCountryCode(base::UTF16ToUTF8(country_code)));
     country_only_profiles.emplace_back(std::move(country_only));
   }
 
