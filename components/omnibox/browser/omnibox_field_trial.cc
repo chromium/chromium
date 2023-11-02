@@ -1040,6 +1040,14 @@ MLConfig::MLConfig() {
   enable_scoring_signals_annotators =
       kEnableScoringSignalsAnnotatorsForLogging.Get() ||
       kEnableScoringSignalsAnnotatorsForMlScoring.Get();
+  shortcut_document_signals =
+      base::FeatureParam<bool>(&omnibox::kLogUrlScoringSignals,
+                               "MlUrlScoringShortcutDocumentSignals", false)
+          .Get() ||
+      base::FeatureParam<bool>(&omnibox::kMlUrlScoring,
+                               "MlUrlScoringShortcutDocumentSignals", false)
+          .Get();
+
   ml_url_scoring = base::FeatureList::IsEnabled(omnibox::kMlUrlScoring);
   ml_sync_batch_url_scoring = kMlSyncBatchUrlScoring.Get();
   ml_url_scoring_counterfactual = kMlUrlScoringCounterfactual.Get();
