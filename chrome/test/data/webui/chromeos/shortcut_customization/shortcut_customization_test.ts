@@ -31,7 +31,7 @@ import {getSubcategoryNameStringId} from 'chrome://shortcut-customization/js/sho
 import {AcceleratorResultData, EditDialogCompletedActions, Subactions, UserAction} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {createUserAcceleratorInfo} from './shortcut_customization_test_util.js';
 
@@ -370,13 +370,14 @@ suite('shortcutCustomizationAppTest', function() {
     editDialog = getPage().shadowRoot!.querySelector('#editDialog');
     assertTrue(!!editDialog);
 
-    // Close the dialog.
-    const dialog =
-        editDialog!.shadowRoot!.querySelector('#editDialog') as CrDialogElement;
-    dialog.close();
-    await flushTasks();
+    // Click done button.
+    const doneButton =
+        strictQuery('#doneButton', editDialog!.shadowRoot, CrButtonElement);
+    doneButton.click();
 
-    assertFalse(dialog.open);
+    // Wait until dialog is closed to make sure onDialogClose() is triggered.
+    await eventToPromise('edit-dialog-closed', editDialog);
+
     assertEquals(
         EditDialogCompletedActions.kNoAction,
         provider.getLastEditDialogCompletedActions());
@@ -582,10 +583,12 @@ suite('shortcutCustomizationAppTest', function() {
 
     // Click done button.
     const doneButton =
-        editDialog!.shadowRoot!.querySelector('#doneButton') as CrButtonElement;
+        strictQuery('#doneButton', editDialog!.shadowRoot, CrButtonElement);
     doneButton.click();
 
-    await flushTasks();
+    // Wait until dialog is closed to make sure onDialogClose() is triggered.
+    await eventToPromise('edit-dialog-closed', editDialog);
+
     // Now verify last action was recorded.
     assertEquals(
         EditDialogCompletedActions.kAdd,

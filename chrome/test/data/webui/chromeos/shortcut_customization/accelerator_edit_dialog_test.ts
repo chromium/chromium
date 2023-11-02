@@ -19,7 +19,8 @@ import {setShortcutProviderForTesting} from 'chrome://shortcut-customization/js/
 import {Accelerator, AcceleratorConfigResult, AcceleratorInfo, AcceleratorKeyState, AcceleratorState, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {AcceleratorResultData, EditDialogCompletedActions, UserAction} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {createAliasedStandardAcceleratorInfo, createCustomStandardAcceleratorInfo, createUserAcceleratorInfo} from './shortcut_customization_test_util.js';
 
@@ -80,7 +81,7 @@ suite('acceleratorEditDialogTest', function() {
     assertEquals(3, acceleratorElements.length);
     assertEquals(
         description,
-        dialog!.querySelector('#dialogTitle')!.textContent!.trim());
+        dialog!.querySelector('#shortcutDescription')!.textContent!.trim());
 
     // Accelerator is sorted, the order is updated to be [c], [ctrl+c],
     // [ctrl+shift+g]
@@ -244,8 +245,9 @@ suite('acceleratorEditDialogTest', function() {
     // Click done button.
     const doneButton = dialog!.querySelector('#doneButton') as CrButtonElement;
     doneButton.click();
-    waitAfterNextRender(dialog);
-    await flushTasks();
+
+    // Wait until dialog is closed to make sure onDialogClose() is triggered.
+    await eventToPromise('edit-dialog-closed', viewElement!);
 
     // Now verify last action was recorded.
     assertEquals(
