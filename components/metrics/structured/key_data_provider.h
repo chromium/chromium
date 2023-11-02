@@ -44,8 +44,8 @@ class KeyDataProvider {
   // Returns true if the keys are ready to be used.
   virtual bool IsReady() = 0;
 
-  // Called whenever a profile key should be initialized.
-  virtual void InitializeProfileKey(const base::FilePath& profile_path) = 0;
+  // Called whenever a profile is added.
+  virtual void OnProfileAdded(const base::FilePath& profile_path) = 0;
 
   // Retrieves the ID for given |project_name|.
   //
@@ -67,23 +67,8 @@ class KeyDataProvider {
   // the KeyData is not available for given |project_name|.
   virtual KeyData* GetKeyData(const std::string& project_name) = 0;
 
-  // Returns the device key data.
-  //
-  // Returns nullptr if InitializeDeviceKey() has not been called or is in
-  // progress.
-  virtual KeyData* GetDeviceKeyData() = 0;
-
-  // Returns the profile key data, if available. A call to HasProfileKey()
-  // should guarantee that this value will not be nullptr.
-  //
-  // Returns nullptr otherwise.
-  virtual KeyData* GetProfileKeyData() = 0;
-
   // Deletes all key data associated with the provider.
   virtual void Purge() = 0;
-
-  virtual bool HasProfileKey() = 0;
-  virtual bool HasDeviceKey() = 0;
 
  protected:
   // Notifies observers that the key is ready.

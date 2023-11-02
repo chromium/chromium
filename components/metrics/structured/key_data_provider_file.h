@@ -24,16 +24,12 @@ class KeyDataProviderFile : public KeyDataProvider, KeyDataProvider::Observer {
 
   // KeyDataProvider:
   bool IsReady() override;
-  void InitializeProfileKey(const base::FilePath& profile_path) override;
+  void OnProfileAdded(const base::FilePath& profile_path) override;
   absl::optional<uint64_t> GetId(const std::string& project_name) override;
   absl::optional<uint64_t> GetSecondaryId(
       const std::string& project_name) override;
   KeyData* GetKeyData(const std::string& project_name) override;
-  KeyData* GetDeviceKeyData() override;
-  KeyData* GetProfileKeyData() override;
   void Purge() override;
-  bool HasProfileKey() override;
-  bool HasDeviceKey() override;
 
   // KeyDataProvider::Observer:
   void OnKeyReady() override;

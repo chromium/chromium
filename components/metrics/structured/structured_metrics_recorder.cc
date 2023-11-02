@@ -197,8 +197,7 @@ void StructuredMetricsRecorder::Purge() {
   if (!is_init_state(InitState::kInitialized)) {
     return;
   }
-  DCHECK(IsDeviceKeyDataInitialized());
-  DCHECK(IsProfileKeyDataInitialized());
+  DCHECK(IsKeyDataInitialized());
 
   DCHECK(events_);
   events_->Purge();
@@ -218,7 +217,7 @@ void StructuredMetricsRecorder::OnProfileAdded(
   }
   init_state_ = InitState::kProfileAdded;
 
-  key_data_provider_->InitializeProfileKey(profile_path);
+  key_data_provider_->OnProfileAdded(profile_path);
 
   // The directory used to store unsent logs. Relative to the user's cryptohome.
   // This file is created by chromium.
@@ -268,8 +267,7 @@ void StructuredMetricsRecorder::OnEventRecord(const Event& event) {
     return;
   }
 
-  DCHECK(IsDeviceKeyDataInitialized());
-  DCHECK(IsProfileKeyDataInitialized());
+  DCHECK(IsKeyDataInitialized());
 
   RecordEvent(event);
 
@@ -361,12 +359,13 @@ void StructuredMetricsRecorder::RecordEventBeforeInitialization(
 }
 
 void StructuredMetricsRecorder::RecordEvent(const Event& event) {
-  DCHECK(IsDeviceKeyDataInitialized());
-  DCHECK(IsProfileKeyDataInitialized());
+  DCHECK(IsKeyDataInitialized());
 
-  // Retrieve keys.
-  KeyData* device_key_data = key_data_provider_->GetDeviceKeyData();
-  KeyData* profile_key_data = key_data_provider_->GetProfileKeyData();
+  // Retrieve key for the project.
+  KeyData* key_data = key_data_provider_->GetKeyData(event.project_name());
+  if (!key_data) {
+    return;
+  }
 
   // Validates the event. If valid, retrieve the metadata associated
   // with the event.
@@ -420,50 +419,32 @@ void StructuredMetricsRecorder::RecordEvent(const Event& event) {
         base::HashMetricName(event.event_sequence_metadata().event_unique_id));
 
     const int rotation_age =
-        profile_key_data->GetKeyAgeInWeeks(project_validator->project_hash())
+        key_data->GetKeyAgeInWeeks(project_validator->project_hash())
             .value_or(0);
     event_sequence_metadata->set_client_id_rotation_weeks(rotation_age);
 
-    event_proto->set_device_project_id(
-        device_key_data->Id(project_validator->project_hash(),
-                            project_validator->key_rotation_period()));
-    event_proto->set_user_project_id(
-        profile_key_data->Id(project_validator->project_hash(),
-                             project_validator->key_rotation_period()));
-  }
+    absl::optional<uint64_t> primary_id =
+        key_data_provider_->GetId(event.project_name());
+    if (primary_id.has_value()) {
+      event_proto->set_user_project_id(primary_id.value());
+    }
 
-  // Choose which KeyData to use for this event.
-  KeyData* key_data;
-
-  switch (project_validator->id_scope()) {
-    case IdScope::kPerProfile:
-      key_data = profile_key_data;
-      break;
-    case IdScope::kPerDevice:
-      // For event sequence, use the profile key for now to hash strings.
-      //
-      // TODO(crbug/1399632): Event sequence is considered a structured
-      // metrics project. Once the client supports device/profile split of
-      // events like structured metrics, remove this.
-      if (project_validator->event_type() ==
-          StructuredEventProto_EventType_SEQUENCE) {
-        key_data = profile_key_data;
-      } else {
-        key_data = device_key_data;
-      }
-      break;
-    default:
-      // In case id_scope is uninitialized.
-      NOTREACHED();
+    absl::optional<uint64_t> secondary_id =
+        key_data_provider_->GetSecondaryId(event.project_name());
+    if (secondary_id.has_value()) {
+      event_proto->set_device_project_id(secondary_id.value());
+    }
   }
 
   // Set the ID for this event, if any.
   switch (project_validator->id_type()) {
-    case IdType::kProjectId:
-      event_proto->set_profile_event_id(
-          key_data->Id(project_validator->project_hash(),
-                       project_validator->key_rotation_period()));
-      break;
+    case IdType::kProjectId: {
+      absl::optional<uint64_t> primary_id =
+          key_data_provider_->GetId(event.project_name());
+      if (primary_id.has_value()) {
+        event_proto->set_profile_event_id(primary_id.value());
+      }
+    } break;
     case IdType::kUmaId:
       // TODO(crbug.com/1148168): Unimplemented.
       break;
@@ -582,14 +563,8 @@ void StructuredMetricsRecorder::AddDisallowedProjectForTest(
   disallowed_projects_.insert(project_name_hash);
 }
 
-bool StructuredMetricsRecorder::IsDeviceKeyDataInitialized() {
-  return key_data_provider_ && key_data_provider_->GetDeviceKeyData() &&
-         key_data_provider_->GetDeviceKeyData()->is_initialized();
-}
-
-bool StructuredMetricsRecorder::IsProfileKeyDataInitialized() {
-  return key_data_provider_ && key_data_provider_->GetProfileKeyData() &&
-         key_data_provider_->GetProfileKeyData()->is_initialized();
+bool StructuredMetricsRecorder::IsKeyDataInitialized() {
+  return key_data_provider_ && key_data_provider_->IsReady();
 }
 
 void StructuredMetricsRecorder::UpdateAndCheckInitState() {

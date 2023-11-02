@@ -175,8 +175,8 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   // Adds a project to the diallowed list for testing.
   void AddDisallowedProjectForTest(uint64_t project_name_hash);
 
-  bool IsDeviceKeyDataInitialized();
-  bool IsProfileKeyDataInitialized();
+  // Returns true if key data is ready to use.
+  bool IsKeyDataInitialized();
 
   // Increments |init_count_| and checks if the recorder is ready.
   void UpdateAndCheckInitState();

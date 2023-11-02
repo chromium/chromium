@@ -50,7 +50,7 @@ class KeyDataProviderAshTest : public testing::Test, KeyDataProvider::Observer {
 
   void SetUpProfileKeys() {
     run_loop_ = std::make_unique<base::RunLoop>();
-    key_data_provider_->InitializeProfileKey(ProfileKeyFilePath());
+    key_data_provider_->OnProfileAdded(ProfileKeyFilePath());
     Wait();
     run_loop_->Run();
   }
@@ -59,10 +59,12 @@ class KeyDataProviderAshTest : public testing::Test, KeyDataProvider::Observer {
     return key_data_provider_->GetKeyData(project_name);
   }
 
-  KeyData* GetDeviceKeyData() { return key_data_provider_->GetDeviceKeyData(); }
+  KeyData* GetDeviceKeyData() {
+    return key_data_provider_->GetKeyData(kDeviceProjectName);
+  }
 
   KeyData* GetProfileKeyData() {
-    return key_data_provider_->GetProfileKeyData();
+    return key_data_provider_->GetKeyData(kProfileProjectName);
   }
 
   base::FilePath DeviceKeyFilePath() {
@@ -95,6 +97,9 @@ class KeyDataProviderAshTest : public testing::Test, KeyDataProvider::Observer {
 TEST_F(KeyDataProviderAshTest, UseDeviceKeyForDeviceProject) {
   auto* key_data = GetCurrentKeyData(kDeviceProjectName);
   EXPECT_NE(key_data, nullptr);
+
+  // Ensure that the pointers are not the same.
+  EXPECT_NE(key_data, GetProfileKeyData());
   EXPECT_EQ(key_data, GetDeviceKeyData());
 }
 
@@ -102,7 +107,10 @@ TEST_F(KeyDataProviderAshTest, UseProfileKeyForProfileProject) {
   SetUpProfileKeys();
   auto* key_data = GetCurrentKeyData(kProfileProjectName);
   EXPECT_NE(key_data, nullptr);
+
+  // Ensure that the pointers are not the same.
   EXPECT_EQ(key_data, GetProfileKeyData());
+  EXPECT_NE(key_data, GetDeviceKeyData());
 }
 
 TEST_F(KeyDataProviderAshTest, ReturnNullIfProfileProjectBeforeProfileKey) {

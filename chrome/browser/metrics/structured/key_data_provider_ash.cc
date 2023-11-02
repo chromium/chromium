@@ -93,11 +93,10 @@ absl::optional<uint64_t> KeyDataProviderAsh::GetSecondaryId(
   return absl::nullopt;
 }
 
-void KeyDataProviderAsh::InitializeProfileKey(
-    const base::FilePath& profile_path) {
+void KeyDataProviderAsh::OnProfileAdded(const base::FilePath& profile_path) {
   // Only the primary user's keys should be loaded. If there is already is a
   // profile key, no-op.
-  if (HasProfileKey()) {
+  if (profile_key_) {
     return;
   }
 
@@ -106,34 +105,14 @@ void KeyDataProviderAsh::InitializeProfileKey(
   profile_key_->AddObserver(this);
 }
 
-KeyData* KeyDataProviderAsh::GetDeviceKeyData() {
-  DCHECK(HasDeviceKey());
-  // Project name does not matter for this implementation.
-  return device_key_->GetKeyData(/*project_name=*/"");
-}
-
-KeyData* KeyDataProviderAsh::GetProfileKeyData() {
-  DCHECK(HasProfileKey());
-  // Project name does not matter for this implementation.
-  return profile_key_->GetKeyData(/*project_name=*/"");
-}
-
 void KeyDataProviderAsh::Purge() {
-  if (HasDeviceKey()) {
-    GetDeviceKeyData()->Purge();
+  if (device_key_) {
+    device_key_->Purge();
   }
 
-  if (HasProfileKey()) {
-    GetProfileKeyData()->Purge();
+  if (profile_key_) {
+    profile_key_->Purge();
   }
-}
-
-bool KeyDataProviderAsh::HasProfileKey() {
-  return profile_key_ != nullptr;
-}
-
-bool KeyDataProviderAsh::HasDeviceKey() {
-  return device_key_ != nullptr;
 }
 
 KeyDataProvider* KeyDataProviderAsh::GetKeyDataProvider(

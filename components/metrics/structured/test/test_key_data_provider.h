@@ -38,11 +38,7 @@ class TestKeyDataProvider : public KeyDataProvider, KeyDataProvider::Observer {
   absl::optional<uint64_t> GetSecondaryId(
       const std::string& project_name) override;
   KeyData* GetKeyData(const std::string& project_name) override;
-  KeyData* GetDeviceKeyData() override;
-  KeyData* GetProfileKeyData() override;
-  bool HasProfileKey() override;
-  bool HasDeviceKey() override;
-  void InitializeProfileKey(const base::FilePath& profile_path) override;
+  void OnProfileAdded(const base::FilePath& profile_path) override;
   void Purge() override;
 
   // KeyDataProvider::Observer

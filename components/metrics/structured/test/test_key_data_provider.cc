@@ -88,46 +88,47 @@ absl::optional<uint64_t> TestKeyDataProvider::GetSecondaryId(
 }
 
 KeyData* TestKeyDataProvider::GetKeyData(const std::string& project_name) {
-  if (profile_key_data_->IsReady()) {
-    auto* maybe_key_data = profile_key_data_->GetKeyData(project_name);
-    if (maybe_key_data) {
-      return maybe_key_data;
-    }
+  // Validates the event. If valid, retrieve the metadata associated
+  // with the event.
+  auto maybe_project_validator =
+      validator::Validators::Get()->GetProjectValidator(project_name);
+  if (!maybe_project_validator.has_value()) {
+    return nullptr;
   }
+  const auto* project_validator = maybe_project_validator.value();
 
-  if (device_key_data_->IsReady()) {
-    return device_key_data_->GetKeyData(project_name);
+  switch (project_validator->id_scope()) {
+    case IdScope::kPerProfile: {
+      if (profile_key_data_) {
+        return profile_key_data_->GetKeyData(project_name);
+      }
+      break;
+    }
+    case IdScope::kPerDevice: {
+      if (project_validator->event_type() ==
+          StructuredEventProto_EventType_SEQUENCE) {
+        if (!profile_key_data_) {
+          return nullptr;
+        }
+        return profile_key_data_->GetKeyData(project_name);
+      } else if (device_key_data_) {
+        return device_key_data_->GetKeyData(project_name);
+      }
+      break;
+    }
+    default:
+      NOTREACHED();
+      break;
   }
 
   return nullptr;
-}
-
-KeyData* TestKeyDataProvider::GetDeviceKeyData() {
-  DCHECK(HasDeviceKey());
-
-  return device_key_data_->GetDeviceKeyData();
-}
-
-KeyData* TestKeyDataProvider::GetProfileKeyData() {
-  DCHECK(HasProfileKey());
-
-  return profile_key_data_->GetProfileKeyData();
 }
 
 bool TestKeyDataProvider::IsReady() {
   return device_key_data_->IsReady();
 }
 
-bool TestKeyDataProvider::HasProfileKey() {
-  return profile_key_data_ && profile_key_data_->IsReady();
-}
-
-bool TestKeyDataProvider::HasDeviceKey() {
-  return device_key_data_ && device_key_data_->IsReady();
-}
-
-void TestKeyDataProvider::InitializeProfileKey(
-    const base::FilePath& profile_path) {
+void TestKeyDataProvider::OnProfileAdded(const base::FilePath& profile_path) {
   // If the profile path has not been set, then set it here.
   if (profile_key_path_.empty()) {
     profile_key_path_ = profile_path;

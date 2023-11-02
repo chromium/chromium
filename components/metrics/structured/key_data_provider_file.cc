@@ -58,34 +58,13 @@ KeyData* KeyDataProviderFile::GetKeyData(const std::string& project_name) {
   return key_data_.get();
 }
 
-// Unimplemented as this API will be removed.
-void KeyDataProviderFile::InitializeProfileKey(
-    const base::FilePath& profile_path) {}
-
-KeyData* KeyDataProviderFile::GetDeviceKeyData() {
-  // This API will be removed.
-  return key_data_.get();
-}
-
-KeyData* KeyDataProviderFile::GetProfileKeyData() {
-  // This API will be removed.
-  return key_data_.get();
-}
+// No-op.
+void KeyDataProviderFile::OnProfileAdded(const base::FilePath& profile_path) {}
 
 void KeyDataProviderFile::Purge() {
   if (IsReady()) {
     key_data_->Purge();
   }
-}
-
-bool KeyDataProviderFile::HasProfileKey() {
-  // This API will be removed.
-  return true;
-}
-
-bool KeyDataProviderFile::HasDeviceKey() {
-  // This API will be removed.
-  return true;
 }
 
 }  // namespace metrics::structured
