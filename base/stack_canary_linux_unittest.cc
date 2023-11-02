@@ -13,7 +13,12 @@ namespace base {
     (defined(ARCH_CPU_ARM_FAMILY) || defined(ARCH_CPU_X86_FAMILY))
 
 namespace {
-__attribute__((noinline, optnone)) void ResetCanaryAndReturn() {
+#if defined(COMPILER_GCC) && !defined(__clang__)
+__attribute__((noinline, optimize(0)))
+#else
+__attribute__((noinline, optnone))
+#endif
+void ResetCanaryAndReturn() {
   // Create a buffer >=8 bytes to force the stack protector on this function,
   // which should work as long as -fno-stack-protector isn't passed in the
   // default options. We compile this file with -fstack-protector-all, but it
