@@ -47,6 +47,11 @@ BASE_DECLARE_FEATURE(kPasswordGenerationExperiment);
 BASE_DECLARE_FEATURE(kPasswordManagerEnableReceiverService);
 BASE_DECLARE_FEATURE(kPasswordManagerEnableSenderService);
 BASE_DECLARE_FEATURE(kPasswordManagerLogToTerminal);
+
+#if BUILDFLAG(IS_MAC)
+BASE_DECLARE_FEATURE(kRestartToGainAccessToKeychain);
+#endif  // BUILDFLAG(IS_MAC)
+
 BASE_DECLARE_FEATURE(kSharedPasswordNotificationUI);
 BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);
 

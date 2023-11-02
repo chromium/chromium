@@ -115,6 +115,13 @@ BASE_FEATURE(kPasswordManagerLogToTerminal,
              "PasswordManagerLogToTerminal",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables "Needs access to keychain, restart chrome" bubble and banner.
+#if BUILDFLAG(IS_MAC)
+BASE_FEATURE(kRestartToGainAccessToKeychain,
+             "RestartToGainAccessToKeychain",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // Enables the notification UI that is displayed to the user when visiting a
 // website for which a stored password has been shared by another user.
 BASE_FEATURE(kSharedPasswordNotificationUI,

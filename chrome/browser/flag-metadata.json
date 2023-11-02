@@ -6853,6 +6853,11 @@
     "expiry_milestone" : 130
   },
   {
+    "name": "restart-to-gain-access-to-keychain",
+    "owners": ["sygiet@google.com", "vasilii@chromium.org"],
+    "expiry_milestone": 126
+  },
+  {
     "name": "restore-session-from-cache",
     "owners": [ "justincohen@chromium.org", "gambard@chromium.org", "bling-flags@google.com" ],
     // Needed for testing of native session restore flow on iOS.

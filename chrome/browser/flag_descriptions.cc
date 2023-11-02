@@ -5294,6 +5294,12 @@ const char kMacSyscallSandboxName[] = "Mac Syscall Filtering Sandbox";
 const char kMacSyscallSandboxDescription[] =
     "Controls whether the macOS sandbox filters syscalls.";
 
+const char kRestartToGainAccessToKeychainName[] =
+    "Prompt to restart Chrome to gain access to the Keychain";
+const char kRestartToGainAccessToKeychainDescription[] =
+    "Controls whether the Chrome shows bubbles and banner, prompting the user "
+    "to restart Chrome to gain access to the Keychain.";
+
 const char kRetryGetVideoCaptureDeviceInfosName[] =
     "Retry capture device enumeration on crash";
 const char kRetryGetVideoCaptureDeviceInfosDescription[] =

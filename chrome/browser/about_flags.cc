@@ -11187,7 +11187,15 @@ const FeatureEntry kFeatureEntries[] = {
          kTrustedVaultFrequentDegradedRecoverabilityPollingDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(
-         trusted_vault::kTrustedVaultFrequentDegradedRecoverabilityPolling)}
+         trusted_vault::kTrustedVaultFrequentDegradedRecoverabilityPolling)},
+#endif
+
+#if BUILDFLAG(IS_MAC)
+    {"restart-to-gain-access-to-keychain",
+     flag_descriptions::kRestartToGainAccessToKeychainName,
+     flag_descriptions::kRestartToGainAccessToKeychainDescription, kOsMac,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kRestartToGainAccessToKeychain)},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

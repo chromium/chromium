@@ -3062,6 +3062,9 @@ extern const char kMacPWAsNotificationAttributionDescription[];
 extern const char kMacSyscallSandboxName[];
 extern const char kMacSyscallSandboxDescription[];
 
+extern const char kRestartToGainAccessToKeychainName[];
+extern const char kRestartToGainAccessToKeychainDescription[];
+
 extern const char kRetryGetVideoCaptureDeviceInfosName[];
 extern const char kRetryGetVideoCaptureDeviceInfosDescription[];
 

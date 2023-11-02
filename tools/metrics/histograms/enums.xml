@@ -54653,6 +54653,7 @@ from previous Chrome versions.
   <int value="1055737615" label="VideoToolboxAv1Decoding:enabled"/>
   <int value="1055907260" label="ReleaseTrackUi:disabled"/>
   <int value="1057014709" label="EnforceTLS13Downgrade:enabled"/>
+  <int value="1057337924" label="RestartToGainAccessToKeychain:disabled"/>
   <int value="1057709415" label="DeprecateAltBasedSixPack:disabled"/>
   <int value="1057887829" label="AutofillScanThemeDialog:disabled"/>
   <int value="1059007599" label="enable-gpu-appcontainer"/>
@@ -55478,6 +55479,7 @@ from previous Chrome versions.
   <int value="1449177114"
       label="EnablePasswordsAccountStorageSavingUi:enabled"/>
   <int value="1449336160" label="MainThreadCompositingPriority:disabled"/>
+  <int value="1450313630" label="RestartToGainAccessToKeychain:enabled"/>
   <int value="1451065780" label="MediaFoundationClearRendering:enabled"/>
   <int value="1451146739"
       label="CellularBypassESimInstallationConnectivityCheck:disabled"/>
