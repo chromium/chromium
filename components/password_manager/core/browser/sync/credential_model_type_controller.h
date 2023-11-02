@@ -73,9 +73,6 @@ class CredentialModelTypeController : public syncer::ModelTypeController,
 
   PasswordAccountStorageSettingsWatcher account_storage_settings_watcher_;
 
-  // Passed in to LoadModels(), and cached here for later use in Stop().
-  syncer::SyncMode sync_mode_ = syncer::SyncMode::kFull;
-
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
