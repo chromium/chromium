@@ -156,14 +156,7 @@ IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserTest, PRE_EncryptedCookies) {
   FlushCookies(cookie_manager.get());
 }
 
-// This flakes on Mac10.12: http://crbug.com/868667
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_EncryptedCookies DISABLED_EncryptedCookies
-#else
-#define MAYBE_EncryptedCookies EncryptedCookies
-#endif
-IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserTest,
-                       MAYBE_EncryptedCookies) {
+IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserTest, EncryptedCookies) {
   // Now attempt to read the cookie with encryption disabled.
   mojo::Remote<network::mojom::NetworkContext> context(
       CreateNetworkContext(/*enable_encrypted_cookies=*/false));
