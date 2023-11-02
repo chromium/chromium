@@ -1189,8 +1189,10 @@ void ChromeShelfController::OnShortcutRemoved(const apps::ShortcutId& id) {
 ///////////////////////////////////////////////////////////////////////////////
 // AppIconLoaderDelegate:
 
-void ChromeShelfController::OnAppImageUpdated(const std::string& app_id,
-                                              const gfx::ImageSkia& image) {
+void ChromeShelfController::OnAppImageUpdated(
+    const std::string& app_id,
+    const gfx::ImageSkia& image,
+    const absl::optional<gfx::ImageSkia>& badge_image) {
   TRACE_EVENT0("ui", "ChromeShelfController::OnAppImageUpdated");
   bool is_standard_icon = true;
   if (!AppServiceAppIconLoader::CanLoadImage(latest_active_profile_, app_id) &&
@@ -1202,7 +1204,7 @@ void ChromeShelfController::OnAppImageUpdated(const std::string& app_id,
   }
 
   if (is_standard_icon) {
-    UpdateAppImage(app_id, image);
+    UpdateAppImage(app_id, badge_image, image);
     return;
   }
 
@@ -1223,11 +1225,13 @@ void ChromeShelfController::OnAppImageUpdated(const std::string& app_id,
   standard_icon_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&CreateStandardImageOnWorkerThread, copy),
       base::BindOnce(&ChromeShelfController::UpdateAppImage,
-                     weak_ptr_factory_.GetWeakPtr(), app_id));
+                     weak_ptr_factory_.GetWeakPtr(), app_id, badge_image));
 }
 
-void ChromeShelfController::UpdateAppImage(const std::string& app_id,
-                                           const gfx::ImageSkia& image) {
+void ChromeShelfController::UpdateAppImage(
+    const std::string& app_id,
+    const absl::optional<gfx::ImageSkia>& badge_image,
+    const gfx::ImageSkia& image) {
   TRACE_EVENT0("ui", "ChromeShelfController::UpdateAppImage");
   // TODO: need to get this working for shortcuts.
   for (int index = 0; index < model_->item_count(); ++index) {
@@ -1238,6 +1242,7 @@ void ChromeShelfController::UpdateAppImage(const std::string& app_id,
       continue;
     }
     item.image = image;
+    item.badge_image = badge_image.value_or(gfx::ImageSkia());
     shelf_spinner_controller_->MaybeApplySpinningEffect(app_id, &item.image);
     item.notification_badge_color =
         ash::AppIconColorCache::GetInstance().GetLightVibrantColorForApp(app_id,

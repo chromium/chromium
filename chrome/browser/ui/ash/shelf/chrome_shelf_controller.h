@@ -286,8 +286,10 @@ class ChromeShelfController
   void OnShortcutRemoved(const apps::ShortcutId& id) override;
 
   // AppIconLoaderDelegate:
-  void OnAppImageUpdated(const std::string& app_id,
-                         const gfx::ImageSkia& image) override;
+  void OnAppImageUpdated(
+      const std::string& app_id,
+      const gfx::ImageSkia& image,
+      const absl::optional<gfx::ImageSkia>& badge_image) override;
 
   // Inserts a shelf item for an app at |index|. Note that |index| may be
   // adjusted by the model to meet ordering constraints.
@@ -309,7 +311,9 @@ class ChromeShelfController
   using WebContentsToAppIDMap = std::map<content::WebContents*, std::string>;
 
   // Updates images of shelf items representing the app.
-  void UpdateAppImage(const std::string& app_id, const gfx::ImageSkia& image);
+  void UpdateAppImage(const std::string& app_id,
+                      const absl::optional<gfx::ImageSkia>& badge_image,
+                      const gfx::ImageSkia& image);
 
   // Remembers / restores list of running applications.
   // Note that this order will neither be stored in the preference nor will it

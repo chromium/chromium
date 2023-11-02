@@ -61,8 +61,10 @@ class ArcAppDialogView : public views::DialogDelegateView,
 
  private:
   // AppIconLoaderDelegate:
-  void OnAppImageUpdated(const std::string& app_id,
-                         const gfx::ImageSkia& image) override;
+  void OnAppImageUpdated(
+      const std::string& app_id,
+      const gfx::ImageSkia& image,
+      const absl::optional<gfx::ImageSkia>& badge_image) override;
 
   void AddMultiLineLabel(views::View* parent, const std::u16string& label_text);
 
@@ -179,8 +181,10 @@ void ArcAppDialogView::OnDialogCancelled() {
   std::move(confirm_callback_).Run(false);
 }
 
-void ArcAppDialogView::OnAppImageUpdated(const std::string& app_id,
-                                         const gfx::ImageSkia& image) {
+void ArcAppDialogView::OnAppImageUpdated(
+    const std::string& app_id,
+    const gfx::ImageSkia& image,
+    const absl::optional<gfx::ImageSkia>& badge_image) {
   DCHECK_EQ(app_id, app_id_);
   DCHECK(!image.isNull());
   DCHECK_EQ(image.width(), kIconSourceSize);

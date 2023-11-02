@@ -90,7 +90,8 @@ void ChromeAppIconLoader::SetExtensionsOnly() {
 }
 
 void ChromeAppIconLoader::OnIconUpdated(ChromeAppIcon* icon) {
-  delegate()->OnAppImageUpdated(icon->app_id(), icon->image_skia());
+  delegate()->OnAppImageUpdated(icon->app_id(), icon->image_skia(),
+                                /*badge_image=*/absl::nullopt);
 }
 
 }  // namespace extensions

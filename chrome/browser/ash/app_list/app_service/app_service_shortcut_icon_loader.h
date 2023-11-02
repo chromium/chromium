@@ -52,7 +52,12 @@ class AppServiceShortcutIconLoader
                           apps::IconValuePtr badge_icon_value);
 
  private:
-  using ShortcutIDToIconMap = std::map<std::string, gfx::ImageSkia>;
+  struct IconInfo {
+    gfx::ImageSkia image;
+    gfx::ImageSkia badge;
+  };
+
+  using ShortcutIDToIconMap = std::map<std::string, IconInfo>;
 
   base::ScopedObservation<apps::ShortcutRegistryCache,
                           apps::ShortcutRegistryCache::Observer>

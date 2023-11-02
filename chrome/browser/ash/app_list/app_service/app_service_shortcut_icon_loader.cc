@@ -51,13 +51,13 @@ bool AppServiceShortcutIconLoader::CanLoadImage(Profile* profile,
 void AppServiceShortcutIconLoader::FetchImage(const std::string& id) {
   ShortcutIDToIconMap::const_iterator it = icon_map_.find(id);
   if (it != icon_map_.end()) {
-    if (!it->second.isNull()) {
-      delegate()->OnAppImageUpdated(id, it->second);
+    if (!it->second.image.isNull()) {
+      delegate()->OnAppImageUpdated(id, it->second.image, it->second.badge);
     }
     return;
   }
 
-  icon_map_[id] = gfx::ImageSkia();
+  icon_map_[id] = IconInfo();
   CallLoadIcon(apps::ShortcutId(id));
 }
 
@@ -67,11 +67,11 @@ void AppServiceShortcutIconLoader::ClearImage(const std::string& id) {
 
 void AppServiceShortcutIconLoader::UpdateImage(const std::string& id) {
   ShortcutIDToIconMap::const_iterator it = icon_map_.find(id);
-  if (it == icon_map_.end() || it->second.isNull()) {
+  if (it == icon_map_.end() || it->second.image.isNull()) {
     return;
   }
 
-  delegate()->OnAppImageUpdated(id, it->second);
+  delegate()->OnAppImageUpdated(id, it->second.image, it->second.badge);
 }
 
 void AppServiceShortcutIconLoader::OnShortcutUpdated(
@@ -110,19 +110,16 @@ void AppServiceShortcutIconLoader::OnLoadIcon(
     const apps::ShortcutId& shortcut_id,
     apps::IconValuePtr icon_value,
     apps::IconValuePtr badge_icon_value) {
-  // Temporary put the badge in with existing UI interface for testing purposes.
-  // The actual visual will be done in the UI layer with the icon and badge raw
-  // icons.
-  // TODO(crbug.com/1480423): Remove this when the actual visual is done in the
-  // UI.
-  gfx::ImageSkia icon_with_badge =
-      gfx::ImageSkiaOperations::CreateIconWithBadge(
-          icon_value->uncompressed, badge_icon_value->uncompressed);
+  const gfx::ImageSkia image =
+      chromeos::features::IsSeparateWebAppShortcutBadgeIconEnabled()
+          ? icon_value->uncompressed
+          : gfx::ImageSkiaOperations::CreateIconWithBadge(
+                icon_value->uncompressed, badge_icon_value->uncompressed);
+  const gfx::ImageSkia badge =
+      chromeos::features::IsSeparateWebAppShortcutBadgeIconEnabled()
+          ? badge_icon_value->uncompressed
+          : gfx::ImageSkia();
 
-  icon_map_[shortcut_id.value()] = icon_with_badge;
-
-  delegate()->OnAppImageUpdated(shortcut_id.value(), icon_with_badge);
-
-  // TODO(crbug.com/1412708): Add badge icon field in metadata and set the badge
-  // icon.
+  icon_map_[shortcut_id.value()] = {.image = image, .badge = badge};
+  delegate()->OnAppImageUpdated(shortcut_id.value(), image, badge);
 }

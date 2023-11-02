@@ -105,5 +105,6 @@ void AppServicePromiseAppIconLoader::OnLoadIcon(
     const apps::PackageId& package_id,
     apps::IconValuePtr icon_value) {
   gfx::ImageSkia image = icon_value->uncompressed;
-  delegate()->OnAppImageUpdated(package_id.ToString(), image);
+  delegate()->OnAppImageUpdated(package_id.ToString(), image,
+                                /*badge_image=*/absl::nullopt);
 }

@@ -28,6 +28,9 @@ struct ASH_PUBLIC_EXPORT ShelfItem {
   // Image to display in the shelf.
   gfx::ImageSkia image;
 
+  // If set, an image to be displayed as a badge on the main shelf image.
+  gfx::ImageSkia badge_image;
+
   // Running status.
   ShelfItemStatus status = STATUS_CLOSED;
 
