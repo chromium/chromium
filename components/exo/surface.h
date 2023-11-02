@@ -107,6 +107,8 @@ class Surface final : public ui::PropertyHandler {
 
   aura::Window* window() const { return window_.get(); }
 
+  std::vector<aura::Window*> GetChildWindows() const;
+
   void set_leave_enter_callback(LeaveEnterCallback callback) {
     leave_enter_callback_ = callback;
   }

@@ -365,6 +365,14 @@ Surface* Surface::AsSurface(const aura::Window* window) {
   return window->GetProperty(kSurfaceKey);
 }
 
+std::vector<aura::Window*> Surface::GetChildWindows() const {
+  std::vector<aura::Window*> children;
+  for (const auto& [sub_surface, _] : sub_surfaces_) {
+    children.push_back(sub_surface->window());
+  }
+  return children;
+}
+
 void Surface::Attach(Buffer* buffer) {
   Attach(buffer, gfx::Vector2d());
 }

@@ -27,6 +27,17 @@
 namespace ash {
 namespace debug {
 
+namespace {
+
+std::unique_ptr<DebugWindowHierarchyDelegate> instance = nullptr;
+
+}  // namespace
+
+void SetDebugWindowHierarchyDelegate(
+    std::unique_ptr<DebugWindowHierarchyDelegate> delegate) {
+  instance = std::move(delegate);
+}
+
 void PrintLayerHierarchy(std::ostringstream* out) {
   for (aura::Window* root : Shell::Get()->GetAllRootWindows()) {
     ui::Layer* layer = root->layer();
@@ -115,7 +126,9 @@ void PrintWindowHierarchy(const aura::Window* active_window,
     views::PrintWidgetInformation(*widget, /*detailed*/ false, out);
   }
 
-  for (aura::Window* child : window->children()) {
+  std::vector<aura::Window*> children =
+      instance ? instance->GetAdjustedChildren(window) : window->children();
+  for (aura::Window* child : children) {
     PrintWindowHierarchy(active_window, focused_window, capture_window, child,
                          indent + 3, scrub_data, out_window_titles, out);
   }

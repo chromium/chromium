@@ -5,6 +5,7 @@
 #include "components/exo/wm_helper.h"
 
 #include "ash/frame_throttler/frame_throttling_controller.h"
+#include "ash/public/cpp/debug_utils.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -14,6 +15,8 @@
 #include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
+#include "components/exo/shell_surface_util.h"
+#include "components/exo/surface.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -73,6 +76,22 @@ constexpr uint8_t kFablicatedFallbackEDIDData[] = {
 };
 // clang-format on
 
+class ExoDebugWindowHierarchyDelegate
+    : public ash::debug::DebugWindowHierarchyDelegate {
+ public:
+  // Exo windows have their window tree up to the root surface disconnected
+  // (see crbug.com/1405015). We want to keep them in debug output though, so
+  // special case them here.
+  std::vector<aura::Window*> GetAdjustedChildren(
+      aura::Window* window) const override {
+    Surface* surface = Surface::AsSurface(window);
+    if (!surface || window->children().size()) {
+      return window->children();
+    }
+    return surface->GetChildWindows();
+  }
+};
+
 }  // namespace
 
 WMHelper::LifetimeManager::LifetimeManager() = default;
@@ -101,6 +120,9 @@ WMHelper::WMHelper() : vsync_timing_manager_(this) {
   if (power_manager) {
     power_manager->AddObserver(this);
   }
+
+  ash::debug::SetDebugWindowHierarchyDelegate(
+      std::make_unique<ExoDebugWindowHierarchyDelegate>());
 }
 
 WMHelper::~WMHelper() {
