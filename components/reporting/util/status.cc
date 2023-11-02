@@ -65,20 +65,17 @@ const Status& Status::StatusOK() {
 
 Status::Status() : error_code_(error::OK) {}
 
+Status::Status(const Status& other) = default;
+Status& Status::operator=(const Status& other) = default;
+Status::Status(Status&&) = default;
+Status& Status::operator=(Status&& x) = default;
+Status::~Status() = default;
+
 Status::Status(error::Code error_code, std::string_view error_message)
     : error_code_(error_code) {
   if (error_code != error::OK) {
     error_message_ = std::string(error_message);
   }
-}
-
-Status::Status(const Status& other)
-    : error_code_(other.error_code_), error_message_(other.error_message_) {}
-
-Status& Status::operator=(const Status& other) {
-  error_code_ = other.error_code_;
-  error_message_ = other.error_message_;
-  return *this;
 }
 
 bool Status::operator==(const Status& x) const {
