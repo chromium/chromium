@@ -228,9 +228,6 @@ extern const char kClearingCookiesKeepsSupervisedUsersSignedInName[];
 extern const char kClearingCookiesKeepsSupervisedUsersSignedInDescription[];
 #endif  // ENABLE_SUPERVISED_USERS
 
-extern const char kUpcomingFollowFeaturesName[];
-extern const char kUpcomingFollowFeaturesDescription[];
-
 extern const char kUseAndroidStagingSmdsName[];
 extern const char kUseAndroidStagingSmdsDescription[];
 

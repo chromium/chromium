@@ -7763,11 +7763,6 @@
     "expiry_milestone": 107
   },
   {
-    "name": "upcoming-follow-features",
-    "owners": [ "ellyjones@chromium.org", "//chrome/browser/follow/OWNERS" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "update-menu-item-custom-summary",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/omaha/OWNERS" ],
     // This is required by test teams to verify functionality on devices which

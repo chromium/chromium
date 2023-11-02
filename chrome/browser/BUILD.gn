@@ -567,8 +567,6 @@ static_library("browser") {
     "first_party_sets/first_party_sets_policy_service_factory.h",
     "flag_descriptions.cc",
     "flag_descriptions.h",
-    "follow/follow_features.cc",
-    "follow/follow_features.h",
     "font_pref_change_notifier.cc",
     "font_pref_change_notifier.h",
     "font_pref_change_notifier_factory.cc",
