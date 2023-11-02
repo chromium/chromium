@@ -125,6 +125,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/offline/histograms.xml",
       "//tools/metrics/histograms/metadata/omnibox/histograms.xml",
       "//tools/metrics/histograms/metadata/oobe/histograms.xml",
+      "//tools/metrics/histograms/metadata/optimization/enums.xml",
       "//tools/metrics/histograms/metadata/optimization/histograms.xml",
       "//tools/metrics/histograms/metadata/others/histograms.xml",
       "//tools/metrics/histograms/metadata/page/histograms.xml",
