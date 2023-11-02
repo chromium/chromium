@@ -3428,9 +3428,7 @@
       // Allows the HTML parser to put <hr> tags inside <select> tags.
       // https://chromestatus.com/feature/6198448366026752
       name: "SelectHr",
-      // Android currently renders <hr>s as empty selectable options:
-      // http://crbug.com/1494927
-      status: {"Android": "", "default": "stable"},
+      status: "stable",
     },
     {
       name: "SendBeaconThrowForBlobWithNonSimpleType",

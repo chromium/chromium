@@ -76,6 +76,73 @@ TEST_F(ExternalPopupMenuDisplayNoneItemsTest, IndexMappingTest) {
   EXPECT_EQ(-1, ExternalPopupMenu::ToPopupMenuItemIndex(8, *owner_element_));
 }
 
+class ExternalPopupMenuHrElementItemsTest : public PageTestBase {
+ public:
+  ExternalPopupMenuHrElementItemsTest() = default;
+
+ protected:
+  void SetUp() override {
+    PageTestBase::SetUp();
+    auto* element = MakeGarbageCollected<HTMLSelectElement>(GetDocument());
+    element->setInnerHTML(R"HTML(
+      <option>zero</option>
+      <option>one</option>
+      <hr>
+      <option>two or three</option>
+    )HTML");
+    GetDocument().body()->AppendChild(element, ASSERT_NO_EXCEPTION);
+    owner_element_ = element;
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  }
+
+  Persistent<HTMLSelectElement> owner_element_;
+};
+
+TEST_F(ExternalPopupMenuHrElementItemsTest, PopupMenuInfoSizeTest) {
+  int32_t item_height;
+  double font_size;
+  int32_t selected_item;
+  Vector<mojom::blink::MenuItemPtr> menu_items;
+  bool right_aligned;
+  bool allow_multiple_selection;
+  ExternalPopupMenu::GetPopupMenuInfo(
+      *owner_element_, &item_height, &font_size, &selected_item, &menu_items,
+      &right_aligned, &allow_multiple_selection);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(3U, menu_items.size());
+#else
+  EXPECT_EQ(4U, menu_items.size());
+#endif
+}
+
+TEST_F(ExternalPopupMenuHrElementItemsTest, IndexMappingTest) {
+  EXPECT_EQ(
+      0, ExternalPopupMenu::ToExternalPopupMenuItemIndex(0, *owner_element_));
+  EXPECT_EQ(
+      1, ExternalPopupMenu::ToExternalPopupMenuItemIndex(1, *owner_element_));
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(
+      -1, ExternalPopupMenu::ToExternalPopupMenuItemIndex(2, *owner_element_));
+  EXPECT_EQ(
+      2, ExternalPopupMenu::ToExternalPopupMenuItemIndex(3, *owner_element_));
+#else
+  EXPECT_EQ(
+      2, ExternalPopupMenu::ToExternalPopupMenuItemIndex(2, *owner_element_));
+  EXPECT_EQ(
+      3, ExternalPopupMenu::ToExternalPopupMenuItemIndex(3, *owner_element_));
+#endif
+
+  EXPECT_EQ(0, ExternalPopupMenu::ToPopupMenuItemIndex(0, *owner_element_));
+  EXPECT_EQ(1, ExternalPopupMenu::ToPopupMenuItemIndex(1, *owner_element_));
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(3, ExternalPopupMenu::ToPopupMenuItemIndex(2, *owner_element_));
+  EXPECT_EQ(-1, ExternalPopupMenu::ToPopupMenuItemIndex(3, *owner_element_));
+#else
+  EXPECT_EQ(2, ExternalPopupMenu::ToPopupMenuItemIndex(2, *owner_element_));
+  EXPECT_EQ(3, ExternalPopupMenu::ToPopupMenuItemIndex(3, *owner_element_));
+#endif
+}
+
 class TestLocalFrameExternalPopupClient : public FakeLocalFrameHost {
  public:
   void ShowPopupMenu(
