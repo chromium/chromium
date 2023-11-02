@@ -10,6 +10,7 @@ source_set("web_state") {
     ":web_state_impl_header",
     "//base",
     "//build:blink_buildflags",
+    "//components/security_state/core",
     "//ios/third_party/webkit",
     "//ios/web/common",
     "//ios/web/js_messaging",
