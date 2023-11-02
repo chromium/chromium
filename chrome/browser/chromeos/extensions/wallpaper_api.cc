@@ -57,11 +57,11 @@ namespace {
 crosapi::mojom::WallpaperLayout GetMojoLayoutEnum(
     extensions::api::wallpaper::WallpaperLayout layout) {
   switch (layout) {
-    case extensions::api::wallpaper::WALLPAPER_LAYOUT_STRETCH:
+    case extensions::api::wallpaper::WallpaperLayout::kStretch:
       return crosapi::mojom::WallpaperLayout::kStretch;
-    case extensions::api::wallpaper::WALLPAPER_LAYOUT_CENTER:
+    case extensions::api::wallpaper::WallpaperLayout::kCenter:
       return crosapi::mojom::WallpaperLayout::kCenter;
-    case extensions::api::wallpaper::WALLPAPER_LAYOUT_CENTER_CROPPED:
+    case extensions::api::wallpaper::WallpaperLayout::kCenterCropped:
       return crosapi::mojom::WallpaperLayout::kCenterCropped;
     default:
       return crosapi::mojom::WallpaperLayout::kCenter;
