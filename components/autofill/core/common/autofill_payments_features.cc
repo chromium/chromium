@@ -171,14 +171,6 @@ BASE_FEATURE(kAutofillEnableUpdateVirtualCardEnrollment,
 #endif
 );
 
-// When enabled, after a successful authentication to autofill a virtual card,
-// the user will be prompted to opt-in to FIDO if the user is not currently
-// opted-in, and if the user is opted-in already and the virtual card is FIDO
-// eligible the user will be prompted to register the virtual card into FIDO.
-BASE_FEATURE(kAutofillEnableVirtualCardFidoEnrollment,
-             "AutofillEnableVirtualCardFidoEnrollment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, Chrome will show metadata along with other card information
 // when the virtual card is presented to users.
 BASE_FEATURE(kAutofillEnableVirtualCardMetadata,

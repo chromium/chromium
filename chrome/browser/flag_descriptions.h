@@ -319,9 +319,6 @@ extern const char kAutofillEnableStickyManualFallbackForCardsDescription[];
 extern const char kAutofillEnableUpdateVirtualCardEnrollmentName[];
 extern const char kAutofillEnableUpdateVirtualCardEnrollmentDescription[];
 
-extern const char kAutofillEnableVirtualCardFidoEnrollmentName[];
-extern const char kAutofillEnableVirtualCardFidoEnrollmentDescription[];
-
 extern const char kAutofillEnableNewSaveCardBubbleUiName[];
 extern const char kAutofillEnableNewSaveCardBubbleUiDescription[];
 

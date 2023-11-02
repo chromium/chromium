@@ -50197,8 +50197,6 @@ from previous Chrome versions.
   <int value="-936652950"
       label="AutofillEnableManualFallbackForVirtualCards:disabled"/>
   <int value="-936308513" label="CompactBubbleLauncher:enabled"/>
-  <int value="-934842188"
-      label="AutofillEnableVirtualCardFidoEnrollment:disabled"/>
   <int value="-934444201" label="Hotspot:enabled"/>
   <int value="-934163513" label="EcheSWA:enabled"/>
   <int value="-933377608"
@@ -52598,8 +52596,6 @@ from previous Chrome versions.
   <int value="232859680" label="VCSegmentationModel:disabled"/>
   <int value="233202090" label="AssistantConsentModal:disabled"/>
   <int value="233721248" label="DownloadRename:disabled"/>
-  <int value="235191586"
-      label="AutofillEnableVirtualCardFidoEnrollment:enabled"/>
   <int value="236412875" label="PreinstalledWebAppWindowExperiment:disabled"/>
   <int value="236498704" label="ArcFixupWindowFeature:disabled"/>
   <int value="237066116" label="PageInfoV2:disabled"/>

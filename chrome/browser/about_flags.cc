@@ -9880,12 +9880,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableRankingFormulaCreditCards)},
 
-    {"autofill-enable-virtual-card-fido-enrollment",
-     flag_descriptions::kAutofillEnableVirtualCardFidoEnrollmentName,
-     flag_descriptions::kAutofillEnableVirtualCardFidoEnrollmentDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableVirtualCardFidoEnrollment)},
     {"autofill-upstream-allow-additional-email-domains",
      flag_descriptions::kAutofillUpstreamAllowAdditionalEmailDomainsName,
      flag_descriptions::kAutofillUpstreamAllowAdditionalEmailDomainsDescription,
