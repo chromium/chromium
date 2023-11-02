@@ -8,6 +8,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
 #include "components/leveldb_proto/testing/fake_db.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/nearby/internal/proto/credential.pb.h"
@@ -127,8 +128,12 @@ class TestNearbyPresenceCredentialStorage
     : public ash::nearby::presence::NearbyPresenceCredentialStorage {
  public:
   TestNearbyPresenceCredentialStorage(
-      std::unique_ptr<leveldb_proto::ProtoDatabase<
-          ::nearby::internal::LocalCredential>> private_db,
+      mojo::PendingReceiver<
+          ash::nearby::presence::mojom::NearbyPresenceCredentialStorage>
+          pending_receiver,
+      std::unique_ptr<
+          leveldb_proto::ProtoDatabase<::nearby::internal::LocalCredential>>
+          private_db,
       std::unique_ptr<
           leveldb_proto::ProtoDatabase<::nearby::internal::SharedCredential>>
           local_public_db,
@@ -136,6 +141,7 @@ class TestNearbyPresenceCredentialStorage
           leveldb_proto::ProtoDatabase<::nearby::internal::SharedCredential>>
           remote_public_db)
       : ash::nearby::presence::NearbyPresenceCredentialStorage(
+            std::move(pending_receiver),
             std::move(private_db),
             std::move(local_public_db),
             std::move(remote_public_db)) {}
@@ -221,9 +227,14 @@ class NearbyPresenceCredentialStorageTest : public testing::Test {
     local_public_db_ = local_public_db.get();
     remote_public_db_ = remote_public_db.get();
 
+    // Since `NearbyPresenceCredentialStorage` binds to a `Receiver`, it
+    // must be entangled with a valid `Remote`.
+    mojo::PendingReceiver<mojom::NearbyPresenceCredentialStorage>
+        pending_receiver = remote_.BindNewPipeAndPassReceiver();
+
     credential_storage_ = std::make_unique<TestNearbyPresenceCredentialStorage>(
-        std::move(private_db), std::move(local_public_db),
-        std::move(remote_public_db));
+        std::move(pending_receiver), std::move(private_db),
+        std::move(local_public_db), std::move(remote_public_db));
   }
 
   void InitializeCredentialStorage(base::RunLoop& run_loop,
@@ -335,6 +346,8 @@ class NearbyPresenceCredentialStorageTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment;
 
   std::unique_ptr<NearbyPresenceCredentialStorage> credential_storage_;
+
+  mojo::Remote<mojom::NearbyPresenceCredentialStorage> remote_;
 
   std::map<std::string, ::nearby::internal::LocalCredential>
       private_db_entries_;

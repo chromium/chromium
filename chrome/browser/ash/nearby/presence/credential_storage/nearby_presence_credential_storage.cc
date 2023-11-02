@@ -37,9 +37,12 @@ const leveldb_proto::KeyFilter& DeleteKeyFilter() {
 namespace ash::nearby::presence {
 
 NearbyPresenceCredentialStorage::NearbyPresenceCredentialStorage(
+    mojo::PendingReceiver<mojom::NearbyPresenceCredentialStorage>
+        pending_receiver,
     leveldb_proto::ProtoDatabaseProvider* db_provider,
     const base::FilePath& profile_filepath) {
   CHECK(db_provider);
+  CHECK(pending_receiver);
 
   base::FilePath private_database_path =
       profile_filepath.Append(kPrivateCredentialDatabaseName);
@@ -65,14 +68,17 @@ NearbyPresenceCredentialStorage::NearbyPresenceCredentialStorage(
           leveldb_proto::ProtoDbType::
               NEARBY_PRESENCE_REMOTE_PUBLIC_CREDENTIAL_DATABASE,
           remote_public_database_path, database_task_runner);
-  NearbyPresenceCredentialStorage(std::move(private_db),
-                                  std::move(local_public_db),
-                                  std::move(remote_public_db));
+  NearbyPresenceCredentialStorage(
+      std::move(pending_receiver), std::move(private_db),
+      std::move(local_public_db), std::move(remote_public_db));
 }
 
 NearbyPresenceCredentialStorage::NearbyPresenceCredentialStorage(
-    std::unique_ptr<leveldb_proto::ProtoDatabase<
-        ::nearby::internal::LocalCredential>> private_db,
+    mojo::PendingReceiver<mojom::NearbyPresenceCredentialStorage>
+        pending_receiver,
+    std::unique_ptr<
+        leveldb_proto::ProtoDatabase<::nearby::internal::LocalCredential>>
+        private_db,
     std::unique_ptr<
         leveldb_proto::ProtoDatabase<::nearby::internal::SharedCredential>>
         local_public_db,
@@ -81,10 +87,12 @@ NearbyPresenceCredentialStorage::NearbyPresenceCredentialStorage(
         remote_public_db)
     : private_db_(std::move(private_db)),
       local_public_db_(std::move(local_public_db)),
-      remote_public_db_(std::move(remote_public_db)) {
+      remote_public_db_(std::move(remote_public_db)),
+      pending_receiver_(std::move(pending_receiver)) {
   CHECK(private_db_);
   CHECK(local_public_db_);
   CHECK(remote_public_db_);
+  CHECK(pending_receiver_);
 }
 
 NearbyPresenceCredentialStorage::~NearbyPresenceCredentialStorage() = default;
@@ -93,7 +101,9 @@ void NearbyPresenceCredentialStorage::Initialize(
     base::OnceCallback<void(bool)> on_fully_initialized) {
   // First attempt to initialize the private database. If successful,
   // the local public database, followed by the remote public database,
-  // will attempt initialization.
+  // will attempt initialization. If all databases successfully initialize,
+  // `pending_receiver` will be bound and `on_fully_initialized` will return
+  // true.
   private_db_->Init(base::BindOnce(
       &NearbyPresenceCredentialStorage::OnPrivateDatabaseInitialized,
       weak_ptr_factory_.GetWeakPtr(), std::move(on_fully_initialized)));
@@ -355,6 +365,11 @@ void NearbyPresenceCredentialStorage::OnRemotePublicDatabaseInitialized(
     std::move(on_fully_initialized).Run(/*success=*/false);
     return;
   }
+
+  CHECK(pending_receiver_);
+  // All databases were successfully initialized, so it's safe to process
+  // interface calls.
+  receiver_.Bind(std::move(pending_receiver_));
 
   std::move(on_fully_initialized).Run(/*success=*/true);
 }
