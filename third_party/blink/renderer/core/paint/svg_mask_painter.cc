@@ -255,7 +255,9 @@ void SVGMaskGeometry::Calculate(const FillLayer& layer) {
 
 void PaintSVGMask(LayoutSVGResourceMasker* masker,
                   const LayoutObject& layout_object,
-                  GraphicsContext& context) {
+                  GraphicsContext& context,
+                  SkBlendMode composite_op,
+                  bool apply_mask_type) {
   const ComputedStyle& style = layout_object.StyleRef();
   const gfx::RectF reference_box = SVGResources::ReferenceBoxForEffects(
       layout_object, GeometryBox::kFillBox,
@@ -267,14 +269,18 @@ void PaintSVGMask(LayoutSVGResourceMasker* masker,
   PaintRecord record = masker->CreatePaintRecord();
 
   context.Save();
-  context.ConcatCTM(content_transformation);
-  bool needs_luminance_layer =
-      masker->StyleRef().MaskType() == EMaskType::kLuminance;
-  if (needs_luminance_layer) {
-    context.BeginLayer(cc::ColorFilter::MakeLuma());
+  bool has_layer = false;
+  if (apply_mask_type &&
+      masker->StyleRef().MaskType() == EMaskType::kLuminance) {
+    context.BeginLayer(cc::ColorFilter::MakeLuma(), &composite_op);
+    has_layer = true;
+  } else if (composite_op != SkBlendMode::kSrcOver) {
+    context.BeginLayer(composite_op);
+    has_layer = true;
   }
+  context.ConcatCTM(content_transformation);
   context.DrawRecord(std::move(record));
-  if (needs_luminance_layer) {
+  if (has_layer) {
     context.EndLayer();
   }
   context.Restore();
@@ -290,6 +296,20 @@ struct FillInfo {
   const LayoutObject& object;
 };
 
+class ScopedMaskLuminanceLayer {
+  STACK_ALLOCATED();
+
+ public:
+  ScopedMaskLuminanceLayer(GraphicsContext& context, SkBlendMode composite_op)
+      : context_(context) {
+    context.BeginLayer(cc::ColorFilter::MakeLuma(), &composite_op);
+  }
+  ~ScopedMaskLuminanceLayer() { context_.EndLayer(); }
+
+ private:
+  GraphicsContext& context_;
+};
+
 void PaintMaskLayer(const FillLayer& layer,
                     const FillInfo& info,
                     SVGMaskGeometry& geometry,
@@ -298,6 +318,20 @@ void PaintMaskLayer(const FillLayer& layer,
   if (!style_image) {
     return;
   }
+
+  absl::optional<ScopedMaskLuminanceLayer> mask_luminance_scope;
+  SkBlendMode composite_op = SkBlendMode::kSrcOver;
+  // Don't use the operator if this is the bottom layer.
+  if (layer.Next()) {
+    composite_op = WebCoreCompositeToSkiaComposite(layer.Composite(),
+                                                   layer.GetBlendMode());
+  }
+
+  if (layer.MaskMode() == EFillMaskMode::kLuminance) {
+    mask_luminance_scope.emplace(context, composite_op);
+    composite_op = SkBlendMode::kSrcOver;
+  }
+
   // If the "image" referenced by the FillLayer is an SVG <mask> reference (and
   // this is a layer for a mask), then repeat, position, clip, origin and size
   // should have no effect.
@@ -317,7 +351,9 @@ void PaintMaskLayer(const FillLayer& layer,
         reference_box, info.object.IsSVGForeignObject()
                            ? info.object.StyleRef().EffectiveZoom()
                            : 1));
-    PaintSVGMask(masker, info.object, context);
+    const bool apply_mask_type =
+        layer.MaskMode() == EFillMaskMode::kMatchSource;
+    PaintSVGMask(masker, info.object, context, composite_op, apply_mask_type);
     context.Restore();
     return;
   }
@@ -366,8 +402,6 @@ void PaintMaskLayer(const FillLayer& layer,
   // This call takes the unscaled image, applies the given scale, and paints it
   // into the dest rect using phase and the given repeat spacing. Note the
   // phase is already scaled.
-  const SkBlendMode composite_op =
-      WebCoreCompositeToSkiaComposite(layer.Composite(), layer.GetBlendMode());
   const ImagePaintTimingInfo paint_timing_info(false, false);
   context.DrawImageTiled(*image, geometry.DestRect(), tiling_info,
                          image_auto_dark_mode, paint_timing_info, composite_op,
@@ -437,7 +471,8 @@ void SVGMaskPainter::Paint(GraphicsContext& context,
   SECURITY_DCHECK(!masker->SelfNeedsFullLayout());
   masker->ClearInvalidationMask();
 
-  PaintSVGMask(masker, layout_object, context);
+  PaintSVGMask(masker, layout_object, context, SkBlendMode::kSrcOver,
+               /*apply_mask_type=*/true);
 }
 
 PaintRecord SVGMaskPainter::PaintResource(SVGResource* mask_resource,
