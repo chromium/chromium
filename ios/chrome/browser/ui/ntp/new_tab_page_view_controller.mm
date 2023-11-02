@@ -165,6 +165,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
     _shouldAnimateHeader = YES;
     _focusAccessibilityOmniboxWhenViewAppears = YES;
     _inhibitScrollPositionUpdates = NO;
+    _shiftTileStartTime = -1;
   }
   return self;
 }
