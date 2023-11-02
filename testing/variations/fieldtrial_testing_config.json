@@ -12517,41 +12517,6 @@
             ]
         }
     ],
-    "PerformanceControlsRound2Launch": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230831",
-                    "params": {
-                        "discard_tab_treatment_opacity": "0.8",
-                        "discard_tab_treatment_option": "2",
-                        "expanded_high_efficiency_chip_discarded_duration": "3h",
-                        "expanded_high_efficiency_chip_frequency": "1d",
-                        "expanded_high_efficiency_chip_threshold_bytes": "206569472",
-                        "high_efficiency_chart_pmf_25_percentile_bytes": "65011712",
-                        "high_efficiency_chart_pmf_50_percentile_bytes": "117440512",
-                        "high_efficiency_chart_pmf_75_percentile_bytes": "206569472",
-                        "high_efficiency_chart_pmf_99_percentile_bytes": "838860800",
-                        "memory_update_trigger": "navigation",
-                        "memory_usage_in_hovercards_high_threshold_bytes": "838860800"
-                    },
-                    "enable_features": [
-                        "DiscardExceptionsImprovements",
-                        "DiscardedTabTreatment",
-                        "MemorySavingsReportingImprovements",
-                        "MemoryUsageInHovercards"
-                    ]
-                }
-            ]
-        }
-    ],
     "PhoneHubOnboardingNotifiersStudy": [
         {
             "platforms": [
