@@ -18,17 +18,34 @@ class PageLoadWaiter final : public content::WebContentsObserver {
   explicit PageLoadWaiter(content::WebContents* web_contents)
       : WebContentsObserver(web_contents) {
     CHECK(web_contents);
+    load_finished_ = !web_contents->IsLoading();
   }
 
   void Wait() { run_loop_.Run(); }
 
+  bool load_finished() { return load_finished_; }
+  bool activation_finished() { return activation_finished_; }
+  bool close_finished() { return close_finished_; }
+
  private:
   // content::WebContentsObserver:
   void DocumentOnLoadCompletedInPrimaryMainFrame() override {
+    load_finished_ = true;
+    run_loop_.Quit();
+  }
+  void DidActivatePreviewedPage(base::TimeTicks activation_time) override {
+    activation_finished_ = true;
+    run_loop_.Quit();
+  }
+  void WebContentsDestroyed() override {
+    close_finished_ = true;
     run_loop_.Quit();
   }
 
   base::RunLoop run_loop_;
+  bool load_finished_ = false;
+  bool activation_finished_ = false;
+  bool close_finished_ = false;
 };
 
 }  // namespace
@@ -61,12 +78,30 @@ void PreviewTestHelper::PromoteToNewTab() {
 void PreviewTestHelper::WaitUntilLoadFinished() {
   base::WeakPtr<content::WebContents> web_contents =
       GetManager().GetWebContentsForPreviewTab();
-  CHECK(web_contents);
-  if (!web_contents->IsLoading()) {
-    return;
-  }
   PageLoadWaiter page_load_waiter(web_contents.get());
-  page_load_waiter.Wait();
+  while (!page_load_waiter.load_finished()) {
+    page_load_waiter.Wait();
+  }
+}
+
+void PreviewTestHelper::ActivateAndWaitUntilFinished() {
+  base::WeakPtr<content::WebContents> web_contents =
+      GetManager().GetWebContentsForPreviewTab();
+  PageLoadWaiter page_load_waiter(web_contents.get());
+  GetManager().ActivateForTesting();
+  while (!page_load_waiter.activation_finished()) {
+    page_load_waiter.Wait();
+  }
+}
+
+void PreviewTestHelper::CloseAndWaitUntilFinished() {
+  base::WeakPtr<content::WebContents> web_contents =
+      GetManager().GetWebContentsForPreviewTab();
+  PageLoadWaiter page_load_waiter(web_contents.get());
+  GetManager().CloseForTesting();
+  while (!page_load_waiter.close_finished()) {
+    page_load_waiter.Wait();
+  }
 }
 
 PreviewManager& PreviewTestHelper::GetManager() {

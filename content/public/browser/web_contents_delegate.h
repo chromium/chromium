@@ -804,6 +804,9 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual void CancelPreviewByMojoBinderPolicy(
       const std::string& interface_name) {}
 
+  // Notify the previewed page is activated.
+  virtual void DidActivatePreviewedPage() {}
+
 #if !BUILDFLAG(IS_ANDROID)
   // Whether the WebContents should use per PWA instanced
   // system media controls.

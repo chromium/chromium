@@ -582,6 +582,9 @@ class PageLoadMetricsObserverInterface {
   virtual void DidActivatePrerenderedPage(
       content::NavigationHandle* navigation_handle) = 0;
 
+  // Called when the previewed page is activated for the tab promotion.
+  virtual void DidActivatePreviewedPage(base::TimeTicks activation_time) = 0;
+
   // Called when V8 per-frame memory usage updates are available. Each
   // MemoryUpdate consists of a GlobalRenderFrameHostId and a nonzero int64_t
   // change in bytes used.

@@ -1416,9 +1416,11 @@ class WebContents : public PageNavigator,
   // Activates the primary page that is shown in preview mode. This will relax
   // capability restriction in the browser process, and notify the renderer to
   // process the prerendering activation algorithm.
+  // This all processes happens asynchronously, and
+  // `WebContentsDelegate::DidActivatePreviewedPage` will be called once it's
+  // done.
   // Should be called while WebContentsDelegate::IsInPreviewMode returns true.
-  virtual void ActivatePreviewPage(base::TimeTicks activation_start,
-                                   base::OnceClosure completion_callback) = 0;
+  virtual void ActivatePreviewPage() = 0;
 
   // Starts an embedder triggered (browser-initiated) prerendering page and
   // returns the unique_ptr<PrerenderHandle>, which cancels prerendering on its

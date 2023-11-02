@@ -532,6 +532,11 @@ void MetricsWebContentsObserver::DidActivatePortal(
   primary_page_->DidActivatePortal(activation_time);
 }
 
+void MetricsWebContentsObserver::DidActivatePreviewedPage(
+    base::TimeTicks activation_time) {
+  primary_page_->DidActivatePreviewedPage(activation_time);
+}
+
 void MetricsWebContentsObserver::OnStorageAccessed(
     content::RenderFrameHost* rfh,
     const GURL& url,

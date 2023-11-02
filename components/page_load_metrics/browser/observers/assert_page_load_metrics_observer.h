@@ -51,6 +51,7 @@ class AssertPageLoadMetricsObserver final
   ObservePolicy OnCommit(content::NavigationHandle* navigation_handle) override;
   void DidActivatePrerenderedPage(
       content::NavigationHandle* navigation_handle) override;
+  void DidActivatePreviewedPage(base::TimeTicks activation_time) override;
 
   // Termination-like events
   void OnFailedProvisionalLoad(
@@ -224,6 +225,8 @@ class AssertPageLoadMetricsObserver final
   mutable bool destructing_ = false;
   bool backforwardcache_entering_ = false;
   bool backforwardcache_entered_ = false;
+  bool in_prerendering_ = false;
+  bool in_preview_ = false;
 };
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_ASSERT_PAGE_LOAD_METRICS_OBSERVER_H_

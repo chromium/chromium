@@ -44,14 +44,18 @@ class PreviewTab final : public content::WebContentsDelegate {
   // and runs queued suspended tasks such as resolving promises, releasing
   // AudioContext, etc.
   // This is not fully implemented, and the progress is tracked at b:305000959.
-  void Activate(base::WeakPtr<content::WebContents> web_contents,
-                base::OnceClosure completion_callback);
+  void Activate(base::WeakPtr<content::WebContents> web_contents);
 
   base::WeakPtr<content::WebContents> GetWebContents();
 
  private:
   class PreviewWidget;
   class WebContentsObserver;
+  enum class Status {
+    kPreview,
+    kActivating,
+    kActivated,
+  };
 
   void AttachTabHelpersForInit();
 
@@ -63,6 +67,7 @@ class PreviewTab final : public content::WebContentsDelegate {
   bool IsInPreviewMode() const override;
   void CancelPreviewByMojoBinderPolicy(
       const std::string& interface_name) override;
+  void DidActivatePreviewedPage() override;
 
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<WebContentsObserver> observer_;
@@ -72,10 +77,7 @@ class PreviewTab final : public content::WebContentsDelegate {
   // PrerenderManager.
   std::unique_ptr<content::PrerenderHandle> prerender_handle_;
   GURL url_;
-  // TODO(b:305000959): We may revisit if this flag name or manaving the state
-  // as a bool is the best option. See also review comment at
-  // https://crrev.com/c/4951222/comment/2922530a_7c28b268/
-  bool is_in_preview_mode_ = true;
+  Status status_ = Status::kPreview;
 };
 
 #endif  // CHROME_BROWSER_PRELOADING_PREVIEW_PREVIEW_TAB_H_

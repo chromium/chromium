@@ -33,6 +33,14 @@ class PreviewManager final
 
   base::WeakPtr<content::WebContents> GetWebContentsForPreviewTab();
 
+  // This method runs a preview page activation steps, and used for testing
+  // until the tab promotion interface is established.
+  void ActivateForTesting();
+
+  // This method closes a preview page, and used for testing until the primary
+  // page navigation closes existing preview pages.
+  void CloseForTesting();
+
  private:
   explicit PreviewManager(content::WebContents* web_contents);
   friend class content::WebContentsUserData<PreviewManager>;

@@ -635,6 +635,13 @@ void PageLoadTracker::DidActivatePrerenderedPage(
       internal::PageLoadPrerenderEvent::kPrerenderActivationNavigation);
 }
 
+void PageLoadTracker::DidActivatePreviewedPage(
+    base::TimeTicks activation_time) {
+  for (const auto& observer : observers_) {
+    observer->DidActivatePreviewedPage(activation_time);
+  }
+}
+
 void PageLoadTracker::DidCommitSameDocumentNavigation(
     content::NavigationHandle* navigation_handle) {
   if (parent_tracker_) {

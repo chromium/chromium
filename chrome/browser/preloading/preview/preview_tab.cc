@@ -170,7 +170,7 @@ content::PreloadingEligibility PreviewTab::IsPrerender2Supported(
 }
 
 bool PreviewTab::IsInPreviewMode() const {
-  return is_in_preview_mode_ &&
+  return status_ != Status::kActivated &&
          base::FeatureList::IsEnabled(blink::features::kLinkPreviewNavigation);
 }
 
@@ -211,11 +211,10 @@ void PreviewTab::PromoteToNewTab(content::WebContents& initiator_web_contents) {
                            /*user_gesture*/ true,
                            /*was_blocked*/ nullptr);
 
-  Activate(web_contents, base::OnceClosure());
+  Activate(web_contents);
 }
 
-void PreviewTab::Activate(base::WeakPtr<content::WebContents> web_contents,
-                          base::OnceClosure completion_callback) {
+void PreviewTab::Activate(base::WeakPtr<content::WebContents> web_contents) {
   CHECK(web_contents);
 
   // If we used ordinal navigation, we don't need to activate it.
@@ -223,11 +222,15 @@ void PreviewTab::Activate(base::WeakPtr<content::WebContents> web_contents,
     return;
   }
 
-  web_contents->ActivatePreviewPage(base::TimeTicks::Now(),
-                                    std::move(completion_callback));
+  status_ = Status::kActivating;
+  web_contents->ActivatePreviewPage();
 }
 
 void PreviewTab::CancelPreviewByMojoBinderPolicy(
     const std::string& interface_name) {
   // TODO(b:299240273): Navigate to an error page.
+}
+
+void PreviewTab::DidActivatePreviewedPage() {
+  status_ = Status::kActivated;
 }

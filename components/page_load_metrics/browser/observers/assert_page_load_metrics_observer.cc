@@ -67,6 +67,7 @@ AssertPageLoadMetricsObserver::OnPrerenderStart(
     const GURL& currently_committed_url) {
   CHECK(!started_);
   started_ = true;
+  in_prerendering_ = true;
 
   return CONTINUE_OBSERVING;
 }
@@ -77,6 +78,7 @@ AssertPageLoadMetricsObserver::OnPreviewStart(
     const GURL& currently_committed_url) {
   CHECK(!started_);
   started_ = true;
+  in_preview_ = true;
 
   return CONTINUE_OBSERVING;
 }
@@ -109,7 +111,21 @@ void AssertPageLoadMetricsObserver::DidActivatePrerenderedPage(
   CHECK(started_);
   CHECK(committed_);
   CHECK(!activated_);
+  CHECK(in_prerendering_);
+  CHECK(!in_preview_);
   activated_ = true;
+  in_prerendering_ = false;
+}
+
+void AssertPageLoadMetricsObserver::DidActivatePreviewedPage(
+    base::TimeTicks activation_time) {
+  CHECK(started_);
+  CHECK(committed_);
+  CHECK(!activated_);
+  CHECK(!in_prerendering_);
+  CHECK(in_preview_);
+  activated_ = true;
+  in_preview_ = false;
 }
 
 void AssertPageLoadMetricsObserver::OnFailedProvisionalLoad(

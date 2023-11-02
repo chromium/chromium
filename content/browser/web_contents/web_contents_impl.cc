@@ -2943,6 +2943,15 @@ void WebContentsImpl::DidActivatePortal(
   GetDelegate()->WebContentsBecamePortal(predecessor_web_contents);
 }
 
+void WebContentsImpl::DidActivatePreviewedPage(
+    base::TimeTicks activation_time) {
+  TRACE_EVENT1("content", "WebContentsImpl::DidActivatePreviewedPage",
+               "activation_time", activation_time);
+  observers_.NotifyObservers(&WebContentsObserver::DidActivatePreviewedPage,
+                             activation_time);
+  GetDelegate()->DidActivatePreviewedPage();
+}
+
 void WebContentsImpl::NotifyInsidePortal(bool inside_portal) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::NotifyInsidePortal",
                         "inside_portal", inside_portal);
@@ -10314,18 +10323,21 @@ void WebContentsImpl::SetTabSwitchStartTime(base::TimeTicks start_time,
       /*show_reason_bfcache_restore=*/false);
 }
 
-void WebContentsImpl::ActivatePreviewPage(
-    base::TimeTicks activation_start,
-    base::OnceClosure completion_callback) {
+void WebContentsImpl::ActivatePreviewPage() {
+  TRACE_EVENT0("content", "WebContentsImpl::ActivatePreviewPage");
+
   // TODO(b:299240273): Relax capability control here.
 
   auto params = blink::mojom::PrerenderPageActivationParams::New();
-  params->activation_start = activation_start;
+  base::TimeTicks activation_time = base::TimeTicks::Now();
+  params->activation_start = activation_time;
   // No way to activate the previewed page other than with a user action, or
   // testing only methods. So, we always set kYes here.
   params->was_user_activated = blink::mojom::WasActivatedOption::kYes;
-  GetRenderViewHost()->ActivatePrerenderedPage(std::move(params),
-                                               std::move(completion_callback));
+  GetRenderViewHost()->ActivatePrerenderedPage(
+      std::move(params),
+      base::BindOnce(&WebContentsImpl::DidActivatePreviewedPage,
+                     weak_factory_.GetWeakPtr(), activation_time));
 }
 
 VisibleTimeRequestTrigger& WebContentsImpl::GetVisibleTimeRequestTrigger() {

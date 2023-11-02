@@ -37,6 +37,14 @@ class PreviewTestHelper {
   void PromoteToNewTab();
   void WaitUntilLoadFinished();
 
+  // Tentative helper method until the tab promotion is available.
+  // This will be replaced by PromoteToNewTab()) and PromoteToCurrentTab().
+  void ActivateAndWaitUntilFinished();
+
+  // Tentative helper method until the primary page navigation closes existing
+  // preview pages.
+  void CloseAndWaitUntilFinished();
+
  private:
   PreviewManager& GetManager();
 

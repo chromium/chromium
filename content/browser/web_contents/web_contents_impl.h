@@ -580,8 +580,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void SetV8CompileHints(base::ReadOnlySharedMemoryRegion data) override;
   void SetTabSwitchStartTime(base::TimeTicks start_time,
                              bool destination_is_loaded) override;
-  void ActivatePreviewPage(base::TimeTicks activation_start,
-                           base::OnceClosure completion_callback) override;
+  void ActivatePreviewPage() override;
 
   // Implementation of PageNavigator.
   WebContents* OpenURL(const OpenURLParams& params) override;
@@ -1302,9 +1301,14 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Notifies observers that this WebContents was activated. This contents'
   // former portal host, |predecessor_web_contents|, has become a portal pending
   // adoption.
-  // |activation_time| is the time the activation happened, in wall time.
+  // `activation_time` is the time the activation happened, in wall time.
   void DidActivatePortal(WebContentsImpl* predecessor_web_contents,
                          base::TimeTicks activation_time);
+
+  // Notifies observers that this WebContents completed preview activation
+  // steps.
+  // `activation_time` is the time the activation happened, in wall time.
+  void DidActivatePreviewedPage(base::TimeTicks activation_time);
 
   void OnServiceWorkerAccessed(RenderFrameHost* render_frame_host,
                                const GURL& scope,

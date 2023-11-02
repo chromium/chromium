@@ -71616,6 +71616,23 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   </int>
 </enum>
 
+<enum name="PreTapEvents">
+  <int value="0" label="no event"/>
+  <int value="1" label="tapdown"/>
+  <int value="2" label="tapunconfirmed"/>
+  <int value="3" label="tapdown + tapunconfirmed"/>
+</enum>
+
+<enum name="PreviewFinalStatus">
+  <int value="0" label="just previewed"/>
+  <int value="1" label="previewed and promoted"/>
+</enum>
+
+<enum name="PreviewOrOriginServerConnection">
+  <int value="0" label="Connected to the origin server"/>
+  <int value="1" label="Connected to the preview server"/>
+</enum>
+
 <enum name="PreviewsCoinFlipResult">
   <int value="0" label="No preview attempted or coinflip disabled"/>
   <int value="1" label="Preview attempted, allowed by coin flip"/>
