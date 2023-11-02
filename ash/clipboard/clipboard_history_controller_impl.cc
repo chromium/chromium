@@ -953,10 +953,9 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
     data_to_paste = std::make_unique<ui::ClipboardData>();
     data_to_paste->set_commit_time(item.data().commit_time());
     data_to_paste->set_text(item.data().text());
-    ui::DataTransferEndpoint* data_src = item.data().source();
+    auto data_src = item.data().source();
     if (data_src) {
-      data_to_paste->set_source(
-          std::make_unique<ui::DataTransferEndpoint>(*data_src));
+      data_to_paste->set_source(data_src);
     }
   } else if (!current_clipboard_data ||
              *current_clipboard_data != item.data()) {

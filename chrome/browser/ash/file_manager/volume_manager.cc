@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
+#include "base/types/optional_util.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
@@ -1301,7 +1302,8 @@ void VolumeManager::OnClipboardDataChanged() {
   base::Pickle pickle(data->custom_data_data().data(),
                       data->custom_data_data().size());
   std::vector<ui::FileInfo> file_info =
-      file_manager::util::ParseFileSystemSources(data->source(), pickle);
+      file_manager::util::ParseFileSystemSources(
+          base::OptionalToPtr(data->source()), pickle);
   if (!file_info.empty()) {
     auto with_files = std::make_unique<ui::ClipboardData>(*data);
     with_files->set_filenames(std::move(file_info));

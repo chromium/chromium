@@ -237,9 +237,10 @@ ClipboardWin::~ClipboardWin() {
 void ClipboardWin::OnPreShutdown() {}
 
 // DataTransferEndpoint is not used on this platform.
-DataTransferEndpoint* ClipboardWin::GetSource(ClipboardBuffer buffer) const {
+absl::optional<DataTransferEndpoint> ClipboardWin::GetSource(
+    ClipboardBuffer buffer) const {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-  return nullptr;
+  return absl::nullopt;
 }
 
 const ClipboardSequenceNumberToken& ClipboardWin::GetSequenceNumber(

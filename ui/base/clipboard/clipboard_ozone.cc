@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -22,6 +23,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"
+#include "base/types/optional_util.h"
 #include "base/types/variant_util.h"
 #include "build/build_config.h"
 #include "clipboard_util.h"
@@ -49,14 +51,15 @@ namespace {
 constexpr base::TimeDelta kRequestTimeout = base::Seconds(1);
 
 // Checks if DLP rules allow the clipboard read.
-bool IsReadAllowed(const DataTransferEndpoint* data_src,
+bool IsReadAllowed(absl::optional<DataTransferEndpoint> data_src,
                    const DataTransferEndpoint* data_dst,
                    const base::span<uint8_t> data) {
   DataTransferPolicyController* policy_controller =
       DataTransferPolicyController::Get();
 
-  if (!policy_controller || !data_src || data.empty())
+  if (!policy_controller || !data_src.has_value() || data.empty()) {
     return true;
+  }
 
   bool is_allowed = policy_controller->IsClipboardReadAllowed(
       data_src, data_dst, data.size());
@@ -379,9 +382,9 @@ ClipboardOzone::~ClipboardOzone() = default;
 
 void ClipboardOzone::OnPreShutdown() {}
 
-DataTransferEndpoint* ClipboardOzone::GetSource(ClipboardBuffer buffer) const {
-  auto it = data_src_.find(buffer);
-  return it == data_src_.end() ? nullptr : it->second.get();
+absl::optional<DataTransferEndpoint> ClipboardOzone::GetSource(
+    ClipboardBuffer buffer) const {
+  return base::OptionalFromPtr(base::FindPtrOrNull(data_src_, buffer));
 }
 
 const ClipboardSequenceNumberToken& ClipboardOzone::GetSequenceNumber(
@@ -760,7 +763,7 @@ void ClipboardOzone::WriteData(const ClipboardFormatType& format,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void ClipboardOzone::AddClipboardSourceToDataOffer(
     const ClipboardBuffer buffer) {
-  DataTransferEndpoint* data_src = GetSource(buffer);
+  absl::optional<DataTransferEndpoint> data_src = GetSource(buffer);
 
   if (!data_src)
     return;

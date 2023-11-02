@@ -1404,16 +1404,19 @@ class FakeDataTransferPolicyController
   ~FakeDataTransferPolicyController() override = default;
 
   // ui::DataTransferPolicyController:
-  bool IsClipboardReadAllowed(const ui::DataTransferEndpoint* const data_src,
-                              const ui::DataTransferEndpoint* const data_dst,
-                              const absl::optional<size_t> size) override {
+  bool IsClipboardReadAllowed(
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+      const absl::optional<size_t> size) override {
     // The multipaste menu should have access to any clipboard data.
-    if (data_dst && data_dst->type() == ui::EndpointType::kClipboardHistory)
+    if (data_dst.has_value() &&
+        data_dst->type() == ui::EndpointType::kClipboardHistory) {
       return true;
+    }
 
     // For other data destinations, only the data from `allowed_url_`
     // should be accessible.
-    return data_src && data_src->IsUrlType() &&
+    return data_src.has_value() && data_src->IsUrlType() &&
            (*data_src->GetURL() == allowed_url_);
   }
 

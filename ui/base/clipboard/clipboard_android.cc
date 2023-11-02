@@ -467,11 +467,11 @@ ClipboardAndroid::~ClipboardAndroid() {
 void ClipboardAndroid::OnPreShutdown() {}
 
 // DataTransferEndpoint is not used on this platform.
-DataTransferEndpoint* ClipboardAndroid::GetSource(
+absl::optional<DataTransferEndpoint> ClipboardAndroid::GetSource(
     ClipboardBuffer buffer) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-  return nullptr;
+  return absl::nullopt;
 }
 
 const ClipboardSequenceNumberToken& ClipboardAndroid::GetSequenceNumber(

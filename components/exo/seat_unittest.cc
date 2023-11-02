@@ -192,7 +192,7 @@ TEST_F(SeatTest, SetSelectionReadDteFromLacros) {
 
   EXPECT_EQ(clipboard, kTestText);
 
-  const ui::DataTransferEndpoint* source_dte =
+  absl::optional<ui::DataTransferEndpoint> source_dte =
       ui::Clipboard::GetForCurrentThread()->GetSource(
           ui::ClipboardBuffer::kCopyPaste);
 
@@ -238,7 +238,7 @@ TEST_F(SeatTest, SetSelectionIgnoreDteFromNonLacros) {
 
   EXPECT_EQ(clipboard, kTestText);
 
-  const ui::DataTransferEndpoint* source_dte =
+  absl::optional<ui::DataTransferEndpoint> source_dte =
       ui::Clipboard::GetForCurrentThread()->GetSource(
           ui::ClipboardBuffer::kCopyPaste);
 

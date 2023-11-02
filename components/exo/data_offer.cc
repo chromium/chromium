@@ -92,7 +92,7 @@ void ReadDataTransferEndpointFromClipboard(
     const std::string& charset,
     const ui::DataTransferEndpoint data_dst,
     DataOffer::SendDataCallback callback) {
-  const ui::DataTransferEndpoint* data_src =
+  absl::optional<ui::DataTransferEndpoint> data_src =
       ui::Clipboard::GetForCurrentThread()->GetSource(
           ui::ClipboardBuffer::kCopyPaste);
 

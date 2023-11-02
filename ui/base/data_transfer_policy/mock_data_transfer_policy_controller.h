@@ -23,8 +23,8 @@ class MockDataTransferPolicyController : public DataTransferPolicyController {
   // DataTransferPolicyController:
   MOCK_METHOD(bool,
               IsClipboardReadAllowed,
-              (const ui::DataTransferEndpoint* const data_src,
-               const ui::DataTransferEndpoint* const data_dst,
+              (base::optional_ref<const ui::DataTransferEndpoint> data_src,
+               base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                const absl::optional<size_t> size),
               (override));
   MOCK_METHOD(void,

@@ -25,7 +25,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardIOS : public Clipboard {
 
   // Clipboard overrides:
   void OnPreShutdown() override;
-  DataTransferEndpoint* GetSource(ClipboardBuffer buffer) const override;
+  absl::optional<DataTransferEndpoint> GetSource(
+      ClipboardBuffer buffer) const override;
   const ClipboardSequenceNumberToken& GetSequenceNumber(
       ClipboardBuffer buffer) const override;
   std::vector<std::u16string> GetStandardFormats(

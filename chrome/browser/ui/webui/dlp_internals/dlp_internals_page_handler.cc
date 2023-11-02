@@ -91,7 +91,7 @@ DlpInternalsPageHandler::~DlpInternalsPageHandler() = default;
 
 void DlpInternalsPageHandler::GetClipboardDataSource(
     GetClipboardDataSourceCallback callback) {
-  const auto* source = ui::Clipboard::GetForCurrentThread()->GetSource(
+  auto source = ui::Clipboard::GetForCurrentThread()->GetSource(
       ui::ClipboardBuffer::kCopyPaste);
   if (!source) {
     std::move(callback).Run(std::move(nullptr));

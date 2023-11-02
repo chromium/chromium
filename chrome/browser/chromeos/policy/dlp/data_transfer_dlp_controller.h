@@ -37,9 +37,10 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
   void operator=(const DataTransferDlpController&) = delete;
 
   // ui::DataTransferPolicyController:
-  bool IsClipboardReadAllowed(const ui::DataTransferEndpoint* const data_src,
-                              const ui::DataTransferEndpoint* const data_dst,
-                              const absl::optional<size_t> size) override;
+  bool IsClipboardReadAllowed(
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+      const absl::optional<size_t> size) override;
   void PasteIfAllowed(const ui::DataTransferEndpoint* const data_src,
                       const ui::DataTransferEndpoint* const data_dst,
                       const absl::optional<size_t> size,

@@ -13,6 +13,8 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/optional_ref.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromecast_buildflags.h"
@@ -30,8 +32,8 @@
 namespace ui {
 
 namespace {
-bool IsReadAllowed(const DataTransferEndpoint* src,
-                   const DataTransferEndpoint* dst) {
+bool IsReadAllowed(base::optional_ref<const DataTransferEndpoint> src,
+                   base::optional_ref<const DataTransferEndpoint> dst) {
   auto* policy_controller = DataTransferPolicyController::Get();
   if (!policy_controller)
     return true;
@@ -58,7 +60,8 @@ void TestClipboard::SetLastModifiedTime(const base::Time& time) {
 
 void TestClipboard::OnPreShutdown() {}
 
-DataTransferEndpoint* TestClipboard::GetSource(ClipboardBuffer buffer) const {
+absl::optional<DataTransferEndpoint> TestClipboard::GetSource(
+    ClipboardBuffer buffer) const {
   return GetStore(buffer).GetDataSource();
 }
 
@@ -72,8 +75,9 @@ bool TestClipboard::IsFormatAvailable(
     ClipboardBuffer buffer,
     const ui::DataTransferEndpoint* data_dst) const {
   if (!MaybeRetrieveSyncedSourceAndCheckIfReadIsAllowed(
-          buffer, GetStore(buffer).data_src.get(), data_dst))
+          buffer, GetStore(buffer).data_src, data_dst)) {
     return false;
+  }
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // The linux clipboard treats the presence of text on the clipboard
   // as the url format being available.
@@ -102,9 +106,10 @@ std::vector<std::u16string> TestClipboard::GetStandardFormats(
     const DataTransferEndpoint* data_dst) const {
   std::vector<std::u16string> types;
   const DataStore& store = GetStore(buffer);
-  if (!MaybeRetrieveSyncedSourceAndCheckIfReadIsAllowed(
-          buffer, store.data_src.get(), data_dst))
+  if (!MaybeRetrieveSyncedSourceAndCheckIfReadIsAllowed(buffer, store.data_src,
+                                                        data_dst)) {
     return types;
+  }
 
   if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer,
                         data_dst)) {
@@ -136,8 +141,9 @@ void TestClipboard::ReadAvailableTypes(
   DCHECK(types);
   types->clear();
   if (!MaybeRetrieveSyncedSourceAndCheckIfReadIsAllowed(
-          buffer, GetStore(buffer).data_src.get(), data_dst))
+          buffer, GetStore(buffer).data_src, data_dst)) {
     return;
+  }
 
   *types = GetStandardFormats(buffer, data_dst);
 }
@@ -146,8 +152,9 @@ void TestClipboard::ReadText(ClipboardBuffer buffer,
                              const DataTransferEndpoint* data_dst,
                              std::u16string* result) const {
   if (!MaybeRetrieveSyncedSourceAndCheckIfReadIsAllowed(
-          buffer, GetStore(buffer).data_src.get(), data_dst))
+          buffer, GetStore(buffer).data_src, data_dst)) {
     return;
+  }
 
   std::string result8;
   ReadAsciiText(buffer, data_dst, &result8);
@@ -159,9 +166,10 @@ void TestClipboard::ReadAsciiText(ClipboardBuffer buffer,
                                   const DataTransferEndpoint* data_dst,
                                   std::string* result) const {
   const DataStore& store = GetStore(buffer);
-  if (!MaybeRetrieveSyncedSourceAndCheckIfReadIsAllowed(
-          buffer, store.data_src.get(), data_dst))
+  if (!MaybeRetrieveSyncedSourceAndCheckIfReadIsAllowed(buffer, store.data_src,
+                                                        data_dst)) {
     return;
+  }
 
   result->clear();
   auto it = store.data.find(ClipboardFormatType::PlainTextType());
@@ -176,9 +184,10 @@ void TestClipboard::ReadHTML(ClipboardBuffer buffer,
                              uint32_t* fragment_start,
                              uint32_t* fragment_end) const {
   const DataStore& store = GetStore(buffer);
-  if (!MaybeRetrieveSyncedSourceAndCheckIfReadIsAllowed(
-          buffer, store.data_src.get(), data_dst))
+  if (!MaybeRetrieveSyncedSourceAndCheckIfReadIsAllowed(buffer, store.data_src,
+                                                        data_dst)) {
     return;
+  }
 
   markup->clear();
   src_url->clear();
@@ -194,9 +203,10 @@ void TestClipboard::ReadSvg(ClipboardBuffer buffer,
                             const DataTransferEndpoint* data_dst,
                             std::u16string* result) const {
   const DataStore& store = GetStore(buffer);
-  if (!MaybeRetrieveSyncedSourceAndCheckIfReadIsAllowed(
-          buffer, store.data_src.get(), data_dst))
+  if (!MaybeRetrieveSyncedSourceAndCheckIfReadIsAllowed(buffer, store.data_src,
+                                                        data_dst)) {
     return;
+  }
 
   result->clear();
   auto it = store.data.find(ClipboardFormatType::SvgType());
@@ -208,9 +218,10 @@ void TestClipboard::ReadRTF(ClipboardBuffer buffer,
                             const DataTransferEndpoint* data_dst,
                             std::string* result) const {
   const DataStore& store = GetStore(buffer);
-  if (!MaybeRetrieveSyncedSourceAndCheckIfReadIsAllowed(
-          buffer, store.data_src.get(), data_dst))
+  if (!MaybeRetrieveSyncedSourceAndCheckIfReadIsAllowed(buffer, store.data_src,
+                                                        data_dst)) {
     return;
+  }
 
   result->clear();
   auto it = store.data.find(ClipboardFormatType::RtfType());
@@ -222,8 +233,8 @@ void TestClipboard::ReadPng(ClipboardBuffer buffer,
                             const DataTransferEndpoint* data_dst,
                             ReadPngCallback callback) const {
   const DataStore& store = GetStore(buffer);
-  if (!MaybeRetrieveSyncedSourceAndCheckIfReadIsAllowed(
-          buffer, store.data_src.get(), data_dst)) {
+  if (!MaybeRetrieveSyncedSourceAndCheckIfReadIsAllowed(buffer, store.data_src,
+                                                        data_dst)) {
     std::move(callback).Run(std::vector<uint8_t>());
     return;
   }
@@ -240,9 +251,10 @@ void TestClipboard::ReadFilenames(ClipboardBuffer buffer,
                                   const DataTransferEndpoint* data_dst,
                                   std::vector<ui::FileInfo>* result) const {
   const DataStore& store = GetStore(buffer);
-  if (!MaybeRetrieveSyncedSourceAndCheckIfReadIsAllowed(
-          buffer, store.data_src.get(), data_dst))
+  if (!MaybeRetrieveSyncedSourceAndCheckIfReadIsAllowed(buffer, store.data_src,
+                                                        data_dst)) {
     return;
+  }
 
   *result = store.filenames;
 }
@@ -253,8 +265,9 @@ void TestClipboard::ReadBookmark(const DataTransferEndpoint* data_dst,
                                  std::string* url) const {
   const DataStore& store = GetDefaultStore();
   if (!MaybeRetrieveSyncedSourceAndCheckIfReadIsAllowed(
-          default_store_buffer_, store.data_src.get(), data_dst))
+          default_store_buffer_, store.data_src, data_dst)) {
     return;
+  }
 
   if (url) {
     auto it = store.data.find(ClipboardFormatType::UrlType());
@@ -270,8 +283,9 @@ void TestClipboard::ReadData(const ClipboardFormatType& format,
                              std::string* result) const {
   const DataStore& store = GetDefaultStore();
   if (!MaybeRetrieveSyncedSourceAndCheckIfReadIsAllowed(
-          default_store_buffer_, store.data_src.get(), data_dst))
+          default_store_buffer_, store.data_src, data_dst)) {
     return;
+  }
 
   result->clear();
   auto it = store.data.find(format);
@@ -301,7 +315,7 @@ void TestClipboard::WritePortableAndPlatformRepresentations(
   Clear(buffer);
   default_store_buffer_ = buffer;
 
-  GetStore(buffer).SetDataSource(std::move(data_src));
+  GetStore(buffer).SetDataSource(base::OptionalFromPtr(data_src.get()));
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   AddClipboardSourceToDataOffer(buffer);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -388,9 +402,7 @@ TestClipboard::DataStore::DataStore(const DataStore& other) {
   url_title = other.url_title;
   html_src_url = other.html_src_url;
   png = other.png;
-  data_src = other.data_src ? std::make_unique<DataTransferEndpoint>(
-                                  DataTransferEndpoint(*(other.data_src)))
-                            : nullptr;
+  data_src = other.data_src;
 }
 
 TestClipboard::DataStore& TestClipboard::DataStore::operator=(
@@ -400,9 +412,7 @@ TestClipboard::DataStore& TestClipboard::DataStore::operator=(
   url_title = other.url_title;
   html_src_url = other.html_src_url;
   png = other.png;
-  data_src = other.data_src ? std::make_unique<DataTransferEndpoint>(
-                                  DataTransferEndpoint(*(other.data_src)))
-                            : nullptr;
+  data_src = other.data_src;
   return *this;
 }
 
@@ -418,18 +428,19 @@ void TestClipboard::DataStore::Clear() {
 }
 
 void TestClipboard::DataStore::SetDataSource(
-    std::unique_ptr<DataTransferEndpoint> new_data_src) {
+    absl::optional<DataTransferEndpoint> new_data_src) {
   data_src = std::move(new_data_src);
 }
 
-DataTransferEndpoint* TestClipboard::DataStore::GetDataSource() const {
-  return data_src.get();
+absl::optional<DataTransferEndpoint> TestClipboard::DataStore::GetDataSource()
+    const {
+  return data_src;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void TestClipboard::AddClipboardSourceToDataOffer(
     const ClipboardBuffer buffer) {
-  DataTransferEndpoint* data_src = GetSource(buffer);
+  absl::optional<DataTransferEndpoint> data_src = GetSource(buffer);
 
   if (!data_src)
     return;
@@ -443,11 +454,12 @@ void TestClipboard::AddClipboardSourceToDataOffer(
 
 bool TestClipboard::MaybeRetrieveSyncedSourceAndCheckIfReadIsAllowed(
     ClipboardBuffer buffer,
-    const DataTransferEndpoint* data_src,
+    base::optional_ref<const DataTransferEndpoint> data_src,
     const DataTransferEndpoint* data_dst) const {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (data_src)
+  if (data_src.has_value()) {
     return IsReadAllowed(data_src, data_dst);
+  }
 
   const DataStore& store = GetDefaultStore();
   auto it =

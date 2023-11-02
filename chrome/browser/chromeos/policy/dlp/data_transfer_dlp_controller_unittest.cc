@@ -172,8 +172,8 @@ class DataTransferDlpControllerTest
 };
 
 TEST_F(DataTransferDlpControllerTest, NullSrc) {
-  EXPECT_EQ(true, dlp_controller_->IsClipboardReadAllowed(nullptr, nullptr,
-                                                          absl::nullopt));
+  EXPECT_EQ(true, dlp_controller_->IsClipboardReadAllowed(
+                      absl::nullopt, absl::nullopt, absl::nullopt));
 
   ::testing::StrictMock<base::MockOnceClosure> callback;
   EXPECT_CALL(callback, Run());
@@ -194,7 +194,7 @@ TEST_F(DataTransferDlpControllerTest, NullSrc) {
 TEST_F(DataTransferDlpControllerTest, ClipboardHistoryDst) {
   ui::DataTransferEndpoint data_src((GURL(kExample1Url)));
   ui::DataTransferEndpoint data_dst(ui::EndpointType::kClipboardHistory);
-  EXPECT_EQ(true, dlp_controller_->IsClipboardReadAllowed(&data_src, &data_dst,
+  EXPECT_EQ(true, dlp_controller_->IsClipboardReadAllowed(data_src, data_dst,
                                                           absl::nullopt));
   histogram_tester_.ExpectUniqueSample(
       data_controls::GetDlpHistogramPrefix() +
@@ -206,7 +206,7 @@ TEST_F(DataTransferDlpControllerTest, ClipboardHistoryDst) {
 TEST_F(DataTransferDlpControllerTest, LacrosDst) {
   ui::DataTransferEndpoint data_src((GURL(kExample1Url)));
   ui::DataTransferEndpoint data_dst(ui::EndpointType::kLacros);
-  EXPECT_EQ(true, dlp_controller_->IsClipboardReadAllowed(&data_src, &data_dst,
+  EXPECT_EQ(true, dlp_controller_->IsClipboardReadAllowed(data_src, data_dst,
                                                           absl::nullopt));
   histogram_tester_.ExpectUniqueSample(
       data_controls::GetDlpHistogramPrefix() +
@@ -441,7 +441,7 @@ TEST_P(DlpControllerTest, Allow) {
   EXPECT_CALL(*rules_manager_, IsRestrictedDestination)
       .WillOnce(testing::Return(DlpRulesManager::Level::kAllow));
 
-  EXPECT_EQ(true, dlp_controller_->IsClipboardReadAllowed(&data_src_, dst_ptr_,
+  EXPECT_EQ(true, dlp_controller_->IsClipboardReadAllowed(data_src_, data_dst_,
                                                           absl::nullopt));
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
@@ -471,7 +471,7 @@ TEST_P(DlpControllerTest, Block_IsClipboardReadAllowed) {
     EXPECT_CALL(*dlp_controller_, NotifyBlockedPaste);
   }
 
-  EXPECT_EQ(false, dlp_controller_->IsClipboardReadAllowed(&data_src_, dst_ptr_,
+  EXPECT_EQ(false, dlp_controller_->IsClipboardReadAllowed(data_src_, data_dst_,
                                                            absl::nullopt));
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
@@ -518,7 +518,7 @@ TEST_P(DlpControllerTest, Report_IsClipboardReadAllowed) {
   EXPECT_CALL(*rules_manager_, IsRestrictedDestination)
       .WillOnce(testing::Return(DlpRulesManager::Level::kReport));
 
-  EXPECT_EQ(true, dlp_controller_->IsClipboardReadAllowed(&data_src_, dst_ptr_,
+  EXPECT_EQ(true, dlp_controller_->IsClipboardReadAllowed(data_src_, data_dst_,
                                                           absl::nullopt));
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
@@ -565,7 +565,7 @@ TEST_P(DlpControllerTest, Warn_IsClipboardReadAllowed) {
   }
 
   EXPECT_EQ(!show_warning, dlp_controller_->IsClipboardReadAllowed(
-                               &data_src_, dst_ptr_, absl::nullopt));
+                               data_src_, data_dst_, absl::nullopt));
   if (show_warning) {
     EXPECT_EQ(events_.size(), 1u);
     EXPECT_THAT(
@@ -583,7 +583,7 @@ TEST_P(DlpControllerTest, Warn_IsClipboardReadAllowed) {
       .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(*dlp_controller_, ShouldCancelOnWarn)
       .WillRepeatedly(testing::Return(false));
-  EXPECT_EQ(true, dlp_controller_->IsClipboardReadAllowed(&data_src_, dst_ptr_,
+  EXPECT_EQ(true, dlp_controller_->IsClipboardReadAllowed(data_src_, data_dst_,
                                                           absl::nullopt));
   EXPECT_EQ(events_.size(), show_warning ? 1u : 0u);
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
@@ -605,7 +605,7 @@ TEST_P(DlpControllerTest, Warn_ShouldCancelOnWarn) {
   EXPECT_CALL(*dlp_controller_, ShouldCancelOnWarn)
       .WillRepeatedly(testing::Return(true));
 
-  EXPECT_EQ(false, dlp_controller_->IsClipboardReadAllowed(&data_src_, dst_ptr_,
+  EXPECT_EQ(false, dlp_controller_->IsClipboardReadAllowed(data_src_, data_dst_,
                                                            absl::nullopt));
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 }
@@ -664,7 +664,7 @@ TEST_P(DlpControllerVMsTest, Allow) {
   EXPECT_CALL(*rules_manager_, IsRestrictedComponent)
       .WillOnce(testing::Return(DlpRulesManager::Level::kAllow));
 
-  EXPECT_EQ(true, dlp_controller_->IsClipboardReadAllowed(&data_src, &data_dst,
+  EXPECT_EQ(true, dlp_controller_->IsClipboardReadAllowed(data_src, data_dst,
                                                           absl::nullopt));
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
@@ -694,8 +694,8 @@ TEST_P(DlpControllerVMsTest, Block_IsClipboardReadAllowed) {
     EXPECT_CALL(*dlp_controller_, NotifyBlockedPaste);
   }
 
-  EXPECT_EQ(false, dlp_controller_->IsClipboardReadAllowed(
-                       &data_src_, &data_dst_, absl::nullopt));
+  EXPECT_EQ(false, dlp_controller_->IsClipboardReadAllowed(data_src_, data_dst_,
+                                                           absl::nullopt));
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
   if (do_notify_) {
@@ -741,8 +741,8 @@ TEST_P(DlpControllerVMsTest, Report_IsClipboardReadAllowed) {
   EXPECT_CALL(*rules_manager_, IsRestrictedComponent)
       .WillOnce(testing::Return(DlpRulesManager::Level::kReport));
 
-  EXPECT_EQ(true, dlp_controller_->IsClipboardReadAllowed(
-                      &data_src_, &data_dst_, absl::nullopt));
+  EXPECT_EQ(true, dlp_controller_->IsClipboardReadAllowed(data_src_, data_dst_,
+                                                          absl::nullopt));
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
   if (do_notify_) {
@@ -787,7 +787,7 @@ TEST_P(DlpControllerVMsTest, Warn_IsClipboardReadAllowed) {
     EXPECT_CALL(*dlp_controller_, WarnOnPaste);
   }
 
-  EXPECT_EQ(true, dlp_controller_->IsClipboardReadAllowed(&data_src, &data_dst,
+  EXPECT_EQ(true, dlp_controller_->IsClipboardReadAllowed(data_src, data_dst,
                                                           absl::nullopt));
   if (do_notify) {
     EXPECT_EQ(events_.size(), 1u);

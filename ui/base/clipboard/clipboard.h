@@ -27,6 +27,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -41,7 +42,6 @@ class GURL;
 namespace ui {
 class TestClipboard;
 class ScopedClipboardWriter;
-class DataTransferEndpoint;
 
 // Clipboard:
 // - reads from and writes to the system clipboard.
@@ -130,7 +130,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual void OnPreShutdown() = 0;
 
   // Gets the source of the current clipboard buffer contents.
-  virtual const DataTransferEndpoint* GetSource(
+  virtual absl::optional<DataTransferEndpoint> GetSource(
       ClipboardBuffer buffer) const = 0;
 
   // Returns a token which uniquely identifies clipboard state.

@@ -33,8 +33,8 @@ ClipboardData::ClipboardData(const ClipboardData& other) {
   web_smart_paste_ = other.web_smart_paste_;
   svg_data_ = other.svg_data_;
   filenames_ = other.filenames_;
-  src_ = other.src_ ? std::make_unique<DataTransferEndpoint>(*other.src_.get())
-                    : nullptr;
+  src_ = other.src_;
+
 #if BUILDFLAG(IS_CHROMEOS)
   commit_time_ = other.commit_time_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -63,8 +63,8 @@ bool ClipboardData::operator==(const ClipboardData& that) const {
       custom_data_data_ == that.custom_data_data() &&
       web_smart_paste_ == that.web_smart_paste() &&
       svg_data_ == that.svg_data() && filenames_ == that.filenames() &&
-      (src_.get() ? (that.source() && *src_.get() == *that.source())
-                  : !that.source());
+      (src_ ? (that.source().has_value() && *src_ == *that.source())
+            : !that.source().has_value());
   if (!equal_except_images)
     return false;
 

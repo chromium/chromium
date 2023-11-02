@@ -214,62 +214,66 @@ void DataTransferDlpController::Init(const DlpRulesManager& dlp_rules_manager) {
 }
 
 bool DataTransferDlpController::IsClipboardReadAllowed(
-    const ui::DataTransferEndpoint* const data_src,
-    const ui::DataTransferEndpoint* const data_dst,
+    base::optional_ref<const ui::DataTransferEndpoint> data_src,
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
     const absl::optional<size_t> size) {
   std::string src_pattern;
   std::string dst_pattern;
   DlpRulesManager::RuleMetadata rule_metadata;
 
-  DlpRulesManager::Level level =
-      IsDataTransferAllowed(*dlp_rules_manager_, data_src, data_dst, size,
-                            &src_pattern, &dst_pattern, &rule_metadata);
+  DlpRulesManager::Level level = IsDataTransferAllowed(
+      *dlp_rules_manager_, data_src.as_ptr(), data_dst.as_ptr(), size,
+      &src_pattern, &dst_pattern, &rule_metadata);
 
-  MaybeReportEvent(data_src, data_dst, src_pattern, dst_pattern, level,
+  MaybeReportEvent(data_src.as_ptr(), data_dst.as_ptr(), src_pattern,
+                   dst_pattern, level,
                    /*is_clipboard_event=*/true, rule_metadata);
 
-  bool notify_on_paste = ShouldNotifyOnPaste(data_dst);
+  bool notify_on_paste = ShouldNotifyOnPaste(data_dst.as_ptr());
 
   bool is_read_allowed = true;
 
   switch (level) {
     case DlpRulesManager::Level::kBlock:
       if (notify_on_paste) {
-        NotifyBlockedPaste(data_src, data_dst);
+        NotifyBlockedPaste(data_src.as_ptr(), data_dst.as_ptr());
       }
       is_read_allowed = false;
       break;
     case DlpRulesManager::Level::kWarn:
 
-      if (data_dst && IsVM(data_dst->type())) {
+      if (data_dst.has_value() && IsVM(data_dst->type())) {
         if (notify_on_paste) {
-          ReportEvent(data_src, data_dst, src_pattern, dst_pattern,
-                      DlpRulesManager::Level::kWarn,
+          ReportEvent(data_src.as_ptr(), data_dst.as_ptr(), src_pattern,
+                      dst_pattern, DlpRulesManager::Level::kWarn,
                       /*is_clipboard_event=*/true, rule_metadata);
 
           auto reporting_cb = base::BindRepeating(
               &DataTransferDlpController::ReportWarningProceededEvent,
-              weak_ptr_factory_.GetWeakPtr(), base::OptionalFromPtr(data_src),
-              base::OptionalFromPtr(data_dst), src_pattern, dst_pattern,
+              weak_ptr_factory_.GetWeakPtr(), data_src.CopyAsOptional(),
+              data_dst.CopyAsOptional(), src_pattern, dst_pattern,
               /*is_clipboard_event=*/true, rule_metadata);
 
-          WarnOnPaste(data_src, data_dst, std::move(reporting_cb));
+          WarnOnPaste(data_src.as_ptr(), data_dst.as_ptr(),
+                      std::move(reporting_cb));
         }
-      } else if (ShouldCancelOnWarn(data_dst)) {
+      } else if (ShouldCancelOnWarn(data_dst.as_ptr())) {
         is_read_allowed = false;
-      } else if (notify_on_paste && !(data_dst && data_dst->IsUrlType()) &&
-                 !ShouldPasteOnWarn(data_dst)) {
-        ReportEvent(data_src, data_dst, src_pattern, dst_pattern,
-                    DlpRulesManager::Level::kWarn,
+      } else if (notify_on_paste &&
+                 !(data_dst.has_value() && data_dst->IsUrlType()) &&
+                 !ShouldPasteOnWarn(data_dst.as_ptr())) {
+        ReportEvent(data_src.as_ptr(), data_dst.as_ptr(), src_pattern,
+                    dst_pattern, DlpRulesManager::Level::kWarn,
                     /*is_clipboard_event=*/true, rule_metadata);
 
         auto reporting_cb = base::BindRepeating(
             &DataTransferDlpController::ReportWarningProceededEvent,
-            weak_ptr_factory_.GetWeakPtr(), base::OptionalFromPtr(data_src),
-            base::OptionalFromPtr(data_dst), src_pattern, dst_pattern,
+            weak_ptr_factory_.GetWeakPtr(), data_src.CopyAsOptional(),
+            data_dst.CopyAsOptional(), src_pattern, dst_pattern,
             /*is_clipboard_event=*/true, rule_metadata);
 
-        WarnOnPaste(data_src, data_dst, std::move(reporting_cb));
+        WarnOnPaste(data_src.as_ptr(), data_dst.as_ptr(),
+                    std::move(reporting_cb));
         is_read_allowed = false;
       }
       break;

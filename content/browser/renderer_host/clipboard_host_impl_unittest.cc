@@ -87,8 +87,8 @@ class PolicyControllerTest : public ui::DataTransferPolicyController {
   ~PolicyControllerTest() override = default;
 
   MOCK_METHOD3(IsClipboardReadAllowed,
-               bool(const ui::DataTransferEndpoint* const data_src,
-                    const ui::DataTransferEndpoint* const data_dst,
+               bool(base::optional_ref<const ui::DataTransferEndpoint> data_src,
+                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                     const absl::optional<size_t> size));
 
   MOCK_METHOD5(PasteIfAllowed,

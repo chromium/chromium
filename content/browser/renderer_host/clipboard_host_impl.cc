@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "content/browser/file_system/browser_file_system_helper.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
@@ -675,10 +676,11 @@ void ClipboardHostImpl::PasteIfPolicyAllowed(
       std::move(clipboard_paste_data), std::move(callback));
 
   if (ui::DataTransferPolicyController::HasInstance()) {
+    auto source =
+        ui::Clipboard::GetForCurrentThread()->GetSource(clipboard_buffer);
     ui::DataTransferPolicyController::Get()->PasteIfAllowed(
-        ui::Clipboard::GetForCurrentThread()->GetSource(clipboard_buffer),
-        CreateDataEndpoint().get(), data_size, &render_frame_host(),
-        std::move(policy_cb));
+        base::OptionalToPtr(source), CreateDataEndpoint().get(), data_size,
+        &render_frame_host(), std::move(policy_cb));
     return;
   }
   std::move(policy_cb).Run(/*is_allowed=*/true);

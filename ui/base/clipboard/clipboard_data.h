@@ -153,9 +153,9 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
       format_ |= static_cast<int>(ClipboardInternalFormat::kFilenames);
   }
 
-  DataTransferEndpoint* source() const { return src_.get(); }
+  const absl::optional<DataTransferEndpoint>& source() const { return src_; }
 
-  void set_source(std::unique_ptr<DataTransferEndpoint> src) {
+  void set_source(absl::optional<DataTransferEndpoint> src) {
     src_ = std::move(src);
   }
 
@@ -214,7 +214,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
   int format_ = 0;
 
   // The source of the data.
-  std::unique_ptr<DataTransferEndpoint> src_;
+  absl::optional<DataTransferEndpoint> src_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // If present, the time at which this data was committed to the clipboard.

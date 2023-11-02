@@ -35,12 +35,12 @@ TEST(ClipboardDataTest, BitmapTest) {
 TEST(ClipboardDataTest, DataSrcTest) {
   GURL url("www.example.com");
   ClipboardData data1;
-  data1.set_source(std::make_unique<DataTransferEndpoint>(url));
+  data1.set_source(absl::make_optional<DataTransferEndpoint>(url));
 
   ClipboardData data2;
   EXPECT_NE(data1, data2);
 
-  data2.set_source(std::make_unique<DataTransferEndpoint>(url));
+  data2.set_source(absl::make_optional<DataTransferEndpoint>(url));
   EXPECT_EQ(data1, data2);
 }
 
