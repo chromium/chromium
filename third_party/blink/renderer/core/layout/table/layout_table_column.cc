@@ -165,10 +165,6 @@ void LayoutTableColumn::UpdateFromElement() {
 
 PhysicalSize LayoutTableColumn::Size() const {
   NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
-    return frame_size_;
-  }
-
   auto* table = Table();
   DCHECK(table);
   if (table->PhysicalFragmentCount() == 0) {
@@ -211,10 +207,6 @@ PhysicalSize LayoutTableColumn::Size() const {
 
 LayoutPoint LayoutTableColumn::LocationInternal() const {
   NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
-    return frame_location_;
-  }
-
   auto* table = Table();
   DCHECK(table);
   if (table->PhysicalFragmentCount() == 0) {

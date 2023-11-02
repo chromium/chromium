@@ -551,52 +551,6 @@ void LayoutMultiColumnFlowThread::SetColumnCountFromNG(unsigned column_count) {
   column_count_ = column_count;
 }
 
-void LayoutMultiColumnFlowThread::StartLayoutFromNG() {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
-  last_set_worked_on_ = DynamicTo<LayoutMultiColumnSet>(FirstMultiColumnBox());
-}
-
-LayoutMultiColumnSet* LayoutMultiColumnFlowThread::PendingColumnSetForNG()
-    const {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
-  if (last_set_worked_on_ &&
-      !last_set_worked_on_->FirstFragmentainerGroup().IsLogicalHeightKnown()) {
-    DCHECK_EQ(last_set_worked_on_->FragmentainerGroups().size(), 1u);
-    return last_set_worked_on_.Get();
-  }
-  return nullptr;
-}
-
-void LayoutMultiColumnFlowThread::AppendNewFragmentainerGroupFromNG() {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
-  if (!last_set_worked_on_) {
-    // There may be no column sets at all (when there's no content inside the
-    // multicol container). Still the multicol container itself may take up
-    // space and become fragmented, due to its specified block-size, padding,
-    // etc. The NG code doesn't care about this when calling this method. Just
-    // bail. It may also be that we haven't gotten to the first column set yet.
-    // This may happen when NG lays out an empty column (before a spanner) where
-    // legacy doesn't think that there should be a column.
-    return;
-  }
-  last_set_worked_on_->AppendNewFragmentainerGroup();
-}
-
-void LayoutMultiColumnFlowThread::SetCurrentColumnBlockSizeFromNG(
-    LayoutUnit block_size) {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
-  // There are cases where NG creates an empty column even if we don't create a
-  // column set.
-  if (!last_set_worked_on_)
-    return;
-  last_set_worked_on_->LastFragmentainerGroup().SetColumnBlockSizeFromNG(
-      block_size);
-}
-
 void LayoutMultiColumnFlowThread::FinishLayoutFromNG(
     LayoutUnit flow_thread_offset) {
   NOT_DESTROYED();
@@ -606,19 +560,7 @@ void LayoutMultiColumnFlowThread::FinishLayoutFromNG(
     column_box->ClearNeedsLayout();
   }
 
-  if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
-    // If we have a trailing column set, finish it.
-    if (auto* last_column_set =
-            DynamicTo<LayoutMultiColumnSet>(LastMultiColumnBox())) {
-      last_column_set->EndFlow(flow_thread_offset);
-      last_column_set->FinishLayoutFromNG();
-    }
-  }
-
   ValidateColumnSets();
-  if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
-    SetLogicalHeight(flow_thread_offset);
-  }
   ClearNeedsLayout();
   last_set_worked_on_ = nullptr;
 }
@@ -828,27 +770,6 @@ void LayoutMultiColumnFlowThread::WillBeRemovedFromTree() {
     column_set->DetachFromFlowThread();
   MultiColumnBlockFlow()->ResetMultiColumnFlowThread();
   LayoutFlowThread::WillBeRemovedFromTree();
-}
-
-void LayoutMultiColumnFlowThread::SkipColumnSpanner(
-    const LayoutBox* layout_object,
-    LayoutUnit logical_top_in_flow_thread) {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
-  DCHECK(layout_object->IsColumnSpanAll());
-
-  last_set_worked_on_ = nullptr;
-
-  LayoutMultiColumnSpannerPlaceholder* placeholder =
-      layout_object->SpannerPlaceholder();
-  LayoutBox* previous_column_box = placeholder->PreviousSiblingMultiColumnBox();
-  if (auto* previous_set = DynamicTo<LayoutMultiColumnSet>(previous_column_box))
-    previous_set->EndFlow(logical_top_in_flow_thread);
-  LayoutBox* next_column_box = placeholder->NextSiblingMultiColumnBox();
-  if (auto* next_set = DynamicTo<LayoutMultiColumnSet>(next_column_box)) {
-    last_set_worked_on_ = next_set;
-    next_set->BeginFlow(logical_top_in_flow_thread);
-  }
 }
 
 // When processing layout objects to remove or when processing layout objects
@@ -1219,18 +1140,9 @@ void LayoutMultiColumnFlowThread::ToggleSpannersInSubtree(
   }
 }
 
-void LayoutMultiColumnFlowThread::UpdateLogicalWidth() {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
-  LayoutUnit column_width;
-  CalculateColumnCountAndWidth(column_width, column_count_);
-  SetLogicalWidth(column_width);
-}
-
 LayoutPoint LayoutMultiColumnFlowThread::LocationInternal() const {
   NOT_DESTROYED();
-  if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled() &&
-      !HasValidCachedGeometry() && EverHadLayout()) {
+  if (!HasValidCachedGeometry() && EverHadLayout()) {
     // const_cast in order to update the cached value.
     const_cast<LayoutMultiColumnFlowThread*>(this)->UpdateGeometry();
   }
@@ -1239,8 +1151,7 @@ LayoutPoint LayoutMultiColumnFlowThread::LocationInternal() const {
 
 PhysicalSize LayoutMultiColumnFlowThread::Size() const {
   NOT_DESTROYED();
-  if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled() &&
-      !HasValidCachedGeometry() && EverHadLayout()) {
+  if (!HasValidCachedGeometry() && EverHadLayout()) {
     // const_cast in order to update the cached value.
     const_cast<LayoutMultiColumnFlowThread*>(this)->UpdateGeometry();
   }
@@ -1249,7 +1160,6 @@ PhysicalSize LayoutMultiColumnFlowThread::Size() const {
 
 void LayoutMultiColumnFlowThread::UpdateGeometry() {
   NOT_DESTROYED();
-  DCHECK(RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
   SetHasValidCachedGeometry(true);
   frame_location_ = LayoutPoint();
   LogicalSize thread_size;

@@ -191,16 +191,6 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
   // Reset previously calculated column height. Will mark for layout if needed.
   void ResetColumnHeight();
 
-  // Layout of flow thread content that's to be rendered inside this column set
-  // begins. This happens at the beginning of flow thread layout, and when
-  // advancing from a previous column set or spanner to this one.
-  void BeginFlow(LayoutUnit offset_in_flow_thread);
-
-  // Layout of flow thread content that was to be rendered inside this column
-  // set has finished. This happens at end of flow thread layout, and when
-  // advancing to the next column set or spanner.
-  void EndFlow(LayoutUnit offset_in_flow_thread);
-
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
   void AttachToFlowThread();
@@ -226,8 +216,6 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
   // column rules should be painted at all.
   bool ComputeColumnRuleBounds(const PhysicalOffset& paint_offset,
                                Vector<PhysicalRect>& column_rule_bounds) const;
-
-  void FinishLayoutFromNG();
 
   // Tell the column set that it shouldn't really exist. This happens when
   // there's a leftover column set after DOM / style changes, that NG doesn't

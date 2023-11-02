@@ -219,23 +219,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutBox* FirstInFlowChildBox() const;
   LayoutBox* LastChildBox() const;
 
-  void SetWidth(LayoutUnit width) {
-    NOT_DESTROYED();
-    if (width == frame_size_.width) {
-      return;
-    }
-    frame_size_.width = width;
-    SizeChanged();
-  }
-  void SetHeight(LayoutUnit height) {
-    NOT_DESTROYED();
-    if (height == frame_size_.height) {
-      return;
-    }
-    frame_size_.height = height;
-    SizeChanged();
-  }
-
   LayoutUnit LogicalLeft() const;
   LayoutUnit LogicalRight() const {
     NOT_DESTROYED();
@@ -262,29 +245,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return FirstLineHeight();
   }
 
-  void SetLogicalWidth(LayoutUnit size) {
-    NOT_DESTROYED();
-    DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
-    if (StyleRef().IsHorizontalWritingMode())
-      SetWidth(size);
-    else
-      SetHeight(size);
-  }
-  void SetLogicalHeight(LayoutUnit size) {
-    NOT_DESTROYED();
-    DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
-    if (StyleRef().IsHorizontalWritingMode())
-      SetHeight(size);
-    else
-      SetWidth(size);
-  }
-
-  // Use PhysicalLocation() instead.
-  LayoutPoint DeprecatedLocation() const {
-    NOT_DESTROYED();
-    DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
-    return LocationInternal();
-  }
   virtual PhysicalSize Size() const;
 
   void SetLocation(const LayoutPoint& location) {
@@ -299,16 +259,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // The ancestor box that this object's Location and PhysicalLocation are
   // relative to.
   virtual LayoutBox* LocationContainer() const;
-
-  void SetSize(const PhysicalSize& size) {
-    NOT_DESTROYED();
-    DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
-    if (size == frame_size_) {
-      return;
-    }
-    frame_size_ = size;
-    SizeChanged();
-  }
 
   // Note that those functions have their origin at this box's CSS border box.
   // As such their location doesn't account for 'top'/'left'. About its
@@ -653,7 +603,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     return MarginBoxOutsets().right;
   }
-  void SetMargin(const PhysicalBoxStrut&);
 
   void AbsoluteQuads(Vector<gfx::QuadF>&,
                      MapCoordinatesFlags mode = 0) const override;
@@ -1472,10 +1421,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       TransformState&,
       const LayoutObject& container,
       const LayoutBoxModelObject* ancestor_to_stop_at) const;
-
-  // TODO(crbug.com/1353190): Remove this data member after enabling
-  // LayoutNGNoCopyBack flag.
-  PhysicalBoxStrut margin_box_outsets_;
 
   PhysicalRect DebugRect() const override;
 

@@ -221,13 +221,6 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
   LayoutMultiColumnSet* ColumnSetAtBlockOffset(LayoutUnit,
                                                PageBoundaryRule) const final;
 
-  // Skip past a column spanner during flow thread layout. Spanners are not laid
-  // out inside the flow thread, since the flow thread is not in a spanner's
-  // containing block chain (since the containing block is the multicol
-  // container).
-  void SkipColumnSpanner(const LayoutBox*,
-                         LayoutUnit logical_top_in_flow_thread);
-
   void ColumnRuleStyleDidChange();
 
   // Remove the spanner placeholder and return true if the specified object is
@@ -246,10 +239,6 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
   }
 
   void SetColumnCountFromNG(unsigned column_count);
-  void StartLayoutFromNG();
-  LayoutMultiColumnSet* PendingColumnSetForNG() const;
-  void AppendNewFragmentainerGroupFromNG();
-  void SetCurrentColumnBlockSizeFromNG(LayoutUnit);
   void FinishLayoutFromNG(LayoutUnit flow_thread_offset);
 
   // Implementing FragmentationContext:
@@ -294,7 +283,6 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
       StyleDifference,
       const ComputedStyle& old_style) override;
   void ToggleSpannersInSubtree(LayoutBox*);
-  void UpdateLogicalWidth() override;
   void UpdateGeometry();
 
   // The last set we worked on. It's not to be used as the "current set". The

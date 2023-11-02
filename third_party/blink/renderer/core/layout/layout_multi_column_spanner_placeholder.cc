@@ -109,18 +109,12 @@ void LayoutMultiColumnSpannerPlaceholder::UpdateLayout() {
 
 LayoutPoint LayoutMultiColumnSpannerPlaceholder::LocationInternal() const {
   NOT_DESTROYED();
-  if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
-    return layout_object_in_flow_thread_->LocationInternal();
-  }
-  return LayoutBox::LocationInternal();
+  return layout_object_in_flow_thread_->LocationInternal();
 }
 
 PhysicalSize LayoutMultiColumnSpannerPlaceholder::Size() const {
   NOT_DESTROYED();
-  if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
-    return layout_object_in_flow_thread_->Size();
-  }
-  return LayoutBox::Size();
+  return layout_object_in_flow_thread_->Size();
 }
 
 }  // namespace blink

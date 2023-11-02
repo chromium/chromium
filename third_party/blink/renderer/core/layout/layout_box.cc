@@ -133,7 +133,6 @@ static const unsigned kBackgroundObscurationTestMaxDepth = 4;
 struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
   DeprecatedLayoutRect frame_rect;
   PhysicalSize previous_size;
-  PhysicalBoxStrut margin_box_outsets;
   MinMaxSizes intrinsic_logical_widths;
   LayoutUnit intrinsic_logical_widths_initial_block_size;
   Member<void*> result;
@@ -1116,17 +1115,8 @@ int LayoutBox::PixelSnappedScrollHeight() const {
   return SnapSizeToPixel(ScrollHeight(), top + ClientTop());
 }
 
-void LayoutBox::SetMargin(const PhysicalBoxStrut& box) {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
-  margin_box_outsets_ = box;
-}
-
 PhysicalBoxStrut LayoutBox::MarginBoxOutsets() const {
   NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
-    return margin_box_outsets_;
-  }
   if (PhysicalFragmentCount()) {
     // We get margin data from the first physical fragment. Margins are
     // per-LayoutBox data, and we don't need to take care of block
@@ -2809,9 +2799,6 @@ void LayoutBox::CheckMayHaveFragmentItems() const {
 
 void LayoutBox::InvalidateCachedGeometry() {
   NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
-    return;
-  }
   SetHasValidCachedGeometry(false);
   if (auto* block_flow = DynamicTo<LayoutBlockFlow>(this)) {
     if (auto* flow_thread = block_flow->MultiColumnFlowThread()) {
@@ -3813,8 +3800,7 @@ LayoutUnit LayoutBox::OffsetTop(const Element* parent) const {
 
 PhysicalSize LayoutBox::Size() const {
   NOT_DESTROYED();
-  if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled() &&
-      !HasValidCachedGeometry()) {
+  if (!HasValidCachedGeometry()) {
     // const_cast in order to update the cached value.
     const_cast<LayoutBox*>(this)->SetHasValidCachedGeometry(true);
     const_cast<LayoutBox*>(this)->frame_size_ = ComputeSize();

@@ -318,27 +318,6 @@ void LayoutMultiColumnSet::ResetColumnHeight() {
   fragmentainer_groups_.First().ResetColumnHeight();
 }
 
-void LayoutMultiColumnSet::BeginFlow(LayoutUnit offset_in_flow_thread) {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
-  // At this point layout is exactly at the beginning of this set. Store block
-  // offset from flow thread start.
-  fragmentainer_groups_.First().SetLogicalTopInFlowThread(
-      offset_in_flow_thread);
-}
-
-void LayoutMultiColumnSet::EndFlow(LayoutUnit offset_in_flow_thread) {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
-  // At this point layout is exactly at the end of this set. Store block offset
-  // from flow thread start. This set is now considered "flowed", although we
-  // may have to revisit it later (with beginFlow()), e.g. if a subtree in the
-  // flow thread has to be laid out over again because the initial margin
-  // collapsing estimates were wrong.
-  fragmentainer_groups_.Last().SetLogicalBottomInFlowThread(
-      offset_in_flow_thread);
-}
-
 void LayoutMultiColumnSet::StyleDidChange(StyleDifference diff,
                                           const ComputedStyle* old_style) {
   NOT_DESTROYED();
@@ -411,8 +390,7 @@ PhysicalSize LayoutMultiColumnSet::Size() const {
 }
 
 void LayoutMultiColumnSet::UpdateGeometryIfNeeded() const {
-  if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled() &&
-      !HasValidCachedGeometry() && EverHadLayout()) {
+  if (!HasValidCachedGeometry() && EverHadLayout()) {
     // const_cast in order to update the cached value.
     const_cast<LayoutMultiColumnSet*>(this)->UpdateGeometry();
   }
@@ -420,7 +398,6 @@ void LayoutMultiColumnSet::UpdateGeometryIfNeeded() const {
 
 void LayoutMultiColumnSet::UpdateGeometry() {
   NOT_DESTROYED();
-  DCHECK(RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
   DCHECK(!HasValidCachedGeometry());
   SetHasValidCachedGeometry(true);
   frame_location_ = LayoutPoint();
@@ -642,17 +619,6 @@ PhysicalRect LayoutMultiColumnSet::LocalVisualRectIgnoringVisibility() const {
   }
 
   return block_flow_bounds;
-}
-
-void LayoutMultiColumnSet::FinishLayoutFromNG() {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
-  // Calculate the block-size of all the fragmentainer groups combined.
-  LayoutUnit logical_height;
-  for (const auto& group : fragmentainer_groups_) {
-    logical_height += group.GroupLogicalHeight();
-  }
-  SetLogicalHeight(logical_height);
 }
 
 void LayoutMultiColumnSet::SetIsIgnoredByNG() {

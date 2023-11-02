@@ -350,10 +350,7 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
       !!builder->table_cell_column_index_ +
       (builder->table_section_row_offsets_.empty() ? 0 : 2) +
       !!builder->page_name_ + has_borders + has_padding +
-      inflow_bounds.has_value();
-  if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
-    rare_fields_size += !!builder->Style().MayHaveMargin();
-  }
+      inflow_bounds.has_value() + !!builder->Style().MayHaveMargin();
 
   if (rare_fields_size > 0 || !builder->table_column_geometries_.empty()) {
     rare_data_ = MakeGarbageCollected<PhysicalFragmentRareData>(
@@ -1077,7 +1074,6 @@ NGPhysicalBoxFragment::MutableForContainerLayout::MutableForContainerLayout(
 
 void NGPhysicalBoxFragment::MutableForContainerLayout::SetMargins(
     const PhysicalBoxStrut& margins) {
-  DCHECK(RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
   // This can be called even without rare_data_.
   fragment_.EnsureRareField(FieldId::kMargins).margins = margins;
 }

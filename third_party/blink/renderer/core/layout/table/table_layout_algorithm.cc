@@ -371,15 +371,6 @@ class ColumnGeometriesBuilder {
                                     column_locations[end_column_index].size -
                                     column_locations[start_column_index].offset;
 
-    if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
-      col.GetLayoutBox()->SetLogicalWidth(column_inline_size);
-      // Table column block-size is only set when at the last table box
-      // fragment.
-      if (table_column_block_size != kIndefiniteSize) {
-        col.GetLayoutBox()->SetLogicalHeight(table_column_block_size);
-      }
-    }
-
     column_geometries.emplace_back(start_column_index, span,
                                    column_locations[start_column_index].offset -
                                        column_locations[0].offset,
@@ -399,15 +390,6 @@ class ColumnGeometriesBuilder {
     LayoutUnit colgroup_size = column_locations[last_column_index].offset +
                                column_locations[last_column_index].size -
                                column_locations[start_column_index].offset;
-
-    if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
-      colgroup.GetLayoutBox()->SetLogicalWidth(colgroup_size);
-      // Table column block-size is only set when at the last table box
-      // fragment.
-      if (table_column_block_size != kIndefiniteSize) {
-        colgroup.GetLayoutBox()->SetLogicalHeight(table_column_block_size);
-      }
-    }
 
     column_geometries.emplace_back(start_column_index, span,
                                    column_locations[start_column_index].offset -
@@ -443,13 +425,11 @@ class ColumnGeometriesBuilder {
                 }
               });
 
-    if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
-      wtf_size_t column_idx = 0;
-      for (const auto& col : column_geometries) {
-        To<LayoutTableColumn>(col.node.GetLayoutBox())
-            ->SetColumnIndex(column_idx);
-        column_idx++;
-      }
+    wtf_size_t column_idx = 0;
+    for (const auto& col : column_geometries) {
+      To<LayoutTableColumn>(col.node.GetLayoutBox())
+          ->SetColumnIndex(column_idx);
+      column_idx++;
     }
   }
 

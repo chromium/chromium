@@ -2285,11 +2285,6 @@
       status: "stable",
     },
     {
-      // crbug.com/1353190
-      name: "LayoutNGNoCopyBack",
-      status: "stable",
-    },
-    {
       name: "LayoutNGShapeCache",
       status: "test",
       base_feature: "LayoutNGShapeCache",
