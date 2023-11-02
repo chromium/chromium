@@ -1,4 +1,36 @@
 <style include="tab-organization-shared-style">
+  :host {
+    --standard-curve: cubic-bezier(0.2, 0.0, 0, 1.0);
+  }
+
+  tab-organization-not-started:not([hidden]),
+  tab-organization-in-progress:not([hidden]),
+  tab-organization-results:not([hidden]),
+  tab-organization-failure:not([hidden]) {
+    animation: fadeIn 200ms linear,
+               paddingIn 250ms var(--standard-curve);
+    display: flex;
+  }
+
+  :host(.changed-state) tab-organization-not-started:not([hidden]),
+  :host(.changed-state) tab-organization-in-progress:not([hidden]),
+  :host(.changed-state) tab-organization-results:not([hidden]),
+  :host(.changed-state) tab-organization-failure:not([hidden]) {
+    animation: fadeIn 100ms linear 100ms,
+               displayIn 200ms linear,
+               paddingIn 250ms var(--standard-curve);
+    display: flex;
+  }
+
+  tab-organization-not-started[hidden],
+  tab-organization-in-progress[hidden],
+  tab-organization-results[hidden],
+  tab-organization-failure[hidden] {
+    animation: fadeOut 100ms linear,
+               displayOut 200ms linear,
+               marginOut 250ms var(--standard-curve);
+  }
+
   .body {
     margin: 16px var(--mwb-list-item-horizontal-margin);
   }
@@ -6,6 +38,20 @@
   .footer {
     background-color: var(--color-bubble-footer-background);
     padding: 16px var(--mwb-list-item-horizontal-margin);
+  }
+
+  .footer:not([hidden]) {
+    animation: fadeIn 200ms linear;
+  }
+
+  :host(.changed-state) .footer:not([hidden]) {
+    animation: fadeIn 100ms linear 100ms,
+               displayIn 200ms linear;
+  }
+
+  .footer[hidden] {
+    animation: fadeOut 100ms linear,
+               displayOut 200ms linear;
   }
 
   .link {

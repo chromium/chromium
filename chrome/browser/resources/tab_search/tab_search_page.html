@@ -1,4 +1,18 @@
-<style include="mwb-shared-style">
+<style include="mwb-shared-style tab-organization-shared-style">
+  :host {
+    --standard-curve: cubic-bezier(0.2, 0.0, 0, 1.0);
+  }
+
+  :host(.iron-selected) #tabSearchPage {
+    animation: fadeIn 200ms linear, paddingIn 250ms var(--standard-curve);
+    opacity: 1;
+  }
+
+  :host(:not(.iron-selected)) #tabSearchPage {
+    animation: fadeOut 200ms linear, marginOut 250ms var(--standard-curve);
+    opacity: 0;
+  }
+
   #searchField {
     align-items: center;
     background-color: var(--mwb-background-color);
@@ -140,63 +154,67 @@
     height: 1px;
     background-color: var(--cr-separator-color);
   }
-
 </style>
 
-<div id="searchField" on-keydown="onSearchKeyDown_"
-    clear-label="$i18n{clearSearch}">
-  <iron-icon id="searchIcon" icon="mwb16:search"></iron-icon>
-  <div id="searchWrapper">
-    <label id="searchLabel" for="searchInput" aria-hidden="true">
-      <span>$i18n{searchTabs}</span>
-      <span>[[shortcut_]]</span>
-      <span id="searchResultText">[[searchResultText_]]</span>
-    </label>
-    <input id="searchInput" aria-labelledby="searchLabel"
-        autofocus  autocomplete="off"
-        on-search="onSearchTermSearch" on-input="onSearchTermInput"
-        type="search" spellcheck="false" role="combobox"
-        aria-activedescendant$="[[activeSelectionId_]]"
-        aria-controls="tabsList" aria-owns="tabsList">
+<div id="tabSearchPage">
+  <div id="searchField" on-keydown="onSearchKeyDown_"
+      clear-label="$i18n{clearSearch}">
+    <iron-icon id="searchIcon" icon="mwb16:search"></iron-icon>
+    <div id="searchWrapper">
+      <label id="searchLabel" for="searchInput" aria-hidden="true">
+        <span>$i18n{searchTabs}</span>
+        <span>[[shortcut_]]</span>
+        <span id="searchResultText">[[searchResultText_]]</span>
+      </label>
+      <input id="searchInput" aria-labelledby="searchLabel"
+          autofocus  autocomplete="off"
+          on-search="onSearchTermSearch" on-input="onSearchTermInput"
+          type="search" spellcheck="false" role="combobox"
+          aria-activedescendant$="[[activeSelectionId_]]"
+          aria-controls="tabsList" aria-owns="tabsList">
+    </div>
   </div>
-</div>
-<div id="divider"></div>
-<div hidden="[[!filteredItems_.length]]">
-  <infinite-list id="tabsList" max-height="[[listMaxHeight_(availableHeight_)]]"
-      items="[[filteredItems_]]"
-      on-selected-item-changed="onSelectedItemChanged_"
-      role="listbox">
-    <template data-type="TitleItem">
-      <div class="list-section-title">
-        <div>[[item.title]]</div>
-        <template is="dom-if" if="[[item.expandable]]">
-          <cr-expand-button aria-label="$i18n{recentlyClosedExpandA11yLabel}"
-              expand-icon="cr:arrow-drop-down" collapse-icon="cr:arrow-drop-up"
-              expanded="[[item.expanded]]"
-              expand-title="$i18n{expandRecentlyClosed}"
-              collapse-title="$i18n{collapseRecentlyClosed}"
-              on-expanded-changed="onTitleExpandChanged_" no-hover>
-          </cr-expand-button>
-        </template>
-      </div>
-    </template>
-    <template data-type="TabData" data-selectable>
-      <tab-search-item id="[[item.tab.tabId]]" aria-label="[[ariaLabel_(item)]]"
-          class="mwb-list-item" data="[[item]]" index="[[index]]"
-          on-click="onItemClick_" on-close="onItemClose_"
-          on-focus="onItemFocus_" on-keydown="onItemKeyDown_" role="option"
-          tabindex="0">
-      </tab-search-item>
-    </template>
-    <template data-type="TabGroupData" data-selectable>
-      <tab-search-group-item id="[[item.tabGroup.id]]" class="mwb-list-item"
-          index="[[index]]" data="[[item]]" aria-label="[[ariaLabel_(item)]]"
-          on-click="onItemClick_" on-focus="onItemFocus_"
-          on-keydown="onItemKeyDown_" role="option" tabindex="0">
-      </tab-search-group-item>
-    </template>
-  </infinite-list>
-</div>
-<div id="no-results" hidden="[[filteredItems_.length]]">
-  $i18n{noResultsFound}
+  <div id="divider"></div>
+  <div hidden="[[!filteredItems_.length]]">
+    <infinite-list id="tabsList"
+        max-height="[[listMaxHeight_(availableHeight_)]]"
+        items="[[filteredItems_]]"
+        on-selected-item-changed="onSelectedItemChanged_"
+        role="listbox">
+      <template data-type="TitleItem">
+        <div class="list-section-title">
+          <div>[[item.title]]</div>
+          <template is="dom-if" if="[[item.expandable]]">
+            <cr-expand-button aria-label="$i18n{recentlyClosedExpandA11yLabel}"
+                expand-icon="cr:arrow-drop-down"
+                collapse-icon="cr:arrow-drop-up"
+                expanded="[[item.expanded]]"
+                expand-title="$i18n{expandRecentlyClosed}"
+                collapse-title="$i18n{collapseRecentlyClosed}"
+                on-expanded-changed="onTitleExpandChanged_" no-hover>
+            </cr-expand-button>
+          </template>
+        </div>
+      </template>
+      <template data-type="TabData" data-selectable>
+        <tab-search-item id="[[item.tab.tabId]]"
+            aria-label="[[ariaLabel_(item)]]"
+            class="mwb-list-item" data="[[item]]" index="[[index]]"
+            on-click="onItemClick_" on-close="onItemClose_"
+            on-focus="onItemFocus_" on-keydown="onItemKeyDown_" role="option"
+            tabindex="0">
+        </tab-search-item>
+      </template>
+      <template data-type="TabGroupData" data-selectable>
+        <tab-search-group-item id="[[item.tabGroup.id]]" class="mwb-list-item"
+            index="[[index]]" data="[[item]]" aria-label="[[ariaLabel_(item)]]"
+            on-click="onItemClick_" on-focus="onItemFocus_"
+            on-keydown="onItemKeyDown_" role="option" tabindex="0">
+        </tab-search-group-item>
+      </template>
+    </infinite-list>
+  </div>
+  <div id="no-results" hidden="[[filteredItems_.length]]">
+    $i18n{noResultsFound}
+  </div>
 </div>

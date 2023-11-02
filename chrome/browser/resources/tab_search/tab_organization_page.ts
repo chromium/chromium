@@ -81,8 +81,8 @@ export class TabOrganizationPageElement extends PolymerElement {
   }
 
   private setSession_(session: TabOrganizationSession) {
+    this.setState_(session.state);
     this.sessionId_ = session.sessionId;
-    this.state_ = session.state;
     this.error_ = session.error;
     if (session.state === TabOrganizationState.kSuccess) {
       const organization: TabOrganization = session.organizations[0];
@@ -92,6 +92,11 @@ export class TabOrganizationPageElement extends PolymerElement {
     } else {
       this.organizationId_ = -1;
     }
+  }
+
+  private setState_(state: TabOrganizationState) {
+    this.classList.toggle('changed-state', this.state_ !== state);
+    this.state_ = state;
   }
 
   private isState_(state: TabOrganizationState): boolean {
