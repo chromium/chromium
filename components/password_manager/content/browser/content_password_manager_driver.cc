@@ -452,19 +452,15 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestions(
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           features::kPasswordSuggestionBottomSheetV2)) {
-    // TODO (crbug.com/1448579): Fix the autosubmission and remove the parameter
-    // autofill::mojom::SubmissionReadinessState::kNoInformation.
-    // TODO (crbug.com/1448579): Make ShowTouchToFill to return bool (whether it
-    // was shown or not) and do not call the OnShowPasswordSuggestions on the
-    // password autofill manager if TTF was shown.
-    bool keyboard_replacing_surface_shown =
-        client_->ShowKeyboardReplacingSurface(
+    // TODO(crbug.com/1448579): Remove the parameter
+    // autofill::mojom::SubmissionReadinessState::kNoInformation when the
+    // feature is launched.
+    if (client_->ShowKeyboardReplacingSurface(
             this,
             SubmissionReadinessParams(
                 form, username_field_index, password_field_index,
                 autofill::mojom::SubmissionReadinessState::kNoInformation),
-            options & autofill::ACCEPTS_WEBAUTHN_CREDENTIALS);
-    if (keyboard_replacing_surface_shown) {
+            options & autofill::ACCEPTS_WEBAUTHN_CREDENTIALS)) {
       return;
     }
   }
