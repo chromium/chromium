@@ -33,6 +33,10 @@ void RecordBDWStaleDownloadAge(base::TimeDelta download_age);
 
 void RecordBDWExistingJobUsed(bool existing_job_used);
 
+void RecordCRXDownloadComplete(bool had_error);
+
+void RecordCRXDownloaderFallback();
+
 }  // namespace update_client::metrics
 
 #endif  // COMPONENTS_UPDATE_CLIENT_UPDATE_CLIENT_METRICS_H_

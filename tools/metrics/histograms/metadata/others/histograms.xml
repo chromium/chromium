@@ -13750,6 +13750,28 @@ features through Chrome Labs. -->
   </summary>
 </histogram>
 
+<histogram name="UpdateClient.CrxDownloader.DownloadCompleteSuccess"
+    enum="Boolean" expires_after="2024-05-01">
+  <owner>noahrose@google.com</owner>
+  <owner>sorin@chromium.org</owner>
+  <owner>waffles@chromium.org</owner>
+  <summary>
+    Whether a download completed with an error or not. Recorded once for every
+    completed download.
+  </summary>
+</histogram>
+
+<histogram name="UpdateClient.CrxDownloader.Fallback" enum="Boolean"
+    expires_after="2024-05-01">
+  <owner>noahrose@google.com</owner>
+  <owner>sorin@chromium.org</owner>
+  <owner>waffles@chromium.org</owner>
+  <summary>
+    Records when the CRX Downloader falls back to a different downloader
+    implementation due to errors.
+  </summary>
+</histogram>
+
 <histogram name="UpgradeDetector.DaysBeforeUpgrade" units="days"
     expires_after="2024-05-01">
   <owner>emshack@chromium.org</owner>

@@ -40,4 +40,13 @@ void RecordBDWExistingJobUsed(bool existing_job_used) {
       existing_job_used);
 }
 
+void RecordCRXDownloadComplete(bool had_error) {
+  base::UmaHistogramBoolean(
+      "UpdateClient.CrxDownloader.DownloadCompleteSuccess", !had_error);
+}
+
+void RecordCRXDownloaderFallback() {
+  base::UmaHistogramBoolean("UpdateClient.CrxDownloader.Fallback", true);
+}
+
 }  // namespace update_client::metrics
