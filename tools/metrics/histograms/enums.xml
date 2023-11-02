@@ -67219,11 +67219,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="13662160" label="PPB_CharSet(Dev);0.4"/>
   <int value="22816901" label="PPB_FileChooser(Dev);0.5"/>
   <int value="28187368" label="PPB_IMEInputEvent(Dev);0.2"/>
+  <int value="33466160" label="PPP_VideoCapture(Dev);0.1"/>
   <int value="36133501" label="PPB_MediaStreamVideoTrack;1.0"/>
   <int value="37307420" label="PPB_Scrollbar(Dev);0.5"/>
+  <int value="43320098" label="PPP_VideoDecoder(Dev);0.11"/>
   <int value="59327104" label="PPB_Messaging;1.2"/>
   <int value="62905097" label="PPB_TrueTypeFont(Removed);0.1"/>
   <int value="79708274" label="PPB_TCPSocket;1.1"/>
+  <int value="87380465" label="PPP_Printing(Dev);0.6"/>
   <int value="110360074" label="PPB_Var;1.1"/>
   <int value="125017713" label="PPB_CameraCapabilities_Private;0.1"/>
   <int value="126651696" label="PPB_ContentDecryptor_Private;0.12"/>
@@ -67246,8 +67249,11 @@ Called by update_net_trust_anchors.py.-->
   <int value="382780521" label="PPB_FileRef;1.2"/>
   <int value="415548516" label="PPB_MessageLoop;1.0"/>
   <int value="434146763" label="PPB_BrowserFont_Trusted;1.0"/>
+  <int value="459850828" label="PPP_TextInput(Dev);0.1"/>
   <int value="495324603" label="PPB_Widget(Dev);0.4"/>
+  <int value="497627353" label="PPP_Instance_Private;0.1"/>
   <int value="502777837" label="PPB_ContentDecryptor_Private;0.15"/>
+  <int value="554562918" label="PPP_Instance;1.0"/>
   <int value="556941117" label="PPB_IMEInputEvent;1.0"/>
   <int value="588532407" label="PPB_Graphics2D;1.1"/>
   <int value="596770967" label="PPB_X509Certificate_Private;0.1"/>
@@ -67261,12 +67267,15 @@ Called by update_net_trust_anchors.py.-->
   <int value="656561383" label="PPB_FlashFullscreen;1.0"/>
   <int value="657117235" label="PPB_Flash_DRM;1.0"/>
   <int value="668624105" label="PPB_Flash_DeviceID;1.0"/>
+  <int value="683574007" label="PPP_Graphics_3D;1.0"/>
   <int value="706893509" label="PPB_ContentDecryptor_Private;0.11"/>
   <int value="714324031" label="PPB_Graphics3D;1.0"/>
   <int value="724664149" label="PPB_Flash_Menu;0.2"/>
   <int value="732838108" label="PPB_IsolatedFileSystem_Private;0.2"/>
+  <int value="758210322" label="PPP_Messaging;1.0"/>
   <int value="760024173" label="PPB_FileIO;1.0"/>
   <int value="760246876" label="PPB_OpenGLES2VertexArrayObject;1.0"/>
+  <int value="763209772" label="PPP_InputEvent;0.1"/>
   <int value="763746388" label="PPB_NaCl_Private;1.0"/>
   <int value="772423590" label="PPB_TouchInputEvent;1.0"/>
   <int value="780912189" label="PPB_Alarms(Dev);0.1"/>
@@ -67301,6 +67310,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="965548627" label="PPB_Audio;1.1"/>
   <int value="972914533" label="PPB_TextInputController;1.0"/>
   <int value="997459960" label="PPB_FileChooserTrusted;0.5"/>
+  <int value="1006866535" label="PPP_PexeStreamHandler;1.0"/>
   <int value="1008493701" label="PPB_UDPSocket;1.0"/>
   <int value="1017579801" label="PPB_OpenGLES2FramebufferBlit;1.0"/>
   <int value="1032125598" label="PPB_HostResolver;1.0"/>
@@ -67328,10 +67338,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="1304992407" label="PPB_UDPSocket;1.2"/>
   <int value="1316246754" label="PPB_KeyboardInputEvent;1.0"/>
   <int value="1316320941" label="PPB_Graphics2D(Dev);0.1"/>
+  <int value="1318030779" label="PPP_Instance;1.1"/>
   <int value="1321620067" label="PPB_Instance;1.0"/>
   <int value="1328369437" label="PPB_Talk_Private;1.0"/>
   <int value="1337084425" label="PPB_View;1.0"/>
   <int value="1354526686" label="PPB_FileIO_Private;0.1"/>
+  <int value="1356508418" label="PPP_MouseLock;1.0"/>
   <int value="1357207230" label="PPB_DeviceRef(Dev);0.1"/>
   <int value="1358195444" label="PPB_CharSet_Trusted;1.0"/>
   <int value="1360443600" label="PPB_OpenGLES2FramebufferMultisample;1.0"/>
@@ -67363,6 +67375,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1721408268" label="PPB_URLLoader;1.0"/>
   <int value="1735606779" label="PPB_VideoEncoder;0.1"/>
   <int value="1753813390" label="PPB_Flash_Clipboard;4.0"/>
+  <int value="1769037030" label="PPP_NetworkState(Dev);0.1"/>
   <int value="1773992510" label="PPB_PDF;1"/>
   <int value="1775059283" label="PPB_Flash_FontFile;0.1"/>
   <int value="1779899536" label="PPB_Flash_Print;1.0"/>

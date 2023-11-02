@@ -143,7 +143,7 @@ InterfaceProxy* ProxyFactory(Dispatcher* dispatcher) {
 }
 
 base::LazyInstance<PpapiPermissions>::DestructorAtExit
-    g_process_global_permissions;
+    g_process_global_permissions = LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
 
@@ -321,10 +321,11 @@ const void* InterfaceList::GetInterfaceForPPB(const std::string& name) {
   return nullptr;
 }
 
-const void* InterfaceList::GetInterfaceForPPP(const std::string& name) const {
+const void* InterfaceList::GetInterfaceForPPP(const std::string& name) {
   auto found = name_to_plugin_info_.find(name);
   if (found == name_to_plugin_info_.end())
     return nullptr;
+  found->second->LogWithUmaOnce(name);
   return found->second->iface();
 }
 
