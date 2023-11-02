@@ -166,6 +166,7 @@ tools/metrics/histograms/metadata/web_audio/histograms.xml
 tools/metrics/histograms/metadata/web_core/histograms.xml
 tools/metrics/histograms/metadata/web_rtc/enums.xml
 tools/metrics/histograms/metadata/web_rtc/histograms.xml
+tools/metrics/histograms/metadata/webapps/enums.xml
 tools/metrics/histograms/metadata/webapps/histograms.xml
 tools/metrics/histograms/metadata/webauthn/enums.xml
 tools/metrics/histograms/metadata/webauthn/histograms.xml
