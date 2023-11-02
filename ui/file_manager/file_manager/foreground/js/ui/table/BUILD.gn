@@ -7,36 +7,17 @@ import("//third_party/closure_compiler/compile_js.gni")
 group("js_modules") {
   deps = [
     ":table",
-    ":table_column",
-    ":table_column_model",
     ":table_header",
     ":table_splitter",
   ]
 }
 
-js_library("table_column") {
-  deps = [
-    "//ash/webui/common/resources:cr_deprecated",
-    "//ash/webui/common/resources:event_target",
-  ]
-}
-
 js_library("table") {
   deps = [
-    ":table_column",
-    ":table_column_model",
     ":table_header",
     "//ash/webui/common/resources:cr_deprecated",
     "//ui/file_manager/file_manager/common/js:array_data_model",
     "//ui/file_manager/file_manager/foreground/js/ui:list_single_selection_model",
-  ]
-}
-
-js_library("table_column_model") {
-  deps = [
-    ":table_column",
-    "//ash/webui/common/resources:cr_deprecated",
-    "//ash/webui/common/resources:event_target",
   ]
 }
 

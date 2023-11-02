@@ -287,8 +287,6 @@ js_library("file_table") {
     ":drag_selector",
     ":file_metadata_formatter",
     "table:table",
-    "table:table_column",
-    "table:table_column_model",
     "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:cr_deprecated",
     "//ui/file_manager/file_manager/common/js:async_util",
@@ -307,7 +305,6 @@ js_library("file_table") {
 js_unittest("file_table_unittest") {
   deps = [
     ":file_table",
-    "table:table_column",
     "//chrome/test/data/webui/chromeos:chai_assert",
   ]
 }
