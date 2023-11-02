@@ -14,6 +14,7 @@
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
+#import "components/sync/base/user_selectable_type.h"
 #import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/ntp/home/features.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
@@ -260,7 +261,9 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
             (testOpenAuthActivityFromNTPIfNoDeviceAccount)] ||
       [self isRunningTest:@selector
             (testOpenSignInFromNTPWhenSyncDisabledByPolicy)] ||
-      [self isRunningTest:@selector(testSwitchToSupervisedUser)]) {
+      [self isRunningTest:@selector(testSwitchToSupervisedUser)] ||
+      [self isRunningTest:@selector(testSignInFromNTPAndDeclineHistorySync)] ||
+      [self isRunningTest:@selector(testSignInFromNTPAndAcceptHistorySync)]) {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
@@ -1086,6 +1089,108 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
                                    IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL))]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that when signing-in using the NTP avatar disc, the user is not signed
+// out if history sync is declined.
+- (void)testSignInFromNTPAndDeclineHistorySync {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Select the NTP avatar disc.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(GetNSString(
+                     IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL))]
+      performAction:grey_tap()];
+
+  // Confirm sign in.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityID(
+                                kWebSigninPrimaryButtonAccessibilityIdentifier),
+                            grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  // Verify that the History Sync Opt-In screen is shown.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kHistorySyncViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify that the footer is shown without the user's email.
+  id<GREYMatcher> footerTextMatcher = grey_allOf(
+      grey_text(
+          l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_FOOTER_WITHOUT_EMAIL)),
+      grey_sufficientlyVisible(), nil);
+  [[[EarlGrey selectElementWithMatcher:footerTextMatcher]
+         usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
+      onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
+      assertWithMatcher:grey_notNil()];
+
+  // Decline History Sync.
+  [[[EarlGrey selectElementWithMatcher:
+                  chrome_test_util::SigninScreenPromoSecondaryButtonMatcher()]
+         usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
+      onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
+
+  // Verify that the history sync is disabled.
+  GREYAssertFalse(
+      [SigninEarlGreyAppInterface
+          isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
+      @"History sync should be disabled.");
+  GREYAssertFalse([SigninEarlGreyAppInterface
+                      isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+                  @"Tabs sync should be disabled.");
+  // Verify that the identity is still signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+}
+
+// Tests that accepting History Sync after tapping on the NTP avatar disc while
+// signed-out enables sync for tabs and history.
+- (void)testSignInFromNTPAndAcceptHistorySync {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Select the NTP avatar disc.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(GetNSString(
+                     IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL))]
+      performAction:grey_tap()];
+
+  // Confirm sign in.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityID(
+                                kWebSigninPrimaryButtonAccessibilityIdentifier),
+                            grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  // Verify that the History Sync Opt-In screen is shown.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kHistorySyncViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Accept History Sync.
+  [[[EarlGrey selectElementWithMatcher:
+                  chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
+         usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
+      onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
+
+  // Verify that the history sync is enabled.
+  GREYAssertTrue(
+      [SigninEarlGreyAppInterface
+          isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
+      @"History sync should be enabled.");
+  GREYAssertTrue([SigninEarlGreyAppInterface
+                     isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+                 @"Tabs sync should be enabled.");
+  // Verify that the identity is signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
 // Tests that a signed-out user with no device account can open the auth
