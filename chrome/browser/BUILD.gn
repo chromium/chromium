@@ -3514,7 +3514,6 @@ static_library("browser") {
       "//chrome/browser/safe_browsing/android:safe_browsing_enums",
       "//chrome/browser/safety_check/android",
       "//chrome/browser/search_resumption:jni_headers",
-      "//chrome/browser/share/core/crow:crow_configuration",
       "//chrome/browser/signin/services/android:jni_headers",
       "//chrome/browser/sync/android:jni_headers",
       "//chrome/browser/tab:jni_headers",

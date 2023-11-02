@@ -164,8 +164,11 @@ enum class FeedUserActionType {
   // User tapped to go to Following feed using the snackbar 'go to Following'
   // option.
   kTappedGoToFeedOnSnackbar = 52,
+
   // User tapped the Crow button in the context menu.
-  kTappedCrowButton = 53,
+  // No longer used after the removal of Crow.
+  // kTappedCrowButton = 53,
+
   // User action caused a first follow sheet to be shown. User action not
   // reported here. iOS only.
   kFirstFollowSheetShown = 54,

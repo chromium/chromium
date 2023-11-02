@@ -8089,7 +8089,6 @@ test("unit_tests") {
       "//chrome/browser/resource_coordinator:tab_manager_features",
       "//chrome/browser/resources:component_extension_resources_grit",
       "//chrome/browser/resources/new_tab_page_instant:resources_grit",
-      "//chrome/browser/share/core/crow:crow_configuration_unittest",
       "//chrome/browser/support_tool:support_tool_proto",
       "//chrome/browser/ui/actions:unit_tests",
       "//chrome/browser/ui/color:color_headers",

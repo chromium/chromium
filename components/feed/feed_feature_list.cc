@@ -117,10 +117,6 @@ BASE_FEATURE(kInfoCardAcknowledgementTracking,
              "InfoCardAcknowledgementTracking",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kShareCrowButton,
-             "ShareCrowButton",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kFeedCloseRefresh,
              "FeedCloseRefresh",
              base::FEATURE_ENABLED_BY_DEFAULT);
