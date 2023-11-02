@@ -722,11 +722,13 @@
   },
   "printing": {
     "dependencies": ["permission:printing"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["blessed_extension"],
+    "required_buildflags": ["use_cups"]
   },
   "printingMetrics": {
     "dependencies": ["permission:printingMetrics"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["blessed_extension"],
+    "required_buildflags": ["use_cups"]
   },
   "privacy": {
     "dependencies": ["permission:privacy"],

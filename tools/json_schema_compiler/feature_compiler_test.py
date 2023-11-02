@@ -65,6 +65,9 @@ class FeatureCompilerTest(unittest.TestCase):
       'allowlist': [
         '0123456789ABCDEF0123456789ABCDEF01234567',
         '76543210FEDCBA9876543210FEDCBA9876543210'
+      ],
+      'required_buildflags': [
+        'use_cups'
       ]
     })
     self.assertFalse(f.GetErrors())
@@ -483,6 +486,32 @@ class FeatureCompilerTest(unittest.TestCase):
     feature = compiler._features.get('empty_contexts')
     self.assertTrue(feature)
     self.assertFalse(feature.GetErrors())
+
+  def testFeatureHiddenBehindBuildflag(self):
+    compiler = self._createTestFeatureCompiler('APIFeature')
+
+    compiler._json = {
+      'feature_cups': {
+        'channel': 'beta',
+        'contexts': ['blessed_extension'],
+        'extension_types': ['extension'],
+        'required_buildflags': ['use_cups']
+      }
+    }
+    compiler.Compile()
+    cc_code = compiler.Render()
+
+    # The code below is formatted correctly!
+    self.assertEqual(cc_code.Render(), '''  {
+    #if BUILDFLAG(USE_CUPS)
+    SimpleFeature* feature = new SimpleFeature();
+    feature->set_name("feature_cups");
+    feature->set_channel(version_info::Channel::BETA);
+    feature->set_contexts({Feature::BLESSED_EXTENSION_CONTEXT});
+    feature->set_extension_types({Manifest::TYPE_EXTENSION});
+    provider->AddFeature("feature_cups", feature);
+    #endif
+  }''')
 
 if __name__ == '__main__':
   unittest.main()
