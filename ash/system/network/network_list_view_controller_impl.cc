@@ -26,6 +26,7 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
+#include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
@@ -39,6 +40,7 @@ namespace ash {
 
 namespace {
 
+using bluetooth_config::IsBluetoothEnabledOrEnabling;
 using bluetooth_config::mojom::BluetoothSystemPropertiesPtr;
 using bluetooth_config::mojom::BluetoothSystemState;
 using ::chromeos::network_config::NetworkTypeMatchesType;
@@ -177,7 +179,11 @@ void NetworkListViewControllerImpl::OnPropertiesUpdated(
   }
 
   bluetooth_system_state_ = properties->system_state;
-  UpdateMobileSection();
+  if (features::IsInstantHotspotRebrandEnabled()) {
+    UpdateTetherHostsSection();
+  } else {
+    UpdateMobileSection();
+  }
 }
 
 void NetworkListViewControllerImpl::GetNetworkStateList() {
@@ -668,9 +674,18 @@ void NetworkListViewControllerImpl::UpdateMobileSection() {
 }
 
 void NetworkListViewControllerImpl::UpdateTetherHostsSection() {
-  DCHECK(tether_hosts_header_view_);
+  if (!tether_hosts_header_view_) {
+    return;
+  }
 
   network_detailed_network_view()->UpdateTetherHostsStatus(true);
+
+  if (!IsBluetoothEnabledOrEnabling(bluetooth_system_state_)) {
+    CreateInfoLabelIfMissingAndUpdate(
+        IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_TOOLTIP,
+        &tether_hosts_status_message_);
+    return;
+  }
 
   if (!has_tether_networks_) {
     CreateInfoLabelIfMissingAndUpdate(
