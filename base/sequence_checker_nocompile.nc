@@ -11,7 +11,8 @@ namespace {
 
 class SequenceAffine {
  public:
-  void BuggyIncrement();
+  void BuggyCounterAccess();
+  void BuggyIncrementCall();
 
   void Increment() VALID_CONTEXT_REQUIRED(sequence_checker_) {
     ++counter_;
@@ -23,20 +24,22 @@ class SequenceAffine {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-#if defined(NCTEST_ACCESS_WITHOUT_CHECK)  // [r"fatal error: writing variable 'counter_' requires holding context 'sequence_checker_' exclusively"]
+#if DCHECK_IS_ON()
 
-void SequenceAffine::BuggyIncrement() {
+void SequenceAffine::BuggyCounterAccess() {
   // Member access without sequence_checker_ assertion.
-  ++counter_;
+  ++counter_;  // expected-error {{writing variable 'counter_' requires holding context 'sequence_checker_' exclusively}}
 }
 
-#elif defined(NCTEST_CALL_WITHOUT_CHECK)  // [r"fatal error: calling function 'Increment' requires holding context 'sequence_checker_' exclusively"]
-
-void SequenceAffine::BuggyIncrement() {
+void SequenceAffine::BuggyIncrementCall() {
   // Function call without sequence_checker_ assertion.
-  Increment();
+  Increment();  // expected-error {{calling function 'Increment' requires holding context 'sequence_checker_' exclusively}}
 }
 
+#else
+
+// The SEQUENCE_CHECKER macros only do something in DCHECK builds.
+// expected-no-diagnostics
 
 #endif
 
