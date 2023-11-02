@@ -59,12 +59,7 @@ class WebRtcTextLogTest : public testing::Test {
     }
     logging::SetMinLogLevel(-verbosity_level);
 
-#if BUILDFLAG(USE_RUNTIME_VLOG)
     EXPECT_TRUE(VLOG_IS_ON(verbosity_level));
-#else
-    // VLOGs default to off when not using runtime vlog.
-    EXPECT_FALSE(VLOG_IS_ON(verbosity_level));
-#endif  // BUILDFLAG(USE_RUNTIME_VLOG)
 
     EXPECT_FALSE(VLOG_IS_ON(verbosity_level + 1));
     return true;
@@ -158,7 +153,6 @@ TEST_F(WebRtcTextLogTest, LogEverythingConfiguration) {
   EXPECT_THAT(contents_of_file,
               ::testing::HasSubstr(AsString(rtc::LS_WARNING)));
 
-#if BUILDFLAG(USE_RUNTIME_VLOG)
   EXPECT_THAT(contents_of_file, ::testing::HasSubstr(AsString(rtc::LS_INFO)));
   // RTC_LOG_E
   EXPECT_THAT(contents_of_file, ::testing::HasSubstr(strerror(kFakeError)));
@@ -166,7 +160,6 @@ TEST_F(WebRtcTextLogTest, LogEverythingConfiguration) {
               ::testing::HasSubstr(AsString(rtc::LS_VERBOSE)));
   EXPECT_THAT(contents_of_file,
               ::testing::HasSubstr(AsString(rtc::LS_SENSITIVE)));
-#endif  // BUILDFLAG(USE_RUNTIME_VLOG)
 }
 
 TEST_F(WebRtcTextLogTest, LogIf) {

@@ -70,11 +70,12 @@ component("gpu") {
     visibility += [ "//content/common" ]
   }
 
-  defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
-  if (!use_runtime_vlog) {
-    # Enable VLOG(1) when using build time VLOG.
-    defines += [ "ENABLED_VLOG_LEVEL=1" ]
-  }
+  defines = [
+    "MEDIA_GPU_IMPLEMENTATION",
+
+    # Enable VLOG(1) so that they are included in field feedbacks.
+    "ENABLED_VLOG_LEVEL=1",
+  ]
 
   sources = [
     "gpu_video_accelerator_util.cc",

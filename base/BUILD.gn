@@ -2498,10 +2498,7 @@ buildflag_header("feature_list_buildflags") {
 buildflag_header("logging_buildflags") {
   header = "logging_buildflags.h"
 
-  flags = [
-    "ENABLE_LOG_ERROR_NOT_REACHED=$enable_log_error_not_reached",
-    "USE_RUNTIME_VLOG=$use_runtime_vlog",
-  ]
+  flags = [ "ENABLE_LOG_ERROR_NOT_REACHED=$enable_log_error_not_reached" ]
 }
 
 buildflag_header("orderfile_buildflags") {

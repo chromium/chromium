@@ -131,7 +131,6 @@ namespace {
 
 int g_min_log_level = 0;
 
-#if BUILDFLAG(USE_RUNTIME_VLOG)
 // NOTE: Once |g_vlog_info| has been initialized, it might be in use
 // by another thread. Never delete the old VLogInfo, just create a second
 // one and overwrite. We need to use leak-san annotations on this intentional
@@ -199,25 +198,6 @@ void MaybeInitializeVlogInfo() {
     }
   }
 }
-#endif  // BUILDFLAG(USE_RUNTIME_VLOG)
-
-#if !BUILDFLAG(USE_RUNTIME_VLOG) && DCHECK_IS_ON()
-
-// Warn developers that vlog command line settings are being ignored.
-void MaybeWarnVmodule() {
-  if (base::CommandLine::InitializedForCurrentProcess()) {
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    if (command_line->HasSwitch(switches::kV) ||
-        command_line->HasSwitch(switches::kVModule)) {
-      LOG(WARNING)
-          << "--" << switches::kV << " and --" << switches::kVModule
-          << " are currently ignored. See comments in base/logging.h on "
-             "proper usage of USE_RUNTIME_VLOG.";
-    }
-  }
-}
-
-#endif  // !BUILDFLAG(USE_RUNTIME_VLOG) && DCHECK_IS_ON()
 
 const char* const log_severity_names[] = {"INFO", "WARNING", "ERROR", "FATAL"};
 static_assert(LOGGING_NUM_SEVERITIES == std::size(log_severity_names),
@@ -552,13 +532,7 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
   g_log_format = settings.log_format;
 #endif
 
-#if BUILDFLAG(USE_RUNTIME_VLOG)
   MaybeInitializeVlogInfo();
-#endif  // BUILDFLAG(USE_RUNTIME_VLOG)
-
-#if !BUILDFLAG(USE_RUNTIME_VLOG) && DCHECK_IS_ON()
-  MaybeWarnVmodule();
-#endif  // !BUILDFLAG(USE_RUNTIME_VLOG) && DCHECK_IS_ON()
 
   g_logging_destination = settings.logging_dest;
 
@@ -642,16 +616,12 @@ int GetVlogVerbosity() {
 int GetVlogLevelHelper(const char* file, size_t N) {
   DCHECK_GT(N, 0U);
 
-#if BUILDFLAG(USE_RUNTIME_VLOG)
   // Note: |g_vlog_info| may change on a different thread during startup
   // (but will always be valid or nullptr).
   VlogInfo* vlog_info = GetVlogInfo();
   return vlog_info ?
       vlog_info->GetVlogLevel(base::StringPiece(file, N - 1)) :
       GetVlogVerbosity();
-#else
-  return GetVlogVerbosity();
-#endif  // BUILDFLAG(USE_RUNTIME_VLOG)
 }
 
 void SetLogItems(bool enable_process_id, bool enable_thread_id,
@@ -1237,15 +1207,9 @@ std::wstring GetLogFileFullPath() {
 }
 #endif
 
-#if !BUILDFLAG(USE_RUNTIME_VLOG)
-int GetDisableAllVLogLevel() {
-  return -1;
-}
-#endif  // !BUILDFLAG(USE_RUNTIME_VLOG)
-
 // Used for testing. Declared in test/scoped_logging_settings.h.
 ScopedVmoduleSwitches::ScopedVmoduleSwitches() = default;
-#if BUILDFLAG(USE_RUNTIME_VLOG)
+
 VlogInfo* ScopedVmoduleSwitches::CreateVlogInfoWithSwitches(
     const std::string& vmodule_switch) {
   // Try get a VlogInfo on which to base this.
@@ -1283,11 +1247,5 @@ ScopedVmoduleSwitches::~ScopedVmoduleSwitches() {
   // looking.
   CHECK_EQ(replaced_vlog_info, scoped_vlog_info_);
 }
-#else
-void ScopedVmoduleSwitches::InitWithSwitches(
-    const std::string& vmodule_switch) {}
-
-ScopedVmoduleSwitches::~ScopedVmoduleSwitches() = default;
-#endif  // BUILDFLAG(USE_RUNTIME_VLOG)
 
 }  // namespace logging

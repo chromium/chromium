@@ -331,7 +331,7 @@ class ArcVmClientAdapterTest : public testing::Test,
   ArcVmClientAdapterTest() {
     // Use the same VLOG() level as production. Note that
     // arc_vm_client_adapter.cc defines ENABLED_VLOG_LEVEL 1, which is respected
-    // at compile time when use_runtime_vlog is set to false.
+    // at compile time.
     logging::SetMinLogLevel(-1);
 
     // Create and set new fake clients every time to reset clients' status.

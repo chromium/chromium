@@ -179,15 +179,15 @@ source_set("gbm") {
 
   public_configs = [ "//third_party/khronos:khronos_headers" ]
 
-  defines = [ "OZONE_IMPLEMENTATION" ]
+  defines = [
+    "OZONE_IMPLEMENTATION",
+
+    # Enable VLOG(1) so that they are included in field feedbacks.
+    "ENABLED_VLOG_LEVEL=1",
+  ]
 
   if (drm_commit_properties_on_page_flip) {
     defines += [ "COMMIT_PROPERTIES_ON_PAGE_FLIP" ]
-  }
-
-  if (!use_runtime_vlog) {
-    # Enable VLOG(1) when using build time VLOG.
-    defines += [ "ENABLED_VLOG_LEVEL=1" ]
   }
 }
 
