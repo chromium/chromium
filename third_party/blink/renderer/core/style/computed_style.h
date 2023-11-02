@@ -1336,69 +1336,42 @@ class ComputedStyle final : public ComputedStyleBase {
            BorderBottomRightRadius() == o.BorderBottomRightRadius();
   }
 
-  bool BorderLeftVisuallyEqual(const ComputedStyle& o) const {
-    if (BorderLeftStyle() == EBorderStyle::kNone &&
-        o.BorderLeftStyle() == EBorderStyle::kNone) {
-      return true;
-    }
-    if (BorderLeftStyle() == EBorderStyle::kHidden &&
-        o.BorderLeftStyle() == EBorderStyle::kHidden) {
-      return true;
-    }
-    return BorderLeftWidthInternal() == o.BorderLeftWidthInternal() &&
-           BorderLeftStyle() == o.BorderLeftStyle() &&
-           ResolvedColor(BorderLeftColor()) ==
-               o.ResolvedColor(o.BorderLeftColor());
-  }
-
-  bool BorderRightVisuallyEqual(const ComputedStyle& o) const {
-    if (BorderRightStyle() == EBorderStyle::kNone &&
-        o.BorderRightStyle() == EBorderStyle::kNone) {
-      return true;
-    }
-    if (BorderRightStyle() == EBorderStyle::kHidden &&
-        o.BorderRightStyle() == EBorderStyle::kHidden) {
-      return true;
-    }
-    return BorderRightWidthInternal() == o.BorderRightWidthInternal() &&
-           BorderRightStyle() == o.BorderRightStyle() &&
-           ResolvedColor(BorderRightColor()) ==
-               o.ResolvedColor(o.BorderRightColor());
-  }
-
-  bool BorderTopVisuallyEqual(const ComputedStyle& o) const {
-    if (BorderTopStyle() == EBorderStyle::kNone &&
-        o.BorderTopStyle() == EBorderStyle::kNone) {
-      return true;
-    }
-    if (BorderTopStyle() == EBorderStyle::kHidden &&
-        o.BorderTopStyle() == EBorderStyle::kHidden) {
-      return true;
-    }
-    return BorderTopWidthInternal() == o.BorderTopWidthInternal() &&
-           BorderTopStyle() == o.BorderTopStyle() &&
-           ResolvedColor(BorderTopColor()) ==
-               o.ResolvedColor(o.BorderTopColor());
-  }
-
-  bool BorderBottomVisuallyEqual(const ComputedStyle& o) const {
-    if (BorderBottomStyle() == EBorderStyle::kNone &&
-        o.BorderBottomStyle() == EBorderStyle::kNone) {
-      return true;
-    }
-    if (BorderBottomStyle() == EBorderStyle::kHidden &&
-        o.BorderBottomStyle() == EBorderStyle::kHidden) {
-      return true;
-    }
-    return BorderBottomWidthInternal() == o.BorderBottomWidthInternal() &&
-           BorderBottomStyle() == o.BorderBottomStyle() &&
-           ResolvedColor(BorderBottomColor()) ==
-               o.ResolvedColor(o.BorderBottomColor());
-  }
-
   bool BorderVisuallyEqual(const ComputedStyle& o) const {
-    return BorderLeftVisuallyEqual(o) && BorderRightVisuallyEqual(o) &&
-           BorderTopVisuallyEqual(o) && BorderBottomVisuallyEqual(o) &&
+    auto BorderSideVisuallyEqual =
+        [](const blink::Color& color, const blink::Color& other_color,
+           EBorderStyle style, EBorderStyle other_style, LayoutUnit width,
+           LayoutUnit other_width) -> bool {
+      if (style == EBorderStyle::kNone && other_style == EBorderStyle::kNone) {
+        return true;
+      }
+      if (style == EBorderStyle::kHidden &&
+          other_style == EBorderStyle::kHidden) {
+        return true;
+      }
+      return width == other_width && style == other_style &&
+             color == other_color;
+    };
+
+    return BorderSideVisuallyEqual(ResolvedColor(BorderTopColor()),
+                                   o.ResolvedColor(o.BorderTopColor()),
+                                   BorderTopStyle(), o.BorderTopStyle(),
+                                   BorderTopWidthInternal(),
+                                   o.BorderTopWidthInternal()) &&
+           BorderSideVisuallyEqual(ResolvedColor(BorderRightColor()),
+                                   o.ResolvedColor(o.BorderRightColor()),
+                                   BorderRightStyle(), o.BorderRightStyle(),
+                                   BorderRightWidthInternal(),
+                                   o.BorderRightWidthInternal()) &&
+           BorderSideVisuallyEqual(ResolvedColor(BorderBottomColor()),
+                                   o.ResolvedColor(o.BorderBottomColor()),
+                                   BorderBottomStyle(), o.BorderBottomStyle(),
+                                   BorderBottomWidthInternal(),
+                                   o.BorderBottomWidthInternal()) &&
+           BorderSideVisuallyEqual(ResolvedColor(BorderLeftColor()),
+                                   o.ResolvedColor(o.BorderLeftColor()),
+                                   BorderLeftStyle(), o.BorderLeftStyle(),
+                                   BorderLeftWidthInternal(),
+                                   o.BorderLeftWidthInternal()) &&
            BorderImage() == o.BorderImage();
   }
 
