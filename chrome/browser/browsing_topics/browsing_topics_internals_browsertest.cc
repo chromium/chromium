@@ -368,7 +368,7 @@ BrowsingTopicsParameters:number_of_epochs_of_observation_data_to_use_for_filteri
 BrowsingTopicsParameters:max_number_of_api_usage_context_domains_to_keep_per_topic: 1000
 BrowsingTopicsParameters:max_number_of_api_usage_context_entries_to_load_per_epoch: 100000
 BrowsingTopicsParameters:max_number_of_api_usage_context_domains_to_store_per_page_load: 30
-BrowsingTopicsParameters:taxonomy_version: 1
+BrowsingTopicsParameters:taxonomy_version: 2
 BrowsingTopicsParameters:disabled_topics_list: 
 )");
 }
@@ -484,7 +484,7 @@ BrowsingTopicsParameters:number_of_epochs_of_observation_data_to_use_for_filteri
 BrowsingTopicsParameters:max_number_of_api_usage_context_domains_to_keep_per_topic: 1000
 BrowsingTopicsParameters:max_number_of_api_usage_context_entries_to_load_per_epoch: 100000
 BrowsingTopicsParameters:max_number_of_api_usage_context_domains_to_store_per_page_load: 30
-BrowsingTopicsParameters:taxonomy_version: 1
+BrowsingTopicsParameters:taxonomy_version: 2
 BrowsingTopicsParameters:disabled_topics_list: 
 )");
 }

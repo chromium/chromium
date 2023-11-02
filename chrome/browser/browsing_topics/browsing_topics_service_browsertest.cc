@@ -693,65 +693,6 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, BrowsingTopicsStateOnStart) {
             now + base::Days(7));
 }
 
-// TODO(crbug.com/1491942): This fails with the field trial testing config.
-class BrowsingTopicsBrowserTestNoTestingConfig
-    : public BrowsingTopicsBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    BrowsingTopicsBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch("disable-field-trial-config");
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTestNoTestingConfig,
-                       CalculationResultUkm) {
-  auto entries = ukm_recorder_->GetEntriesByName(
-      ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::kEntryName);
-
-  for (auto* entry : entries) {
-    ukm_recorder_->ExpectEntryMetric(
-        entry,
-        ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
-            kTopTopic0Name,
-        6);
-    ukm_recorder_->ExpectEntryMetric(
-        entry,
-        ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
-            kTopTopic1Name,
-        5);
-    ukm_recorder_->ExpectEntryMetric(
-        entry,
-        ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
-            kTopTopic2Name,
-        4);
-    ukm_recorder_->ExpectEntryMetric(
-        entry,
-        ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
-            kTopTopic3Name,
-        3);
-    ukm_recorder_->ExpectEntryMetric(
-        entry,
-        ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
-            kTopTopic4Name,
-        2);
-    ukm_recorder_->ExpectEntryMetric(
-        entry,
-        ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
-            kTaxonomyVersionName,
-        1);
-    ukm_recorder_->ExpectEntryMetric(
-        entry,
-        ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
-            kModelVersionName,
-        1);
-    ukm_recorder_->ExpectEntryMetric(
-        entry,
-        ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
-            kPaddedTopicsStartIndexName,
-        5);
-  }
-}
-
 IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, ApiResultUkm) {
   GURL main_frame_url =
       https_server_.GetURL("a.test", "/browsing_topics/one_iframe_page.html");

@@ -206,7 +206,7 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kBrowsingTopicsPrioritizedTopicsList;
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBrowsingTopicsXHR);
-constexpr int kBrowsingTopicsTaxonomyVersionDefault = 1;
+constexpr int kBrowsingTopicsTaxonomyVersionDefault = 2;
 
 // Suppresses console errors for CORS problems which report an associated
 // inspector issue anyway.

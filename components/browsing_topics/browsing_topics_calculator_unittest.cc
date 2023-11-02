@@ -35,7 +35,7 @@ namespace browsing_topics {
 
 namespace {
 
-constexpr int kTaxonomyVersion = 1;
+constexpr int kTaxonomyVersion = 2;
 
 constexpr char kHost1[] = "www.foo1.com";
 constexpr char kHost2[] = "www.foo2.com";
@@ -43,6 +43,23 @@ constexpr char kHost3[] = "www.foo3.com";
 constexpr char kHost4[] = "www.foo4.com";
 constexpr char kHost5[] = "www.foo5.com";
 constexpr char kHost6[] = "www.foo6.com";
+
+Topic ExpectedRandomTopic(size_t index) {
+  Topic kExpectedRandomTopicsForTaxonomyV1[5] = {
+      Topic(101), Topic(102), Topic(103), Topic(104), Topic(105)};
+  Topic kExpectedRandomTopicsForTaxonomyV2[5] = {
+      Topic(176), Topic(177), Topic(180), Topic(183), Topic(184)};
+
+  if (blink::features::kBrowsingTopicsTaxonomyVersion.Get() == 1) {
+    return kExpectedRandomTopicsForTaxonomyV1[index];
+  }
+
+  if (blink::features::kBrowsingTopicsTaxonomyVersion.Get() == 2) {
+    return kExpectedRandomTopicsForTaxonomyV2[index];
+  }
+
+  NOTREACHED_NORETURN();
+}
 
 }  // namespace
 
@@ -376,11 +393,11 @@ TEST_F(BrowsingTopicsCalculatorTest, ModelHasNoTopicsForHost) {
 
   EpochTopics result = CalculateTopics();
   ExpectResultTopicsEqual(result.top_topics_and_observing_domains(),
-                          {{Topic(101), {}},
-                           {Topic(102), {}},
-                           {Topic(103), {}},
-                           {Topic(104), {}},
-                           {Topic(105), {}}});
+                          {{ExpectedRandomTopic(0), {}},
+                           {ExpectedRandomTopic(1), {}},
+                           {ExpectedRandomTopic(2), {}},
+                           {ExpectedRandomTopic(3), {}},
+                           {ExpectedRandomTopic(4), {}}});
 
   EXPECT_EQ(result.padded_top_topics_start_index(), 0u);
 }
@@ -431,11 +448,11 @@ TEST_F(BrowsingTopicsCalculatorTest, AllTopTopicsRandomlyPadded) {
 
   EpochTopics result = CalculateTopics();
   ExpectResultTopicsEqual(result.top_topics_and_observing_domains(),
-                          {{Topic(101), {}},
-                           {Topic(102), {}},
-                           {Topic(103), {}},
-                           {Topic(104), {}},
-                           {Topic(105), {}}});
+                          {{ExpectedRandomTopic(0), {}},
+                           {ExpectedRandomTopic(1), {}},
+                           {ExpectedRandomTopic(2), {}},
+                           {ExpectedRandomTopic(3), {}},
+                           {ExpectedRandomTopic(4), {}}});
 
   EXPECT_EQ(result.padded_top_topics_start_index(), 0u);
 }
@@ -465,8 +482,8 @@ TEST_F(BrowsingTopicsCalculatorTest, TopTopicsPartiallyPadded) {
                           {{Topic(6), {}},
                            {Topic(5), {}},
                            {Topic(4), {}},
-                           {Topic(101), {}},
-                           {Topic(102), {}}});
+                           {ExpectedRandomTopic(0), {}},
+                           {ExpectedRandomTopic(1), {}}});
 
   EXPECT_EQ(result.padded_top_topics_start_index(), 3u);
 }
@@ -533,17 +550,17 @@ TEST_F(BrowsingTopicsCalculatorTest, CalculationResultUkm) {
       entries.back(),
       ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
           kTopTopic3Name,
-      101);
+      ExpectedRandomTopic(0).value());
   ukm_recorder.ExpectEntryMetric(
       entries.back(),
       ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
           kTopTopic4Name,
-      102);
+      ExpectedRandomTopic(1).value());
   ukm_recorder.ExpectEntryMetric(
       entries.back(),
       ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
           kTaxonomyVersionName,
-      1);
+      kTaxonomyVersion);
   ukm_recorder.ExpectEntryMetric(
       entries.back(),
       ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
@@ -624,11 +641,11 @@ TEST_F(
 
   EpochTopics result = CalculateTopics();
   ExpectResultTopicsEqual(result.top_topics_and_observing_domains(),
-                          {{Topic(101), {}},
-                           {Topic(102), {}},
-                           {Topic(103), {}},
-                           {Topic(104), {}},
-                           {Topic(105), {}}});
+                          {{ExpectedRandomTopic(0), {}},
+                           {ExpectedRandomTopic(1), {}},
+                           {ExpectedRandomTopic(2), {}},
+                           {ExpectedRandomTopic(3), {}},
+                           {ExpectedRandomTopic(4), {}}});
 
   EXPECT_EQ(result.padded_top_topics_start_index(), 0u);
 }
@@ -651,9 +668,9 @@ TEST_F(
   test_annotator_.UseModelInfo(
       *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build());
   test_annotator_.UseAnnotations({
-      {kHost1, {1, 2, 103, 4, 5, 6}},
-      {kHost2, {2, 103, 4, 5, 6}},
-      {kHost3, {103, 4, 5, 6}},
+      {kHost1, {1, 2, ExpectedRandomTopic(2).value(), 4, 5, 6}},
+      {kHost2, {2, ExpectedRandomTopic(2).value(), 4, 5, 6}},
+      {kHost3, {ExpectedRandomTopic(2).value(), 4, 5, 6}},
       {kHost4, {4, 5, 6}},
       {kHost5, {5, 6}},
       {kHost6, {6}},
@@ -663,11 +680,11 @@ TEST_F(
 
   EpochTopics result = CalculateTopics();
   ExpectResultTopicsEqual(result.top_topics_and_observing_domains(),
-                          {{Topic(101), {}},
-                           {Topic(102), {}},
-                           {Topic(103), {HashedDomain(2)}},
-                           {Topic(104), {}},
-                           {Topic(105), {}}});
+                          {{ExpectedRandomTopic(0), {}},
+                           {ExpectedRandomTopic(1), {}},
+                           {ExpectedRandomTopic(2), {HashedDomain(2)}},
+                           {ExpectedRandomTopic(3), {}},
+                           {ExpectedRandomTopic(4), {}}});
 
   EXPECT_EQ(result.padded_top_topics_start_index(), 0u);
 }
@@ -711,7 +728,7 @@ TEST_F(BrowsingTopicsCalculatorTest,
        {Topic(5), {HashedDomain(1), HashedDomain(2), HashedDomain(3)}},
        {Topic(4), {HashedDomain(2), HashedDomain(3)}},
        {Topic(3), {HashedDomain(2)}},
-       {Topic(101), {}}});
+       {ExpectedRandomTopic(0), {}}});
 
   EXPECT_EQ(result.padded_top_topics_start_index(), 4u);
 }
@@ -761,7 +778,7 @@ TEST_F(BrowsingTopicsCalculatorTest,
         {HashedDomain(1), HashedDomain(2), HashedDomain(3), HashedDomain(5)}},
        {Topic(4), {HashedDomain(2), HashedDomain(3), HashedDomain(5)}},
        {Topic(3), {HashedDomain(2), HashedDomain(5)}},
-       {Topic(101), {}}});
+       {ExpectedRandomTopic(0), {}}});
 
   EXPECT_EQ(result.padded_top_topics_start_index(), 4u);
 }
@@ -811,7 +828,7 @@ TEST_F(BrowsingTopicsCalculatorTest,
        {Topic(5), {HashedDomain(1), HashedDomain(2), HashedDomain(3)}},
        {Topic(4), {HashedDomain(2), HashedDomain(3)}},
        {Topic(3), {HashedDomain(2)}},
-       {Topic(101), {}}});
+       {ExpectedRandomTopic(0), {}}});
 
   EXPECT_EQ(result.padded_top_topics_start_index(), 4u);
 }
@@ -1008,24 +1025,30 @@ TEST_F(BrowsingTopicsCalculatorTest, PaddedTopicsDoNotDuplicate) {
   test_annotator_.UseModelInfo(
       *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build());
   test_annotator_.UseAnnotations({
-      {kHost1, {1, 2, 3, 4, 5, 102}},
-      {kHost2, {2, 3, 4, 5, 102}},
-      {kHost3, {3, 4, 5, 102}},
-      {kHost4, {4, 5, 102}},
-      {kHost5, {5, 102}},
-      {kHost6, {102}},
+      {kHost1, {1, 2, 3, 4, 5, ExpectedRandomTopic(1).value()}},
+      {kHost2, {2, 3, 4, 5, ExpectedRandomTopic(1).value()}},
+      {kHost3, {3, 4, 5, ExpectedRandomTopic(1).value()}},
+      {kHost4, {4, 5, ExpectedRandomTopic(1).value()}},
+      {kHost5, {5, ExpectedRandomTopic(1).value()}},
+      {kHost6, {ExpectedRandomTopic(1).value()}},
   });
 
   task_environment_.AdvanceClock(base::Seconds(1));
 
   EpochTopics result = CalculateTopics();
+
+  // Note that ExpectedRandomTopic(1) (i.e. Topic(177)) is a descendant of
+  // ExpectedRandomTopic(0) (i.e. Topic(176)). Thus, `ExpectedRandomTopic(0)` is
+  // considered to have observed all three domains as well.
   ExpectResultTopicsEqual(
       result.top_topics_and_observing_domains(),
-      {{Topic(102), {HashedDomain(1), HashedDomain(2), HashedDomain(3)}},
+      {{ExpectedRandomTopic(1),
+        {HashedDomain(1), HashedDomain(2), HashedDomain(3)}},
        {Topic(5), {HashedDomain(1), HashedDomain(2), HashedDomain(3)}},
        {Topic(4), {HashedDomain(3)}},
-       {Topic(101), {}},
-       {Topic(103), {}}});
+       {ExpectedRandomTopic(0),
+        {HashedDomain(1), HashedDomain(2), HashedDomain(3)}},
+       {ExpectedRandomTopic(2), {}}});
 }
 
 TEST_F(BrowsingTopicsCalculatorTest, Metrics_LessThan5HistoryTopics) {
@@ -1061,8 +1084,8 @@ TEST_F(BrowsingTopicsCalculatorTest, Metrics_LessThan5HistoryTopics) {
       {{Topic(6), {HashedDomain(1), HashedDomain(2), HashedDomain(3)}},
        {Topic(5), {HashedDomain(1), HashedDomain(2), HashedDomain(3)}},
        {Topic(4), {HashedDomain(3)}},
-       {Topic(101), {}},
-       {Topic(102), {}}});
+       {ExpectedRandomTopic(0), {}},
+       {ExpectedRandomTopic(1), {}}});
 
   EXPECT_EQ(result.padded_top_topics_start_index(), 3u);
 
