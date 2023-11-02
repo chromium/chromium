@@ -42,6 +42,19 @@ export function hasCtrlModifier(e: KeyboardEvent): boolean {
 }
 
 /**
+ * Determines if the event has the platform-equivalent of the Windows ctrl key
+ * modifier, and only that modifier.
+ * @return Whether the event only has the ctrl key modifier.
+ */
+export function hasCtrlModifierOnly(e: KeyboardEvent): boolean {
+  let metaModifier = e.metaKey;
+  // <if expr="is_macosx">
+  metaModifier = e.ctrlKey;
+  // </if>
+  return hasCtrlModifier(e) && !e.shiftKey && !e.altKey && !metaModifier;
+}
+
+/**
  * Whether keydown events should currently be ignored. Events are ignored when
  * an editable element has focus, to allow for proper editing controls.
  * @return Whether keydown events should be ignored.

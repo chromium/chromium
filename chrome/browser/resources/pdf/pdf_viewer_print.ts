@@ -18,7 +18,7 @@ import {ViewerZoomToolbarElement} from './elements/viewer-zoom-toolbar.js';
 import {deserializeKeyEvent, LoadState, serializeKeyEvent} from './pdf_scripting_api.js';
 import {KeyEventData, PdfViewerBaseElement} from './pdf_viewer_base.js';
 import {getTemplate} from './pdf_viewer_print.html.js';
-import {DestinationMessageData, DocumentDimensionsMessageData, hasCtrlModifier, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
+import {DestinationMessageData, DocumentDimensionsMessageData, hasCtrlModifierOnly, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 import {ToolbarManager} from './toolbar_manager.js';
 
 let pluginLoaderPolicy: TrustedTypePolicy|null = null;
@@ -116,7 +116,7 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
       case 'Escape':
         break;  // Ensure escape falls through to the print-preview handler.
       case 'a':
-        if (hasCtrlModifier(e)) {
+        if (hasCtrlModifierOnly(e)) {
           this.pluginController_!.selectAll();
           // Since we do selection ourselves.
           e.preventDefault();
