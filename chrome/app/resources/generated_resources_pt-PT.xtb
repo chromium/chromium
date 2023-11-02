@@ -9017,6 +9017,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="81238879832906896">Flor amarela e branca</translation>
 <translation id="8123975449645947908">Deslocar para trás</translation>
 <translation id="8124313775439841391">ONC gerido</translation>
+<translation id="8125651784723647184">A partilha de palavras-passe é gerida pelo seu administrador</translation>
 <translation id="8129265306888404830">Para usar o endereço de email da sua organização (<ph name="EMAIL_DOMAIN" />), tem de usar a inscrição empresarial. Se este dispositivo for para sua utilização pessoal, inicie sessão com a sua Conta Google pessoal.</translation>
 <translation id="813082847718468539">Ver informações do Website</translation>
 <translation id="8131740175452115882">Confirmar</translation>
@@ -9234,7 +9235,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8298429963694909221">Já pode receber notificações do seu telemóvel no <ph name="DEVICE_TYPE" />. Ignorar as notificações no <ph name="DEVICE_TYPE" /> também as ignora no seu telemóvel. Certifique-se de que o telemóvel está próximo e com o Bluetooth e o Wi-Fi ativados.</translation>
 <translation id="829923460755755423">Adicione um atalho para o Gestor de Palavras-passe da Google</translation>
 <translation id="8299319456683969623">De momento, está offline.</translation>
-<translation id="8299951061833867575">Wi-Fi, dados móveis</translation>
 <translation id="8300011035382349091">Edite o marcador para este separador</translation>
 <translation id="8300374739238450534">Azul noite</translation>
 <translation id="8301242268274839723">Toque no sensor de impressões digitais no canto inferior esquerdo do teclado. Os seus dados de impressões digitais são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
@@ -9370,7 +9370,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8399282673057829204">Ver palavra-passe</translation>
 <translation id="8401432541486058167">Indique o PIN que está associado ao seu cartão inteligente.</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{O Chrome vai bloquear os cookies novamente hoje}=1{O Chrome vai bloquear os cookies novamente amanhã}other{# dias até o Chrome bloquear os cookies novamente}}</translation>
-<translation id="8403374688423270156">Zona Wi-Fi disponível</translation>
 <translation id="8403618281196981152">Os seus dados no Chrome</translation>
 <translation id="8403807918453631441">O <ph name="BRAND" /> consegue verificar as suas palavras-passe quando as guarda</translation>
 <translation id="8405046151008197676">Obtenha os destaques da atualização mais recente.</translation>

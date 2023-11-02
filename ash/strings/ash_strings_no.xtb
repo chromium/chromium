@@ -116,6 +116,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1391102559483454063">På</translation>
 <translation id="1407069428457324124">Mørkt tema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Bruk piltastene for å navigere mellom datoer.</translation>
+<translation id="141170878022560212">Midtre knapp</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" /> – installert app</translation>
 <translation id="1414919006379339073">Lukke gjeldende vindu</translation>
 <translation id="1415846719612499304">Vis nettverksliste. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2086334242442703436">Åpne emojivelgeren</translation>
 <translation id="2088116547584365419">spill</translation>
 <translation id="209965399369889474">Ikke koblet til nettverket</translation>
+<translation id="2107581415810719320">Annen knapp <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C-kabelen din støtter ikke Thunderbolt. Enhetens ytelse kan være begrenset.</translation>
 <translation id="2108303511227308752">Hurtigtasten Alt + tilbaketast er endret. For å bruke Delete-tasten, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + tilbaketasten.</translation>
 <translation id="2126242104232412123">Nytt skrivebord</translation>

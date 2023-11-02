@@ -349,6 +349,7 @@
 <translation id="1640244768702815859">ลอง<ph name="BEGIN_LINK" />ไปที่หน้าแรกของเว็บไซต์<ph name="END_LINK" /></translation>
 <translation id="1641976391427233992">หน่วงเวลาการพิมพ์จนถึง</translation>
 <translation id="164212631332220697">ชำระเงินด้วย <ph name="CARD_DETAIL" /> ที่จุดชำระเงิน</translation>
+<translation id="1643651787397909318">ปุ่มไปที่การตรวจสอบความปลอดภัยของ Chrome เปิดใช้งานเพื่อไปที่หน้าการตรวจสอบความปลอดภัยของ Chrome ในการตั้งค่า</translation>
 <translation id="1644574205037202324">ประวัติการเข้าชม</translation>
 <translation id="1645368109819982629">ไม่รองรับโปรโตคอล</translation>
 <translation id="1650602712345345441">จัดการการตั้งค่า Chrome</translation>
@@ -2048,6 +2049,8 @@
 <translation id="5137761395480718572">แอปนี้กำลังขอสิทธิ์ในการติดตั้งข้อมูลเข้าสู่ระบบ Wi-Fi หลังตั้งค่าแล้ว <ph name="DEVICE_TYPE" /> จะเชื่อมต่อกับเครือข่าย Wi-Fi ที่เข้าร่วมโดยอัตโนมัติ หากต้องการนำข้อมูลเข้าสู่ระบบเหล่านี้ออก ให้ถอนการติดตั้งแอป <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">บัตรเสมือนไม่พร้อมใช้งานในขณะนี้ โปรดติดต่อธนาคาร</translation>
 <translation id="5138227688689900538">แสดงน้อยลง</translation>
+<translation id="5143309888746105072">Chromium บล็อกเว็บไซต์ไม่ให้ใช้คุกกี้ของบุคคลที่สามเพื่อติดตามคุณในขณะที่ท่องเว็บ
+            <ph name="NEW_LINE" />หากฟีเจอร์ของเว็บไซต์ไม่ทำงาน ให้<ph name="START_LINK" />ลองอนุญาตคุกกี้ของบุคคลที่สามชั่วคราว<ph name="END_LINK" /></translation>
 <translation id="5145883236150621069">มีรหัสข้อผิดพลาดในการตอบกลับนโยบาย</translation>
 <translation id="5146995429444047494">บล็อกการแจ้งเตือนของ <ph name="ORIGIN" /> ไว้</translation>
 <translation id="514704532284964975"><ph name="URL" /> ต้องการดูและเปลี่ยนแปลงข้อมูลในอุปกรณ์ NFC ที่คุณแตะจากโทรศัพท์</translation>
@@ -2394,6 +2397,7 @@
 <translation id="5873297634595728366">ยานพาหนะดีเซล</translation>
 <translation id="5877831137320480913">สุขภาพและความงาม</translation>
 <translation id="5879989559903563723">ไม่อนุญาตในโหมดผู้มาเยือน</translation>
+<translation id="5880050725127890683">ไปที่การตรวจสอบความปลอดภัยของ Chrome</translation>
 <translation id="5883861433316751031">ควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่ไหม</translation>
 <translation id="5884465125445718607">Envelope Chinese #6</translation>
 <translation id="5887400589839399685">บันทึกการ์ดแล้ว</translation>
@@ -2575,6 +2579,7 @@
 <translation id="6251906504834538140">{0,plural, =1{ไฟล์ถูกบล็อกไม่ให้มีการย้าย}other{ไฟล์ <ph name="FILE_COUNT" /> รายการถูกบล็อกไม่ให้มีการย้าย}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อจัดการไฟล์ที่คุณดาวน์โหลดใน Chrome</translation>
 <translation id="6254436959401408446">หน่วยความจำไม่เพียงพอที่จะเปิดหน้านี้</translation>
+<translation id="625463612687472648">หยุดการอนุญาต</translation>
 <translation id="6259156558325130047">&amp;ทำซ้ำการจัดลำดับใหม่</translation>
 <translation id="6263376278284652872">บุ๊กมาร์ก <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">ดาวน์โหลดต่อไป</translation>
@@ -2750,6 +2755,8 @@
 <translation id="6596325263575161958">ตัวเลือกการเข้ารหัส</translation>
 <translation id="6597665340361269064">90 องศา</translation>
 <translation id="6599642189720630047">ผลิตภัณฑ์ที่ติดตาม</translation>
+<translation id="6606309334576464871">Chrome บล็อกเว็บไซต์ไม่ให้ใช้คุกกี้ของบุคคลที่สามเพื่อติดตามคุณในขณะที่ท่องเว็บ
+            <ph name="NEW_LINE" />หากฟีเจอร์ของเว็บไซต์ไม่ทำงาน ให้<ph name="START_LINK" />ลองอนุญาตคุกกี้ของบุคคลที่สามชั่วคราว<ph name="END_LINK" /></translation>
 <translation id="6611723696964473273">ข่าวเศรษฐกิจ</translation>
 <translation id="6612010098632894193">วิดีโอออนไลน์</translation>
 <translation id="6613866251791999074">ดูข้อมูลเพิ่มเติมเกี่ยวกับเครื่องมือค้นหาใน Chrome</translation>
@@ -3424,6 +3431,7 @@
 <translation id="7888575728750733395">การปรับค่าสีการพิมพ์</translation>
 <translation id="7894280532028510793">หากการสะกดถูกต้อง ให้<ph name="BEGIN_LINK" />ลองเรียกใช้การวินิจฉัยเครือข่าย<ph name="END_LINK" /></translation>
 <translation id="7901831439558593470">Envelope 7 x 9 นิ้ว</translation>
+<translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อไปที่หน้าการตรวจสอบความปลอดภัยของ Chrome ในการตั้งค่า</translation>
 <translation id="7916162853251942238">เฟล็กโซเบส</translation>
 <translation id="7927971017714848357">ที่ดินและแปลงที่ดิน</translation>
 <translation id="793209273132572360">อัปเดตที่อยู่ไหม</translation>
@@ -3719,6 +3727,7 @@
 <translation id="8460854335417802511">เปิด</translation>
 <translation id="8461694314515752532">เข้ารหัสลับข้อมูลที่ซิงค์ด้วยรหัสผ่านการซิงค์ของคุณเอง</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{บัตรเครดิต 1 ใบ}other{บัตรเครดิต # ใบ}}</translation>
+<translation id="8467494337615822642">ไปที่หน้าการตรวจสอบความปลอดภัยของ Chrome ในการตั้งค่า</translation>
 <translation id="8468358362970107653">Envelope C3</translation>
 <translation id="8473626140772740486">300 x 450 มม.</translation>
 <translation id="8473863474539038330">ที่อยู่และอื่นๆ</translation>

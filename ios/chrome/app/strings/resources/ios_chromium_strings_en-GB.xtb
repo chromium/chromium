@@ -96,6 +96,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chromium data in your 
 <translation id="4654936625574199632">To help improve the app, Chromium sends usage and crash data to Google. <ph name="BEGIN_LINK" />Manage<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Turn on Chromium scanner</translation>
 <translation id="4736424910885271643">Your account is managed by <ph name="HOSTED_DOMAIN" />, so your Chromium data will be cleared from this device</translation>
+<translation id="4773487571745795781">You turned off Chromium sign-in.</translation>
 <translation id="4790638144988730920">Keep using the Chromium data in your Google Account.</translation>
 <translation id="4828317641996116749">Chromium couldn't check all passwords. Try again later.</translation>
 <translation id="4985291216379576555">Offline, Chromium can't check for updates</translation>

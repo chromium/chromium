@@ -32,6 +32,7 @@
 <translation id="1142732900304639782">ਇਹਨਾਂ ਸਾਈਟਾਂ ਦਾ ਅਨੁਵਾਦ ਕਰਨ ਦੀ ਪੇਸ਼ਕਸ਼ ਨਾ ਕਰੋ</translation>
 <translation id="1145536944570833626">ਮੌਜੂਦਾ ਡਾਟਾ ਮਿਟਾਓ।</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> ਨੂੰ Chrome ਵਿੱਚ ਖੋਲ੍ਹਿਆ ਜਾਵੇਗਾ। ਜਾਰੀ ਰੱਖ ਕੇ, ਤੁਸੀਂ <ph name="BEGIN_LINK1" />Google ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_LINK1" /> ਅਤੇ <ph name="BEGIN_LINK2" />Google Chrome ਅਤੇ ChromeOS ਦੇ ਵਧੀਕ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_LINK2" /> ਨਾਲ ਸਹਿਮਤ ਹੁੰਦੇ ਹੋ।</translation>
+<translation id="115483310321669804"><ph name="PASSWORD" /> ਪਾਸਵਰਡ ਵਰਤੋ</translation>
 <translation id="1173894706177603556">ਮੁੜ-ਨਾਮਕਰਨ ਕਰੋ</translation>
 <translation id="1174479719160874822">ਸਕ੍ਰੀਨ ਛੋਟੀ ਹੋਣ 'ਤੇ Chrome ਮੋਬਾਈਲ ਸਾਈਟ ਲਈ ਬੇਨਤੀ ਕਰੇਗਾ</translation>
 <translation id="1177863135347784049">ਵਿਉਂਂਤੀ</translation>
@@ -149,6 +150,7 @@
 <translation id="1779766957982586368">window ਬੰਦ ਕਰੋ</translation>
 <translation id="1791662854739702043">ਸਥਾਪਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1792959175193046959">ਕਿਸੇ ਵੇਲੇ ਵੀ ਡਾਊਨਲੋਡ ਦਾ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਟਿਕਾਣਾ ਬਦਲੋ</translation>
+<translation id="1796666869097395659">ਬਾਅਦ ਵਿੱਚ ਟੈਬ 'ਤੇ ਵਾਪਸ ਆਉਣ ਲਈ ਇਸਨੂੰ ਛੋਟਾ ਕਰੋ</translation>
 <translation id="1807246157184219062">ਹਲਕਾ</translation>
 <translation id="1810845389119482123">ਸ਼ੁਰੂਆਤੀ ਸਿੰਕ ਸੈੱਟਅੱਪ ਪੂਰਾ ਨਹੀਂ ਹੋਇਆ</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਦੀ ਵਰਤੋਂ ਜਾਰੀ ਨਹੀਂ ਰੱਖ ਸਕਦਾ</translation>

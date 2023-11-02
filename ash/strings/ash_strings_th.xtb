@@ -565,6 +565,7 @@
 <translation id="3340978935015468852">การตั้งค่า</translation>
 <translation id="3341303451326249809">จับภาพหน้าจอแล้ว</translation>
 <translation id="334252345105450327">จับภาพหน้าจอ</translation>
+<translation id="3346728094401457853">ป้อนรหัสผ่านของอุปกรณ์สำหรับ <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">เลือกข้อความจากเคอร์เซอร์ไปจนถึงท้ายบรรทัด</translation>
 <translation id="3349345708646875009">เปิดตัวจัดการงาน</translation>
 <translation id="3364721542077212959">เครื่องมือสไตลัส</translation>
@@ -1586,6 +1587,7 @@
 <translation id="7489261257412536105">เข้าหรือออกจากโหมดเต็มหน้าจอ</translation>
 <translation id="7490360161041035804">คุณปักหมุดไฟล์ที่สำคัญ รวมถึงไฟล์ใน Google ไดรฟ์ได้ หากต้องการปักหมุด ให้วางเมาส์เหนือรายการหรือเปิด Files และคลิกขวาที่รายการ</translation>
 <translation id="7497767806359279797">เลือกภาษาและแป้นพิมพ์</translation>
+<translation id="7507162824403726948">ยืนยันตัวตนให้เสร็จสิ้น</translation>
 <translation id="7508690557411636492">เปิดในเดือนที่ผ่านมา</translation>
 <translation id="7509246181739783082">ยืนยันตัวตนของคุณ</translation>
 <translation id="7512509370370076552">อัปเดตแป้นพิมพ์ลัดสำหรับการคลิกขวาจาก Alt + คลิกเป็นแป้น <ph name="LAUNCHER_KEY_NAME" /> + คลิกแล้ว</translation>

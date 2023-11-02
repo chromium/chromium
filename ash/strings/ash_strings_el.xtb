@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">Ενεργό</translation>
 <translation id="1407069428457324124">Σκούρο θέμα</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Χρησιμοποιήστε τα πλήκτρα βέλους για να πλοηγηθείτε στις ημερομηνίες.</translation>
+<translation id="141170878022560212">Μεσαίο κουμπί</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, Εγκατεστημένη εφαρμογή</translation>
 <translation id="1414919006379339073">Κλείσιμο τρέχοντος παραθύρου</translation>
 <translation id="1415846719612499304">Εμφάνιση λίστας δικτύων. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@
 <translation id="2086334242442703436">Άνοιγμα εργαλείου επιλογής emoji</translation>
 <translation id="2088116547584365419">παιχνίδια</translation>
 <translation id="209965399369889474">Δεν υπάρχει σύνδεση στο δίκτυο</translation>
+<translation id="2107581415810719320">Άλλο κουμπί <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Το καλώδιο USB-C που έχετε δεν υποστηρίζει συσκευές Thunderbolt. Η απόδοση της συσκευής ενδέχεται να είναι περιορισμένη.</translation>
 <translation id="2108303511227308752">Η συντόμευση πληκτρολογίου Alt + Backspace άλλαξε. Για να χρησιμοποιήσετε το πλήκτρο Delete, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
 <translation id="2126242104232412123">Νέο γραφείο</translation>

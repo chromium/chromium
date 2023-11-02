@@ -9035,6 +9035,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="81238879832906896">Flor amarela e branca</translation>
 <translation id="8123975449645947908">Rolar para trás</translation>
 <translation id="8124313775439841391">ONC gerenciado</translation>
+<translation id="8125651784723647184">O compartilhamento de senhas é gerenciado pelo administrador</translation>
 <translation id="8129265306888404830">Para usar o endereço de e-mail da sua organização (<ph name="EMAIL_DOMAIN" />), você precisa do registro empresarial. Se este dispositivo for para uso pessoal, faça login com sua Conta do Google pessoal.</translation>
 <translation id="813082847718468539">Ver informações do site</translation>
 <translation id="8131740175452115882">Confirmar</translation>
@@ -9252,7 +9253,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8298429963694909221">Agora, é possível receber notificações do seu smartphone no <ph name="DEVICE_TYPE" />. Ao dispensá-las no <ph name="DEVICE_TYPE" />, elas também serão dispensadas no smartphone. Confira se o smartphone está por perto com o Wi-Fi e o Bluetooth ativados.</translation>
 <translation id="829923460755755423">Adicione um atalho para o Gerenciador de senhas do Google</translation>
 <translation id="8299319456683969623">No momento, você está off-line.</translation>
-<translation id="8299951061833867575">Wi-Fi, dados móveis</translation>
 <translation id="8300011035382349091">Editar favorito para esta guia</translation>
 <translation id="8300374739238450534">Azul noturno</translation>
 <translation id="8301242268274839723">Toque no sensor de impressão digital no canto inferior esquerdo do teclado. Seus dados de impressão digital são armazenados de forma segura e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
@@ -9388,7 +9388,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8399282673057829204">Ver senha</translation>
 <translation id="8401432541486058167">Insira o PIN associado ao seu cartão inteligente.</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{O Chrome vai bloquear os cookies novamente hoje}=1{O Chrome vai bloquear os cookies novamente amanhã}one{# dia até que o Chrome bloqueie os cookies novamente}other{# dias até que o Chrome bloqueie os cookies novamente}}</translation>
-<translation id="8403374688423270156">Ponto de acesso disponível</translation>
 <translation id="8403618281196981152">Seus dados no Chrome</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> pode verificar suas senhas quando elas são salvas</translation>
 <translation id="8405046151008197676">Veja os destaques da atualização mais recente</translation>

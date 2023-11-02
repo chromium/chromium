@@ -134,6 +134,7 @@
 <translation id="1672586136351118594">फिर से न दिखाएं</translation>
 <translation id="1680919990519905526">Google Lens से इमेज खरीदें <ph name="BEGIN_NEW" />नए<ph name="END_NEW" /></translation>
 <translation id="1687482373098770139">जल्द ही, आपको 'फ़ॉलो किया जा रहा है' सेक्शन में <ph name="SITE_NAME" /> के बारे में और उसका कॉन्टेंट दिखेगा. आपने जिन साइटों और खोजों को फ़ॉलो किया है उन्हें आपके Google खाते में सेव कर दिया गया है. सेटिंग में जाकर, फ़ॉलो किए जाने वाले आइटम को कभी भी मैनेज किया जा सकता है.</translation>
+<translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> पर जारी रखने के लिए, दूसरे तरीके आज़माए जा सकते हैं.</translation>
 <translation id="1702543251015153180">क्या आपको गहरे रंग वाली थीम की सेटिंग को बदलना है?</translation>
 <translation id="1702907158640575240">मैनेज किया गया ब्राउज़र</translation>
 <translation id="1710099199314114079">टैब को स्विच करें या बंद करें</translation>
@@ -150,6 +151,7 @@
 <translation id="1792959175193046959">डिफ़ॉल्ट डाउनलोड स्थान किसी भी समय बदलें</translation>
 <translation id="1807246157184219062">हल्का</translation>
 <translation id="1810845389119482123">शुरुआती सिंक सेट अप पूरा नहीं हुआ</translation>
+<translation id="1812027881030482584"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> पर <ph name="SITE_ETLD_PLUS_ONE" /> का इस्तेमाल जारी नहीं रखा जा सकता</translation>
 <translation id="1829244130665387512">पेज में ढूंढें</translation>
 <translation id="1832459821645506983">हां, वॉइस सर्च करें</translation>
 <translation id="185383612275551373">Google से सबसे उपयोगी कॉन्टेंट पाने के लिए सिंक करें</translation>
@@ -316,6 +318,7 @@
 <translation id="2718846868787000099">आपकी पसंदीदा भाषाओं में कॉन्टेंट दिखाने के लिए, आप जिन साइटों का इस्तेमाल करते हैं वे आपकी प्राथमिकताएं देख सकती हैं</translation>
 <translation id="2722945394406572875">प्राइवसी सैंडबॉक्स प्रॉम्प्ट बंद है</translation>
 <translation id="2723001399770238859">ऑडियो</translation>
+<translation id="2742373789128106053">फ़िलहाल, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> उपलब्ध नहीं है.</translation>
 <translation id="2760805590727089264">महीना / साल</translation>
 <translation id="2760989362628427051">अपने डिवाइस की गहरे रंग वाली थीम या बैटरी सेवर मोड चालू होने पर, गहरे रंग वाली थीम चालू करें</translation>
 <translation id="2762000892062317888">अभी-अभी</translation>
@@ -474,6 +477,7 @@
 <translation id="3509330069915219067">ऑफ़लाइन. Chrome, अपडेट की जांच नहीं कर सकता.</translation>
 <translation id="3513704683820682405">ऑगमेंटेड रिएलिटी (AR)</translation>
 <translation id="3518985090088779359">स्‍वीकार करें और जारी रखें</translation>
+<translation id="3521388823983121502"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> के साथ जारी नहीं रखा जा सकता</translation>
 <translation id="3522247891732774234">अपडेट उपलब्ध है. ज़्यादा विकल्प</translation>
 <translation id="3524138585025253783">डेवलपर यूज़र इंटरफ़ेस (यूआई)</translation>
 <translation id="3524334353996115845"><ph name="ORIGIN" /> को आपकी पहचान की पुष्टि करने दें</translation>
@@ -626,6 +630,7 @@
 <translation id="4355272626458588338">किसी भी अहम पेज पर आसानी से वापस जाने के लिए, उसे बुकमार्क किया जा सकता है</translation>
 <translation id="4369735607080757018">विज्ञापनों की परफ़ॉर्मेंस मापने के लिए साइटों के बीच सीमित डेटा शेयर किया जाता है. जैसे, किसी दिन के किस समय आपको विज्ञापन दिखाया गया</translation>
 <translation id="4378154925671717803">फ़ोन</translation>
+<translation id="4380055775103003110">अगर यह समस्या बार-बार आ रही है, तो <ph name="SITE_ETLD_PLUS_ONE" /> पर जारी रखने के लिए, दूसरे तरीके आज़माएं.</translation>
 <translation id="438319986296050901">सिर्फ़ कार्ड शेयर करें</translation>
 <translation id="4384468725000734951">खोज के लिए Sogou का इस्तेमाल कर रहे हैं</translation>
 <translation id="4387647248986092471">कार का प्रोफ़ाइल लॉक सेट करें</translation>
@@ -884,6 +889,7 @@
 <translation id="569435661099256888">आपने जिन पेजों पर विज़िट किया है उन्हें देखा जा सकता है या अपने इतिहास से हटाया जा सकता है</translation>
 <translation id="569536719314091526">'ज़्यादा विकल्प' बटन से इस पेज का अनुवाद किसी भी भाषा में करें</translation>
 <translation id="5696597120588531049">Chrome आपको डेटा के गलत इस्तेमाल, नुकसान पहुंचाने वाली वेबसाइटों वगैरह से सुरक्षित रहने में मदद कर सकता है</translation>
+<translation id="5698878456427040674">देखें कि चुना गया खाता काम करता है या नहीं.</translation>
 <translation id="570347048394355941">टैब पर स्विच करें</translation>
 <translation id="572328651809341494">हाल ही के टैब</translation>
 <translation id="5726692708398506830">पेज पर सब कुछ बड़ा करें</translation>
@@ -963,6 +969,7 @@
 <translation id="6108923351542677676">सेटअप प्रगति में है…</translation>
 <translation id="6112702117600201073">पृष्‍ठ रीफ्रेश किया जा रहा है</translation>
 <translation id="6122831415929794347">क्या आप सुरक्षित ब्राउज़िंग की सुविधा का इस्तेमाल बंद करना चाहते हैं?</translation>
+<translation id="6125864963080902918"><ph name="BEGIN_LINK" />ज़्यादा जानकारी<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">आइटम निकाला गया</translation>
 <translation id="6130303040046284160">टैब को छोटा करें</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" /> की भाषा</translation>
@@ -1004,6 +1011,7 @@
 <translation id="6342069812937806050">अभी</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> अन्य}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> अन्य}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> अन्य}}</translation>
 <translation id="6345878117466430440">'पढ़ा गया' के तौर पर मार्क करें</translation>
+<translation id="6356893102071098867">देखें कि आपने सही खाता चुना है या नहीं</translation>
 <translation id="6357653805084533597">इस फ़ोन का इस्तेमाल, उस डिवाइस पर साइन इन करने के लिए किया जा सकता है जिस पर यह क्यूआर कोड दिख रहा है.</translation>
 <translation id="6363990818884053551">इसे चालू करने के लिए अपनी पहचान की पुष्टि करें</translation>
 <translation id="6364438453358674297">सुझाव को इतिहास से निकालें?</translation>
@@ -1136,6 +1144,7 @@
 <translation id="6908998565271542516">किसी वेबसाइट को अनुमति देने या न देने का विकल्प पूरी स्क्रीन में खुला है</translation>
 <translation id="6909589135458168665">पेजों को पहले से लोड करने की सुविधा</translation>
 <translation id="6910211073230771657">हटाया गया</translation>
+<translation id="6918398787259831832">अगर यह समस्या बार-बार आती है, तो <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> से <ph name="BEGIN_LINK" />ज़्यादा जानकारी पाएं<ph name="END_LINK" />.</translation>
 <translation id="6942665639005891494">सेटिंग मेन्यू विकल्प का इस्तेमाल करके डिफ़ॉल्ट डाउनलोड स्थान किसी भी समय बदलें</translation>
 <translation id="694267552845942083">फ़िलहाल, आप अपनी सिंक सेटिंग पसंद के मुताबिक इस्तेमाल कर रहे हैं. सिंक की सुविधा चालू करने की प्रोसेस पूरी करने के लिए, स्क्रीन पर सबसे नीचे मौजूद 'पुष्टि करें' बटन पर टैप करें. ऊपर जाएं</translation>
 <translation id="6945221475159498467">चुनें</translation>
@@ -1172,6 +1181,7 @@
 <translation id="7138678301420049075">अन्य</translation>
 <translation id="7140829094791862589">मैन्युअल क्रम से लगाएं</translation>
 <translation id="7146622961999026732">शायद ये साइटें और ऐप्लिकेशन आपके लिए अहम हैं:</translation>
+<translation id="7148400116894863598"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> से इसकी <ph name="BEGIN_LINK" />ज़्यादा जानकारी पाएं<ph name="END_LINK" />.</translation>
 <translation id="7149893636342594995">पिछले 24 घंटे</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> के तौर पर साइन इन किया गया. इस बटन से सेटिंग खुलती है.</translation>
 <translation id="7173114856073700355">सेटिंग खोलें</translation>
@@ -1198,6 +1208,7 @@
 <translation id="7274013316676448362">अवरोधित साइट</translation>
 <translation id="7276100255011548441">Chrome, सूची से उन विषयों को अपने-आप मिटा देता है जो चार हफ़्ते से ज़्यादा पुराने हैं. हालांकि, ब्राउज़ करते समय, विषयों की सूची में कोई पुराना विषय फिर से दिख सकता है. इसके अलावा, आपके पास उन विषयों को ब्लॉक करने का भी विकल्प होता है जिन्हें आपको Chrome की सूची में शामिल नहीं करवाना है. <ph name="BEGIN_LINK" />Chrome में विज्ञापन देखने वाले की निजता बनाए रखने<ph name="END_LINK" /> के बारे में ज़्यादा जानें.</translation>
 <translation id="7286703216224610554">सिर्फ़ प्रतिक्रिया शेयर करें</translation>
+<translation id="7289303553784750393">आपके ऑनलाइन रहने पर भी अगर यह समस्या बार-बार आ रही है, तो <ph name="SITE_ETLD_PLUS_ONE" /> पर जारी रखने के लिए दूसरे तरीके आज़माएं.</translation>
 <translation id="7290209999329137901">नाम बदलने की सुविधा उपलब्ध नहीं है</translation>
 <translation id="7291910923717764901">इस पेज पर इमेज की जानकारी जोड़ दी गई है</translation>
 <translation id="7293429513719260019">भाषा चुनें</translation>
@@ -1253,6 +1264,7 @@
 <translation id="750228856503700085">कोई अपडेट उपलब्ध नहीं है</translation>
 <translation id="7507207699631365376">इस सेवा देने वाले की <ph name="BEGIN_LINK" />निजता नीति<ph name="END_LINK" /> देखें</translation>
 <translation id="7514365320538308">डाउनलोड करें</translation>
+<translation id="7518079994230200553">फ़िलहाल, यह विकल्प उपलब्ध नहीं है.</translation>
 <translation id="751961395872307827">साइट से कनेक्ट नहीं किया जा सका</translation>
 <translation id="752220631458524187">काम हो जाने के बाद डिसकनेक्ट कर दें</translation>
 <translation id="7523960634226602883">Google Lens के ज़रिए अपने कैमरे और फ़ोटो की मदद से खोजें</translation>

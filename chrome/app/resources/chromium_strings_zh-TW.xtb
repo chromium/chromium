@@ -21,6 +21,7 @@
 <translation id="1342274909142618978">一併刪除 Chromium 中的資料 (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">你已登入 Chromium！</translation>
 <translation id="1478370723027452770">查看 Chrome for Testing 相關說明</translation>
+<translation id="1497802159252041924">安裝錯誤：<ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">分享 Chromium 分頁</translation>
 <translation id="1553461853655228091">Chromium 需要取得攝影機權限，才能根據你的周遭環境建立 3D 地圖</translation>
 <translation id="1574377791422810894">Chromium 安全工具</translation>
@@ -155,11 +156,13 @@
 <translation id="390528597099634151"><ph name="EXISTING_USER" />已登入這個 Chromium 設定檔。如要分開保存你的瀏覽資料，建議在 Chromium 中建立專屬設定檔。</translation>
 <translation id="3909353120217047026">這項擴充功能違反 Chrome 線上應用程式商店政策，可能不安全。請從 Chromium 中移除這項擴充功能，使其無法再查看及變更你造訪的網站相關資料，包括你的個人資訊。</translation>
 <translation id="391789666908693569">你的帳戶是由 <ph name="MANAGER_NAME" /> 管理。系統管理員可查看及編輯這個 Chromium 瀏覽器設定檔及其中的資料，例如書籤、歷史記錄和密碼。</translation>
+<translation id="3922825997980843979">當你輸入文字時，Chromium 會將網址列或搜尋框的內容傳送至預設搜尋引擎</translation>
 <translation id="3945058413678539331">Chromium 正在嘗試複製密碼。如果你同意這項作業，請輸入你的 Windows 密碼。</translation>
 <translation id="3962647064319009959">瞭解 Chromium 如何保護資料安全</translation>
 <translation id="3975724895399328945">關於 Google Chrome for Testing(&amp;G)</translation>
 <translation id="3997429360543082038">關於 Chromium OS</translation>
 <translation id="4019629340646866719">Chromium OS 受惠於其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />技術才能成功發布，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開發環境<ph name="END_LINK_LINUX_OSS" />也一樣。</translation>
+<translation id="4028143804911941282">關閉後，你仍會看到 Chromium 在本機提供的建議</translation>
 <translation id="4036079820698952681">只要回報<ph name="BEGIN_LINK" />目前的設定<ph name="END_LINK" />，就能助我們一臂之力，讓 Chromium 更臻完美</translation>
 <translation id="4050175100176540509">最新版本包含重要的安全性改善與新功能。</translation>
 <translation id="4055805654398742145">密碼管理工具(&amp;A)</translation>
@@ -251,6 +254,7 @@
 <translation id="6003112304606738118">下載中… 還剩 <ph name="HOURS" /> 小時</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6055895534982063517">新版 Chromium 現已推出，速度更勝以往。</translation>
+<translation id="6058380562449900225">為保護你的資料，請允許 Chromium 從你近期未造訪的網站移除權限。這不會停止通知。</translation>
 <translation id="6063093106622310249">在 Chromium 中開啟(&amp;O)</translation>
 <translation id="6072279588547424923">已將「<ph name="EXTENSION_NAME" />」加到 Chromium</translation>
 <translation id="6072463441809498330">提升 Chromium 的運作速度</translation>

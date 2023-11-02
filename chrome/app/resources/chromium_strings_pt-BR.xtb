@@ -22,6 +22,7 @@
 <translation id="1342274909142618978">Também excluir dados do Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Você está conectado ao Chromium.</translation>
 <translation id="1478370723027452770">Receber ajuda com o Chrome for Testing</translation>
+<translation id="1497802159252041924">Erro de instalação: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Compartilhar uma guia do Chromium</translation>
 <translation id="1553461853655228091">O Chromium precisa de permissão para acessar sua câmera e criar um mapa 3D do ambiente a sua volta</translation>
 <translation id="1574377791422810894">Ferramentas de segurança do Chromium</translation>
@@ -155,11 +156,13 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="390528597099634151">A conta de <ph name="EXISTING_USER" /> já está conectada a este perfil do Chromium. Para manter sua navegação separada, o Chromium pode criar um perfil só para você.</translation>
 <translation id="3909353120217047026">Esta extensão viola a política da Chrome Web Store e pode não ser segura. Remova do Chromium para que ela não apareça mais e altere seus dados nos sites que você visitar, incluindo suas informações pessoais.</translation>
 <translation id="391789666908693569">Sua conta é gerenciada por <ph name="MANAGER_NAME" />. Seu administrador pode ver e editar este perfil do navegador Chromium e os dados dele, como favoritos, histórico e senhas.</translation>
+<translation id="3922825997980843979">Conforme você digita, o Chromium envia o conteúdo da barra de endereço ou da caixa de pesquisa para seu mecanismo de pesquisa padrão</translation>
 <translation id="3945058413678539331">O Chromium está tentando copiar senhas. Digite a senha do Windows para permitir essa ação.</translation>
 <translation id="3962647064319009959">Saiba como o Chromium protege você</translation>
 <translation id="3975724895399328945">Sobre o &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Sobre o ChromiumOS</translation>
 <translation id="4019629340646866719">A existência do ChromiumOS tornou-se possível graças a outros <ph name="BEGIN_LINK_CROS_OSS" />softwares de código aberto<ph name="END_LINK_CROS_OSS" />, como o <ph name="BEGIN_LINK_LINUX_OSS" />ambiente para desenvolvedores do Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="4028143804911941282">Quando esta opção estiver desativada, você ainda terá acesso a sugestões que o Chromium oferece localmente</translation>
 <translation id="4036079820698952681">Ajude a melhorar o Chromium informando as <ph name="BEGIN_LINK" />configurações atuais<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Melhorias de segurança importantes e novos recursos estão disponíveis na versão mais recente.</translation>
 <translation id="4055805654398742145">Gerenciador de senhas</translation>
@@ -251,6 +254,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="6003112304606738118">Fazendo o download… <ph name="HOURS" /> hora(s) restante(s)</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6055895534982063517">Há uma nova versão ainda mais rápida do Chromium disponível.</translation>
+<translation id="6058380562449900225">Para proteger seus dados, permita que o Chromium remova permissões de sites que você não visitou recentemente. Não interrompe notificações.</translation>
 <translation id="6063093106622310249">&amp;Abrir no Chromium</translation>
 <translation id="6072279588547424923">A extensão <ph name="EXTENSION_NAME" /> foi adicionada ao Chromium</translation>
 <translation id="6072463441809498330">Deixe o Chromium mais rápido</translation>

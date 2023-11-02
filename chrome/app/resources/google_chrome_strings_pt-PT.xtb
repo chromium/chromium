@@ -25,6 +25,7 @@
 <translation id="1425903838053942728">{COUNT,plural, =0{A atualização do Chrome está concluída. Pode usar a versão mais recente assim que reiniciar. Depois, os separadores atuais vão ser reabertos.}=1{A atualização do Chrome está concluída. Pode usar a versão mais recente assim que reiniciar. Depois, os separadores atuais vão ser reabertos. Não é possível reabrir a janela de navegação anónima.}other{A atualização do Chrome está concluída. Pode usar a versão mais recente assim que reiniciar. Depois, os separadores atuais vão ser reabertos. Não é possível reabrir # janelas de navegação anónima.}}</translation>
 <translation id="1434626383986940139">Apps do Chrome para o Canary</translation>
 <translation id="1492280395845991349">Reinicie para concluir a atualização do Chrome</translation>
+<translation id="1497802159252041924">Erro ao instalar: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Personalize o seu novo perfil do Chrome</translation>
 <translation id="1516530951338665275">O Google Chrome necessita do acesso ao Bluetooth para continuar 
 a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -87,6 +88,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="2467438592969358367">O Google Chrome quer exportar as suas palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="2472092250898121027">Esta extensão contém software malicioso e não é segura. Remova-a do Chrome para que deixe de poder ver e alterar os seus dados nos sites que visita, incluindo as suas informações pessoais.</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
+<translation id="2534365042754120737">Para proteger os seus dados, permita que o Chrome remova as autorizações de sites que não visitou recentemente. Esta opção não para as notificações.</translation>
 <translation id="2534507159460261402">Google Pay (copiado para o Chrome)</translation>
 <translation id="2556847002339236023">A sua organização fecha o Chrome quando este não é usado durante <ph name="TIMEOUT_DURATION" />. Os dados de navegação foram eliminados. Estes dados podem incluir o histórico, o preenchimento automático e as transferências.</translation>
 <translation id="2559253115192232574">Posteriormente, um site que visitar pode pedir ao Chrome para ver os seus interesses para personalizar os anúncios que vê. O Chrome pode partilhar até 3 interesses.</translation>
@@ -266,6 +268,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="5524761631371622910">Quando as avaliações estão ativadas, e se o Chrome tiver colocado o utilizador aleatoriamente numa avaliação ativa, o histórico de navegação afeta os anúncios que vê e os interesses, conforme estimados abaixo. Para proteger a sua privacidade, o Chrome elimina os seus interesses todos os meses.</translation>
 <translation id="5530733413481476019">Torne o Chrome mais rápido</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5572786658631721382">Quando esta opção está desativada, continua a ver sugestões que o Chrome faculta localmente</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> pode ser perigoso, por isso o Chrome bloqueou-o.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{O seu administrador solicita-lhe que reinicie o Chrome para aplicar esta atualização.}=1{O seu administrador solicita-lhe que reinicie o Chrome para aplicar esta atualização. Não é possível reabrir a sua janela de navegação anónima.}other{O seu administrador solicita-lhe que reinicie o Chrome para aplicar esta atualização. Não é possível reabrir as suas # janelas de navegação anónima.}}</translation>
 <translation id="5686916850681061684">Personalize e controle o Google Chrome. É necessária a sua atenção – clique para obter detalhes.</translation>
@@ -359,6 +362,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="7177959540995930968">Pode saber mais sobre estas funcionalidades nas definições do Chrome.</translation>
 <translation id="7193885263065350793">A sua organização fecha o Chrome quando este não é usado durante <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Está a iniciar sessão com uma conta gerida e a permitir que o gestor controle o seu perfil do Google Chrome. Os seus dados do Chrome, como aplicações, marcadores, histórico, palavras-passe e outras definições, ficarão associados definitivamente a <ph name="USER_NAME" />. Poderá eliminar estes dados através do Painel de Controlo das Contas Google, mas não poderá associá-los a outra conta. Opcionalmente, pode criar um perfil novo para manter os seus dados atuais do Chrome em separado. <ph name="LEARN_MORE" /></translation>
+<translation id="7284878711178835966">À medida que escreve, o Chrome envia o conteúdo da barra de endereço ou da caixa de pesquisa para o motor de pesquisa predefinido</translation>
 <translation id="7295052994004373688">Este idioma é utilizado para apresentar a IU do Google Chrome</translation>
 <translation id="7296210096911315575">Informações de utilização e segurança importantes</translation>
 <translation id="7308322188646931570">O Chrome necessita de acesso ao armazenamento para transferir ficheiros.</translation>

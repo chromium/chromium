@@ -32,6 +32,7 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="1142732900304639782">Không đề xuất dịch những trang web này</translation>
 <translation id="1145536944570833626">Xóa dữ liệu hiện có.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> sẽ mở trong Chrome. Bằng việc tiếp tục, bạn đồng ý với <ph name="BEGIN_LINK1" />Điều khoản dịch vụ của Google<ph name="END_LINK1" /> cũng như <ph name="BEGIN_LINK2" />Điều khoản dịch vụ bổ sung của Google Chrome và ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="115483310321669804">Sử dụng mật khẩu <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Đổi tên</translation>
 <translation id="1174479719160874822">Chrome sẽ yêu cầu trang web dành cho thiết bị di động khi màn hình bị hẹp</translation>
 <translation id="1177863135347784049">Tùy chỉnh</translation>
@@ -149,6 +150,7 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="1779766957982586368">Đóng cửa sổ</translation>
 <translation id="1791662854739702043">Đã cài đặt</translation>
 <translation id="1792959175193046959">Thay đổi vị trí tải xuống mặc định bất cứ lúc nào</translation>
+<translation id="1796666869097395659">Thu nhỏ thẻ để quay lại sau</translation>
 <translation id="1807246157184219062">Sáng</translation>
 <translation id="1810845389119482123">Chưa hoàn tất quá trình thiết lập đồng bộ hóa ban đầu</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> không thể tiếp tục dùng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

@@ -32,6 +32,7 @@ Yalnız parolunuzu bilən kimsə şifrələnmiş datanızı oxuya bilər. Bu par
 <translation id="1142732900304639782">Bu saytların tərcümə edilməsini təklif etməyin</translation>
 <translation id="1145536944570833626">Mövcud datanı silin.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chrome'da açılacaq. Davam etməklə, <ph name="BEGIN_LINK1" />Google Xidmət Şərtləri<ph name="END_LINK1" /> və <ph name="BEGIN_LINK2" />Google Chrome və ChromeOS Əlavə Xidmət Şərtləri<ph name="END_LINK2" /> ilə razılaşırsınız.</translation>
+<translation id="115483310321669804">Parol istifadə edin: <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Adını dəyişin</translation>
 <translation id="1174479719160874822">Ekran dar olduqda Chrome mobil sayt tələb edəcək</translation>
 <translation id="1177863135347784049">İxtiyari</translation>
@@ -149,6 +150,7 @@ Yalnız parolunuzu bilən kimsə şifrələnmiş datanızı oxuya bilər. Bu par
 <translation id="1779766957982586368">Pəncərəni qapadın</translation>
 <translation id="1791662854739702043">Quraşdırıldı</translation>
 <translation id="1792959175193046959">İstənilən zaman defolt endirmə məkanını dəyişin</translation>
+<translation id="1796666869097395659">Sonra qayıtmaq üçün tabı kiçildin</translation>
 <translation id="1807246157184219062">Yüngül</translation>
 <translation id="1810845389119482123">İlkin sinxronizasiya ayarlanması tamamlanmayıb</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> istifadəsinə davam edə bilməz</translation>

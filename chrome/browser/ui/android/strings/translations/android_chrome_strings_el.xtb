@@ -32,6 +32,7 @@
 <translation id="1142732900304639782">Να μην παρέχεται δυνατότητα μετάφρασης αυτών των ιστοτόπων</translation>
 <translation id="1145536944570833626">Διαγραφή υπαρχόντων δεδομένων.</translation>
 <translation id="1150263420752757504">Η εφαρμογή <ph name="APP_NAME" /> θα ανοίξει στο Chrome. Εάν συνεχίσετε, συμφωνείτε με τους <ph name="BEGIN_LINK1" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK1" /> και τους <ph name="BEGIN_LINK2" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_LINK2" />.</translation>
+<translation id="115483310321669804">Χρήση κωδικού πρόσβασης <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Μετονομασία</translation>
 <translation id="1174479719160874822">Εάν η οθόνη είναι στενή, το Chrome θα ζητήσει τον ιστότοπο για κινητά</translation>
 <translation id="1177863135347784049">Προσαρμοσμένη</translation>
@@ -149,6 +150,7 @@
 <translation id="1779766957982586368">Κλείσιμο παραθύρου</translation>
 <translation id="1791662854739702043">Εγκατεστημένο</translation>
 <translation id="1792959175193046959">Αλλάξτε την προεπιλεγμένη τοποθεσία λήψης ανά πάσα στιγμή</translation>
+<translation id="1796666869097395659">Ελαχιστοποιήστε την καρτέλα για να την επισκεφτείτε ξανά αργότερα</translation>
 <translation id="1807246157184219062">Ανοιχτόχρωμο</translation>
 <translation id="1810845389119482123">Η αρχική ρύθμιση συγχρονισμού δεν ολοκληρώθηκε</translation>
 <translation id="1812027881030482584">Το <ph name="SITE_ETLD_PLUS_ONE" /> δεν μπορεί να συνεχίσει να χρησιμοποιεί το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

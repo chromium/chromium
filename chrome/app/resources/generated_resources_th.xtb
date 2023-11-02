@@ -9011,6 +9011,7 @@
 <translation id="81238879832906896">ดอกไม้สีเหลืองแซมขาว</translation>
 <translation id="8123975449645947908">เลื่อนไปข้างหลัง</translation>
 <translation id="8124313775439841391">ONC ที่มีการจัดการ</translation>
+<translation id="8125651784723647184">การแชร์รหัสผ่านจัดการโดยผู้ดูแลระบบ</translation>
 <translation id="8129265306888404830">หากต้องการใช้อีเมลจากองค์กร (<ph name="EMAIL_DOMAIN" />) คุณต้องใช้การลงทะเบียนองค์กร หากอุปกรณ์นี้มีไว้เพื่อใช้งานส่วนบุคคล ให้ลงชื่อเข้าใช้ด้วยบัญชี Google ส่วนบุคคล</translation>
 <translation id="813082847718468539">ดูข้อมูลเว็บไซต์</translation>
 <translation id="8131740175452115882">ยืนยัน</translation>
@@ -9228,7 +9229,6 @@
 <translation id="8298429963694909221">ตอนนี้คุณรับการแจ้งเตือนจากโทรศัพท์ใน <ph name="DEVICE_TYPE" /> ได้แล้ว การปิดการแจ้งเตือนใน <ph name="DEVICE_TYPE" /> จะปิดการแจ้งเตือนในโทรศัพท์ด้วย ตรวจสอบว่าโทรศัพท์อยู่ใกล้ๆ และเปิดบลูทูธกับ Wi-Fi ไว้</translation>
 <translation id="829923460755755423">เพิ่มทางลัดในเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="8299319456683969623">ขณะนี้คุณอยู่ในสถานะออฟไลน์</translation>
-<translation id="8299951061833867575">Wi-Fi, อินเทอร์เน็ตมือถือ</translation>
 <translation id="8300011035382349091">แก้ไขบุ๊กมาร์กของแท็บนี้</translation>
 <translation id="8300374739238450534">สีน้ำเงินแก่</translation>
 <translation id="8301242268274839723">แตะเซ็นเซอร์ลายนิ้วมือที่มุมซ้ายล่างของแป้นพิมพ์ ข้อมูลลายนิ้วมือจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> ของคุณเสมอ</translation>
@@ -9364,7 +9364,6 @@
 <translation id="8399282673057829204">ดูรหัสผ่าน</translation>
 <translation id="8401432541486058167">ใส่ PIN ที่เชื่อมโยงกับสมาร์ทการ์ดของคุณ</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{Chrome จะบล็อกคุกกี้อีกครั้งในวันนี้}=1{Chrome จะบล็อกคุกกี้อีกครั้งในวันพรุ่งนี้}other{อีก # วัน Chrome จะบล็อกคุกกี้อีกครั้ง}}</translation>
-<translation id="8403374688423270156">มีฮอตสปอตพร้อมใช้งาน</translation>
 <translation id="8403618281196981152">ข้อมูลของคุณใน Chrome</translation>
 <translation id="8403807918453631441"><ph name="BRAND" />จะตรวจสอบรหัสผ่านได้เมื่อคุณบันทึกไว้</translation>
 <translation id="8405046151008197676">ดูไฮไลต์จากอัปเดตล่าสุด</translation>

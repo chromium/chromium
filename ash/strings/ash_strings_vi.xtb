@@ -116,6 +116,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1391102559483454063">Đang bật</translation>
 <translation id="1407069428457324124">Giao diện tối</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Dùng các phím mũi tên để di chuyển giữa các ngày.</translation>
+<translation id="141170878022560212">Nút giữa</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, Ứng dụng đã được cài đặt</translation>
 <translation id="1414919006379339073">Đóng cửa sổ hiện tại</translation>
 <translation id="1415846719612499304">Hiện danh sách mạng. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2086334242442703436">Mở Bộ chọn biểu tượng cảm xúc</translation>
 <translation id="2088116547584365419">trò chơi</translation>
 <translation id="209965399369889474">Chưa kết nối với mạng</translation>
+<translation id="2107581415810719320">Nút khác: <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Cáp USB-C của bạn không hỗ trợ Thunderbolt. Hiệu suất của thiết bị có thể bị hạn chế.</translation>
 <translation id="2108303511227308752">Phím tắt Alt + Backspace đã thay đổi. Để sử dụng phím Delete, hãy nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
 <translation id="2126242104232412123">Không gian làm việc mới</translation>

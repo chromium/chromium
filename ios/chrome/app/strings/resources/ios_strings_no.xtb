@@ -48,6 +48,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="1219674500290482172">Kan ikke koble til Internett.</translation>
 <translation id="1226238226094914652">Passord på alle enhetene dine</translation>
 <translation id="122699739164161391">Lukk alle faner</translation>
+<translation id="1227866575467023566">{count,plural, =1{Siden er lagt til på leselisten i kontoen din ({email})}other{{count} sider er lagt til på leselisten i kontoen din ({email})}}</translation>
 <translation id="1229222343402087523">Søk etter ${searchPhrase} i Chrome</translation>
 <translation id="1242044645101871359">Logg på igjen</translation>
 <translation id="1248276223555153952">Administrer kontoer på denne enheten…</translation>
@@ -123,6 +124,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="1580715474678097352">Hold deg beskyttet mot farlige nettsteder</translation>
 <translation id="1580783302095112590">E-posten er sendt.</translation>
 <translation id="1582732959743469162">Dette stopper all fremdriften for den aktive nedlastingen.</translation>
+<translation id="158591023028013564">{count,plural, =1{Siden er lagt til på leselisten din}other{{count} sider er lagt til på leselisten din}}</translation>
 <translation id="1594034544529347967">Starter</translation>
 <translation id="160275202205869636">Når dette er på, kan du bruke og lagre data i Google-kontoen din. Når dette er slått av, lagres data bare på denne enheten.</translation>
 <translation id="1605405588277479165">Av – anbefales ikke</translation>
@@ -422,6 +424,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3157387275655328056">Legg til i leselisten</translation>
 <translation id="3157684681743766797">Merk alle…</translation>
 <translation id="315778507796115851">Logg</translation>
+<translation id="31652791196570636">Lukk</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174662312949010067">Du kan også bruke lagrede passord på de andre enhetene dine.</translation>
 <translation id="3175081911749765310">Nettjenester</translation>
@@ -585,6 +588,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4112644173421521737">Søk</translation>
 <translation id="4113030288477039509">Styres av administratoren din</translation>
 <translation id="4113957097611235433">Endre passordene dine</translation>
+<translation id="4120936477286528673">Dette nettstedet prøver å åpne en annen app gjentatte ganger.</translation>
 <translation id="4121993058175073134">For å sende data for netteksport må du konfigurere e-postkontoen din i Innstillinger-appen.</translation>
 <translation id="4124987746317609294">Tidsperiode</translation>
 <translation id="4133265950310064865">Økt beskyttelse</translation>
@@ -779,6 +783,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} svakt passord}other{{COUNT} svake passord}}</translation>
 <translation id="5149188072385105201">Legg til et passord…</translation>
 <translation id="5150492518600715772">Send til enheten din</translation>
+<translation id="5157638238828697074">Noe gikk galt. Kunne ikke åpne appen.</translation>
 <translation id="5168414296986405587">Laget for iPadOS</translation>
 <translation id="5173088371991956744">Synkronisering må bekrefte at det er deg</translation>
 <translation id="5173493422621051500">Bruk tastaturet</translation>
@@ -805,6 +810,8 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5235389474593199952">Skjul loggen</translation>
 <translation id="5238301240406177137">Lagre i konto</translation>
 <translation id="5245322853195994030">Avbryt synkronisering</translation>
+<translation id="5248640482715684545">Dette nettstedet prøver å åpne en annen app.</translation>
+<translation id="5256661381001734217">Dette nettstedet prøver å åpne en app.  Dette medfører at du går ut av inkognitomodus.</translation>
 <translation id="5256908199795498284">Chrome registrerer pakkesporingsnumre på nettsteder du besøker, og viser pakkeoppdateringer på Ny fane-siden. Dataene dine blir delt med Google, slik at vi kan tilby denne funksjonen og gjøre Shopping enda bedre for alle.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Et obligatorisk felt er tomt. Fyll det ut før du lagrer.}other{Noen obligatoriske felt er tomme. Fyll dem ut før du lagrer.}}</translation>
 <translation id="5271549068863921519">Lagre passord</translation>
@@ -904,6 +911,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5834415013958049700">Lens-bildet du har kopiert</translation>
 <translation id="5844284118433003733">Når du er logget på, blir disse dataene knyttet til Google-kontoen din for å beskytte deg på alle Google-tjenester, for eksempel ved at beskyttelsen i Gmail økes etter sikkerhetshendelser.</translation>
 <translation id="5846482154967366008">Søkemotor</translation>
+<translation id="5850913622988109693">Alternativer for å spore pakker</translation>
 <translation id="5854790677617711513">Eldre enn 30 dager</translation>
 <translation id="5857090052475505287">Ny mappe</translation>
 <translation id="5857770089550859117">Det kreves en passordfrase for å starte synkroniseringen.</translation>

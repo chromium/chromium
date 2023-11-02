@@ -4466,6 +4466,17 @@ A configuração <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> só terá e
       Se esta política não for definida, a filtragem será omitida, e todos os servidores de impressão serão considerados.
 
       Esta política está obsoleta. Use <ph name="EXTERNAL_PRINT_SERVERS_ALLOWLIST" />.</translation>
+<translation id="4667462525936265103">Essa política controla se os usuários têm permissão para migrar dados de navegação para um perfil gerenciado criado após o login de uma conta gerenciada na área de conteúdo.
+
+Se a política for deixada sem definição ou for definida como <ph name="USER_OPTIN_DATA_ENUM_NAME" /> (valor 1), o usuário poderá escolher se quer trazer os dados de navegação para o perfil gerenciado. A caixa de seleção na caixa de diálogo de criação de perfil fica visível e desmarcada por padrão.
+
+Se esta política for definida como <ph name="USER_OPTOUT_DATA_ENUM_NAME" /> (valor 2), o usuário poderá escolher se quer usar os dados de navegação já existentes para o perfil gerenciado. A caixa de seleção na caixa de diálogo de criação de perfil fica visível e marcada por padrão. Além disso, a opção só é permitida em dispositivos gerenciados.
+
+Se esta política for definida como <ph name="USER_ALWAYS_SEPARATE_DATA_ENUM_NAME" /> (valor 3), o usuário não poderá transferir os dados de navegação para o perfil gerenciado. A caixa de seleção na caixa de diálogo de criação de perfil não estará visível.
+
+A transferência de dados de navegação para o perfil gerenciado significa que o perfil atual passa a ser gerenciado. Nenhum perfil novo será criado.
+
+Não transferir os dados de navegação para o perfil gerenciado significa que um novo perfil limpo será criado. Os dados de navegação vão permanecer em um perfil não gerenciado, que ainda poderá ser acessado pelo usuário no seletor de perfis.</translation>
 <translation id="4668325077104657568">Configuração de imagens padrão</translation>
 <translation id="4669083178278833688">Definir a câmera, configurações do navegador, configurações do SO, digitalização, loja on-line, tela, análise, Crosh, galeria e recursos do terminal a serem desativados</translation>
 <translation id="4669292863736266737">A não ser que a política <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> seja definida como <ph name="BLOCK_GEOLOCATION_SETTING" />, a definição de <ph name="GLS_ENABLED" /> vai ativar os Serviços de localização do Google durante a configuração inicial. Se a política for definida como <ph name="GLS_DISABLED" /> ou não for definida, os Serviços de localização vão continuar desativados durante a configuração.
@@ -7235,6 +7246,7 @@ bloqueio dessas solicitações será aplicado.</translation>
 
       Os idiomas compatíveis no momento são: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
 <translation id="6926703471186170050">Ativar impressão duplex de borda longa</translation>
+<translation id="6929639826067341257">Sugerir aos usuários que transfiram os dados no perfil gerenciado e oferecer a opção de negar a transferência</translation>
 <translation id="6929746927224321095">Desativar o preenchimento automático</translation>
 <translation id="6931242315485576290">Desativar a sincronização de dados com o Google</translation>
 <translation id="6932282102911647185">Luz de fundo roxa do teclado</translation>

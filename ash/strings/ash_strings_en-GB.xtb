@@ -116,6 +116,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1391102559483454063">On</translation>
 <translation id="1407069428457324124">Dark theme</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Use arrow keys to navigate between dates.</translation>
+<translation id="141170878022560212">Middle Button</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, installed app</translation>
 <translation id="1414919006379339073">Close current window</translation>
 <translation id="1415846719612499304">Show network list. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2086334242442703436">Open emoji picker</translation>
 <translation id="2088116547584365419">games</translation>
 <translation id="209965399369889474">Not connected to network</translation>
+<translation id="2107581415810719320">Other Button <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Your USB-C cable does not support Thunderbolt. Device performance may be limited.</translation>
 <translation id="2108303511227308752">The Alt + Backspace keyboard shortcut has changed. To use the Delete key, press the <ph name="LAUNCHER_KEY_NAME" /> key + Backspace.</translation>
 <translation id="2126242104232412123">New desk</translation>
@@ -563,6 +565,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3340978935015468852">settings</translation>
 <translation id="3341303451326249809">Screenshot captured</translation>
 <translation id="334252345105450327">Take a screenshot</translation>
+<translation id="3346728094401457853">Enter device password for <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Select text from cursor to end of line</translation>
 <translation id="3349345708646875009">Open task manager</translation>
 <translation id="3364721542077212959">Stylus tools</translation>
@@ -1589,6 +1592,7 @@ New install</translation>
 <translation id="7489261257412536105">Enter or exit fullscreen</translation>
 <translation id="7490360161041035804">You can pin important files, including Google Drive files. To pin, hover over an item or open Files and right-click an item.</translation>
 <translation id="7497767806359279797">Choose language and keyboard</translation>
+<translation id="7507162824403726948">Finish verifying your identity</translation>
 <translation id="7508690557411636492">Opened in the past month</translation>
 <translation id="7509246181739783082">Verify your identity</translation>
 <translation id="7512509370370076552">The right-click shortcut is updated to <ph name="LAUNCHER_KEY_NAME" /> key + click from alt + click</translation>

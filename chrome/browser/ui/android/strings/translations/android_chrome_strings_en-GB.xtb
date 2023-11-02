@@ -32,6 +32,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1142732900304639782">Don’t offer to translate these sites</translation>
 <translation id="1145536944570833626">Delete existing data.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS additional Terms of Service<ph name="END_LINK2" />.</translation>
+<translation id="115483310321669804">Use password <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Rename</translation>
 <translation id="1174479719160874822">Chrome will request the mobile site when the screen is narrow</translation>
 <translation id="1177863135347784049">Customised</translation>
@@ -149,6 +150,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1779766957982586368">Close window</translation>
 <translation id="1791662854739702043">Installed</translation>
 <translation id="1792959175193046959">Change the default download location at any time</translation>
+<translation id="1796666869097395659">Minimise tab to return to it later</translation>
 <translation id="1807246157184219062">Light</translation>
 <translation id="1810845389119482123">Initial sync setup not finished</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> can't continue using <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -755,6 +757,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Your passwords will be exported and downloaded as a text file. They will be visible to anyone and any app with access to the destination folder.</translation>
 <translation id="4926901776383726965">You can save images and files to view offline or share in other apps</translation>
+<translation id="4928144016283278047">Protection from trackers (third-party cookies, IP tracking, invasive scripts, and more)</translation>
 <translation id="4932247056774066048">Because you're signing out of an account managed by <ph name="DOMAIN_NAME" />, your Chrome data will be deleted from this device. It will remain in your Google account.</translation>
 <translation id="4943703118917034429">Virtual Reality</translation>
 <translation id="4943872375798546930">No results</translation>

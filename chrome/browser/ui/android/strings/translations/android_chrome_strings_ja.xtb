@@ -756,6 +756,7 @@
 <translation id="4925120120285606924">スクリーンショット <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">パスワードはエクスポートされ、テキスト ファイルとしてダウンロードされます。このファイルは、ダウンロード先のフォルダにアクセス可能なすべてのユーザーおよびアプリが閲覧できます。</translation>
 <translation id="4926901776383726965">画像やファイルを保存してオフラインで表示したり、他のアプリで共有したりできます</translation>
+<translation id="4928144016283278047">トラッカー（サードパーティ Cookie、IP トラッキング、侵襲的なスクリプトなど）からの保護</translation>
 <translation id="4932247056774066048"><ph name="DOMAIN_NAME" /> で管理されているアカウントからログアウトするにあたり、Chrome データはこのデバイスから削除されます。Google アカウントからはデータは削除されません。</translation>
 <translation id="4943703118917034429">バーチャル リアリティ</translation>
 <translation id="4943872375798546930">結果はありません</translation>

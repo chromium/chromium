@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">Күйүк</translation>
 <translation id="1407069428457324124">Караңгы тема</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Күндөргө өтүү үчүн жебе баскычтарын колдонуңуз.</translation>
+<translation id="141170878022560212">Ортоңку баскыч</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, Орнотулган колдонмо</translation>
 <translation id="1414919006379339073">Учурдагы терезени жабуу</translation>
 <translation id="1415846719612499304">Тармактардын тизмесин көрсөтүү. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@
 <translation id="2086334242442703436">Быйтыкча тандагычты ачуу</translation>
 <translation id="2088116547584365419">оюндар</translation>
 <translation id="209965399369889474">Тармакка туташпай турат</translation>
+<translation id="2107581415810719320">Башка баскыч <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C кабелиңиз Thunderbolt түзмөгүн колдоого албайт. Түзмөктүн майнаптуулугу чектелиши мүмкүн.</translation>
 <translation id="2108303511227308752">Alt + Backspace ыкчам баскычы өзгөртүлдү. Delete баскычын колдонуу үчүн <ph name="LAUNCHER_KEY_NAME" /> + backspace баскычтарын басыңыз.</translation>
 <translation id="2126242104232412123">Жаңы иш такта</translation>

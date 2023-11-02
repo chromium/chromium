@@ -563,6 +563,7 @@
 <translation id="3340978935015468852">設定</translation>
 <translation id="3341303451326249809">已擷取螢幕截圖</translation>
 <translation id="334252345105450327">擷取螢幕畫面</translation>
+<translation id="3346728094401457853">輸入「<ph name="EMAIL" />」的裝置密碼</translation>
 <translation id="334927402682780278">選取從游標到該行結尾之間的文字</translation>
 <translation id="3349345708646875009">開啟工作管理員</translation>
 <translation id="3364721542077212959">觸控筆工具</translation>
@@ -1585,6 +1586,7 @@
 <translation id="7489261257412536105">進入或退出全螢幕模式</translation>
 <translation id="7490360161041035804">你可以固定重要檔案，包括 Google 雲端硬碟檔案。如要固定項目，請將游標懸停在該項目上，或是開啟「檔案」應用程式，並在項目上按一下滑鼠右鍵。</translation>
 <translation id="7497767806359279797">選擇語言和鍵盤配置</translation>
+<translation id="7507162824403726948">完成身分驗證</translation>
 <translation id="7508690557411636492">過去一個月開啟過</translation>
 <translation id="7509246181739783082">驗證身分</translation>
 <translation id="7512509370370076552">右鍵快速鍵已從 alt + 點按更新為<ph name="LAUNCHER_KEY_NAME" />鍵 + 點按</translation>

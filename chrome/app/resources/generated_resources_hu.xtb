@@ -9247,7 +9247,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8298429963694909221">Mostantól megkaphatja a telefonja értesítéseit a(z) <ph name="DEVICE_TYPE" /> eszközén. Az értesítések <ph name="DEVICE_TYPE" /> eszközön való elvetésével a telefonon is elveti őket. Gondoskodjon arról, hogy telefonja a közelben legyen, bekapcsolt Bluetooth és Wi-Fi funkcióval.</translation>
 <translation id="829923460755755423">Parancsikon hozzáadása Google Jelszókezelőhöz</translation>
 <translation id="8299319456683969623">Ön jelenleg offline állapotban van.</translation>
-<translation id="8299951061833867575">Wi-Fi, mobiladat</translation>
 <translation id="8300011035382349091">A jelenlegi laphoz tartozó könyvjelző szerkesztése</translation>
 <translation id="8300374739238450534">Éjkék</translation>
 <translation id="8301242268274839723">Érintse meg a billentyűzet bal alsó sarkában található ujjlenyomat-érzékelőt. Az ujjlenyomatadatokat a(z) <ph name="DEVICE_TYPE" /> biztonságosan tárolja, és soha nem kerülnek ki az eszközről.</translation>
@@ -9383,7 +9382,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8399282673057829204">Jelszó megtekintése</translation>
 <translation id="8401432541486058167">Adja meg az intelligens kártyájához tartozó PIN-kódot.</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{A Chrome ma ismét letiltja a cookie-kat}=1{A Chrome holnap ismét letiltja a cookie-kat}other{# nap, amíg a Chrome ismét letiltja a cookie-kat}}</translation>
-<translation id="8403374688423270156">Van rendelkezésre álló hotspot</translation>
 <translation id="8403618281196981152">Az Ön adatai a Chrome-ban</translation>
 <translation id="8403807918453631441">A <ph name="BRAND" /> képes a jelszavak ellenőrzésére, amikor Ön menti őket.</translation>
 <translation id="8405046151008197676">Tekintse át a legutóbbi frissítés összefoglalóját</translation>

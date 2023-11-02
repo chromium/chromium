@@ -32,6 +32,7 @@
 <translation id="1142732900304639782">ഈ സൈറ്റുകൾ വിവർത്തനം ചെയ്യേണ്ട</translation>
 <translation id="1145536944570833626">നിലവിലുള്ള വിവരങ്ങൾ ഇല്ലാതാക്കുക.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" />, Chrome-ൽ തുറക്കും. തുടരുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_LINK1" />Google സേവന നിബന്ധനകളും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome, ChromeOS അധിക സേവന നിബന്ധനകളും<ph name="END_LINK2" /> അംഗീകരിക്കുന്നു.</translation>
+<translation id="115483310321669804"><ph name="PASSWORD" /> എന്ന പാസ്‌വേഡ് ഉപയോഗിക്കുക</translation>
 <translation id="1173894706177603556">പേരുമാറ്റുക</translation>
 <translation id="1174479719160874822">സ്‌ക്രീൻ ഇടുങ്ങിയിരിക്കുമ്പോൾ Chrome മൊബൈൽ സൈറ്റ് അഭ്യർത്ഥിക്കും</translation>
 <translation id="1177863135347784049">ഇഷ്ടാനുസൃതം</translation>
@@ -149,6 +150,7 @@
 <translation id="1779766957982586368">വിന്‍‌ഡോ അടയ്‌ക്കുക</translation>
 <translation id="1791662854739702043">ഇന്‍സ്റ്റാളുചെയ്തു</translation>
 <translation id="1792959175193046959">ഏതുസമയത്തും ഡിഫോൾട്ട് ഡൗൺലോഡ് ലൊക്കേഷൻ മാറ്റുക</translation>
+<translation id="1796666869097395659">പിന്നീട് അതിലേക്ക് തിരികെ വരാൻ ടാബ് ചെറുതാക്കുക</translation>
 <translation id="1807246157184219062">ലൈറ്റ്</translation>
 <translation id="1810845389119482123">പ്രാഥമിക സമന്വയ സജ്ജീകരണം പൂർത്തിയാക്കിയിട്ടില്ല</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> എന്നതിന് <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ഉപയോഗിക്കുന്നത് തുടരാനാകുന്നില്ല</translation>
@@ -755,6 +757,7 @@
 <translation id="4925120120285606924">സ്‌ക്രീൻഷോട്ട് <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">നിങ്ങളുടെ പാസ്‌വേഡുകൾ, ടെക്സ്റ്റ് ഫയൽ ആയി എക്സ്പോർട്ട് ചെയ്യുന്നതും ഡൗൺലോഡ് ചെയ്യുന്നതുമാണ്. ലക്ഷ്യസ്ഥാന ഫോൾഡറിലേക്ക് ആക്സസുള്ള ഏതൊരു വ്യക്തിക്കും ആപ്പിനും അവ ദൃശ്യമാവും.</translation>
 <translation id="4926901776383726965">ഓഫ്‌ലൈനിൽ കാണാനോ മറ്റ് ആപ്പുകളിൽ പങ്കിടാനോ നിങ്ങൾക്ക് ചിത്രങ്ങളും ഫയലുകളും സംരക്ഷിക്കാനാകും</translation>
+<translation id="4928144016283278047">ട്രാക്കറുകളിൽ (മൂന്നാം-കക്ഷി കുക്കികൾ, IP ട്രാക്ക് ചെയ്യൽ, തുടർച്ചയായുള്ള സ്ക്രിപ്റ്റുകൾ എന്നിവയും മറ്റും) നിന്നുള്ള പരിരക്ഷ</translation>
 <translation id="4932247056774066048"><ph name="DOMAIN_NAME" /> മാനേജ് ചെയ്യുന്ന അക്കൗണ്ടിൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്യുന്നതിനാൽ, ഈ ഉപകരണത്തിൽ നിന്ന് നിങ്ങളുടെ Chrome ഡാറ്റ ഇല്ലാതാക്കപ്പെടും. അത് തുടർന്നും നിങ്ങളുടെ Google അക്കൗണ്ടിൽ ഉണ്ടായിരിക്കുന്നതാണ്.</translation>
 <translation id="4943703118917034429">വെർച്വൽ റിയാലിറ്റി</translation>
 <translation id="4943872375798546930">ഫലങ്ങളൊന്നുമില്ല</translation>

@@ -563,6 +563,7 @@
 <translation id="3340978935015468852">設定</translation>
 <translation id="3341303451326249809">スクリーンショットをキャプチャしました</translation>
 <translation id="334252345105450327">スクリーンショットを撮って</translation>
+<translation id="3346728094401457853"><ph name="EMAIL" /> のデバイス パスワードを入力してください</translation>
 <translation id="334927402682780278">カーソル位置から行末までのテキストを選択する</translation>
 <translation id="3349345708646875009">タスク マネージャーを開きます</translation>
 <translation id="3364721542077212959">タッチペン ツール</translation>
@@ -1590,6 +1591,7 @@
 <translation id="7489261257412536105">全画面表示を開始または終了する</translation>
 <translation id="7490360161041035804">Google ドライブなどの重要なファイルを固定できます。固定するには、該当のファイルにカーソルを合わせるか、ファイルアプリで該当のファイルを右クリックします。</translation>
 <translation id="7497767806359279797">言語とキーボードを選択</translation>
+<translation id="7507162824403726948">本人確認を完了してください</translation>
 <translation id="7508690557411636492">過去 1 か月以内に開いたファイル</translation>
 <translation id="7509246181739783082">本人確認</translation>
 <translation id="7512509370370076552">右クリックのショートカットが、Alt キー+クリックから <ph name="LAUNCHER_KEY_NAME" />キー+クリックに変更されました</translation>
