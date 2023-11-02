@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_DATA_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -21,6 +22,14 @@ class TabData : public TabStripModelObserver {
   // TODO(1476012) replace with opaque tab handle
   using TabID = int;
 
+  class Observer {
+   public:
+    virtual ~Observer() = default;
+
+    virtual void OnTabDataUpdated(const TabData* tab_data) {}
+    virtual void OnTabDataDestroyed(TabID tab_id) {}
+  };
+
   TabData(TabStripModel* model, content::WebContents* web_contents);
   ~TabData() override;
   const TabID& tab_id() const { return tab_id_; }
@@ -34,6 +43,9 @@ class TabData : public TabStripModelObserver {
   content::WebContents* web_contents() { return web_contents_; }
   const GURL& original_url() const { return original_url_; }
 
+  void AddObserver(Observer* new_observer);
+  void RemoveObserver(Observer* new_observer);
+
   // Checks if the Tab is still valid for an organization.
   bool IsValidForOrganizing() const;
 
@@ -45,10 +57,15 @@ class TabData : public TabStripModelObserver {
       const TabStripSelectionChange& selection) override;
 
  private:
+  // Notifies observers of the tab data that it has been updated.
+  void NotifyObserversOfUpdate();
+
   const TabID tab_id_;
   raw_ptr<TabStripModel> original_tab_strip_model_;
   raw_ptr<content::WebContents> web_contents_;
   const GURL original_url_;
+
+  base::ObserverList<Observer>::Unchecked observers_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_ORGANIZATION_METRICS_H_

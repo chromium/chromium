@@ -194,6 +194,67 @@ TEST_F(TabOrganizationTest, TabDataWebContentsDeletionIsNotValidForOrganizing) {
   EXPECT_FALSE(tab_data->IsValidForOrganizing());
 }
 
+TEST_F(TabOrganizationTest, TabDataObserverTest) {
+  class TestObserver : public TabData::Observer {
+   public:
+    void OnTabDataUpdated(const TabData* tab_data) override {
+      update_call_count++;
+    }
+
+    void OnTabDataDestroyed(TabData::TabID tab_id) override {
+      if (!tab_data_) {
+        return;
+      }
+
+      destroy_call_count++;
+      tab_data_ = nullptr;
+    }
+
+    ~TestObserver() override {
+      if (tab_data_) {
+        tab_data_->RemoveObserver(this);
+      }
+    }
+
+    int update_call_count = 0;
+    int destroy_call_count = 0;
+    raw_ptr<TabData> tab_data_;
+  };
+
+  content::WebContents* old_contents = AddTab();
+  std::unique_ptr<TabData> tab_data =
+      std::make_unique<TabData>(tab_strip_model(), old_contents);
+
+  {
+    TabData::Observer default_observer;
+    tab_data->AddObserver(&default_observer);
+    tab_data->RemoveObserver(&default_observer);
+  }
+
+  TestObserver observer;
+  tab_data->AddObserver(&observer);
+  observer.tab_data_ = tab_data.get();
+
+  // replace the contents which should result in an update call.
+  std::unique_ptr<content::WebContents> new_contents = CreateWebContents();
+  content::WebContents* new_contents_ptr = new_contents.get();
+  tab_strip_model()->ReplaceWebContentsAt(
+      tab_strip_model()->GetIndexOfWebContents(old_contents),
+      std::move(new_contents));
+  EXPECT_EQ(observer.update_call_count, 1);
+
+  // Add another tab so that the tabstripmodel doesnt go away. Arbitrary
+  // TabStripModelChanges should not update the observer.
+  AddTab();
+  EXPECT_EQ(observer.update_call_count, 1);
+
+  // Remove the original webcontents and expect an update call.
+  tab_strip_model()->CloseWebContentsAt(
+      tab_strip_model()->GetIndexOfWebContents(new_contents_ptr),
+      TabCloseTypes::CLOSE_NONE);
+  EXPECT_EQ(observer.update_call_count, 2);
+}
+
 // TabOrganization tests.
 
 TEST_F(TabOrganizationTest, TabOrganizationIDs) {
