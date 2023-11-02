@@ -29,20 +29,23 @@ enum Length {
 };
 
 // Status code used in compose responses.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Keep in sync with
+// ComposeResponseStatus in src/tools/metrics/histograms/enums.xml.
 enum ComposeStatus {
-  kOk,
+  kOk = 0,
   // Generic error, not specified.
-  kError,
+  kError = 1,
   // Request was unable to be processed.
-  kNotSuccessful,
+  kNotSuccessful = 2,
   // Server may have not responded.
-  kTryAgain,
+  kTryAgain = 3,
   // Server is likely overloaded, cannot handle a response right now.
-  kTryAgainLater,
+  kTryAgainLater = 4,
   // If the feature is somehow disabled.
-  kMisconfiguration,
+  kMisconfiguration = 5,
   // If permission is denied (e.g. user is not logged in.)
-  kPermissionDenied,
+  kPermissionDenied = 6,
 };
 
 // Configuration parameters used in compose requests.

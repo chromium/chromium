@@ -31,6 +31,17 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Compose opened from context menu"/>
 </enum>
 
+<enum name="ComposeResponseStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Generic error, not specified"/>
+  <int value="2" label="Request was unable to be processed"/>
+  <int value="3" label="Server may have not responded"/>
+  <int value="4"
+      label="Server is likely overloaded, cannot handle a response right now"/>
+  <int value="5" label="The feature is disabled"/>
+  <int value="6" label="User permission is denied"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

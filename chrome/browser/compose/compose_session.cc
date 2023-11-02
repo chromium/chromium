@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -37,6 +38,10 @@
 namespace {
 
 const char kComposeBugReportURL[] = "https://goto.google.com/ccbrfd";
+
+void LogComposeResponseStatus(compose::mojom::ComposeStatus status) {
+  UMA_HISTOGRAM_ENUMERATION("Compose.Response.Status", status);
+}
 
 }  // namespace
 
@@ -117,6 +122,9 @@ void ComposeSession::ModelExecutionCallback(
     return;
   }
 
+  // Log successful response status.
+  LogComposeResponseStatus(compose::mojom::ComposeStatus::kOk);
+
   auto ui_response = compose::mojom::ComposeResponse::New();
   ui_response->status = compose::mojom::ComposeStatus::kOk;
   ui_response->result = response->output();
@@ -129,6 +137,8 @@ void ComposeSession::ModelExecutionCallback(
 }
 
 void ComposeSession::ProcessError(compose::mojom::ComposeStatus error) {
+  LogComposeResponseStatus(error);
+
   current_state_->has_pending_request = false;
   current_state_->response = compose::mojom::ComposeResponse::New();
   current_state_->response->status = error;
