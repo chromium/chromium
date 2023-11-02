@@ -148,8 +148,10 @@ void AppServiceAppItem::OnAppUpdate(const apps::AppUpdate& app_update) {
 
 void AppServiceAppItem::OnAppUpdate(const apps::AppUpdate& app_update,
                                     bool in_constructor) {
-  if (in_constructor || app_update.NameChanged()) {
-    SetName(app_update.Name());
+  if (in_constructor || app_update.ShortNameChanged()) {
+    // We display the short name rather than the full name here since
+    // each launcher item only has a limited space.
+    SetName(app_update.ShortName());
   }
 
   if (in_constructor || app_update.IconKeyChanged()) {
