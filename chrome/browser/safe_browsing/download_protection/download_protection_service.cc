@@ -862,6 +862,8 @@ void DownloadProtectionService::CheckDownloadWithLocalDecryption(
       download_core_service->GetDownloadManagerDelegate();
   DCHECK(delegate);
 
+  DownloadItemWarningData::SetHasShownLocalDecryptionPrompt(item, true);
+
   delegate->CheckClientDownloadDone(
       item->GetId(), safe_browsing::DownloadCheckResult::ASYNC_SCANNING);
   protection_service->CheckClientDownload(

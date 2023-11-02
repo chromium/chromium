@@ -69,6 +69,10 @@ BASE_DECLARE_FEATURE(kDownloadBubbleV2);
 // server-side.
 BASE_DECLARE_FEATURE(kDownloadTailoredWarnings);
 
+// Controls whether Standard Safe Browsing users are permitted to provide
+// passwords for local decryption on encrypted archives.
+BASE_DECLARE_FEATURE(kEncryptedArchivesMetadata);
+
 // Enables decreased Phishguard password length minimum.
 BASE_DECLARE_FEATURE(kEvaluateProtectedPasswordLengthMinimum);
 

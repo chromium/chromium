@@ -152,3 +152,11 @@ TEST_F(DownloadItemWarningDataTest, HasIncorrectPassword) {
   DownloadItemWarningData::SetHasIncorrectPassword(&download_, true);
   EXPECT_TRUE(DownloadItemWarningData::HasIncorrectPassword(&download_));
 }
+
+TEST_F(DownloadItemWarningDataTest, HasShownLocalDecryptionPrompt) {
+  EXPECT_FALSE(
+      DownloadItemWarningData::HasShownLocalDecryptionPrompt(&download_));
+  DownloadItemWarningData::SetHasShownLocalDecryptionPrompt(&download_, true);
+  EXPECT_TRUE(
+      DownloadItemWarningData::HasShownLocalDecryptionPrompt(&download_));
+}

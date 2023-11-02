@@ -332,7 +332,19 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records how often users in a population consented to deep scanning are
-    actually prompted for deep scanning.
+    actually prompted for deep scanning. This is logged once per download by an
+    eligible user.
+  </summary>
+</histogram>
+
+<histogram name="SBClientDownload.ServerRequestsLocalDecryptionPrompt"
+    enum="BooleanRequested" expires_after="2024-02-11">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records how often users in a population consented to local decryption are
+    actually prompted for this feature. This is logged once per download by an
+    eligible user.
   </summary>
 </histogram>
 

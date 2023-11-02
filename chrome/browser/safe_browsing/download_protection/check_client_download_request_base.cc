@@ -286,8 +286,54 @@ void CheckClientDownloadRequestBase::SanitizeRequest() {
   }
 }
 
+void CheckClientDownloadRequestBase::GetAdditionalPromptResult(
+    const ClientDownloadResponse& response,
+    DownloadCheckResult* result,
+    DownloadCheckResultReason* reason,
+    std::string* token) const {
+  bool local_decryption_prompt = ShouldPromptForLocalDecryption(
+      response.is_suspicious_encrypted_archive());
+  if (local_decryption_prompt) {
+    *result = DownloadCheckResult::PROMPT_FOR_LOCAL_PASSWORD_SCANNING;
+    *reason = DownloadCheckResultReason::REASON_LOCAL_DECRYPTION_PROMPT;
+    *token = response.token();
+  }
+
+  if (ShouldPromptForLocalDecryption(/*server_requests_prompt=*/true)) {
+    base::UmaHistogramBoolean(
+        "SBClientDownload.ServerRequestsLocalDecryptionPrompt",
+        local_decryption_prompt);
+  }
+
+  bool deep_scanning_prompt =
+      ShouldPromptForDeepScanning(response.request_deep_scan());
+  if (deep_scanning_prompt) {
+    *result = DownloadCheckResult::PROMPT_FOR_SCANNING;
+    *reason = DownloadCheckResultReason::REASON_DEEP_SCAN_PROMPT;
+    // Always set the token if Chrome should prompt for deep scanning.
+    // Otherwise, client Safe Browsing reports may be missed when the
+    // verdict is SAFE. See https://crbug.com/1485218.
+    *token = response.token();
+    LogDeepScanningPrompt();
+  }
+
+  // Only record the UMA metric if we're in a population that potentially
+  // could prompt for deep scanning.
+  if (ShouldPromptForDeepScanning(/*server_requests_prompt=*/true)) {
+    base::UmaHistogramBoolean(
+        "SBClientDownload.ServerRequestsDeepScanningPrompt",
+        deep_scanning_prompt);
+  }
+}
+
 void CheckClientDownloadRequestBase::OnRequestBuilt(
     std::unique_ptr<ClientDownloadRequest> request) {
+  if (ShouldPromptForIncorrectPassword()) {
+    FinishRequest(DownloadCheckResult::PROMPT_FOR_LOCAL_PASSWORD_SCANNING,
+                  REASON_LOCAL_DECRYPTION_PROMPT);
+    return;
+  }
+
   client_download_request_ = std::move(request);
   SanitizeRequest();
 
@@ -557,17 +603,7 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
             base::Unretained(WebUIInfoSingleton::GetInstance()),
             std::make_unique<ClientDownloadResponse>(response)));
 
-    bool should_prompt =
-        ShouldPromptForDeepScanning(response.request_deep_scan());
-    if (should_prompt) {
-      result = DownloadCheckResult::PROMPT_FOR_SCANNING;
-      reason = DownloadCheckResultReason::REASON_DEEP_SCAN_PROMPT;
-      // Always set the token if Chrome should prompt for deep scanning.
-      // Otherwise, client Safe Browsing reports may be missed when the
-      // verdict is SAFE. See https://crbug.com/1485218.
-      token = response.token();
-      LogDeepScanningPrompt();
-    }
+    GetAdditionalPromptResult(response, &result, &reason, &token);
 
     if (!token.empty()) {
       SetDownloadProtectionData(token, response.verdict(),
@@ -578,13 +614,6 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
     MaybeStorePingsForDownload(result, upload_requested,
                                client_download_request_data_,
                                *response_body.get());
-
-    // Only record the UMA metric if we're in a population that potentially
-    // could prompt for deep scanning.
-    if (ShouldPromptForDeepScanning(/*server_requests_prompt=*/true)) {
-      base::UmaHistogramBoolean(
-          "SBClientDownload.ServerRequestsDeepScanningPrompt", should_prompt);
-    }
   }
 
   // We don't need the loader anymore.

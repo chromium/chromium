@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -346,6 +347,43 @@ bool CheckClientDownloadRequest::ShouldPromptForDeepScanning(
   }
 
   return false;
+}
+
+bool CheckClientDownloadRequest::ShouldPromptForLocalDecryption(
+    bool server_requests_prompt) const {
+  if (!server_requests_prompt) {
+    return false;
+  }
+
+  if (!DownloadItemWarningData::IsEncryptedArchive(item_)) {
+    return false;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(GetBrowserContext());
+  if (!profile) {
+    return false;
+  }
+
+  if (GetSafeBrowsingState(*profile->GetPrefs()) !=
+      SafeBrowsingState::STANDARD_PROTECTION) {
+    return false;
+  }
+
+  // Too large archive extraction would fail immediately, so don't prompt in
+  // this case.
+  if (static_cast<size_t>(item_->GetTotalBytes()) >=
+      FileTypePolicies::GetInstance()->GetMaxFileSizeToAnalyze(
+          item_->GetTargetFilePath())) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(kEncryptedArchivesMetadata);
+}
+
+bool CheckClientDownloadRequest::ShouldPromptForIncorrectPassword() const {
+  return password_.has_value() &&
+         DownloadItemWarningData::HasShownLocalDecryptionPrompt(item_) &&
+         DownloadItemWarningData::HasIncorrectPassword(item_);
 }
 
 bool CheckClientDownloadRequest::IsAllowlistedByPolicy() const {

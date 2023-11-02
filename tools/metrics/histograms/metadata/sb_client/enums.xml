@@ -155,6 +155,7 @@ chromium-metrics-reviews@google.com.
   <int value="34" label="DEEP_SCAN_PROMPT"/>
   <int value="35" label="BLOCKED_UNSUPPORTED_FILETYPE"/>
   <int value="36" label="ACCOUNT_COMPROMISE"/>
+  <int value="37" label="LOCAL_DECRYPTION_PROMPT"/>
 </enum>
 
 <enum name="SBClientDownloadCheckResult">

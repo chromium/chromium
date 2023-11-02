@@ -1005,6 +1005,9 @@ message ClientDownloadRequest {
   // Fields 87-89 are reserved for server-side use and are never sent by the
   // client.
   reserved 87 to 89;
+
+  // The token from previous requests related to this download, if any exists.
+  optional bytes previous_token = 90;
 }
 
 message ReferrerChainOptions {
@@ -1218,6 +1221,10 @@ message ClientDownloadResponse {
     repeated ExperimentalWarningAdjustment adjustments = 2 [packed = true];
   }
   optional TailoredVerdict tailored_verdict = 20;
+
+  // Whether this archive is suspicious and we should prompt the user for a
+  // password for use in local decryption.
+  optional bool is_suspicious_encrypted_archive = 21;
 }
 
 // The following protocol buffer holds the feedback report gathered

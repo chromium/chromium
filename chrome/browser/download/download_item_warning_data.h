@@ -99,19 +99,26 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
                                     WarningAction action);
 
   // Returns whether the download was an encrypted archive.
-  static bool IsEncryptedArchive(download::DownloadItem* download);
+  static bool IsEncryptedArchive(const download::DownloadItem* download);
   static void SetIsEncryptedArchive(download::DownloadItem* download,
                                     bool is_encrypted_archive);
 
   // Returns whether the user has entered an incorrect password for the
   // archive.
-  static bool HasIncorrectPassword(download::DownloadItem* download);
+  static bool HasIncorrectPassword(const download::DownloadItem* download);
   static void SetHasIncorrectPassword(download::DownloadItem* download,
                                       bool has_incorrect_password);
 
   // Converts an `event` to the Safe Browsing report proto format.
   static safe_browsing::ClientSafeBrowsingReportRequest::DownloadWarningAction
   ConstructCsbrrDownloadWarningAction(const WarningActionEvent& event);
+
+  // Returns whether we have shown a local password decryption prompt for this
+  // download.
+  static bool HasShownLocalDecryptionPrompt(
+      const download::DownloadItem* download);
+  static void SetHasShownLocalDecryptionPrompt(download::DownloadItem* download,
+                                               bool has_shown);
 
  private:
   DownloadItemWarningData();
@@ -130,6 +137,7 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
   std::vector<WarningActionEvent> action_events_;
   bool is_encrypted_archive_ = false;
   bool has_incorrect_password_ = false;
+  bool has_shown_local_decryption_prompt_ = false;
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_ITEM_WARNING_DATA_H_

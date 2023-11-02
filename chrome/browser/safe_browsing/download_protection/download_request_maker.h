@@ -57,7 +57,6 @@ class DownloadRequestMaker {
       bool is_user_initiated,
       ReferrerChainData* referrer_chain_data,
       base::optional_ref<const std::string> password,
-      // TODO(crbug/1491184): Put `previous_token` in the download ping.
       const std::string& previous_token,
       base::OnceCallback<void(const FileAnalyzer::Results&)>
           on_results_callback);

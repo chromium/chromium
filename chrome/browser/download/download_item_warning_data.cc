@@ -141,7 +141,7 @@ void DownloadItemWarningData::AddWarningActionEvent(DownloadItem* download,
 
 // static
 bool DownloadItemWarningData::IsEncryptedArchive(
-    download::DownloadItem* download) {
+    const download::DownloadItem* download) {
   return GetWithDefault(download,
                         &DownloadItemWarningData::is_encrypted_archive_, false);
 }
@@ -159,7 +159,7 @@ void DownloadItemWarningData::SetIsEncryptedArchive(
 
 // static
 bool DownloadItemWarningData::HasIncorrectPassword(
-    download::DownloadItem* download) {
+    const download::DownloadItem* download) {
   return GetWithDefault(
       download, &DownloadItemWarningData::has_incorrect_password_, false);
 }
@@ -238,6 +238,25 @@ DownloadItemWarningData::ConstructCsbrrDownloadWarningAction(
   action.set_is_terminal_action(event.is_terminal_action);
   action.set_interval_msec(event.action_latency_msec);
   return action;
+}
+
+// static
+bool DownloadItemWarningData::HasShownLocalDecryptionPrompt(
+    const download::DownloadItem* download) {
+  return GetWithDefault(
+      download, &DownloadItemWarningData::has_shown_local_decryption_prompt_,
+      false);
+}
+
+// static
+void DownloadItemWarningData::SetHasShownLocalDecryptionPrompt(
+    download::DownloadItem* download,
+    bool has_shown) {
+  if (!download) {
+    return;
+  }
+
+  GetOrCreate(download)->has_shown_local_decryption_prompt_ = has_shown;
 }
 
 DownloadItemWarningData::DownloadItemWarningData() = default;

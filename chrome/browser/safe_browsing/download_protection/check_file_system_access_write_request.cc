@@ -116,6 +116,16 @@ bool CheckFileSystemAccessWriteRequest::ShouldPromptForDeepScanning(
   return false;
 }
 
+bool CheckFileSystemAccessWriteRequest::ShouldPromptForLocalDecryption(
+    bool server_requests_prompt) const {
+  return false;
+}
+
+bool CheckFileSystemAccessWriteRequest::ShouldPromptForIncorrectPassword()
+    const {
+  return false;
+}
+
 void CheckFileSystemAccessWriteRequest::NotifyRequestFinished(
     DownloadCheckResult result,
     DownloadCheckResultReason reason) {

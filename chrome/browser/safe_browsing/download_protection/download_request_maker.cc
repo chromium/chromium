@@ -180,6 +180,8 @@ DownloadRequestMaker::DownloadRequestMaker(
         ->set_recent_navigations_to_collect(
             referrer_chain_data->recent_navigations_to_collect());
   }
+
+  request_->set_previous_token(previous_token);
 }
 
 DownloadRequestMaker::~DownloadRequestMaker() = default;
