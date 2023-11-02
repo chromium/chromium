@@ -1885,6 +1885,10 @@ void WebFrameWidgetImpl::SetHaveScrollEventHandlers(bool has_handlers) {
 void WebFrameWidgetImpl::SetEventListenerProperties(
     cc::EventListenerClass listener_class,
     cc::EventListenerProperties listener_properties) {
+  if (widget_base_->WillBeDestroyed()) {
+    return;
+  }
+
   widget_base_->LayerTreeHost()->SetEventListenerProperties(
       listener_class, listener_properties);
 

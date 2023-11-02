@@ -643,5 +643,24 @@ TEST_F(LayerTreeViewDelegateChangeTest, StopDeferringCommitsOnSwap) {
             cc::PaintHoldingCommitTrigger::kWidgetSwapped);
 }
 
+TEST_F(LayerTreeViewDelegateChangeTest, ResetEventListenerPropertiesOnSwap) {
+  auto* layer_tree_host = layer_tree_view_.layer_tree_host();
+  for (uint32_t i = 0;
+       i <= static_cast<uint32_t>(cc::EventListenerClass::kLast); i++) {
+    layer_tree_host->SetEventListenerProperties(
+        static_cast<cc::EventListenerClass>(i),
+        cc::EventListenerProperties::kBlocking);
+  }
+
+  SwapDelegate();
+
+  for (uint32_t i = 0;
+       i <= static_cast<uint32_t>(cc::EventListenerClass::kLast); i++) {
+    EXPECT_EQ(layer_tree_host->event_listener_properties(
+                  static_cast<cc::EventListenerClass>(i)),
+              cc::EventListenerProperties::kNone);
+  }
+}
+
 }  // namespace
 }  // namespace blink

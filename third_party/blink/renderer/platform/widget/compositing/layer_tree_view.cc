@@ -137,10 +137,18 @@ void LayerTreeView::Disconnect() {
 void LayerTreeView::ReattachTo(
     LayerTreeViewDelegate* delegate,
     scoped_refptr<scheduler::WidgetScheduler> scheduler) {
+  // Reset state tied to the previous `delegate_`.
   layer_tree_host_->WaitForProtectedSequenceCompletion();
   layer_tree_host_->DetachInputDelegateAndRenderFrameObserver();
   layer_tree_host_->StopDeferringCommits(
       cc::PaintHoldingCommitTrigger::kWidgetSwapped);
+  for (uint32_t i = 0;
+       i <= static_cast<uint32_t>(cc::EventListenerClass::kLast); ++i) {
+    layer_tree_host_->SetEventListenerProperties(
+        static_cast<cc::EventListenerClass>(i),
+        cc::EventListenerProperties::kNone);
+  }
+
   delegate_ = delegate;
   CHECK_GE(layer_tree_host_->SourceFrameNumber(),
            first_source_frame_for_current_delegate_)
