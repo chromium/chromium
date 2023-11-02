@@ -135,7 +135,8 @@ TEST(PartitionAllocBaseRandUtilTest,
   uint64_t found_ones = kAllZeros;
   uint64_t found_zeros = kAllOnes;
 
-  InsecureRandomGenerator generator;
+  InsecureRandomGenerator generator =
+      InsecureRandomGenerator::ConstructForTesting();
 
   for (size_t i = 0; i < 1000; ++i) {
     uint64_t value = generator.RandUint64();
@@ -224,7 +225,8 @@ TEST(PartitionAllocBaseRandUtilTest, InsecureRandomGeneratorChiSquared) {
     int pass_count = 0;
     for (int i = 0; i < kIterations; i++) {
       size_t samples = 1 << 16;
-      InsecureRandomGenerator gen;
+      InsecureRandomGenerator gen =
+          InsecureRandomGenerator::ConstructForTesting();
       // Fix the seed to make the test non-flaky.
       gen.ReseedForTesting(kIterations + 1);
       bool pass = ChiSquaredTest(gen, samples, start_bit, 8);

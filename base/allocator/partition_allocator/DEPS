@@ -34,9 +34,6 @@ specific_include_rules = {
   "extended_api\.cc$": [
     "+base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h",
   ],
-  "gtest_prod_util\.h$": [
-    "+testing/gtest/include/gtest/gtest_prod.h",
-  ],
   "raw_(ptr|ref)_unittest\.cc$": [
     "+base",
     "+third_party/abseil-cpp/absl/types/optional.h",

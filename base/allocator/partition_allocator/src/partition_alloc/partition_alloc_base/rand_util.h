@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/gtest_prod_util.h"
 #include "build/build_config.h"
 
 namespace partition_alloc {
@@ -72,6 +71,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) InsecureRandomGenerator {
   uint32_t RandUint32();
   uint64_t RandUint64();
 
+  static InsecureRandomGenerator ConstructForTesting() {
+    return InsecureRandomGenerator();
+  }
+
  private:
   InsecureRandomGenerator();
   // State.
@@ -88,14 +91,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) InsecureRandomGenerator {
   friend class ::partition_alloc::RandomGenerator;
   template <typename QuarantineEntry, size_t CountCapacity>
   friend class ::partition_alloc::internal::LightweightQuarantineList;
-
-  PA_FRIEND_TEST_ALL_PREFIXES(
-      PartitionAllocBaseRandUtilTest,
-      InsecureRandomGeneratorProducesBothValuesOfAllBits);
-  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocBaseRandUtilTest,
-                              InsecureRandomGeneratorChiSquared);
-  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocBaseRandUtilTest,
-                              InsecureRandomGeneratorRandDouble);
 };
 
 }  // namespace partition_alloc::internal::base

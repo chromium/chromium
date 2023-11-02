@@ -372,7 +372,6 @@ component("allocator_base") {
     "partition_alloc_base/debug/stack_trace.cc",
     "partition_alloc_base/debug/stack_trace.h",
     "partition_alloc_base/export_template.h",
-    "partition_alloc_base/gtest_prod_util.h",
     "partition_alloc_base/immediate_crash.h",
     "partition_alloc_base/log_message.cc",
     "partition_alloc_base/log_message.h",
