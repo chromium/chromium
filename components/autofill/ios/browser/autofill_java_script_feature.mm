@@ -13,7 +13,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/ios/browser/autofill_switches.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
@@ -45,25 +44,6 @@ AutofillJavaScriptFeature::AutofillJavaScriptFeature()
           {FormUtilJavaScriptFeature::GetInstance()}) {}
 
 AutofillJavaScriptFeature::~AutofillJavaScriptFeature() = default;
-
-void AutofillJavaScriptFeature::AddJSDelayInFrame(web::WebFrame* frame) {
-  const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(
-          autofill::switches::kAutofillIOSDelayBetweenFields)) {
-    return;
-  }
-
-  const std::string delay_string = command_line->GetSwitchValueASCII(
-      autofill::switches::kAutofillIOSDelayBetweenFields);
-  int command_line_delay = 0;
-  if (base::StringToInt(delay_string, &command_line_delay)) {
-    return;
-  }
-
-  CallJavaScriptFunction(frame, "autofill.setDelay",
-                         base::Value::List().Append(command_line_delay));
-}
 
 void AutofillJavaScriptFeature::FetchForms(
     web::WebFrame* frame,

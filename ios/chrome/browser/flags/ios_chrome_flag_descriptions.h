@@ -96,10 +96,6 @@ extern const char kAutofillEnableCardProductNameDescription[];
 extern const char kAutofillEnableVirtualCardsName[];
 extern const char kAutofillEnableVirtualCardsDescription[];
 
-// Title and description for the flag to control the autofill delay.
-extern const char kAutofillIOSDelayBetweenFieldsName[];
-extern const char kAutofillIOSDelayBetweenFieldsDescription[];
-
 // Title and description for the flag to parse standalone CVC fields for VCN
 // card on file in Autofill.
 extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsName[];

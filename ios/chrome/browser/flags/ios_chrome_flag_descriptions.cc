@@ -113,11 +113,6 @@ const char kAutofillEnableVirtualCardsDescription[] =
     "When enabled, virtual card enrollment and retrieval will be available on "
     "Bling.";
 
-const char kAutofillIOSDelayBetweenFieldsName[] = "Autofill delay";
-const char kAutofillIOSDelayBetweenFieldsDescription[] =
-    "Delay between the different fields of a form being autofilled. In "
-    "milliseconds.";
-
 const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsName[] =
     "Parse standalone CVC fields for VCN card on file in forms";
 const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[] =

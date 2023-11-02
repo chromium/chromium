@@ -63,15 +63,6 @@ __gCrWeb.autofill.lastAutoFilledElement = null;
 __gCrWeb.autofill.styleInjected = false;
 
 /**
- * Sets the delay between fields when autofilling forms.
- *
- * @param {number} delay The new delay in milliseconds.
- */
-__gCrWeb.autofill.setDelay = function(delay) {
-  __gCrWeb.autofill.delayBetweenFieldFillingMs = delay;
-};
-
-/**
  * Determines whether the form is interesting enough to send to the browser for
  * further operations.
  *

@@ -675,11 +675,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "autofill-ios-delay-between-fields",
-    "owners": [ "olivierrobin@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 86
-  },
-  {
     "name": "autofill-more-prominent-popup",
     "owners": [
       "vykochko@google.com",

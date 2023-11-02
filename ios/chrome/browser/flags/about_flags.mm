@@ -24,7 +24,6 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/core/common/autofill_switches.h"
-#import "components/autofill/ios/browser/autofill_switches.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/flag_descriptions.h"
@@ -120,18 +119,6 @@
 using flags_ui::FeatureEntry;
 
 namespace {
-
-const FeatureEntry::Choice kAutofillIOSDelayBetweenFieldsChoices[] = {
-    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {"0", autofill::switches::kAutofillIOSDelayBetweenFields, "0"},
-    {"10", autofill::switches::kAutofillIOSDelayBetweenFields, "10"},
-    {"20", autofill::switches::kAutofillIOSDelayBetweenFields, "20"},
-    {"50", autofill::switches::kAutofillIOSDelayBetweenFields, "50"},
-    {"100", autofill::switches::kAutofillIOSDelayBetweenFields, "100"},
-    {"200", autofill::switches::kAutofillIOSDelayBetweenFields, "200"},
-    {"500", autofill::switches::kAutofillIOSDelayBetweenFields, "500"},
-    {"1000", autofill::switches::kAutofillIOSDelayBetweenFields, "1000"},
-};
 
 const FeatureEntry::Choice
     kWaitThresholdMillisecondsForCapabilitiesApiChoices[] = {
@@ -807,10 +794,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillAccountProfilesStorageDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillAccountProfileStorage)},
-    {"autofill-ios-delay-between-fields",
-     flag_descriptions::kAutofillIOSDelayBetweenFieldsName,
-     flag_descriptions::kAutofillIOSDelayBetweenFieldsDescription,
-     flags_ui::kOsIos, MULTI_VALUE_TYPE(kAutofillIOSDelayBetweenFieldsChoices)},
     {"fullscreen-promos-manager-skip-internal-limits",
      flag_descriptions::kFullscreenPromosManagerSkipInternalLimitsName,
      flag_descriptions::kFullscreenPromosManagerSkipInternalLimitsDescription,

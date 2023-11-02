@@ -884,7 +884,6 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   if (driver->is_processed())
     return;
   driver->set_processed(true);
-  AutofillJavaScriptFeature::GetInstance()->AddJSDelayInFrame(frame);
 
   if (frame->IsMainFrame()) {
     _popupDelegate.reset();
