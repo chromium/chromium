@@ -7021,7 +7021,7 @@ crbug.com/1491587 [ Mac10.15 ] external/wpt/selection/contenteditable/modifying-
 
 # Gardener 2023-10-13
 crbug.com/1481694 [ Linux ] accessibility/selection-change-notification-on-selection-removed.html [ Failure Pass ]
-crbug.com/1492371 [ Mac12 ] virtual/shared-storage-fenced-frame-mparch/http/tests/inspector-protocol/shared-storage/event-breakpoints.js [ Pass Timeout ]
+crbug.com/1492371 [ Mac ] virtual/shared-storage-fenced-frame-mparch/http/tests/inspector-protocol/shared-storage/event-breakpoints.js [ Pass Timeout ]
 
 # Gardener 2023-10-16
 crbug.com/1492850 [ Linux ] http/tests/devtools/elements/accessibility/edit-aria-attributes.js [ Failure Pass ]
