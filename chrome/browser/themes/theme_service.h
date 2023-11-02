@@ -18,7 +18,6 @@
 #include "chrome/browser/themes/theme_helper.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/mojom/themes.mojom.h"
@@ -324,15 +323,6 @@ class ThemeService : public KeyedService, public BrowserThemeProviderDelegate {
   void OnThemeBuiltFromExtension(const extensions::ExtensionId& extension_id,
                                  scoped_refptr<BrowserThemePack> pack,
                                  bool new_theme);
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  // Returns true if the profile belongs to a supervised user.
-  bool IsSupervisedUser() const;
-
-  // Sets the current theme to the supervised user theme. Should only be used
-  // for supervised user profiles.
-  void SetSupervisedUserTheme();
-#endif
 
   // Handles theme color policy pref updates. if policy value contains valid
   // color(s), sets browser theme accordingly.
