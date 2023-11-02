@@ -18584,21 +18584,6 @@
             ]
         }
     ],
-    "UseAdHocSigningForWebAppShims": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseAdHocSigningForWebAppShims"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseBoringSSLForRandBytes": [
         {
             "platforms": [
