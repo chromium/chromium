@@ -21,6 +21,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/sequence_bound.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/compression/test_compression_module.h"
 #include "components/reporting/encryption/decryption.h"

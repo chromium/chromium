@@ -25,6 +25,7 @@
 #include "base/thread_annotations.h"
 #include "base/token.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"

@@ -18,6 +18,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace reporting {

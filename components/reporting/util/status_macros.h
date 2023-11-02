@@ -8,8 +8,6 @@
 #include "base/types/expected.h"
 #include "components/reporting/util/status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-// TODO(b/300464285): Remove this header inclusion here.
-#include "base/types/expected_macros.h"
 
 namespace reporting::internal {
 // Helper functions for the macro RETURN_IF_ERROR_STATUS. Overloads of the
