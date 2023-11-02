@@ -20238,173 +20238,6 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="6" label="Side"/>
 </enum>
 
-<enum name="CustomTabsBrandingAppIdType">
-  <summary>Used by CustomTabs.Branding.AppIdType</summary>
-  <int value="0" label="INVALID"/>
-  <int value="1" label="PACKAGE_NAME"/>
-  <int value="2" label="REFERRER"/>
-</enum>
-
-<enum name="CustomTabsBrandingDecision">
-  <summary>Used by CustomTabs.Branding.BrandingDecision</summary>
-  <int value="0" label="None">
-    Branding is not shown. Used when branding is already shown in the past set
-    cadence (e.g. one hour).
-  </int>
-  <int value="1" label="Shown on toolbar">
-    Branding is shown on the toolbar. Used when the client app launches CCT past
-    the set branding cadence.
-  </int>
-  <int value="2" label="Shown with Toast">
-    Branding is shown with a toast. Used when the client app launches CCT for
-    the first time.
-  </int>
-</enum>
-
-<enum name="CustomTabsCloseCause">
-  <int value="0" label="User action in Chrome (back press, close button)"/>
-  <int value="1" label="User action in Android (home)"/>
-  <int value="2" label="Auto-closed"/>
-</enum>
-
-<enum name="CustomTabsConnection">
-  <int value="0" label="Disconnected from service w/o KeepAlive connection"/>
-  <int value="1" label="Disconnected from service with KeepAlive connection"/>
-  <int value="2" label="Connected to service w/o KeepAlive connection"/>
-  <int value="3" label="Connected to service with KeepAlive connection"/>
-</enum>
-
-<enum name="CustomTabsFeatureUsed">
-  <int value="0" label="Sessions - counter for all sessions"/>
-  <int value="1" label="Action button EXTRA_ACTION_BUTTON_BUNDLE"/>
-  <int value="2" label="Action button tint EXTRA_TINT_ACTION_BUTTON"/>
-  <int value="3" label="Background color EXTRA_INITIAL_BACKGROUND_COLOR"/>
-  <int value="4" label="Background EXTRA_ENABLE_BACKGROUND_INTERACTION"/>
-  <int value="5" label="Close button EXTRA_CLOSE_BUTTON_ICON"/>
-  <int value="6" label="Close position EXTRA_CLOSE_BUTTON_POSITION"/>
-  <int value="7" label="Color dark CTF_DARK"/>
-  <int value="8" label="Color light CTF_LIGHT"/>
-  <int value="9" label="Color scheme EXTRA_COLOR_SCHEME"/>
-  <int value="10" label="Color system CTF_SYSTEM"/>
-  <int value="11" label="Disable download EXTRA_DISABLE_DOWNLOAD_BUTTON"/>
-  <int value="12" label="Disable star EXTRA_DISABLE_STAR_BUTTON"/>
-  <int value="13" label="Exit animation EXTRA_EXIT_ANIMATION_BUNDLE"/>
-  <int value="14" label="AGA experiment ids EXPERIMENT_IDS"/>
-  <int value="15" label="Incognito EXTRA_OPEN_NEW_INCOGNITO_TAB"/>
-  <int value="16" label="Initial height EXTRA_INITIAL_ACTIVITY_HEIGHT_PX"/>
-  <int value="17" label="Media EXTRA_ENABLE_EMBEDDED_MEDIA_EXPERIENCE"/>
-  <int value="18" label="Media launcher EXTRA_BROWSER_LAUNCH_SOURCE"/>
-  <int value="19" label="Media url EXTRA_MEDIA_VIEWER_URL"/>
-  <int value="20" label="Menu items EXTRA_MENU_ITEMS"/>
-  <int value="21" label="Package extra EXTRA_CALLING_ACTIVITY_PACKAGE"/>
-  <int value="22" label="Package from Sessions or Extra CTF_PACKAGE_NAME"/>
-  <int value="23" label="Partial corners EXTRA_TOOLBAR_CORNER_RADIUS_DP"/>
-  <int value="24" label="Partial height layout CTF_PARTIAL"/>
-  <int value="25" label="Pending intent EXTRA_REMOTEVIEWS_PENDINGINTENT"/>
-  <int value="26" label="Reader Mode usage READER_MODE"/>
-  <int value="27" label="Remote view IDs EXTRA_REMOTEVIEWS_VIEW_IDS"/>
-  <int value="28" label="Remote views EXTRA_REMOTEVIEWS"/>
-  <int value="29" label="Resizable EXTRA_ACTIVITY_HEIGHT_RESIZE_BEHAVIOR"/>
-  <int value="30" label="Screen orientation EXTRA_SCREEN_ORIENTATION"/>
-  <int value="31" label="Sent by Chrome CTF_SENT_BY_CHROME"/>
-  <int value="32" label="Service keep alive EXTRA_KEEP_ALIVE"/>
-  <int value="33" label="Share menu EXTRA_DEFAULT_SHARE_MENU_ITEM"/>
-  <int value="34" label="Share state EXTRA_SHARE_STATE"/>
-  <int value="35" label="Title visibility EXTRA_TITLE_VISIBILITY_STATE"/>
-  <int value="36" label="Toolbar items EXTRA_TOOLBAR_ITEMS"/>
-  <int value="37" label="Translate specified EXTRA_TRANSLATE_LANGUAGE"/>
-  <int value="38" label="TWA display mode EXTRA_DISPLAY_MODE"/>
-  <int value="39" label="TWA EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY"/>
-  <int value="40" label="TWA origins EXTRA_ADDITIONAL_TRUSTED_ORIGINS"/>
-  <int value="41" label="Url bar hiding EXTRA_ENABLE_URLBAR_HIDING"/>
-  <int value="42" label="Translate specified EXTRA_AUTO_TRANSLATE_LANGUAGE"/>
-  <int value="43" label="Experiment override EXTRA_AGA_EXPERIMENT_ENABLE"/>
-  <int value="44" label="Partial width custom tab CTF_PARTIAL_SIDE_SHEET"/>
-  <int value="45" label="Break point EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP"/>
-  <int value="46" label="Initial width EXTRA_INITIAL_ACTIVITY_WIDTH_PX"/>
-  <int value="47"
-      label="Maximize button EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION"/>
-  <int value="48"
-      label="Secondary toolbar swipe-up pending intent
-             EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION"/>
-  <int value="49"
-      label="Decoration type EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE"/>
-  <int value="50"
-      label="Side sheet position EXTRA_ACTIVITY_SIDE_SHEET_POSITION"/>
-  <int value="51"
-      label="Side sheet animation EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR"/>
-  <int value="52"
-      label="Rounded corners position
-             EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION"/>
-  <int value="53"
-      label="Enable page insights hub EXTRA_ENABLE_PAGE_INSIGHTS_HUB"/>
-  <int value="54"
-      label="Scroll content may resize tab
-             EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE"/>
-</enum>
-
-<enum name="CustomTabsMinimizedEvents">
-  <int value="0" label="Minimized into PiP"/>
-  <int value="1" label="Maximized from PiP"/>
-  <int value="2" label="PiP dismissed or destroyed"/>
-</enum>
-
-<enum name="CustomTabsMinimizedFeatureAvailability">
-  <int value="0" label="Available"/>
-  <int value="1" label="Unavailable: API level is too low"/>
-  <int value="2" label="Unavailable: Low-end device"/>
-  <int value="3" label="Unavailable: System doesn't have PiP feature"/>
-  <int value="4" label="Unavailable: PiP permission isn't granted"/>
-</enum>
-
-<enum name="CustomTabsParallelRequestStatusOnStart">
-  <int value="0" label="No Parallel Request was requested"/>
-  <int value="1" label="Parallel request successfully started"/>
-  <int value="2" label="Failure: Chrome was not initialized"/>
-  <int value="3" label="Failure: Calling application not authorized"/>
-  <int value="4" label="Failure: Invalid URL"/>
-  <int value="5" label="Failure: Invalid referrer"/>
-  <int value="6" label="Failure: Invalid referrer for the calling session"/>
-</enum>
-
-<enum name="CustomTabsPartialCustomTabType">
-  <int value="0" label="No type"/>
-  <int value="1" label="Partial Custom Tab is a bottom-sheet"/>
-  <int value="2" label="Partial Custom Tab is a side-sheet"/>
-  <int value="3" label="Partial Custom Tab is full-size"/>
-</enum>
-
-<enum name="CustomTabsResizeType">
-  <obsolete>
-    Obsolete as of November 2022.
-  </obsolete>
-  <int value="0" label="Partial Custom Tab is expanded"/>
-  <int value="1" label="Partial Custom Tab is minimized"/>
-</enum>
-
-<enum name="CustomTabsResizeType2">
-  <int value="0" label="Partial Custom Tab is manually expanded"/>
-  <int value="1" label="Partial Custom Tab is manually minimized"/>
-  <int value="2" label="Partial Custom Tab is automatically expanded"/>
-  <int value="3" label="Partial Custom Tab is automatically minimized"/>
-</enum>
-
-<enum name="CustomTabsSessionDisconnectStatus">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Custom Tab in Foreground"/>
-  <int value="2" label="Custom Tab in Foreground, KEEP_ALIVE set"/>
-  <int value="3" label="Custom Tab in Background"/>
-  <int value="4" label="Custom Tab in Background, KEEP_ALIVE set"/>
-  <int value="5" label="Custom Tab in Foreground, the system is low on memory"/>
-  <int value="6"
-      label="Custom Tab in Foreground, KEEP_ALIVE set, the system is low on
-             memory"/>
-  <int value="7" label="Custom Tab in Background, the system is low on memory"/>
-  <int value="8"
-      label="Custom Tab in Background, KEEP_ALIVE set, the system is low on
-             memory"/>
-</enum>
-
 <enum name="D3D11FeatureLevel">
   <int value="0" label="Unknown"/>
   <int value="1" label="No D3D11 DLL"/>
@@ -43510,14 +43343,6 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="7" label="SuspiciousModule"/>
 </enum>
 
-<enum name="IncognitoCCTCallerId">
-  <int value="0" label="Other Apps"/>
-  <int value="1" label="Google Apps"/>
-  <int value="2" label="Chrome - Other features"/>
-  <int value="3" label="Chrome - Reader mode"/>
-  <int value="4" label="Chrome - Read later"/>
-</enum>
-
 <enum name="IncognitoClearBrowsingDataDialogActionType">
   <int value="0" label="Cancel"/>
   <int value="1" label="Close Incognito"/>
@@ -59047,14 +58872,6 @@ Called by update_use_counter_css.py.-->
   <int value="4" label="Suggestion index out of bounds"/>
 </enum>
 
-<enum name="MayLaunchUrlType">
-  <int value="0" label="No MayLaunchUrl() call."/>
-  <int value="1" label="Low confidence."/>
-  <int value="2" label="High confidence."/>
-  <int value="3" label="Low and High confidence."/>
-  <int value="4" label="Invalid session."/>
-</enum>
-
 <enum name="MBOSupport">
   <int value="0" label="Unsupported"/>
   <int value="1" label="Supported"/>
@@ -67360,23 +67177,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Click on confirmation chip"/>
   <int value="3"
       label="Click on lock within 20 seconds after confirmation chip collapse"/>
-</enum>
-
-<enum name="PageInsightsEvent">
-  <int value="0" label="Tap on Page Insights tab from Overflow menu"/>
-  <int value="1" label="Page Insights is auto-triggered in Peek state"/>
-  <int value="2" label="Page Insights is in Peek state"/>
-  <int value="3" label="Page Insights is in Expanded state"/>
-  <int value="4" label="Dismiss Page Insights from Peek state"/>
-  <int value="5" label="Dismiss Page Insights from Expanded state"/>
-  <int value="6"
-      label="Tap on XSurface view in Page Insights feature that opens a new
-             URL"/>
-  <int value="7"
-      label="Tap on XSurface view in Page Insights feature that shares a URL"/>
-  <int value="8"
-      label="Tap on XSurface view in Page Insights feature that opens a new
-             child page within the feature"/>
 </enum>
 
 <enum name="PageLoadBackForwardCacheEvent">
@@ -77876,19 +77676,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   </int>
 </enum>
 
-<enum name="ShareOptionLocation">
-  <int value="0" label="TOOLBAR"/>
-  <int value="1" label="MENU">Share option chosen to be shown in the menu.</int>
-  <int value="2" label="TOOLBAR_FULL_MENU_FALLBACK">
-    Share option shown in the menu because the toolbar is full.
-  </int>
-  <int value="3" label="NO_SPACE">
-    No share option shown despite share being enabled. This is due to the
-    existence of custom buttons and menu items, which take precedence.
-  </int>
-  <int value="4" label="SHARE_DISABLED"/>
-</enum>
-
 <enum name="ShareOrigin">
   <int value="0" label="OVERFLOW_MENU"/>
   <int value="1" label="TOP_TOOLBAR"/>
@@ -84456,20 +84243,6 @@ Full version information for the fingerprint enum values:
   <int value="3" label="New Tab Page Infobar"/>
 </enum>
 
-<enum name="TrustedWebActivityDelegatedNotificationSmallIconFallback">
-  <int value="0" label="No fallback"/>
-  <int value="1" label="Fallback icon mot provided"/>
-  <int value="2" label="Fallback for Status Bar"/>
-  <int value="3" label="Fallback for Status Bar and content"/>
-</enum>
-
-<enum name="TrustedWebActivityPermissionChanged">
-  <int value="0" label="Null to False"/>
-  <int value="1" label="Null to True"/>
-  <int value="2" label="True to False"/>
-  <int value="3" label="False to True"/>
-</enum>
-
 <enum name="TrustedWebActivityQualityEnforcementViolationType">
   <int value="0" label="Error 404"/>
   <int value="1" label="Error 5xx"/>
@@ -86501,12 +86274,6 @@ Full version information for the fingerprint enum values:
   <int value="2" label="Commit text with space"/>
 </enum>
 
-<enum name="VisibleTab">
-  <int value="0" label="Custom Tab"/>
-  <int value="1" label="Chrome Tab"/>
-  <int value="2" label="No Visible Tab (Startup/Warmup)"/>
-</enum>
-
 <enum name="VkPipelinePopulatedCacheEntryUsage">
   <int value="0" label="Used"/>
   <int value="1" label="Overwritten"/>
@@ -87245,14 +87012,6 @@ others/histograms.xml -->
   </int>
 </enum>
 
-<enum name="WarmupStateOnLaunch">
-  <int value="0" label="No Session, No Warmup"/>
-  <int value="1" label="No Session, Warmup"/>
-  <int value="2" label="Session, No Warmup, Warmup called from another UID"/>
-  <int value="3" label="Session, No Warmup"/>
-  <int value="4" label="Session, Warmup"/>
-</enum>
-
 <enum name="WasmAllocationResult">
   <int value="0" label="kSuccess"/>
   <int value="1" label="kSuccessAfterRetry"/>
@@ -87883,13 +87642,6 @@ This is true even if the type has been removed from the mojom file.
   <int value="2" label="Previously played audio"/>
 </enum>
 
-<enum name="WebContentsState">
-  <int value="0" label="No WebContents"/>
-  <int value="1" label="Prerendered WebContents"/>
-  <int value="2" label="Spare WebContents"/>
-  <int value="3" label="Transferred WebContents"/>
-</enum>
-
 <enum name="WebDatabaseInitResult">
   <int value="0" label="kSuccess"/>
   <int value="1" label="kCouldNotOpen"/>
@@ -88309,11 +88061,6 @@ Called by update_scheduler_enums.py.-->
   <int value="0" label="Success"/>
   <int value="1" label="UnknownFailure"/>
   <int value="2" label="Canceled"/>
-</enum>
-
-<enum name="WebShareTargetMethod">
-  <int value="0" label="GET"/>
-  <int value="1" label="POST"/>
 </enum>
 
 <enum name="WebsiteSettingsAction">

@@ -74,6 +74,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/cross_device/histograms.xml",
       "//tools/metrics/histograms/metadata/crostini/histograms.xml",
       "//tools/metrics/histograms/metadata/cryptohome/histograms.xml",
+      "//tools/metrics/histograms/metadata/custom_tabs/enums.xml",
       "//tools/metrics/histograms/metadata/custom_tabs/histograms.xml",
       "//tools/metrics/histograms/metadata/data/histograms.xml",
       "//tools/metrics/histograms/metadata/dev/histograms.xml",
