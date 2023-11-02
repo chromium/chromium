@@ -69,10 +69,6 @@ js_library("files_app_entry_types") {
   deps = [ "//ui/file_manager/file_manager/common/js:volume_manager_types" ]
 }
 
-js_library("files_app_state") {
-  deps = [ ":volume_manager_types" ]
-}
-
 js_library("file_types_data") {
   sources = [ "$target_gen_dir/file_types_data.js" ]
   extra_deps = [ "//ui/file_manager/base/gn:file_types_data_gen_js" ]

@@ -32,7 +32,7 @@ static_js_files = [
   "file_manager/common/js/glitch.js",
   "file_manager/common/js/file_type.js",
   "file_manager/common/js/files_app_entry_types.js",
-  "file_manager/common/js/files_app_state.js",
+
   "file_manager/common/js/filtered_volume_manager.js",
   "file_manager/common/js/mock_chrome.js",
   "file_manager/common/js/mock_entry.js",
@@ -190,6 +190,7 @@ ts_files = [
   "file_manager/common/js/api.ts",
   "file_manager/common/js/app_util.ts",
   "file_manager/common/js/cr_ui.ts",
+  "file_manager/common/js/files_app_state.ts",
   "file_manager/common/js/dom_utils.ts",
   "file_manager/common/js/dialog_type.ts",
   "file_manager/common/js/entry_utils.ts",

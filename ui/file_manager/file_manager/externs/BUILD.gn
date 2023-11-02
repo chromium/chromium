@@ -31,7 +31,6 @@ js_library("command_handler_deps") {
     "background:crostini",
     "background:file_operation_manager",
     "background:progress_center",
-    "//ui/file_manager/file_manager/common/js:files_app_state",
     "//ui/file_manager/file_manager/foreground/js:actions_controller",
     "//ui/file_manager/file_manager/foreground/js:directory_contents",
     "//ui/file_manager/file_manager/foreground/js:directory_model",

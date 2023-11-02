@@ -28,7 +28,6 @@ js_library("file_manager_base") {
     ":file_operation_manager",
     ":progress_center",
     "..:volume_manager",
-    "//ui/file_manager/file_manager/common/js:files_app_state",
   ]
 }
 

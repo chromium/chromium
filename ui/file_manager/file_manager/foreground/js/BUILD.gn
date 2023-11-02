@@ -405,7 +405,6 @@ js_library("file_manager") {
     "//ui/file_manager/file_manager/background/js:file_manager_base",
     "//ui/file_manager/file_manager/common/js:array_data_model",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
-    "//ui/file_manager/file_manager/common/js:files_app_state",
     "//ui/file_manager/file_manager/common/js:filtered_volume_manager",
     "//ui/file_manager/file_manager/common/js:progress_center_common",
     "//ui/file_manager/file_manager/common/js:storage",
@@ -559,10 +558,7 @@ js_library("holding_space_util") {
 }
 
 js_library("launch_param") {
-  deps = [
-    "//ui/file_manager/file_manager/common/js:files_app_state",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-  ]
+  deps = [ "//ui/file_manager/file_manager/common/js:volume_manager_types" ]
 }
 
 js_library("list_thumbnail_loader") {
