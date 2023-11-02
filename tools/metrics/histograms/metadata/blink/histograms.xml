@@ -2382,7 +2382,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.ImageDecoders.Avif.CleanAperture"
-    enum="AVIFCleanApertureType" expires_after="2023-11-30">
+    enum="AVIFCleanApertureType" expires_after="2024-05-31">
   <owner>wtc@google.com</owner>
   <owner>jzern@google.com</owner>
   <owner>
