@@ -102,24 +102,23 @@ extensions::api::passwords_private::ExportProgressStatus ConvertStatus(
   switch (status) {
     case password_manager::ExportProgressStatus::kNotStarted:
       return extensions::api::passwords_private::ExportProgressStatus::
-          EXPORT_PROGRESS_STATUS_NOT_STARTED;
+          kNotStarted;
     case password_manager::ExportProgressStatus::kInProgress:
       return extensions::api::passwords_private::ExportProgressStatus::
-          EXPORT_PROGRESS_STATUS_IN_PROGRESS;
+          kInProgress;
     case password_manager::ExportProgressStatus::kSucceeded:
       return extensions::api::passwords_private::ExportProgressStatus::
-          EXPORT_PROGRESS_STATUS_SUCCEEDED;
+          kSucceeded;
     case password_manager::ExportProgressStatus::kFailedCancelled:
       return extensions::api::passwords_private::ExportProgressStatus::
-          EXPORT_PROGRESS_STATUS_FAILED_CANCELLED;
+          kFailedCancelled;
     case password_manager::ExportProgressStatus::kFailedWrite:
       return extensions::api::passwords_private::ExportProgressStatus::
-          EXPORT_PROGRESS_STATUS_FAILED_WRITE_FAILED;
+          kFailedWriteFailed;
   }
 
   NOTREACHED();
-  return extensions::api::passwords_private::ExportProgressStatus::
-      EXPORT_PROGRESS_STATUS_NONE;
+  return extensions::api::passwords_private::ExportProgressStatus::kNone;
 }
 
 std::u16string GetReauthPurpose(
@@ -127,30 +126,30 @@ std::u16string GetReauthPurpose(
 #if BUILDFLAG(IS_MAC)
 
   switch (reason) {
-    case extensions::api::passwords_private::PLAINTEXT_REASON_VIEW:
+    case extensions::api::passwords_private::PlaintextReason::kView:
       return l10n_util::GetStringUTF16(
           IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
-    case extensions::api::passwords_private::PLAINTEXT_REASON_COPY:
+    case extensions::api::passwords_private::PlaintextReason::kCopy:
       return l10n_util::GetStringUTF16(
           IDS_PASSWORDS_PAGE_COPY_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
-    case extensions::api::passwords_private::PLAINTEXT_REASON_EDIT:
+    case extensions::api::passwords_private::PlaintextReason::kEdit:
       return l10n_util::GetStringUTF16(
           IDS_PASSWORDS_PAGE_EDIT_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
-    case extensions::api::passwords_private::PLAINTEXT_REASON_NONE:
+    case extensions::api::passwords_private::PlaintextReason::kNone:
       NOTREACHED_NORETURN();
   }
 #elif BUILDFLAG(IS_WIN)
   switch (reason) {
-    case extensions::api::passwords_private::PLAINTEXT_REASON_VIEW:
+    case extensions::api::passwords_private::PlaintextReason::kView:
       return l10n_util::GetStringUTF16(
           IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT);
-    case extensions::api::passwords_private::PLAINTEXT_REASON_COPY:
+    case extensions::api::passwords_private::PlaintextReason::kCopy:
       return l10n_util::GetStringUTF16(
           IDS_PASSWORDS_PAGE_COPY_AUTHENTICATION_PROMPT);
-    case extensions::api::passwords_private::PLAINTEXT_REASON_EDIT:
+    case extensions::api::passwords_private::PlaintextReason::kEdit:
       return l10n_util::GetStringUTF16(
           IDS_PASSWORDS_PAGE_EDIT_AUTHENTICATION_PROMPT);
-    case extensions::api::passwords_private::PLAINTEXT_REASON_NONE:
+    case extensions::api::passwords_private::PlaintextReason::kNone:
       NOTREACHED_NORETURN();
   }
 #else
@@ -162,13 +161,13 @@ password_manager::metrics_util::AccessPasswordInSettingsEvent
 ConvertPlaintextReason(
     extensions::api::passwords_private::PlaintextReason reason) {
   switch (reason) {
-    case extensions::api::passwords_private::PLAINTEXT_REASON_COPY:
+    case extensions::api::passwords_private::PlaintextReason::kCopy:
       return password_manager::metrics_util::ACCESS_PASSWORD_COPIED;
-    case extensions::api::passwords_private::PLAINTEXT_REASON_VIEW:
+    case extensions::api::passwords_private::PlaintextReason::kView:
       return password_manager::metrics_util::ACCESS_PASSWORD_VIEWED;
-    case extensions::api::passwords_private::PLAINTEXT_REASON_EDIT:
+    case extensions::api::passwords_private::PlaintextReason::kEdit:
       return password_manager::metrics_util::ACCESS_PASSWORD_EDITED;
-    case extensions::api::passwords_private::PLAINTEXT_REASON_NONE:
+    case extensions::api::passwords_private::PlaintextReason::kNone:
       NOTREACHED();
       return password_manager::metrics_util::ACCESS_PASSWORD_VIEWED;
   }
@@ -178,13 +177,13 @@ base::flat_set<password_manager::PasswordForm::Store>
 ConvertToPasswordFormStores(
     extensions::api::passwords_private::PasswordStoreSet store) {
   switch (store) {
-    case extensions::api::passwords_private::
-        PASSWORD_STORE_SET_DEVICE_AND_ACCOUNT:
+    case extensions::api::passwords_private::PasswordStoreSet::
+        kDeviceAndAccount:
       return {password_manager::PasswordForm::Store::kProfileStore,
               password_manager::PasswordForm::Store::kAccountStore};
-    case extensions::api::passwords_private::PASSWORD_STORE_SET_DEVICE:
+    case extensions::api::passwords_private::PasswordStoreSet::kDevice:
       return {password_manager::PasswordForm::Store::kProfileStore};
-    case extensions::api::passwords_private::PASSWORD_STORE_SET_ACCOUNT:
+    case extensions::api::passwords_private::PasswordStoreSet::kAccount:
       return {password_manager::PasswordForm::Store::kAccountStore};
     default:
       break;
@@ -514,7 +513,7 @@ void PasswordsPrivateDelegateImpl::RemovePasswordException(int id) {
   ExecuteFunction(base::BindOnce(
       &PasswordsPrivateDelegateImpl::RemoveEntryInternal,
       base::Unretained(this), id,
-      api::passwords_private::PASSWORD_STORE_SET_DEVICE_AND_ACCOUNT));
+      api::passwords_private::PasswordStoreSet::kDeviceAndAccount));
 }
 
 void PasswordsPrivateDelegateImpl::UndoRemoveSavedPasswordOrException() {
@@ -547,7 +546,7 @@ void PasswordsPrivateDelegateImpl::RequestCredentialsDetails(
     content::WebContents* web_contents) {
   AuthenticateUser(
       web_contents, PasswordAccessAuthTimeoutHandler::GetAuthValidityPeriod(),
-      GetReauthPurpose(api::passwords_private::PLAINTEXT_REASON_VIEW),
+      GetReauthPurpose(api::passwords_private::PlaintextReason::kView),
       base::BindOnce(
           &PasswordsPrivateDelegateImpl::OnRequestCredentialDetailsAuthResult,
           weak_ptr_factory_.GetWeakPtr(), ids, std::move(callback),
@@ -563,18 +562,15 @@ void PasswordsPrivateDelegateImpl::OnFetchingFamilyMembersCompleted(
     case FetchFamilyMembersRequestStatus::kUnknown:
     case FetchFamilyMembersRequestStatus::kNetworkError:
     case FetchFamilyMembersRequestStatus::kPendingRequest:
-      results.status = api::passwords_private::FamilyFetchStatus::
-          FAMILY_FETCH_STATUS_UNKNOWN_ERROR;
+      results.status = api::passwords_private::FamilyFetchStatus::kUnknownError;
       break;
     case FetchFamilyMembersRequestStatus::kSuccess:
     case FetchFamilyMembersRequestStatus::kNoOtherFamilyMembers:
       // TODO(crbug.com/1445526): Add new FamilyFetchStatus and its handling.
-      results.status = api::passwords_private::FamilyFetchStatus::
-          FAMILY_FETCH_STATUS_SUCCESS;
+      results.status = api::passwords_private::FamilyFetchStatus::kSuccess;
       break;
     case FetchFamilyMembersRequestStatus::kNoFamily:
-      results.status = api::passwords_private::FamilyFetchStatus::
-          FAMILY_FETCH_STATUS_NO_MEMBERS;
+      results.status = api::passwords_private::FamilyFetchStatus::kNoMembers;
   }
   if (request_status == FetchFamilyMembersRequestStatus::kSuccess) {
     for (const password_manager::RecipientInfo& family_member :
@@ -738,8 +734,7 @@ void PasswordsPrivateDelegateImpl::ImportPasswords(
     api::passwords_private::PasswordStoreSet to_store,
     ImportResultsCallback results_callback,
     content::WebContents* web_contents) {
-  DCHECK_NE(api::passwords_private::PasswordStoreSet::
-                PASSWORD_STORE_SET_DEVICE_AND_ACCOUNT,
+  DCHECK_NE(api::passwords_private::PasswordStoreSet::kDeviceAndAccount,
             to_store);
   password_manager::PasswordForm::Store store_to_use =
       *ConvertToPasswordFormStores(to_store).begin();
@@ -960,7 +955,7 @@ void PasswordsPrivateDelegateImpl::OnRequestPlaintextPasswordAuthResult(
     return;
   }
 
-  if (reason == api::passwords_private::PLAINTEXT_REASON_COPY) {
+  if (reason == api::passwords_private::PlaintextReason::kCopy) {
     ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
     clipboard_writer.WriteText(entry->password);
     clipboard_writer.MarkAsConfidential();
@@ -1006,7 +1001,7 @@ void PasswordsPrivateDelegateImpl::OnRequestCredentialDetailsAuthResult(
 
   if (!passwords.empty()) {
     EmitHistogramsForCredentialAccess(
-        last_entry, api::passwords_private::PLAINTEXT_REASON_VIEW);
+        last_entry, api::passwords_private::PlaintextReason::kView);
   }
   std::move(callback).Run(std::move(passwords));
 

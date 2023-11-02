@@ -102,10 +102,10 @@ bool IsUnmutedCompromisedCredential(
     return false;
   return base::ranges::any_of(
       entry.compromised_info->compromise_types, [](auto type) {
-        return type ==
-                   extensions::api::passwords_private::COMPROMISE_TYPE_LEAKED ||
+        return type == extensions::api::passwords_private::CompromiseType::
+                           kLeaked ||
                type ==
-                   extensions::api::passwords_private::COMPROMISE_TYPE_PHISHED;
+                   extensions::api::passwords_private::CompromiseType::kPhished;
       });
 }
 
@@ -114,7 +114,8 @@ bool IsCredentialWeak(
   DCHECK(entry.compromised_info);
   return base::ranges::any_of(
       entry.compromised_info->compromise_types, [](auto type) {
-        return type == extensions::api::passwords_private::COMPROMISE_TYPE_WEAK;
+        return type ==
+               extensions::api::passwords_private::CompromiseType::kWeak;
       });
 }
 
@@ -124,7 +125,7 @@ bool IsCredentialReused(
   return base::ranges::any_of(
       entry.compromised_info->compromise_types, [](auto type) {
         return type ==
-               extensions::api::passwords_private::COMPROMISE_TYPE_REUSED;
+               extensions::api::passwords_private::CompromiseType::kReused;
       });
 }
 
@@ -779,7 +780,7 @@ void SafetyCheckHandler::OnCredentialDone(
       passwords_delegate_->GetPasswordCheckStatus();
   // Send progress updates only if the check is still running.
   if (status.state ==
-          extensions::api::passwords_private::PASSWORD_CHECK_STATE_RUNNING &&
+          extensions::api::passwords_private::PasswordCheckState::kRunning &&
       status.already_processed && status.remaining_in_queue) {
     Done done = Done(*(status.already_processed));
     Total total = Total(*(status.remaining_in_queue) + done.value());
@@ -793,7 +794,7 @@ void SafetyCheckHandler::OnInsecureCredentialsChanged() {
       passwords_delegate_->GetPasswordCheckStatus();
   // Ignore the event, unless the password check is idle with no errors.
   if (status.state !=
-      extensions::api::passwords_private::PASSWORD_CHECK_STATE_IDLE) {
+      extensions::api::passwords_private::PasswordCheckState::kIdle) {
     return;
   }
   UpdatePasswordsResultOnCheckIdle();
