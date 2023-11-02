@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
@@ -64,6 +65,10 @@ constexpr int kAdjacentLabelsVerticalSpacing = 2;
 // The icon size used in the suggestion dropdown for displaying the Google
 // Password Manager icon in the Manager Passwords entry.
 constexpr int kGooglePasswordManagerIconSize = 20;
+
+// Metric to measure the duration of getting the image for the Autofill pop-up.
+constexpr char kHistogramGetImageViewByName[] =
+    "Autofill.PopupGetImageViewTime";
 
 // Returns the name of the network for payment method icons, empty string
 // otherwise.
@@ -295,16 +300,28 @@ gfx::Insets GetMarginsForContentCell(bool has_control_element) {
 
 std::unique_ptr<views::ImageView> GetIconImageView(
     const Suggestion& suggestion) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
+
   if (!suggestion.custom_icon.IsEmpty()) {
     return ImageViewFromImageSkia(suggestion.custom_icon.AsImageSkia());
   }
+  std::unique_ptr<views::ImageView> icon_image_view =
+      GetIconImageViewByName(suggestion.icon);
+  base::UmaHistogramTimes(kHistogramGetImageViewByName,
+                          base::TimeTicks::Now() - start_time);
 
-  return GetIconImageViewByName(suggestion.icon);
+  return icon_image_view;
 }
 
 std::unique_ptr<views::ImageView> GetTrailingIconImageView(
     const Suggestion& suggestion) {
-  return GetIconImageViewByName(suggestion.trailing_icon);
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  std::unique_ptr<views::ImageView> icon_image_view =
+      GetIconImageViewByName(suggestion.trailing_icon);
+  base::UmaHistogramTimes(kHistogramGetImageViewByName,
+                          base::TimeTicks::Now() - start_time);
+
+  return icon_image_view;
 }
 
 // Adds a spacer with `spacer_width` to `view`. `layout` must be the
