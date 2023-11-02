@@ -8,17 +8,13 @@
 #include "ash/projector/projector_metadata_model.h"
 #include "ash/projector/projector_metrics.h"
 #include "ash/projector/projector_ui_controller.h"
-#include "ash/public/cpp/projector/projector_controller.h"
-#include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 
 namespace ash {
@@ -87,8 +83,9 @@ void ProjectorMetadataController::SaveMetadata(
     const base::FilePath& video_file_path) {
   DCHECK(metadata_);
   // TODO(b/200330118): Finalize on the metadata file naming convention.
-  const base::FilePath path =
-      video_file_path.AddExtension(kProjectorMetadataFileExtension);
+  const base::FilePath path = video_file_path.AddExtension(
+      ash::features::IsProjectorV2Enabled() ? kProjectorV2MetadataFileExtension
+                                            : kProjectorMetadataFileExtension);
 
   // Save metadata.
   auto metadata_str = metadata_->Serialize();

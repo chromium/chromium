@@ -27,6 +27,9 @@ extern const char kChromeUIUntrustedAnnotatorUrl[];
 // screencasts at processing pending screencasts and fetching screencast list.
 extern const base::FilePath::CharType kProjectorMetadataFileExtension[];
 
+// File extension of Projector V2 metadata file.
+extern const base::FilePath::CharType kProjectorV2MetadataFileExtension[];
+
 // File extension of Projector media file.
 extern const base::FilePath::CharType kProjectorMediaFileExtension[];
 

@@ -29,6 +29,8 @@ const char kChromeUIUntrustedProjectorSwaAppId[] =
 
 const base::FilePath::CharType kProjectorMetadataFileExtension[] =
     FILE_PATH_LITERAL(".projector");
+const base::FilePath::CharType kProjectorV2MetadataFileExtension[] =
+    FILE_PATH_LITERAL(".screencast");
 
 const base::FilePath::CharType kProjectorMediaFileExtension[] =
     FILE_PATH_LITERAL(".webm");

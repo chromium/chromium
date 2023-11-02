@@ -9,23 +9,21 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/projector/projector_metrics.h"
-#include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "ash/webui/projector_app/public/mojom/projector_types.mojom-forward.h"
 #include "base/check.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
-#include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/projector/projector_utils.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -44,8 +42,7 @@ constexpr char kDriveRequestIndexableTextKey[] = "indexableText";
 constexpr base::TimeDelta kDriveGetMetadataDelay = base::Seconds(3);
 
 bool IsWebmOrProjectorFile(const base::FilePath& path) {
-  return path.MatchesExtension(ash::kProjectorMediaFileExtension) ||
-         path.MatchesExtension(ash::kProjectorMetadataFileExtension);
+  return IsMediaFile(path) || IsMetadataFile(path);
 }
 
 // "Absolute path" is the DriveFS absolute path of `drive_relative_path` on
@@ -231,10 +228,10 @@ absl::optional<ash::PendingScreencastContainer> GetPendingScreencastContainer(
   // Calculates the size of media file and metadata file, and the created time
   // of media.
   for (base::FilePath path = files.Next(); !path.empty(); path = files.Next()) {
-    if (path.MatchesExtension(ash::kProjectorMetadataFileExtension)) {
+    if (IsMetadataFile(path)) {
       total_size_in_bytes += files.GetInfo().GetSize();
       metadata_file_count++;
-    } else if (path.MatchesExtension(ash::kProjectorMediaFileExtension)) {
+    } else if (IsMediaFile(path)) {
       base::File::Info info;
       if (!base::GetFileInfo(path, &info)) {
         continue;
@@ -408,11 +405,10 @@ void PendingScreencastManager::OnSyncingStatusUpdate(
     // "kCompleted" state for a file so that we could only update indexable text
     // once.
     if (ash::features::IsProjectorUpdateIndexableTextEnabled() &&
-        event_file.MatchesExtension(ash::kProjectorMetadataFileExtension)) {
+        IsMetadataFile(event_file)) {
       syncing_metadata_files_.emplace(event_file);
     }
-    pending_webm_or_projector_events.push_back(
-        drivefs::mojom::ItemEvent(*event.get()));
+    pending_webm_or_projector_events.emplace_back(*event.get());
   }
 
   // If the `pending_webm_or_projector_events`, `error_syncing_files_` and

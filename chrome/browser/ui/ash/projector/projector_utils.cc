@@ -70,6 +70,16 @@ bool IsProjectorAppEnabled(const Profile* profile) {
          profile->GetPrefs()->GetBoolean(ash::prefs::kProjectorAllowByPolicy);
 }
 
+bool IsMediaFile(const base::FilePath& path) {
+  return path.MatchesExtension(ash::kProjectorMediaFileExtension);
+}
+
+bool IsMetadataFile(const base::FilePath& path) {
+  return path.MatchesExtension(ash::kProjectorMetadataFileExtension) ||
+         (ash::features::IsProjectorV2Enabled() &&
+          path.MatchesExtension(ash::kProjectorV2MetadataFileExtension));
+}
+
 void SendFilesToProjectorApp(std::vector<base::FilePath> files) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   Browser* browser =
