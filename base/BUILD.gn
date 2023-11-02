@@ -4132,6 +4132,7 @@ if (enable_nocompile_tests_new) {
       "strings/stringprintf_nocompile.nc",
       "task/task_traits_nocompile.nc",
       "thread_annotations_nocompile.nc",
+      "types/variant_util_nocompile.nc",
       "values_nocompile.nc",
     ]
     deps = [ ":base" ]
@@ -4161,7 +4162,6 @@ if (enable_nocompile_tests) {
       "task/bind_post_task_unittest.nc",
       "traits_bag_unittest.nc",
       "types/pass_key_unittest.nc",
-      "types/variant_util_unittest.nc",
     ]
 
     deps = [
