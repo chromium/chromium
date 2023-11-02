@@ -58,7 +58,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "AdjustForOSLevel": "false"
+                        "AdjustForOSLevel": "true"
                     },
                     "enable_features": [
                         "AccessibilityPageZoom"
