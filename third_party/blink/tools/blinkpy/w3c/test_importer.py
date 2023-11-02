@@ -245,10 +245,6 @@ class TestImporter(object):
 
         if try_results and self.git_cl.some_failed(try_results):
             self.fetch_new_expectations_and_baselines()
-            # Update metadata after baselines so that `rebaseline-cl` does not
-            # complain about uncommitted files. `update-metadata` has a similar
-            # but more fine-grained check.
-            self.expectations_updater.update_metadata()
             if self.project_git.has_working_directory_changes():
                 # Skip slow and timeout tests so that presubmit check passes
                 port = self.host.port_factory.get()
