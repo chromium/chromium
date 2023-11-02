@@ -73,6 +73,20 @@ class PreloadingPredictionUkmEntryBuilder {
   PreloadingPredictor predictor_;
 };
 
+// Checks if `ukm_recorder` recorded `expected_attempt_entries`. Doesn't care
+// about the recording order.
+void ExpectPreloadingAttemptUkm(
+    ukm::TestAutoSetUkmRecorder& ukm_recorder,
+    const std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>&
+        expected_attempt_entries);
+
+// Checks if `ukm_recorder` recorded `expected_prediction_entries`. Doesn't care
+// about the recording order.
+void ExpectPreloadingPredictionUkm(
+    ukm::TestAutoSetUkmRecorder& ukm_recorder,
+    const std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>&
+        expected_prediction_entries);
+
 // Turns a UKM entry into a human-readable string.
 std::string UkmEntryToString(
     const ukm::TestUkmRecorder::HumanReadableUkmEntry& entry);

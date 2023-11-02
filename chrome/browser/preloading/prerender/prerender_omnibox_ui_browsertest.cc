@@ -331,36 +331,27 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
   EXPECT_TRUE(IsPrerenderingNavigation());
   EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(), kNewUrl);
 
-  {
-    // Check that we store two entries for both new and old entry.
-    ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
-    auto ukm_entries = test_ukm_recorder()->GetEntries(
-        Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
-    EXPECT_EQ(ukm_entries.size(), 2u);
-
-    std::vector<UkmEntry> expected_entries = {
-        ukm_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingType::kPrerender,
-            content::PreloadingEligibility::kEligible,
-            content::PreloadingHoldbackStatus::kAllowed,
-            content::PreloadingTriggeringOutcome::kFailure,
-            ToPreloadingFailureReason(PrerenderPredictionStatus::kCancelled),
-            /*accurate=*/false),
-        ukm_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingType::kPrerender,
-            content::PreloadingEligibility::kEligible,
-            content::PreloadingHoldbackStatus::kAllowed,
-            content::PreloadingTriggeringOutcome::kSuccess,
-            content::PreloadingFailureReason::kUnspecified,
-            /*accurate=*/true,
-            /*ready_time=*/kMockElapsedTime),
-    };
-    EXPECT_THAT(ukm_entries,
-                testing::UnorderedElementsAreArray(expected_entries))
-        << content::test::ActualVsExpectedUkmEntriesToString(ukm_entries,
-                                                             expected_entries);
-  }
+  // Check that we store two entries for both new and old entry.
+  ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
+  content::test::ExpectPreloadingAttemptUkm(
+      *test_ukm_recorder(),
+      {
+          ukm_entry_builder().BuildEntry(
+              ukm_source_id, content::PreloadingType::kPrerender,
+              content::PreloadingEligibility::kEligible,
+              content::PreloadingHoldbackStatus::kAllowed,
+              content::PreloadingTriggeringOutcome::kFailure,
+              ToPreloadingFailureReason(PrerenderPredictionStatus::kCancelled),
+              /*accurate=*/false),
+          ukm_entry_builder().BuildEntry(
+              ukm_source_id, content::PreloadingType::kPrerender,
+              content::PreloadingEligibility::kEligible,
+              content::PreloadingHoldbackStatus::kAllowed,
+              content::PreloadingTriggeringOutcome::kSuccess,
+              content::PreloadingFailureReason::kUnspecified,
+              /*accurate=*/true,
+              /*ready_time=*/kMockElapsedTime),
+      });
 
   // Prerender was attempted twice and the first one was cancelled.
   histogram_tester.ExpectBucketCount(
@@ -404,29 +395,20 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
   EXPECT_FALSE(IsPrerenderingNavigation());
   EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(), kNewUrl);
 
-  {
-    ukm::SourceId ukm_source_id =
-        GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
-    auto ukm_entries = test_ukm_recorder()->GetEntries(
-        Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
-    EXPECT_EQ(ukm_entries.size(), 1u);
-
-    std::vector<UkmEntry> expected_entries = {
-        ukm_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingType::kPrerender,
-            content::PreloadingEligibility::kEligible,
-            content::PreloadingHoldbackStatus::kAllowed,
-            content::PreloadingTriggeringOutcome::kReady,
-            content::PreloadingFailureReason::kUnspecified,
-            /*accurate=*/false,
-            /*ready_time=*/kMockElapsedTime),
-    };
-    EXPECT_THAT(ukm_entries,
-                testing::UnorderedElementsAreArray(expected_entries))
-        << content::test::ActualVsExpectedUkmEntriesToString(ukm_entries,
-                                                             expected_entries);
-  }
+  ukm::SourceId ukm_source_id =
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  content::test::ExpectPreloadingAttemptUkm(
+      *test_ukm_recorder(),
+      {
+          ukm_entry_builder().BuildEntry(
+              ukm_source_id, content::PreloadingType::kPrerender,
+              content::PreloadingEligibility::kEligible,
+              content::PreloadingHoldbackStatus::kAllowed,
+              content::PreloadingTriggeringOutcome::kReady,
+              content::PreloadingFailureReason::kUnspecified,
+              /*accurate=*/false,
+              /*ready_time=*/kMockElapsedTime),
+      });
 
   // Prerender was attempted once and was cancelled.
   histogram_tester.ExpectBucketCount(
@@ -466,35 +448,26 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
   EXPECT_TRUE(IsPrerenderingNavigation());
   EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(), kPrerenderingUrl);
 
-  {
-    ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
-    auto ukm_entries = test_ukm_recorder()->GetEntries(
-        Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
-    EXPECT_EQ(ukm_entries.size(), 2u);
-
-    std::vector<UkmEntry> expected_entries = {
-        ukm_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingType::kPrerender,
-            content::PreloadingEligibility::kEligible,
-            content::PreloadingHoldbackStatus::kAllowed,
-            content::PreloadingTriggeringOutcome::kSuccess,
-            content::PreloadingFailureReason::kUnspecified,
-            /*accurate=*/true,
-            /*ready_time=*/kMockElapsedTime),
-        ukm_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingType::kPrerender,
-            content::PreloadingEligibility::kEligible,
-            content::PreloadingHoldbackStatus::kAllowed,
-            content::PreloadingTriggeringOutcome::kDuplicate,
-            content::PreloadingFailureReason::kUnspecified,
-            /*accurate=*/true),
-    };
-    EXPECT_THAT(ukm_entries,
-                testing::UnorderedElementsAreArray(expected_entries))
-        << content::test::ActualVsExpectedUkmEntriesToString(ukm_entries,
-                                                             expected_entries);
-  }
+  ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
+  content::test::ExpectPreloadingAttemptUkm(
+      *test_ukm_recorder(),
+      {
+          ukm_entry_builder().BuildEntry(
+              ukm_source_id, content::PreloadingType::kPrerender,
+              content::PreloadingEligibility::kEligible,
+              content::PreloadingHoldbackStatus::kAllowed,
+              content::PreloadingTriggeringOutcome::kSuccess,
+              content::PreloadingFailureReason::kUnspecified,
+              /*accurate=*/true,
+              /*ready_time=*/kMockElapsedTime),
+          ukm_entry_builder().BuildEntry(
+              ukm_source_id, content::PreloadingType::kPrerender,
+              content::PreloadingEligibility::kEligible,
+              content::PreloadingHoldbackStatus::kAllowed,
+              content::PreloadingTriggeringOutcome::kDuplicate,
+              content::PreloadingFailureReason::kUnspecified,
+              /*accurate=*/true),
+      });
 
   histogram_tester.ExpectUniqueSample(
       internal::kHistogramPrerenderPredictionStatusDirectUrlInput,
@@ -535,28 +508,20 @@ IN_PROC_BROWSER_TEST_F(PrerenderPreloaderHoldbackBrowserTest,
       kPrerenderingUrl, *GetActiveWebContents(), gfx::Size(50, 50));
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kPrerenderingUrl));
 
-  {
-    ukm::SourceId ukm_source_id =
-        GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
-    auto ukm_entries = test_ukm_recorder()->GetEntries(
-        Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
-
-    // PreloadingHoldbackStatus should be set to kHoldback.
-    std::vector<UkmEntry> expected_entries = {
-        ukm_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingType::kPrerender,
-            content::PreloadingEligibility::kEligible,
-            content::PreloadingHoldbackStatus::kHoldback,
-            content::PreloadingTriggeringOutcome::kUnspecified,
-            content::PreloadingFailureReason::kUnspecified,
-            /*accurate=*/true),
-    };
-    EXPECT_THAT(ukm_entries,
-                testing::UnorderedElementsAreArray(expected_entries))
-        << content::test::ActualVsExpectedUkmEntriesToString(ukm_entries,
-                                                             expected_entries);
-  }
+  // PreloadingHoldbackStatus should be set to kHoldback.
+  ukm::SourceId ukm_source_id =
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  content::test::ExpectPreloadingAttemptUkm(
+      *test_ukm_recorder(),
+      {
+          ukm_entry_builder().BuildEntry(
+              ukm_source_id, content::PreloadingType::kPrerender,
+              content::PreloadingEligibility::kEligible,
+              content::PreloadingHoldbackStatus::kHoldback,
+              content::PreloadingTriggeringOutcome::kUnspecified,
+              content::PreloadingFailureReason::kUnspecified,
+              /*accurate=*/true),
+      });
 }
 
 // Tests that NavigationHandle::IsRendererInitiated() returns RendererInitiated
@@ -964,53 +929,35 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(base::Contains(
       GetActiveWebContents()->GetLastCommittedURL().spec(), "pf=cs"));
 
-  {
-    // Check that we store 1 entry for the prediction and 2 entries for the
-    // prefetch/prerender attempts.
-    ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
-    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
-        Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
-    auto prediction_ukm_entries = test_ukm_recorder()->GetEntries(
-        Preloading_Prediction::kEntryName,
-        content::test::kPreloadingPredictionUkmMetrics);
-    EXPECT_EQ(prediction_ukm_entries.size(), 1u);
-    EXPECT_EQ(attempt_ukm_entries.size(), 2u);
-
-    // Check that we log the correct metrics for successful prerender
-    // activation.
-    std::vector<UkmEntry> expected_prediction_entries = {
-        prediction_entry_builder().BuildEntry(ukm_source_id,
-                                              /*confidence=*/80,
-                                              /*accurate_prediction=*/true),
-    };
-    std::vector<UkmEntry> expected_attempt_entries = {
-        attempt_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingType::kPrefetch,
-            content::PreloadingEligibility::kEligible,
-            content::PreloadingHoldbackStatus::kAllowed,
-            content::PreloadingTriggeringOutcome::kReady,
-            content::PreloadingFailureReason::kUnspecified,
-            /*accurate=*/true,
-            /*ready_time=*/kMockElapsedTime),
-        attempt_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingType::kPrerender,
-            content::PreloadingEligibility::kEligible,
-            content::PreloadingHoldbackStatus::kAllowed,
-            content::PreloadingTriggeringOutcome::kSuccess,
-            content::PreloadingFailureReason::kUnspecified,
-            /*accurate=*/true,
-            /*ready_time=*/kMockElapsedTime),
-    };
-    EXPECT_THAT(attempt_ukm_entries,
-                testing::UnorderedElementsAreArray(expected_attempt_entries))
-        << content::test::ActualVsExpectedUkmEntriesToString(
-               attempt_ukm_entries, expected_attempt_entries);
-    EXPECT_THAT(prediction_ukm_entries,
-                testing::UnorderedElementsAreArray(expected_prediction_entries))
-        << content::test::ActualVsExpectedUkmEntriesToString(
-               prediction_ukm_entries, expected_prediction_entries);
-  }
+  // Check that we log the correct metrics for successful prerender activation.
+  ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
+  content::test::ExpectPreloadingPredictionUkm(
+      *test_ukm_recorder(),
+      {
+          prediction_entry_builder().BuildEntry(ukm_source_id,
+                                                /*confidence=*/80,
+                                                /*accurate_prediction=*/true),
+      });
+  content::test::ExpectPreloadingAttemptUkm(
+      *test_ukm_recorder(),
+      {
+          attempt_entry_builder().BuildEntry(
+              ukm_source_id, content::PreloadingType::kPrefetch,
+              content::PreloadingEligibility::kEligible,
+              content::PreloadingHoldbackStatus::kAllowed,
+              content::PreloadingTriggeringOutcome::kReady,
+              content::PreloadingFailureReason::kUnspecified,
+              /*accurate=*/true,
+              /*ready_time=*/kMockElapsedTime),
+          attempt_entry_builder().BuildEntry(
+              ukm_source_id, content::PreloadingType::kPrerender,
+              content::PreloadingEligibility::kEligible,
+              content::PreloadingHoldbackStatus::kAllowed,
+              content::PreloadingTriggeringOutcome::kSuccess,
+              content::PreloadingFailureReason::kUnspecified,
+              /*accurate=*/true,
+              /*ready_time=*/kMockElapsedTime),
+      });
 
   histogram_tester.ExpectUniqueSample(
       internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
@@ -1050,37 +997,28 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(IsPrerenderingNavigation());
   base::RunLoop().RunUntilIdle();
 
-  {
-    ukm::SourceId ukm_source_id =
-        GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
-    auto ukm_entries = test_ukm_recorder()->GetEntries(
-        Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
-    EXPECT_EQ(ukm_entries.size(), 2u);
-
-    std::vector<UkmEntry> expected_entries = {
-        attempt_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingType::kPrefetch,
-            content::PreloadingEligibility::kEligible,
-            content::PreloadingHoldbackStatus::kAllowed,
-            content::PreloadingTriggeringOutcome::kReady,
-            content::PreloadingFailureReason::kUnspecified,
-            /*accurate=*/false,
-            /*ready_time=*/kMockElapsedTime),
-        attempt_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingType::kPrerender,
-            content::PreloadingEligibility::kEligible,
-            content::PreloadingHoldbackStatus::kAllowed,
-            content::PreloadingTriggeringOutcome::kReady,
-            content::PreloadingFailureReason::kUnspecified,
-            /*accurate=*/false,
-            /*ready_time=*/kMockElapsedTime),
-    };
-    EXPECT_THAT(ukm_entries,
-                testing::UnorderedElementsAreArray(expected_entries))
-        << content::test::ActualVsExpectedUkmEntriesToString(ukm_entries,
-                                                             expected_entries);
-  }
+  ukm::SourceId ukm_source_id =
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  content::test::ExpectPreloadingAttemptUkm(
+      *test_ukm_recorder(),
+      {
+          attempt_entry_builder().BuildEntry(
+              ukm_source_id, content::PreloadingType::kPrefetch,
+              content::PreloadingEligibility::kEligible,
+              content::PreloadingHoldbackStatus::kAllowed,
+              content::PreloadingTriggeringOutcome::kReady,
+              content::PreloadingFailureReason::kUnspecified,
+              /*accurate=*/false,
+              /*ready_time=*/kMockElapsedTime),
+          attempt_entry_builder().BuildEntry(
+              ukm_source_id, content::PreloadingType::kPrerender,
+              content::PreloadingEligibility::kEligible,
+              content::PreloadingHoldbackStatus::kAllowed,
+              content::PreloadingTriggeringOutcome::kReady,
+              content::PreloadingFailureReason::kUnspecified,
+              /*accurate=*/false,
+              /*ready_time=*/kMockElapsedTime),
+      });
 
   histogram_tester.ExpectUniqueSample(
       internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
@@ -1127,53 +1065,43 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(IsPrerenderingNavigation());
   base::RunLoop().RunUntilIdle();
 
-  {
-    // Check that we store 4 entries for prefetch/prererender attempts.
-    ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
-    auto ukm_entries = test_ukm_recorder()->GetEntries(
-        Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
-    EXPECT_EQ(ukm_entries.size(), 4u);
-
-    // Check that we log the correct metrics for successful prerender
-    // activation and for duplicate attempt to the same prerender URL.
-    std::vector<UkmEntry> expected_entries = {
-        attempt_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingType::kPrefetch,
-            content::PreloadingEligibility::kEligible,
-            content::PreloadingHoldbackStatus::kAllowed,
-            content::PreloadingTriggeringOutcome::kReady,
-            content::PreloadingFailureReason::kUnspecified,
-            /*accurate=*/true,
-            /*ready_time=*/kMockElapsedTime),
-        attempt_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingType::kPrerender,
-            content::PreloadingEligibility::kEligible,
-            content::PreloadingHoldbackStatus::kAllowed,
-            content::PreloadingTriggeringOutcome::kSuccess,
-            content::PreloadingFailureReason::kUnspecified,
-            /*accurate=*/true,
-            /*ready_time=*/kMockElapsedTime),
-        attempt_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingType::kPrefetch,
-            content::PreloadingEligibility::kEligible,
-            content::PreloadingHoldbackStatus::kAllowed,
-            content::PreloadingTriggeringOutcome::kDuplicate,
-            content::PreloadingFailureReason::kUnspecified,
-            /*accurate=*/true),
-        attempt_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingType::kPrerender,
-            content::PreloadingEligibility::kEligible,
-            content::PreloadingHoldbackStatus::kAllowed,
-            content::PreloadingTriggeringOutcome::kDuplicate,
-            content::PreloadingFailureReason::kUnspecified,
-            /*accurate=*/true),
-    };
-    EXPECT_THAT(ukm_entries,
-                testing::UnorderedElementsAreArray(expected_entries))
-        << content::test::ActualVsExpectedUkmEntriesToString(ukm_entries,
-                                                             expected_entries);
-  }
+  // Check that we log the correct metrics for successful prerender activation
+  // and for duplicate attempt to the same prerender URL.
+  ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
+  content::test::ExpectPreloadingAttemptUkm(
+      *test_ukm_recorder(),
+      {
+          attempt_entry_builder().BuildEntry(
+              ukm_source_id, content::PreloadingType::kPrefetch,
+              content::PreloadingEligibility::kEligible,
+              content::PreloadingHoldbackStatus::kAllowed,
+              content::PreloadingTriggeringOutcome::kReady,
+              content::PreloadingFailureReason::kUnspecified,
+              /*accurate=*/true,
+              /*ready_time=*/kMockElapsedTime),
+          attempt_entry_builder().BuildEntry(
+              ukm_source_id, content::PreloadingType::kPrerender,
+              content::PreloadingEligibility::kEligible,
+              content::PreloadingHoldbackStatus::kAllowed,
+              content::PreloadingTriggeringOutcome::kSuccess,
+              content::PreloadingFailureReason::kUnspecified,
+              /*accurate=*/true,
+              /*ready_time=*/kMockElapsedTime),
+          attempt_entry_builder().BuildEntry(
+              ukm_source_id, content::PreloadingType::kPrefetch,
+              content::PreloadingEligibility::kEligible,
+              content::PreloadingHoldbackStatus::kAllowed,
+              content::PreloadingTriggeringOutcome::kDuplicate,
+              content::PreloadingFailureReason::kUnspecified,
+              /*accurate=*/true),
+          attempt_entry_builder().BuildEntry(
+              ukm_source_id, content::PreloadingType::kPrerender,
+              content::PreloadingEligibility::kEligible,
+              content::PreloadingHoldbackStatus::kAllowed,
+              content::PreloadingTriggeringOutcome::kDuplicate,
+              content::PreloadingFailureReason::kUnspecified,
+              /*accurate=*/true),
+      });
 
   // The displayed url shouldn't contain the parameter of pf=cs.
   EXPECT_FALSE(base::Contains(
@@ -1227,54 +1155,44 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
       host_id2);
   EXPECT_TRUE(IsPrerenderingNavigation());
 
-  {
-    // Check that we store 4 entries for prefetch/prerender attempts.
-    ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
-    auto ukm_entries = test_ukm_recorder()->GetEntries(
-        Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
-    EXPECT_EQ(ukm_entries.size(), 4u);
-
-    // Check that we log the correct metrics for successful prerender
-    // activation with suggestions to the different prerender URLs.
-    std::vector<UkmEntry> expected_entries = {
-        attempt_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingType::kPrefetch,
-            content::PreloadingEligibility::kEligible,
-            content::PreloadingHoldbackStatus::kAllowed,
-            content::PreloadingTriggeringOutcome::kReady,
-            content::PreloadingFailureReason::kUnspecified,
-            /*accurate=*/false,
-            /*ready_time=*/kMockElapsedTime),
-        attempt_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingType::kPrerender,
-            content::PreloadingEligibility::kEligible,
-            content::PreloadingHoldbackStatus::kAllowed,
-            content::PreloadingTriggeringOutcome::kFailure,
-            ToPreloadingFailureReason(PrerenderPredictionStatus::kCancelled),
-            /*accurate=*/false),
-        attempt_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingType::kPrefetch,
-            content::PreloadingEligibility::kEligible,
-            content::PreloadingHoldbackStatus::kAllowed,
-            content::PreloadingTriggeringOutcome::kReady,
-            content::PreloadingFailureReason::kUnspecified,
-            /*accurate=*/true,
-            /*ready_time=*/kMockElapsedTime),
-        attempt_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingType::kPrerender,
-            content::PreloadingEligibility::kEligible,
-            content::PreloadingHoldbackStatus::kAllowed,
-            content::PreloadingTriggeringOutcome::kSuccess,
-            content::PreloadingFailureReason::kUnspecified,
-            /*accurate=*/true,
-            /*ready_time=*/kMockElapsedTime),
-    };
-    EXPECT_THAT(ukm_entries,
-                testing::UnorderedElementsAreArray(expected_entries))
-        << content::test::ActualVsExpectedUkmEntriesToString(ukm_entries,
-                                                             expected_entries);
-  }
+  // Check that we log the correct metrics for successful prerender activation
+  // with suggestions to the different prerender URLs.
+  ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
+  content::test::ExpectPreloadingAttemptUkm(
+      *test_ukm_recorder(),
+      {
+          attempt_entry_builder().BuildEntry(
+              ukm_source_id, content::PreloadingType::kPrefetch,
+              content::PreloadingEligibility::kEligible,
+              content::PreloadingHoldbackStatus::kAllowed,
+              content::PreloadingTriggeringOutcome::kReady,
+              content::PreloadingFailureReason::kUnspecified,
+              /*accurate=*/false,
+              /*ready_time=*/kMockElapsedTime),
+          attempt_entry_builder().BuildEntry(
+              ukm_source_id, content::PreloadingType::kPrerender,
+              content::PreloadingEligibility::kEligible,
+              content::PreloadingHoldbackStatus::kAllowed,
+              content::PreloadingTriggeringOutcome::kFailure,
+              ToPreloadingFailureReason(PrerenderPredictionStatus::kCancelled),
+              /*accurate=*/false),
+          attempt_entry_builder().BuildEntry(
+              ukm_source_id, content::PreloadingType::kPrefetch,
+              content::PreloadingEligibility::kEligible,
+              content::PreloadingHoldbackStatus::kAllowed,
+              content::PreloadingTriggeringOutcome::kReady,
+              content::PreloadingFailureReason::kUnspecified,
+              /*accurate=*/true,
+              /*ready_time=*/kMockElapsedTime),
+          attempt_entry_builder().BuildEntry(
+              ukm_source_id, content::PreloadingType::kPrerender,
+              content::PreloadingEligibility::kEligible,
+              content::PreloadingHoldbackStatus::kAllowed,
+              content::PreloadingTriggeringOutcome::kSuccess,
+              content::PreloadingFailureReason::kUnspecified,
+              /*accurate=*/true,
+              /*ready_time=*/kMockElapsedTime),
+      });
 
   // The displayed url shouldn't contain the parameter of pf=cs.
   EXPECT_FALSE(base::Contains(

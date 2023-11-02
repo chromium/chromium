@@ -709,30 +709,22 @@ IN_PROC_BROWSER_TEST_P(PrerenderNewTabPageBrowserTest,
   int host_id = prerender_helper().GetHostForUrl(prerender_url);
   EXPECT_EQ(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
 
-  {
-    // Navigate to a different URL other than the prerender_url to flush the
-    // metrics.
-    ASSERT_TRUE(
-        content::NavigateToURL(GetActiveWebContents(),
-                               embedded_test_server()->GetURL("/simple.html")));
-    ukm::SourceId ukm_source_id =
-        GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
-    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
-        Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
-    EXPECT_EQ(attempt_ukm_entries.size(), 1u);
+  // Navigate to a different URL other than the prerender_url to flush the
+  // metrics.
+  ASSERT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(), embedded_test_server()->GetURL("/simple.html")));
 
-    UkmEntry expected_entry = attempt_entry_builder().BuildEntry(
-        ukm_source_id, content::PreloadingType::kPrerender,
-        content::PreloadingEligibility::kHttpsOnly,
-        content::PreloadingHoldbackStatus::kUnspecified,
-        content::PreloadingTriggeringOutcome::kUnspecified,
-        content::PreloadingFailureReason::kUnspecified,
-        /*accurate=*/false);
-    EXPECT_EQ(attempt_ukm_entries[0], expected_entry)
-        << content::test::ActualVsExpectedUkmEntryToString(
-               attempt_ukm_entries[0], expected_entry);
-  }
+  ukm::SourceId ukm_source_id =
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  content::test::ExpectPreloadingAttemptUkm(
+      *test_ukm_recorder(),
+      {attempt_entry_builder().BuildEntry(
+          ukm_source_id, content::PreloadingType::kPrerender,
+          content::PreloadingEligibility::kHttpsOnly,
+          content::PreloadingHoldbackStatus::kUnspecified,
+          content::PreloadingTriggeringOutcome::kUnspecified,
+          content::PreloadingFailureReason::kUnspecified,
+          /*accurate=*/false)});
 }
 
 IN_PROC_BROWSER_TEST_P(PrerenderNewTabPageBrowserTest,

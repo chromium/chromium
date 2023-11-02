@@ -10,6 +10,8 @@
 #include "preloading_test_util.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace content::test {
 
@@ -97,6 +99,32 @@ UkmEntry PreloadingPredictionUkmEntryBuilder::BuildEntry(
                     ukm::GetExponentialBucketMinForCounts1000(
                         base::ScopedMockElapsedTimersForTest::kMockElapsedTime
                             .InMilliseconds())}}};
+}
+
+void ExpectPreloadingAttemptUkm(
+    ukm::TestAutoSetUkmRecorder& ukm_recorder,
+    const std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>&
+        expected_attempt_entries) {
+  auto attempt_entries = ukm_recorder.GetEntries(
+      Preloading_Attempt::kEntryName, test::kPreloadingAttemptUkmMetrics);
+  EXPECT_EQ(attempt_entries.size(), expected_attempt_entries.size());
+  EXPECT_THAT(attempt_entries,
+              testing::UnorderedElementsAreArray(expected_attempt_entries))
+      << test::ActualVsExpectedUkmEntriesToString(attempt_entries,
+                                                  expected_attempt_entries);
+}
+
+void ExpectPreloadingPredictionUkm(
+    ukm::TestAutoSetUkmRecorder& ukm_recorder,
+    const std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>&
+        expected_prediction_entries) {
+  auto prediction_entries = ukm_recorder.GetEntries(
+      Preloading_Prediction::kEntryName, test::kPreloadingPredictionUkmMetrics);
+  EXPECT_EQ(prediction_entries.size(), expected_prediction_entries.size());
+  EXPECT_THAT(prediction_entries,
+              testing::UnorderedElementsAreArray(expected_prediction_entries))
+      << test::ActualVsExpectedUkmEntriesToString(prediction_entries,
+                                                  expected_prediction_entries);
 }
 
 std::string UkmEntryToString(const UkmEntry& entry) {

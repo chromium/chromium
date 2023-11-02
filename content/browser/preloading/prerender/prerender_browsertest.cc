@@ -534,13 +534,8 @@ class PrerenderBrowserTest : public ContentBrowserTest,
 
   void ExpectPreloadingAttemptUkm(
       const std::vector<UkmEntry>& expected_attempt_entries) {
-    auto attempt_entries = test_ukm_recorder()->GetEntries(
-        Preloading_Attempt::kEntryName, test::kPreloadingAttemptUkmMetrics);
-    EXPECT_EQ(attempt_entries.size(), expected_attempt_entries.size());
-    EXPECT_THAT(attempt_entries,
-                testing::UnorderedElementsAreArray(expected_attempt_entries))
-        << test::ActualVsExpectedUkmEntriesToString(attempt_entries,
-                                                    expected_attempt_entries);
+    test::ExpectPreloadingAttemptUkm(*test_ukm_recorder(),
+                                     expected_attempt_entries);
   }
 
   void ExpectPreloadingAttemptPreviousPrimaryPageUkm(
@@ -556,14 +551,8 @@ class PrerenderBrowserTest : public ContentBrowserTest,
 
   void ExpectPreloadingPredictionUkm(
       const std::vector<UkmEntry>& expected_prediction_entries) {
-    auto prediction_entries =
-        test_ukm_recorder()->GetEntries(Preloading_Prediction::kEntryName,
-                                        test::kPreloadingPredictionUkmMetrics);
-    EXPECT_EQ(prediction_entries.size(), expected_prediction_entries.size());
-    EXPECT_THAT(prediction_entries,
-                testing::UnorderedElementsAreArray(expected_prediction_entries))
-        << test::ActualVsExpectedUkmEntriesToString(
-               prediction_entries, expected_prediction_entries);
+    test::ExpectPreloadingPredictionUkm(*test_ukm_recorder(),
+                                        expected_prediction_entries);
   }
 
   void TestHostPrerenderingState(const GURL& prerender_url) {
