@@ -9,6 +9,7 @@ import android.view.WindowManager;
 
 import androidx.test.filters.LargeTest;
 
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,9 +20,11 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
@@ -98,6 +101,27 @@ public class DisplayCutoutTest {
         mTestRule.waitForSafeArea(DisplayCutoutTestRule.TEST_SAFE_AREA_WITHOUT_CUTOUT);
         mTestRule.waitForLayoutInDisplayCutoutMode(
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT);
+    }
+
+    /**
+     * Test without Fullscreen to make sure that viewport fit cover does not draw under the cutout.
+     */
+    @Test
+    @LargeTest
+    @EnableFeatures({
+        ChromeFeatureList.DRAW_CUTOUT_EDGE_TO_EDGE,
+        ChromeFeatureList.DRAW_EDGE_TO_EDGE
+    })
+    public void testViewportFitCover_NotFullscreen() throws TimeoutException {
+        // Start without entering fullscreen.
+        mTestRule.setViewportFit(DisplayCutoutTestRule.VIEWPORT_FIT_COVER);
+        try {
+            mTestRule.waitForSafeArea(DisplayCutoutTestRule.TEST_SAFE_AREA_WITHOUT_CUTOUT);
+            mTestRule.waitForLayoutInDisplayCutoutMode(
+                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT);
+        } catch (AssertionError e) {
+            Assert.fail("When not in Fullscreen the Safe Area should not include the cutout!");
+        }
     }
 
     /** Test that no safe area is applied when we have no viewport fit. */
