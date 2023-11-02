@@ -277,6 +277,9 @@ HEADLESS_MODE_PROTOCOL_TEST(FullscreenRestoreWindow,
                             "sanity/fullscreen-restore-window.js")
 #endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
 
+HEADLESS_MODE_PROTOCOL_TEST(MaximizedWindowSize,
+                            "sanity/maximized-window-size.js")
+
 HEADLESS_MODE_PROTOCOL_TEST(PrintToPdfTinyPage,
                             "sanity/print-to-pdf-tiny-page.js")
 
