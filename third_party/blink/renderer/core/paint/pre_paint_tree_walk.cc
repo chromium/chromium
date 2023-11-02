@@ -121,8 +121,6 @@ void PrePaintTreeWalk::Walk(LocalFrameView& frame_view,
   // Block fragmentation doesn't cross frame boundaries.
   context.ResetFragmentation();
 
-  // ancestor_scroll_container_paint_layer does not cross frame boundaries.
-  context.ancestor_scroll_container_paint_layer = nullptr;
   if (context.tree_builder_context) {
     PaintPropertyTreeBuilder::SetupContextForFrame(
         frame_view, *context.tree_builder_context);
