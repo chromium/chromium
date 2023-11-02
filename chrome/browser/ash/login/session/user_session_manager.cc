@@ -1211,6 +1211,10 @@ void UserSessionManager::OnProfilePrepared(Profile* profile,
   RestorePendingUserSessions();
 }
 
+base::WeakPtr<UserSessionManagerDelegate> UserSessionManager::AsWeakPtr() {
+  return GetUserSessionManagerAsWeakPtr();
+}
+
 void UserSessionManager::OnUsersSignInConstraintsChanged() {
   const user_manager::UserManager* user_manager =
       user_manager::UserManager::Get();

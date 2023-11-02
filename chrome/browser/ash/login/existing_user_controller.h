@@ -194,6 +194,7 @@ class ExistingUserController : public content::NotificationObserver,
 
   // UserSessionManagerDelegate implementation:
   void OnProfilePrepared(Profile* profile, bool browser_launched) override;
+  base::WeakPtr<UserSessionManagerDelegate> AsWeakPtr() override;
 
   // Called when device settings change.
   void DeviceSettingsChanged();

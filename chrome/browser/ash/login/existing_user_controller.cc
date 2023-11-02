@@ -923,6 +923,10 @@ void ExistingUserController::OnProfilePrepared(Profile* profile,
     auth_status_consumer.OnAuthSuccess(user_context);
 }
 
+base::WeakPtr<UserSessionManagerDelegate> ExistingUserController::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void ExistingUserController::OnOffTheRecordAuthSuccess() {
   // Do not reset is_login_in_progress_ flag:
   // CompleteGuestSessionLogin() below should result in browser restart

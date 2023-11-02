@@ -292,8 +292,7 @@ void ReLaunch(const base::CommandLine& command_line) {
 // Wraps the work of sending chrome restart request to session manager.
 // If local state is present, try to commit it first. The request is fired when
 // the commit goes through or some time (3 seconds) has elapsed.
-class ChromeRestartRequest
-    : public base::SupportsWeakPtr<ChromeRestartRequest> {
+class ChromeRestartRequest {
  public:
   explicit ChromeRestartRequest(const std::vector<std::string>& argv,
                                 RestartChromeReason reson);
@@ -317,6 +316,8 @@ class ChromeRestartRequest
   const RestartChromeReason reason_;
 
   base::OneShotTimer timer_;
+
+  base::WeakPtrFactory<ChromeRestartRequest> weak_ptr_factory_{this};
 };
 
 ChromeRestartRequest::ChromeRestartRequest(const std::vector<std::string>& argv,
@@ -335,8 +336,8 @@ void ChromeRestartRequest::Start() {
 
   // XXX: normally this call must not be needed, however RestartJob
   // just kills us so settings may be lost. See http://crosbug.com/13102
-  g_browser_process->FlushLocalStateAndReply(
-      base::BindOnce(&ChromeRestartRequest::RestartJob, AsWeakPtr()));
+  g_browser_process->FlushLocalStateAndReply(base::BindOnce(
+      &ChromeRestartRequest::RestartJob, weak_ptr_factory_.GetWeakPtr()));
   timer_.Start(FROM_HERE, base::Seconds(3), this,
                &ChromeRestartRequest::RestartJob);
 }
@@ -365,8 +366,8 @@ void ChromeRestartRequest::RestartJob() {
   SessionManagerClient::Get()->RestartJob(
       remote_auth_fd.get(), argv_,
       static_cast<SessionManagerClient::RestartJobReason>(reason_),
-      base::BindOnce(&ChromeRestartRequest::OnRestartJob, AsWeakPtr(),
-                     std::move(local_auth_fd)));
+      base::BindOnce(&ChromeRestartRequest::OnRestartJob,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(local_auth_fd)));
 }
 
 void ChromeRestartRequest::OnRestartJob(base::ScopedFD local_auth_fd,

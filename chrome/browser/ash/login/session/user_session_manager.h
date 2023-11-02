@@ -69,13 +69,14 @@ namespace test {
 class UserSessionManagerTestApi;
 }  // namespace test
 
-class UserSessionManagerDelegate
-    : public base::SupportsWeakPtr<UserSessionManagerDelegate> {
+class UserSessionManagerDelegate {
  public:
   // Called after profile is loaded and prepared for the session.
   // `browser_launched` will be true is browser has been launched, otherwise
   // it will return false and client is responsible on launching browser.
   virtual void OnProfilePrepared(Profile* profile, bool browser_launched) = 0;
+
+  virtual base::WeakPtr<UserSessionManagerDelegate> AsWeakPtr() = 0;
 
  protected:
   virtual ~UserSessionManagerDelegate();
@@ -382,6 +383,7 @@ class UserSessionManager
   // UserSessionManagerDelegate overrides:
   // Used when restoring user sessions after crash.
   void OnProfilePrepared(Profile* profile, bool browser_launched) override;
+  base::WeakPtr<UserSessionManagerDelegate> AsWeakPtr() override;
 
   // user_manager::UserManager::Observer overrides:
   void OnUsersSignInConstraintsChanged() override;
