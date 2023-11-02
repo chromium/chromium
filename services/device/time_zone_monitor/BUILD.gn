@@ -18,6 +18,8 @@ source_set("time_zone_monitor") {
     "time_zone_monitor.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//build:chromecast_buildflags",

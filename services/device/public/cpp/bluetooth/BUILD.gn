@@ -9,6 +9,8 @@ component("bluetooth") {
   ]
   defines = [ "IS_BLUETOOTH_IMPL=1" ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//device/bluetooth/public/cpp",

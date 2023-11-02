@@ -12,6 +12,8 @@ source_set("device_posture") {
     "device_posture_provider_impl.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [
     "//base",
     "//mojo/public/cpp/bindings",

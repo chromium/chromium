@@ -24,6 +24,8 @@ source_set("hid") {
     "hid_service.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//build:chromeos_buildflags",

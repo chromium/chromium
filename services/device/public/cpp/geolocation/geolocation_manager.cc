@@ -5,6 +5,7 @@
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
 
 #include "base/check_op.h"
+#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 
@@ -15,8 +16,8 @@ namespace {
 class CheckedAccessWrapper {
  public:
   static CheckedAccessWrapper& GetInstance() {
-    static CheckedAccessWrapper wrapper;
-    return wrapper;
+    static base::NoDestructor<CheckedAccessWrapper> wrapper;
+    return *wrapper;
   }
 
   void SetManager(std::unique_ptr<GeolocationManager> manager) {

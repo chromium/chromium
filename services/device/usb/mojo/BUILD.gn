@@ -14,6 +14,8 @@ source_set("mojo") {
     "device_manager_test.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//build:chromeos_buildflags",
     "//mojo/public/cpp/bindings",

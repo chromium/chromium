@@ -52,6 +52,8 @@ source_set("generic_sensor") {
     "virtual_platform_sensor_provider.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//build:chromeos_buildflags",

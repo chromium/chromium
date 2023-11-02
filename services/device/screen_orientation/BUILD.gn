@@ -14,6 +14,8 @@ source_set("screen_orientation") {
 
   sources = []
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//mojo/public/cpp/bindings",

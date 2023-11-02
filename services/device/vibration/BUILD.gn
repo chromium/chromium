@@ -18,6 +18,8 @@ if (!is_android) {
       "vibration_manager_impl_default.cc",
     ]
 
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
     public_deps = [ "//services/device/public/mojom" ]
 
     deps = [

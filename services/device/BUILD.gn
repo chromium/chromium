@@ -101,6 +101,7 @@ component("binder_overrides") {
     "binder_overrides.cc",
     "binder_overrides.h",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   public_deps = [
     "//base",
     "//mojo/public/cpp/bindings",

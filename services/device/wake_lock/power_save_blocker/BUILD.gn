@@ -34,6 +34,8 @@ source_set("power_save_blocker") {
 
   sources = [ "power_save_blocker.h" ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [ "//services/device/public/mojom" ]
 
   deps = [ "//base" ]

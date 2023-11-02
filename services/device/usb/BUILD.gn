@@ -34,6 +34,8 @@ static_library("usb") {
     "webusb_descriptors.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
