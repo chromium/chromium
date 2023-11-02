@@ -36,9 +36,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.flags.PostNativeFlag;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -60,9 +58,6 @@ import java.util.List;
 public class TabContentManager {
     private static final int WAIT_FOR_NATIVE_BACKOFF_MS = 50;
     private static final int WAIT_FOR_NATIVE_MAX_BACKOFF_ATTEMPTS = 2;
-
-    private static PostNativeFlag sThumbnailCacheRefactor =
-            new PostNativeFlag(ChromeFeatureList.THUMBNAIL_CACHE_REFACTOR);
 
     // These are used for UMA logging, so append only. Please update the
     // GridTabSwitcherThumbnailFetchingResult enum in enums.xml if these change.
@@ -179,20 +174,14 @@ public class TabContentManager {
         int writeQueueMaxSize =
                 mContext.getResources().getInteger(R.integer.default_write_queue_size);
 
-        // Override the cache size on the command line with
-        // --approximation-thumbnails=100
-        int approximationCacheSize = getIntegerResourceWithOverride(mContext,
-                R.integer.default_approximation_thumbnail_cache_size,
-                ChromeSwitches.APPROXIMATION_THUMBNAILS);
-
-        boolean useApproximationThumbnails =
-                !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
-                && !sThumbnailCacheRefactor.isEnabled();
-
-        mNativeTabContentManager = TabContentManagerJni.get().init(TabContentManager.this,
-                mFullResThumbnailsMaxSize, approximationCacheSize, compressionQueueMaxSize,
-                writeQueueMaxSize, useApproximationThumbnails,
-                /*saveJpegThumbnails=*/!SysUtils.isLowEndDevice());
+        mNativeTabContentManager =
+                TabContentManagerJni.get()
+                        .init(
+                                TabContentManager.this,
+                                mFullResThumbnailsMaxSize,
+                                compressionQueueMaxSize,
+                                writeQueueMaxSize,
+                                /* saveJpegThumbnails= */ !SysUtils.isLowEndDevice());
     }
 
     /**
@@ -217,23 +206,6 @@ public class TabContentManager {
         return mNativeTabContentManager;
     }
 
-    /**
-     * Attach the given Tab's cc layer to this {@link TabContentManager}.
-     * @param tab Tab whose cc layer will be attached.
-     */
-    public void attachTab(Tab tab) {
-        if (mNativeTabContentManager == 0 || sThumbnailCacheRefactor.isEnabled()) return;
-        TabContentManagerJni.get().attachTab(mNativeTabContentManager, tab, tab.getId());
-    }
-
-    /**
-     * Detach the given Tab's cc layer from this {@link TabContentManager}.
-     * @param tab Tab whose cc layer will be detached.
-     */
-    public void detachTab(Tab tab) {
-        if (mNativeTabContentManager == 0 || sThumbnailCacheRefactor.isEnabled()) return;
-        TabContentManagerJni.get().detachTab(mNativeTabContentManager, tab, tab.getId());
-    }
 
     /**
      * Add a listener to thumbnail changes.
@@ -331,8 +303,9 @@ public class TabContentManager {
 
         // Do not capture a JPEG here because we likely already created one when capturing. We just
         // want to fetch the ETC1 off of disk for a higher resolution image to use for animations.
-        TabContentManagerJni.get().getEtc1TabThumbnail(
-                mNativeTabContentManager, tabId, 0.0f, /*saveJpeg=*/false, callback);
+        TabContentManagerJni.get()
+                .getEtc1TabThumbnail(
+                        mNativeTabContentManager, tabId, /* saveJpeg= */ false, callback);
     }
 
     /**
@@ -352,7 +325,6 @@ public class TabContentManager {
         // TODO(crbug/1444782): Remove forceUpdate and writeBack params once the following features
         // launch:
         // * GridTabSwitcherAndroidAnimations
-        // * ThumbnailCacheRefactor
         // * Start Surface Refactor
         if (ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()
                 && ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mContext)) {
@@ -450,9 +422,8 @@ public class TabContentManager {
 
     private void getTabThumbnailFromDisk(
             @NonNull int tabId, @NonNull Size thumbnailSize, @NonNull Callback<Bitmap> callback) {
-        // Get the JPEG once it is ready if a capture is ongoing. Ignore any possible refetch
-        // attempts as aspect ratio will be ignored if the ThumbnailCacheRefactor is enabled.
-        if (mNativeTabContentManager != 0 && sThumbnailCacheRefactor.isEnabled()) {
+        // Get the JPEG once it is ready if a capture is ongoing.
+        if (mNativeTabContentManager != 0) {
             TraceEvent.startAsync("GetTabThumbnailFromDiskJpegAwait", tabId);
             fetchJpeg(tabId, thumbnailSize, (bitmap) -> {
                 TraceEvent.finishAsync("GetTabThumbnailFromDiskJpegAwait", tabId);
@@ -474,8 +445,7 @@ public class TabContentManager {
      */
     private void getJpegForTabWithRefetch(int tabId, @NonNull Size thumbnailSize, int attempts,
             @NonNull Callback<Bitmap> callback) {
-        // Try JPEG thumbnail first before using the more costly
-        // TabContentManagerJni.get().getEtc1TabThumbnail.
+        // Try JPEG thumbnail with backoff while pre-native.
         TraceEvent.startAsync("GetTabThumbnailFromDisk", tabId);
         PostTask.postDelayedTask(TaskTraits.USER_VISIBLE_MAY_BLOCK, () -> {
             Bitmap bitmap = getJpegForTab(tabId, thumbnailSize);
@@ -537,55 +507,10 @@ public class TabContentManager {
                 });
     }
 
-    private boolean shouldRefetchForAspectRatio(@NonNull Size thumbnailSize, @NonNull Bitmap jpeg) {
-        // Pixel difference between the real aspect ratio and the actual aspect ratio.
-        final int aspectRatioPixelError = Math.abs(
-                (int) Math.round(jpeg.getHeight() * getTabCaptureAspectRatio()) - jpeg.getWidth());
-        // Allow a pixel error proportional to the size of the thumbnail that will be shown.
-        // thumbnailSize will be within a factor of 2 of the size of jpeg due to resizeJpeg.
-        final int aspectRatioAllowedError =
-                (int) Math.round(Math.min(thumbnailSize.getWidth(), thumbnailSize.getHeight())
-                        * PIXEL_TOLERANCE_PERCENT);
-
-        return aspectRatioPixelError >= aspectRatioAllowedError;
-    }
-
-    private void refetchEtc1(int tabId, @NonNull Callback<Bitmap> callback, boolean emitMetrics) {
-        // Generate a JPEG because this path is only triggered if the existing JPEG was not of the
-        // the correct size. Create a new JPEG so we can skip this slower path in future requests.
-        // This is only applicable when ThumbnailCacheRefactor is disabled.
-        TabContentManagerJni.get().getEtc1TabThumbnail(mNativeTabContentManager, tabId,
-                getTabCaptureAspectRatio(), /*saveJpeg=*/true, (etc1) -> {
-                    if (emitMetrics) {
-                        if (etc1 != null) {
-                            recordThumbnailFetchingResult(ThumbnailFetchingResult.GOT_ETC1);
-                        } else {
-                            recordThumbnailFetchingResult(ThumbnailFetchingResult.GOT_NOTHING);
-                        }
-                    }
-                    callback.onResult(etc1);
-                });
-    }
-
     private void onBitmapRead(int tabId, @NonNull Size thumbnailSize, int attempts, Bitmap jpeg,
             @NonNull Callback<Bitmap> callback) {
         TraceEvent.finishAsync("GetTabThumbnailFromDisk", tabId);
         if (jpeg != null) {
-            if (shouldRefetchForAspectRatio(thumbnailSize, jpeg)) {
-                recordThumbnailFetchingResult(
-                        ThumbnailFetchingResult.GOT_DIFFERENT_ASPECT_RATIO_JPEG);
-
-                if (mNativeTabContentManager == 0) {
-                    callback.onResult(jpeg);
-                    return;
-                }
-
-                if (!mSnapshotsEnabled) return;
-
-                refetchEtc1(tabId, callback, false);
-                return;
-            }
-
             recordThumbnailFetchingResult(ThumbnailFetchingResult.GOT_JPEG);
             callback.onResult(jpeg);
             return;
@@ -600,9 +525,8 @@ public class TabContentManager {
             return;
         }
 
-        // Generate a thumbnail from the ETC1. This masks a race condition between the thumbnail
-        // being captured and an ETC1 or JPEG version of it being available.
-        refetchEtc1(tabId, callback, true);
+        // Native is ready, try one more time and wait for the thumbnail to be ready.
+        fetchJpeg(tabId, thumbnailSize, callback);
     }
 
     private static void recordThumbnailFetchingResult(@ThumbnailFetchingResult int result) {
@@ -638,8 +562,8 @@ public class TabContentManager {
 
         Bitmap nativeBitmap = readbackNativeBitmap(tab, mThumbnailScale);
         if (nativeBitmap == null) return null;
-        TabContentManagerJni.get().cacheTabWithBitmap(mNativeTabContentManager, tab, nativeBitmap,
-                mThumbnailScale, getTabCaptureAspectRatio());
+        TabContentManagerJni.get()
+                .cacheTabWithBitmap(mNativeTabContentManager, tab, nativeBitmap, mThumbnailScale);
         return nativeBitmap;
     }
 
@@ -676,16 +600,9 @@ public class TabContentManager {
             final float downsamplingScale = 0.5f;
             Matrix matrix = new Matrix();
             matrix.setScale(downsamplingScale, downsamplingScale);
-            Bitmap resized;
-            if (sThumbnailCacheRefactor.isEnabled()) {
-                resized = Bitmap.createBitmap(
-                        bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-            } else {
-                resized = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
-                        Math.min(bitmap.getHeight(),
-                                (int) ((float) bitmap.getWidth() / getTabCaptureAspectRatio())),
-                        matrix, true);
-            }
+            Bitmap resized =
+                    Bitmap.createBitmap(
+                            bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
             callback.onResult(resized);
         } else {
             if (tab.getWebContents() == null || tab.isHidden()) {
@@ -698,14 +615,15 @@ public class TabContentManager {
             // path of capturing a downsampled copy.
             // This faster path is essential to Tab-to-Grid animation to be smooth.
             final float downsamplingScale = writeToCache ? 1 : 0.5f;
-            TabContentManagerJni.get().captureThumbnail(mNativeTabContentManager, tab,
-                    mThumbnailScale * downsamplingScale, writeToCache, getTabCaptureAspectRatio(),
-                    returnBitmap, callback);
+            TabContentManagerJni.get()
+                    .captureThumbnail(
+                            mNativeTabContentManager,
+                            tab,
+                            mThumbnailScale * downsamplingScale,
+                            writeToCache,
+                            returnBitmap,
+                            callback);
         }
-    }
-
-    private double getTabCaptureAspectRatio() {
-        return TabUtils.getTabThumbnailAspectRatio(mContext, mBrowserControlsStateProvider);
     }
 
     /**
@@ -774,24 +692,36 @@ public class TabContentManager {
     @NativeMethods
     interface Natives {
         // Class Object Methods
-        long init(TabContentManager caller, int defaultCacheSize, int approximationCacheSize,
-                int compressionQueueMaxSize, int writeQueueMaxSize,
-                boolean useApproximationThumbnail, boolean saveJpegThumbnails);
+        long init(
+                TabContentManager caller,
+                int defaultCacheSize,
+                int compressionQueueMaxSize,
+                int writeQueueMaxSize,
+                boolean saveJpegThumbnails);
 
-        void attachTab(long nativeTabContentManager, Tab tab, int tabId);
-        void detachTab(long nativeTabContentManager, Tab tab, int tabId);
-        void captureThumbnail(long nativeTabContentManager, Object tab, float thumbnailScale,
-                boolean writeToCache, double aspectRatio, boolean returnBitmap,
+        void captureThumbnail(
+                long nativeTabContentManager,
+                Object tab,
+                float thumbnailScale,
+                boolean writeToCache,
+                boolean returnBitmap,
                 Callback<Bitmap> callback);
-        void cacheTabWithBitmap(long nativeTabContentManager, Object tab, Object bitmap,
-                float thumbnailScale, double aspectRatio);
+
+        void cacheTabWithBitmap(
+                long nativeTabContentManager, Object tab, Object bitmap, float thumbnailScale);
+
         void invalidateIfChanged(long nativeTabContentManager, int tabId, GURL url);
         void updateVisibleIds(long nativeTabContentManager, int[] priority, int primaryTabId);
         void removeTabThumbnail(long nativeTabContentManager, int tabId);
         void waitForJpegTabThumbnail(
                 long nativeTabContentManager, int tabId, Callback<Boolean> callback);
-        void getEtc1TabThumbnail(long nativeTabContentManager, int tabId, double aspectRatio,
-                boolean saveJpeg, Callback<Bitmap> callback);
+
+        void getEtc1TabThumbnail(
+                long nativeTabContentManager,
+                int tabId,
+                boolean saveJpeg,
+                Callback<Bitmap> callback);
+
         void setCaptureMinRequestTimeForTesting(long nativeTabContentManager, int timeMs);
         int getInFlightCapturesForTesting(long nativeTabContentManager);
         void destroy(long nativeTabContentManager);

@@ -1952,9 +1952,6 @@ extern const char
 extern const char
     kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesDescription[];
 
-extern const char kThumbnailCacheRefactorName[];
-extern const char kThumbnailCacheRefactorDescription[];
-
 extern const char kNewBaseUrlInheritanceBehaviorName[];
 extern const char kNewBaseUrlInheritanceBehaviorDescription[];
 

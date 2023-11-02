@@ -7610,11 +7610,6 @@
     "expiry_milestone": 114
   },
   {
-    "name": "thumbnail-cache-refactor",
-    "owners": [ "ckitagawa@chromium.org", "fredmello@chromium.org" ],
-    "expiry_milestone": 123
-  },
-  {
     "name": "thumbnail-placeholder",
     "owners": [ "ckitagawa@chromium.org", "fredmello@chromium.org" ],
     "expiry_milestone": 123

@@ -3333,11 +3333,6 @@ const char
         "the frame has zero viewport intersection, a non-zero area, and is "
         "not display:none.";
 
-const char kThumbnailCacheRefactorName[] = "Thumbnail Cache Refactor";
-const char kThumbnailCacheRefactorDescription[] =
-    "When enabled the thumbnail cache for Android is updated to improve "
-    "memory usage and performance.";
-
 const char kNewBaseUrlInheritanceBehaviorName[] =
     "Enable new base url inheritance behaviors for srcdoc and about:blank";
 const char kNewBaseUrlInheritanceBehaviorDescription[] =

@@ -76,7 +76,6 @@ public class TabSwitcherThumbnailTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.THUMBNAIL_CACHE_REFACTOR)
     public void testThumbnailDynamicAspectRatioWhenCaptured_FixedWhenShown() {
         // With this flag bitmap aspect ratios are not applied. Check that the resultant image views
         // still display at the right size.

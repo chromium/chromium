@@ -61,7 +61,6 @@
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/site_isolation/about_flags.h"
-#include "chrome/browser/thumbnail/cc/features.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -10371,10 +10370,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
         //
 #if BUILDFLAG(IS_ANDROID)
-    {"thumbnail-cache-refactor", flag_descriptions::kThumbnailCacheRefactorName,
-     flag_descriptions::kThumbnailCacheRefactorDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(thumbnail::kThumbnailCacheRefactor)},
-
     {"surface-control-magnifier",
      flag_descriptions::kSurfaceControlMagnifierName,
      flag_descriptions::kSurfaceControlMagnifierDescription, kOsAndroid,

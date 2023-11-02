@@ -6,60 +6,38 @@
 
 #include <algorithm>
 
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/thumbnail/cc/features.h"
 #include "skia/ext/image_operations.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 
 namespace thumbnail {
 namespace {
 
-SkBitmap ResizeBitmap(double jpeg_aspect_ratio, const SkBitmap& bitmap) {
-  // We want to show thumbnails in a specific aspect ratio. Therefore, the
-  // thumbnail saved needs to be cropped to the target aspect ratio, otherwise
-  // it would be vertically center-aligned and the top would be hidden in
-  // portrait mode, or it would be shown in the wrong aspect ratio in
-  // landscape mode.
+SkBitmap ResizeBitmap(const SkBitmap& bitmap) {
   constexpr int kScale = 2;
-  double aspect_ratio = std::clamp(jpeg_aspect_ratio, 0.5, 2.0);
+  int width = bitmap.width() / kScale;
+  int height = bitmap.height() / kScale;
 
-  int width = 0;
-  int height = 0;
-  if (!base::FeatureList::IsEnabled(thumbnail::kThumbnailCacheRefactor)) {
-    width = std::min(bitmap.width() / kScale,
-                     (int)(bitmap.height() * aspect_ratio / kScale));
-    height = std::min(bitmap.height() / kScale,
-                      (int)(bitmap.width() / aspect_ratio / kScale));
-  } else {
-    width = bitmap.width() / kScale;
-    height = bitmap.height() / kScale;
-  }
-  // When cropping the thumbnails, we want to keep the top center portion.
-  int begin_x = (bitmap.width() / kScale - width) / 2;
-  int end_x = begin_x + width;
-  SkIRect dest_subset = {begin_x, 0, end_x, height};
+  SkIRect dest_subset = {0, 0, width, height};
 
   SkBitmap output = skia::ImageOperations::Resize(
-      bitmap, skia::ImageOperations::RESIZE_BETTER, bitmap.width() / kScale,
-      bitmap.height() / kScale, dest_subset);
+      bitmap, skia::ImageOperations::RESIZE_BETTER, width, height, dest_subset);
   output.setImmutable();
   return output;
 }
 
 void CompressTask(
-    double jpeg_aspect_ratio,
     const SkBitmap& bitmap,
     base::OnceCallback<void(std::vector<uint8_t>)> post_processing_task) {
   constexpr int kCompressionQuality = 97;
   std::vector<uint8_t> data;
-  const bool result = gfx::JPEGCodec::Encode(
-      ResizeBitmap(jpeg_aspect_ratio, bitmap), kCompressionQuality, &data);
+  const bool result =
+      gfx::JPEGCodec::Encode(ResizeBitmap(bitmap), kCompressionQuality, &data);
   DCHECK(result);
 
   std::move(post_processing_task).Run(std::move(data));
@@ -116,7 +94,6 @@ JpegThumbnailHelper::~JpegThumbnailHelper() {
 }
 
 void JpegThumbnailHelper::Compress(
-    double jpeg_aspect_ratio,
     const SkBitmap& bitmap,
     base::OnceCallback<void(std::vector<uint8_t>)> post_processing_task) {
   DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
@@ -124,7 +101,7 @@ void JpegThumbnailHelper::Compress(
       FROM_HERE,
       {base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&CompressTask, jpeg_aspect_ratio, bitmap,
+      base::BindOnce(&CompressTask, bitmap,
                      base::BindPostTask(default_task_runner_,
                                         std::move(post_processing_task))));
 }

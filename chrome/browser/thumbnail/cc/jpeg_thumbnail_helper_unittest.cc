@@ -31,7 +31,6 @@
 namespace thumbnail {
 namespace {
 
-constexpr double kJpegImageRatio = 0.85;
 constexpr int kDimension = 16;
 constexpr int kKiB = 1024;
 
@@ -92,7 +91,7 @@ TEST_F(JpegThumbnailHelperTest, CompressThumbnail) {
         EXPECT_GT(bitmap->height(), 0);
       }).Then(loop1.QuitClosure());
 
-  GetInterface().Compress(kJpegImageRatio, image, std::move(once));
+  GetInterface().Compress(image, std::move(once));
   task_environment_.RunUntilIdle();
   loop1.Run();
 }

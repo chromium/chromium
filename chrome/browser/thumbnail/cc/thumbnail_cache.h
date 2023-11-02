@@ -51,10 +51,8 @@ class ThumbnailCacheObserver {
 class ThumbnailCache : ThumbnailDelegate {
  public:
   ThumbnailCache(size_t default_cache_size,
-                 size_t approximation_cache_size,
                  size_t compression_queue_max_size,
                  size_t write_queue_max_size,
-                 bool use_approximation_thumbnail,
                  bool save_jpeg_thumbnails);
 
   ThumbnailCache(const ThumbnailCache&) = delete;
@@ -72,10 +70,9 @@ class ThumbnailCache : ThumbnailDelegate {
            std::unique_ptr<ThumbnailCaptureTracker, base::OnTaskRunnerDeleter>
                tracker,
            const SkBitmap& bitmap,
-           float thumbnail_scale,
-           double jpeg_aspect_ratio);
+           float thumbnail_scale);
   void Remove(TabId tab_id);
-  Thumbnail* Get(TabId tab_id, bool force_disk_read, bool allow_approximation);
+  Thumbnail* Get(TabId tab_id, bool force_disk_read);
 
   void InvalidateThumbnailIfChanged(TabId tab_id, const GURL& url);
   bool CheckAndUpdateThumbnailMetaData(TabId tab_id, const GURL& url);
@@ -84,7 +81,6 @@ class ThumbnailCache : ThumbnailDelegate {
                         TabId primary_tab_id);
   void DecompressEtc1ThumbnailFromFile(
       TabId tab_id,
-      double jpeg_aspect_ratio,
       bool save_jpeg,
       base::OnceCallback<void(bool, const SkBitmap&)> post_decompress_callback);
 
@@ -133,12 +129,10 @@ class ThumbnailCache : ThumbnailDelegate {
   void SaveAsJpeg(TabId tab_id,
                   std::unique_ptr<ThumbnailCaptureTracker,
                                   base::OnTaskRunnerDeleter> tracker,
-                  const SkBitmap& bitmap,
-                  double jpeg_aspect_ratio);
+                  const SkBitmap& bitmap);
   void ForkToSaveAsJpeg(
       base::OnceCallback<void(bool, const SkBitmap&)> callback,
       int tab_id,
-      double jpeg_aspect_ratio,
       bool result,
       const SkBitmap& bitmap);
   void PostWriteJpegTask(std::unique_ptr<ThumbnailCaptureTracker,
@@ -151,8 +145,7 @@ class ThumbnailCache : ThumbnailDelegate {
           tracker,
       const base::Time& time_stamp,
       const SkBitmap& bitmap,
-      float scale,
-      double jpeg_aspect_ratio);
+      float scale);
   void ReadNextThumbnail();
   void MakeSpaceForNewItemIfNecessary(TabId tab_id);
   void RemoveFromReadQueue(TabId tab_id);
@@ -186,7 +179,6 @@ class ThumbnailCache : ThumbnailDelegate {
 
   const size_t compression_queue_max_size_;
   const size_t write_queue_max_size_;
-  const bool use_approximation_thumbnail_;
   const bool save_jpeg_thumbnails_;
   base::TimeDelta capture_min_request_time_ms_;
 
@@ -197,7 +189,6 @@ class ThumbnailCache : ThumbnailDelegate {
   bool read_in_progress_;
 
   ExpiringThumbnailCache cache_;
-  ExpiringThumbnailCache approximation_cache_;
   base::ObserverList<ThumbnailCacheObserver>::Unchecked observers_;
   ThumbnailMetaDataMap thumbnail_meta_data_;
   TabIdList read_queue_;
