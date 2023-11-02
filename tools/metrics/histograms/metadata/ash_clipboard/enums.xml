@@ -1,0 +1,83 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="ClipboardHistoryDisplayFormat">
+  <int value="0" label="Text"/>
+  <int value="1" label="Png"/>
+  <int value="2" label="Html"/>
+  <int value="3" label="File"/>
+</enum>
+
+<enum name="ClipboardHistoryOperation">
+  <int value="0" label="Copy"/>
+  <int value="1" label="Paste (from clipboard and clipboard history)"/>
+</enum>
+
+<enum name="ClipboardHistoryPasteType">
+  <int value="0" label="PlainTextAccelerator"/>
+  <int value="1" label="RichTextAccelerator"/>
+  <int value="2" label="PlainTextKeystroke"/>
+  <int value="3" label="RichTextKeystroke"/>
+  <int value="4" label="PlainTextMouse"/>
+  <int value="5" label="RichTextMouse"/>
+  <int value="6" label="PlainTextTouch"/>
+  <int value="7" label="RichTextTouch"/>
+  <int value="8" label="PlainTextVirtualKeyboard"/>
+  <int value="9" label="RichTextVirtualKeyboard"/>
+  <int value="10" label="PlainTextCtrlV"/>
+  <int value="11" label="RichTextCtrlV"/>
+</enum>
+
+<enum name="ClipboardHistoryReorderType">
+  <int value="0" label="On copy"/>
+  <int value="1" label="On paste"/>
+</enum>
+
+<enum name="ClipboardHistoryTriggerType">
+  <int value="0" label="Accelerator"/>
+  <int value="1" label="Render View Context Menu"/>
+  <int value="2" label="Textfield Context Menu"/>
+  <int value="3" label="Virtual Keyboard"/>
+  <int value="4" label="Unknown"/>
+  <int value="5" label="Toast (deprecated)"/>
+  <int value="6" label="Ctrl+V Longpress"/>
+  <int value="7" label="Render View Context Menu Nested Menu"/>
+  <int value="8" label="Textfield Context Menu Nested Menu"/>
+</enum>
+
+<enum name="RequestStopReason">
+  <int value="0" label="Fulfilled"/>
+  <int value="1" label="Timeout"/>
+  <int value="2" label="Empty Result"/>
+  <int value="3" label="Multiple Copy Completion"/>
+  <int value="4" label="Request Canceled"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>
