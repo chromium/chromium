@@ -43,11 +43,14 @@ enum class AccountManagementStatus {
   kNonManaged,
 };
 
-// Used to create a dummy account and sign it it as a primary account.
-AccountInfo SignInWithPrimaryAccount(
+// Used to create a dummy account and sign it in, by default as a primary
+// account.
+AccountInfo SignInWithAccount(
     signin::IdentityTestEnvironment& identity_test_env,
     AccountManagementStatus management_status =
-        AccountManagementStatus::kNonManaged);
+        AccountManagementStatus::kNonManaged,
+    absl::optional<signin::ConsentLevel> consent_level =
+        signin::ConsentLevel::kSignin);
 
 // Sets up the parameters that are passed to the command line. For example,
 // to enable dark mode, we need to pass `kForceDarkMode` to the command line.
@@ -69,8 +72,7 @@ void InitPixelTestFeatures(const PixelTestParam& params,
 // - applying the configuration from `PixelTestParam` passed via the
 //   constructor, removing the need to call `SetUpPixelTestCommandLine()` and
 //   `InitPixelTestFeatures()`.
-// - providing helpers to set up the primary account, see
-//   `SignInWithPrimaryAccount()`.
+// - providing helpers to set up the account, see `SignInWithAccount()`.
 template <typename T,
           typename =
               std::enable_if_t<std::is_base_of_v<InProcessBrowserTest, T>>>
@@ -85,12 +87,15 @@ class ProfilesPixelTestBaseT : public SigninBrowserTestBaseT<T> {
 
   ~ProfilesPixelTestBaseT() override = default;
 
-  // Used to create a dummy account and sign it it as a primary account.
-  AccountInfo SignInWithPrimaryAccount(
+  // Used to create a dummy account and sign it in, by default as a primary
+  // account.
+  AccountInfo SignInWithAccount(
       AccountManagementStatus management_status =
-          AccountManagementStatus::kNonManaged) {
-    return ::SignInWithPrimaryAccount(*this->identity_test_env(),
-                                      management_status);
+          AccountManagementStatus::kNonManaged,
+      absl::optional<signin::ConsentLevel> consent_level =
+          signin::ConsentLevel::kSignin) {
+    return ::SignInWithAccount(*this->identity_test_env(), management_status,
+                               consent_level);
   }
 
   // SigninBrowserTestBaseT overrides:

@@ -146,7 +146,7 @@ class SyncConfirmationUIWindowPixelTest
         ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
     DCHECK(browser());
 
-    SignInWithPrimaryAccount(GetParam().account_management_status);
+    SignInWithAccount(GetParam().account_management_status);
     profile_picker_view_ = new ProfileManagementStepTestView(
         ProfilePicker::Params::ForFirstRun(browser()->profile()->GetPath(),
                                            base::DoNothing()),
@@ -211,7 +211,7 @@ class SyncConfirmationUIDialogPixelTest
   void ShowUi(const std::string& name) override {
     DCHECK(browser());
 
-    SignInWithPrimaryAccount(GetParam().account_management_status);
+    SignInWithAccount(GetParam().account_management_status);
     auto url = GURL(chrome::kChromeUISyncConfirmationURL);
     if (GetParam().sync_style == SyncConfirmationStyle::kSigninInterceptModal) {
       url = AppendSyncConfirmationQueryParams(url, GetParam().sync_style);

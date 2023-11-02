@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/views/profiles/profile_menu_view.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
@@ -16,9 +18,13 @@
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/events/event_utils.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -39,9 +45,21 @@ enum class ProfileTypePixelTestParam {
 #endif
 };
 
+enum class SigninStatusPixelTestParam {
+  kSignedOut,
+  kWebSignedIn,
+  kSignedInNoSync,
+  kSignedInWithSync,
+  kSignedInSyncPaused,
+  kSignedInSyncNotWorking
+};
+
 struct ProfileMenuViewPixelTestParam {
   PixelTestParam pixel_test_param;
-  ProfileTypePixelTestParam profile_type_param;
+  ProfileTypePixelTestParam profile_type_param =
+      ProfileTypePixelTestParam::kRegular;
+  SigninStatusPixelTestParam signin_status =
+      SigninStatusPixelTestParam::kSignedOut;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -55,8 +73,7 @@ std::string ParamToTestSuffix(
 // Permutations of supported parameters.
 const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
     // Legacy design (to be removed)
-    {.pixel_test_param = {.test_suffix = "Regular"},
-     .profile_type_param = ProfileTypePixelTestParam::kRegular},
+    {.pixel_test_param = {.test_suffix = "Regular"}},
     {.pixel_test_param = {.test_suffix = "Guest"},
      .profile_type_param = ProfileTypePixelTestParam::kGuest},
     {.pixel_test_param = {.test_suffix = "Incognito"},
@@ -65,16 +82,13 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
     {.pixel_test_param = {.test_suffix = "LacrosDeviceGuestSession"},
      .profile_type_param = ProfileTypePixelTestParam::kDeviceGuestSession},
 #endif
-    {.pixel_test_param = {.test_suffix = "DarkTheme", .use_dark_theme = true},
-     .profile_type_param = ProfileTypePixelTestParam::kRegular},
+    {.pixel_test_param = {.test_suffix = "DarkTheme", .use_dark_theme = true}},
     {.pixel_test_param = {.test_suffix = "RTL",
-                          .use_right_to_left_language = true},
-     .profile_type_param = ProfileTypePixelTestParam::kRegular},
+                          .use_right_to_left_language = true}},
 
     // CR2023 design
     {.pixel_test_param = {.test_suffix = "CR2023",
-                          .use_chrome_refresh_2023_style = true},
-     .profile_type_param = ProfileTypePixelTestParam::kRegular},
+                          .use_chrome_refresh_2023_style = true}},
     {.pixel_test_param = {.test_suffix = "CR2023_Guest",
                           .use_chrome_refresh_2023_style = true},
      .profile_type_param = ProfileTypePixelTestParam::kGuest},
@@ -92,13 +106,29 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
 #endif
     {.pixel_test_param = {.test_suffix = "CR2023_DarkTheme",
                           .use_dark_theme = true,
-                          .use_chrome_refresh_2023_style = true},
-     .profile_type_param = ProfileTypePixelTestParam::kRegular},
+                          .use_chrome_refresh_2023_style = true}},
     {.pixel_test_param = {.test_suffix = "CR2023_RTL",
                           .use_right_to_left_language = true,
-                          .use_chrome_refresh_2023_style = true},
-     .profile_type_param = ProfileTypePixelTestParam::kRegular},
-};
+                          .use_chrome_refresh_2023_style = true}},
+    // Signed in tests
+    {.pixel_test_param = {.test_suffix = "SignedIn_Sync"},
+     .signin_status = SigninStatusPixelTestParam::kSignedInWithSync},
+    {.pixel_test_param = {.test_suffix = "SignedIn_SyncPaused_DarkTheme",
+                          .use_dark_theme = true},
+     .signin_status = SigninStatusPixelTestParam::kSignedInSyncPaused},
+    {.pixel_test_param = {.test_suffix = "SignedIn_Nosync_RTL",
+                          .use_right_to_left_language = true},
+     .signin_status = SigninStatusPixelTestParam::kSignedInNoSync},
+    {.pixel_test_param = {.test_suffix = "SignedIn_Nosync_DarkTheme",
+                          .use_dark_theme = true},
+     .signin_status = SigninStatusPixelTestParam::kSignedInNoSync},
+    {.pixel_test_param = {.test_suffix =
+                              "SignedIn_SyncNotWorking_RTL_DarkTheme",
+                          .use_dark_theme = true,
+                          .use_right_to_left_language = true},
+     .signin_status = SigninStatusPixelTestParam::kSignedInSyncNotWorking},
+    {.pixel_test_param = {.test_suffix = "WebSignedIn_Chrome"},
+     .signin_status = SigninStatusPixelTestParam::kWebSignedIn}};
 
 }  // namespace
 
@@ -108,12 +138,19 @@ class ProfileMenuViewPixelTest
  public:
   ProfileMenuViewPixelTest()
       : ProfilesPixelTestBaseT<DialogBrowserTest>(GetParam().pixel_test_param) {
+    if (GetParam().signin_status == SigninStatusPixelTestParam::kWebSignedIn) {
+      feature_list_.InitAndEnableFeature(switches::kUnoDesktop);
+    }
   }
 
   ~ProfileMenuViewPixelTest() override = default;
 
   ProfileTypePixelTestParam GetProfileType() const {
     return GetParam().profile_type_param;
+  }
+
+  SigninStatusPixelTestParam GetSigninStatus() const {
+    return GetParam().signin_status;
   }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -171,6 +208,54 @@ class ProfileMenuViewPixelTest
       SelectFirstBrowser();
       ASSERT_EQ(new_browser, browser());
     }
+
+    // Configures browser according to desired signin status.
+    switch (GetSigninStatus()) {
+      case SigninStatusPixelTestParam::kSignedOut: {
+        // Nothing to do.
+        break;
+      }
+      case SigninStatusPixelTestParam::kWebSignedIn: {
+        AccountInfo signed_out_info = SignInWithAccount(
+            AccountManagementStatus::kNonManaged, absl::nullopt);
+        break;
+      }
+      case SigninStatusPixelTestParam::kSignedInNoSync: {
+        AccountInfo no_sync_info = SignInWithAccount();
+        break;
+      }
+      case SigninStatusPixelTestParam::kSignedInWithSync: {
+        AccountInfo sync_info = SignInWithAccount(
+            AccountManagementStatus::kNonManaged, signin::ConsentLevel::kSync);
+
+        // Enable sync.
+        syncer::SyncService* sync_service =
+            SyncServiceFactory::GetForProfile(GetProfile());
+        sync_service->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
+            syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+
+        break;
+      }
+      case SigninStatusPixelTestParam::kSignedInSyncPaused: {
+        AccountInfo sync_paused_info = SignInWithAccount(
+            AccountManagementStatus::kNonManaged, signin::ConsentLevel::kSync);
+
+        // Enable sync.
+        syncer::SyncService* sync_paused_service =
+            SyncServiceFactory::GetForProfile(GetProfile());
+        sync_paused_service->GetUserSettings()
+            ->SetInitialSyncFeatureSetupComplete(
+                syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+
+        identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
+        break;
+      }
+      case SigninStatusPixelTestParam::kSignedInSyncNotWorking: {
+        AccountInfo sync_not_working_info = SignInWithAccount(
+            AccountManagementStatus::kNonManaged, signin::ConsentLevel::kSync);
+        break;
+      }
+    }
   }
 
   // DialogBrowserTest:
@@ -186,6 +271,8 @@ class ProfileMenuViewPixelTest
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
+
   void OpenProfileMenu() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
