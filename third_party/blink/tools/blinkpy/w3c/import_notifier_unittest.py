@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import contextlib
 import json
-import textwrap
 import unittest
 from unittest import mock
 
@@ -13,23 +11,18 @@ from blinkpy.common.host_mock import MockHost
 from blinkpy.common.path_finder import (
     RELATIVE_WEB_TESTS,
     PathFinder,
-    bootstrap_wpt_imports,
 )
-from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.executive_mock import mock_git_commands, MockExecutive
 from blinkpy.common.system.filesystem_mock import MockFileSystem
-from blinkpy.w3c import wpt_metadata
 from blinkpy.w3c.directory_owners_extractor import WPTDirMetadata
 from blinkpy.w3c.local_wpt_mock import MockLocalWPT
 from blinkpy.w3c.import_notifier import ImportNotifier, TestFailure
 from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
 from blinkpy.w3c.buganizer_mock import BuganizerClientMock
 
-bootstrap_wpt_imports()
-from wptrunner import metadata
-
 UMBRELLA_BUG = WPTExpectationsUpdater.UMBRELLA_BUG
 MOCK_WEB_TESTS = '/mock-checkout/' + RELATIVE_WEB_TESTS
+
 
 class ImportNotifierTest(unittest.TestCase):
     def setUp(self):
@@ -65,12 +58,7 @@ class ImportNotifierTest(unittest.TestCase):
             }))
         self.git = self.host.git()
         self.local_wpt = MockLocalWPT()
-        configs = wpt_metadata.TestConfigurations(self.host.filesystem, [
-            metadata.RunInfo({'os': 'win'}),
-            metadata.RunInfo({'os': 'mac'}),
-        ])
-        self.notifier = ImportNotifier(self.host, self.git, self.local_wpt,
-                                       configs)
+        self.notifier = ImportNotifier(self.host, self.git, self.local_wpt)
         self._buganizer_api = BuganizerClientMock
 
     def test_find_changed_baselines_of_tests(self):
@@ -229,165 +217,6 @@ class ImportNotifierTest(unittest.TestCase):
                         'platform/linux/external/wpt/foo/bar-expected.txt',
                         gerrit_url_with_ps=gerrit_url_with_ps),
                 ]
-            })
-
-    def test_examine_metadata_changes_existing_failures(self):
-        self.host.filesystem.write_text_file(
-            self.finder.path_from_wpt_tests('webdriver', 'DIR_METADATA'), '')
-        old_contents = textwrap.dedent("""\
-            [foo.py]
-              [subtest]
-                expected: [FAIL, PASS]
-            """).encode()
-        path = RELATIVE_WEB_TESTS + 'external/wpt/webdriver/foo.py.ini'
-        self.host.filesystem.write_text_file(
-            self.finder.path_from_chromium_base(path),
-            textwrap.dedent("""\
-                [foo.py]
-                  [subtest]
-                    expected:
-                      if os == "mac": FAIL
-                      PASS
-                """))
-        with contextlib.ExitStack() as mocks:
-            show_blob = mocks.enter_context(
-                mock.patch.object(self.git,
-                                  'show_blob',
-                                  return_value=old_contents))
-            mocks.enter_context(
-                mock.patch.object(self.git,
-                                  'changed_files',
-                                  return_value=[path]))
-            self.notifier.examine_metadata_changes(
-                'https://crrev.com/c/12345/3/')
-        show_blob.assert_called_with(
-            'third_party/blink/web_tests/external/wpt/webdriver/foo.py.ini')
-        self.assertEqual(self.notifier.new_failures_by_directory, {})
-
-    def test_examine_metadata_changes_new_harness_error(self):
-        self.host.filesystem.write_text_file(
-            self.finder.path_from_wpt_tests('webdriver', 'DIR_METADATA'), '')
-        old_contents = textwrap.dedent("""\
-            [foo.py]
-              expected:
-                if os == "mac": TIMEOUT
-            """).encode()
-        path = RELATIVE_WEB_TESTS + 'external/wpt/webdriver/foo.py.ini'
-        self.host.filesystem.write_text_file(
-            self.finder.path_from_chromium_base(path),
-            textwrap.dedent("""\
-                [foo.py]
-                  expected: TIMEOUT
-                """))
-        with contextlib.ExitStack() as mocks:
-            show_blob = mocks.enter_context(
-                mock.patch.object(self.git,
-                                  'show_blob',
-                                  return_value=old_contents))
-            mocks.enter_context(
-                mock.patch.object(self.git,
-                                  'changed_files',
-                                  return_value=[path]))
-            self.notifier.examine_metadata_changes(
-                'https://crrev.com/c/12345/3/')
-
-        show_blob.assert_called_with(
-            'third_party/blink/web_tests/external/wpt/webdriver/foo.py.ini')
-        self.assertEqual(
-            self.notifier.new_failures_by_directory, {
-                'external/wpt/webdriver': [
-                    TestFailure(
-                        'external/wpt/webdriver/foo.py new failing tests: '
-                        'https://crrev.com/c/12345/3/'
-                        'third_party/blink/web_tests/external/wpt/webdriver/foo.py.ini',
-                        'external/wpt/webdriver/foo.py'),
-                ],
-            })
-
-    def test_examine_metadata_changes_new_subtest_failures(self):
-        self.host.filesystem.write_text_file(
-            self.finder.path_from_wpt_tests('webdriver', 'DIR_METADATA'), '')
-        path = RELATIVE_WEB_TESTS + 'external/wpt/webdriver/foo.py.ini'
-        self.host.filesystem.write_text_file(
-            self.finder.path_from_chromium_base(path),
-            textwrap.dedent("""\
-                [foo.py]
-                  [subtest]
-                    expected: FAIL
-                """))
-        with contextlib.ExitStack() as mocks:
-            show_blob = mocks.enter_context(
-                mock.patch.object(self.git,
-                                  'show_blob',
-                                  side_effect=ScriptError))
-            mocks.enter_context(
-                mock.patch.object(self.git,
-                                  'changed_files',
-                                  return_value=[path]))
-            self.notifier.examine_metadata_changes(
-                'https://crrev.com/c/12345/3/')
-
-        show_blob.assert_called_with(
-            'third_party/blink/web_tests/external/wpt/webdriver/foo.py.ini')
-        self.assertEqual(
-            self.notifier.new_failures_by_directory, {
-                'external/wpt/webdriver': [
-                    TestFailure(
-                        'external/wpt/webdriver/foo.py new failing tests: '
-                        'https://crrev.com/c/12345/3/'
-                        'third_party/blink/web_tests/external/wpt/webdriver/foo.py.ini',
-                        'external/wpt/webdriver/foo.py'),
-                ],
-            })
-
-    def test_examine_metadata_changes_variants(self):
-        self.host.filesystem.write_text_file(
-            self.finder.path_from_wpt_tests('foo', 'DIR_METADATA'), '')
-        path = RELATIVE_WEB_TESTS + 'external/wpt/foo/bar.html.ini'
-        self.host.filesystem.write_text_file(
-            self.finder.path_from_chromium_base(path),
-            textwrap.dedent("""\
-                [bar.html?a]
-                  [subtest]
-                    expected:
-                      if os == "mac": FAIL
-
-                [bar.html?b]
-                  [subtest]
-                    expected:
-                      if os == "mac": FAIL
-                """))
-        with contextlib.ExitStack() as mocks:
-            show_blob = mocks.enter_context(
-                mock.patch.object(self.git,
-                                  'show_blob',
-                                  side_effect=ScriptError))
-            mocks.enter_context(
-                mock.patch.object(self.git,
-                                  'changed_files',
-                                  return_value=[path]))
-            self.notifier.examine_metadata_changes(
-                'https://crrev.com/c/12345/3/')
-
-        # TODO(crbug.com/1474702): After the switch to wptrunner, check that
-        # non-wdspec tests can generate failures (i.e., delete the first
-        # assertion, and turn the second one into `assertEqual`). For now,
-        # require that no such failures are generated.
-        self.assertEqual(self.notifier.new_failures_by_directory, {})
-        self.assertNotEqual(
-            self.notifier.new_failures_by_directory, {
-                'external/wpt/foo': [
-                    TestFailure(
-                        'external/wpt/foo/bar.html?a new failing tests: '
-                        'https://crrev.com/c/12345/3/'
-                        'third_party/blink/web_tests/external/wpt/foo/bar.html.ini',
-                        'external/wpt/foo/bar.html?a'),
-                    TestFailure(
-                        'external/wpt/foo/bar.html?b new failing tests: '
-                        'https://crrev.com/c/12345/3/'
-                        'third_party/blink/web_tests/external/wpt/foo/bar.html.ini',
-                        'external/wpt/foo/bar.html?b'),
-                ],
             })
 
     def test_examine_new_test_expectations(self):

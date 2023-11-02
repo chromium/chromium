@@ -20,6 +20,7 @@ from typing import (
     FrozenSet,
     Iterator,
     List,
+    Literal,
     NamedTuple,
     Optional,
     Set,
@@ -34,7 +35,6 @@ from blinkpy.common.html_diff import html_diff
 from blinkpy.common.memoized import memoized
 from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.common.unified_diff import unified_diff
-from blinkpy.w3c import wpt_metadata
 from blinkpy.web_tests.port.base import Port
 from blinkpy.web_tests.models import test_failures
 from blinkpy.web_tests.models.testharness_results import (
@@ -67,6 +67,9 @@ _status_mapping = collections.OrderedDict([
     ('NOTRUN', ResultType.Failure),
 ])
 
+RunInfo = Dict[str, Any]
+TestType = Literal[tuple(wpttest.manifest_test_cls)]
+
 
 def wptrunner_to_chromium_status(status: str) -> str:
     return _status_mapping[status]
@@ -75,7 +78,7 @@ def wptrunner_to_chromium_status(status: str) -> str:
 @memoized
 def chromium_to_wptrunner_statuses(
     statuses: FrozenSet[str],
-    test_type: wpt_metadata.TestType,
+    test_type: TestType,
     subtest: bool = False,
 ) -> Set[str]:
     wptrunner_statuses = {
@@ -435,7 +438,7 @@ class WPTResultsProcessor:
 
     def suite_start(self,
                     event: Event,
-                    run_info: Optional[wpt_metadata.RunInfo] = None,
+                    run_info: Optional[RunInfo] = None,
                     **_):
         if run_info:
             self.run_info.update(run_info)

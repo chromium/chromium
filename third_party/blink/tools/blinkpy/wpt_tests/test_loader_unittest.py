@@ -8,7 +8,7 @@ import unittest
 
 from blinkpy.common import path_finder
 from blinkpy.common.host_mock import MockHost
-from blinkpy.wpt_tests.test_loader import TestLoader
+from blinkpy.wpt_tests.test_loader import TestLoader, wpt_url_to_blink_test
 
 path_finder.bootstrap_wpt_imports()
 from wptrunner import wptlogging
@@ -255,3 +255,9 @@ class TestLoaderTestCase(unittest.TestCase):
         subtest = test.get_subtest('subtest2')
         self.assertEqual(subtest.expected, 'PASS')
         self.assertEqual(subtest.known_intermittent, ['TIMEOUT', 'NOTRUN'])
+
+    def test_wpt_url_to_exp_test(self):
+        self.assertEqual(wpt_url_to_blink_test('/css/test.html?a'),
+                         'external/wpt/css/test.html?a')
+        self.assertEqual(wpt_url_to_blink_test('/wpt_internal/test.html'),
+                         'wpt_internal/test.html')

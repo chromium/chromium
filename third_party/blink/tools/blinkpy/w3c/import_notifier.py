@@ -10,27 +10,19 @@ Design doc: https://docs.google.com/document/d/1W3V81l94slAC_rPcTKWXgv3YxRxtlSIA
 """
 
 from collections import defaultdict
-import io
 import logging
 import re
 import typing
-from typing import NamedTuple, Optional, Set, Tuple
-from urllib.parse import urljoin
+from typing import NamedTuple, Optional
 
 from blinkpy.common import path_finder
-from blinkpy.common.memoized import memoized
 from blinkpy.common.net.luci_auth import LuciAuth
-from blinkpy.common.system.executive import ScriptError
-from blinkpy.w3c import wpt_metadata
 from blinkpy.w3c.common import WPT_GH_URL, WPT_GH_RANGE_URL_TEMPLATE
 from blinkpy.w3c.directory_owners_extractor import DirectoryOwnersExtractor
 from blinkpy.w3c.monorail import MonorailAPI, MonorailIssue
 from blinkpy.w3c.buganizer import BuganizerClient
 from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
-
-path_finder.bootstrap_wpt_imports()
-from wptrunner import manifestexpected
-from wptrunner.wptmanifest.backends import static
+from blinkpy.w3c.wpt_results_processor import TestType
 
 _log = logging.getLogger(__name__)
 
@@ -40,26 +32,18 @@ SHORT_GERRIT_PREFIX = 'https://crrev.com/c/'
 USE_BUGANIZER = False
 BUGANIZER_WPT_COMPONENT = "1415957"
 
-MetadataChange = Tuple[io.BytesIO, io.BytesIO]
-
 
 class ImportNotifier:
-    def __init__(self,
-                 host,
-                 chromium_git,
-                 local_wpt,
-                 configs: Optional[wpt_metadata.TestConfigurations] = None):
+    def __init__(self, host, chromium_git, local_wpt):
         self.host = host
         self.git = chromium_git
         self.local_wpt = local_wpt
-        self._configs = configs or wpt_metadata.TestConfigurations.generate(
-            self.host)
 
         self._monorail_api = MonorailAPI
         self._buganizer_api = BuganizerClient
         self.default_port = host.port_factory.get()
-        self.default_port.set_option_default(
-            'test_types', typing.get_args(wpt_metadata.TestType))
+        self.default_port.set_option_default('test_types',
+                                             typing.get_args(TestType))
         self.finder = path_finder.PathFinder(host.filesystem)
         self.owners_extractor = DirectoryOwnersExtractor(host)
         self.new_failures_by_directory = defaultdict(list)
@@ -102,7 +86,6 @@ class ImportNotifier:
             rebaselined_tests)
         self.examine_baseline_changes(changed_test_baselines,
                                       gerrit_url_with_ps)
-        self.examine_metadata_changes(gerrit_url_with_ps)
         self.examine_new_test_expectations(test_expectations)
 
         bugs = self.create_bugs_from_new_failures(wpt_revision_start,
@@ -178,110 +161,6 @@ class ImportNotifier:
             if line.startswith('-Harness Error.'):
                 delta_harness_errors -= 1
         return delta_failures > 0 or delta_harness_errors > 0
-
-    def examine_metadata_changes(self, gerrit_url_with_ps: str):
-        manifest = self.default_port.wpt_manifest('external/wpt')
-        for changed_file in self.git.changed_files(diff_filter='AM'):
-            test_path = self._metadata_path_to_test_path(changed_file)
-            if not test_path:
-                continue
-            test_type = manifest.get_test_type(
-                self.finder.strip_wpt_path(test_path))
-            if not test_type:
-                continue
-            # TODO(crbug.com/1474702): After the switch to wptrunner, remove
-            # this condition.
-            if (test_type != 'wdspec'
-                    and not self.host.project_config.switched_to_wptrunner):
-                continue
-            failing_tests = set()
-            contents_before, contents_after = self._load_metadata_change(
-                test_path)
-            for config in self._configs:
-                for contents in (contents_before, contents_after):
-                    contents.seek(0)
-                exp_before = static.compile(contents_before,
-                                            config.data,
-                                            manifestexpected.data_cls_getter,
-                                            test_path=test_path)
-                exp_after = static.compile(contents_after,
-                                           config.data,
-                                           manifestexpected.data_cls_getter,
-                                           test_path=test_path)
-                for exp in (exp_before, exp_after):
-                    exp.set('type', test_type)
-                failing_tests.update(
-                    self._detect_new_metadata_failures(exp_before, exp_after))
-            for test_name in failing_tests:
-                directory = self.find_directory_for_bug(test_name)
-                if not directory:
-                    continue
-                self.new_failures_by_directory[directory].append(
-                    TestFailure.from_file(test_name, changed_file,
-                                          gerrit_url_with_ps))
-
-    @memoized
-    def _load_metadata_change(self, test_path: str) -> MetadataChange:
-        try:
-            rel_test_path = path_finder.RELATIVE_WEB_TESTS + test_path
-            contents_before = self.git.show_blob(
-                rel_test_path + wpt_metadata.METADATA_EXTENSION)
-        except ScriptError:
-            contents_before = b''
-        metadata_path = self.finder.path_from_web_tests(
-            test_path + wpt_metadata.METADATA_EXTENSION)
-        contents_after = self.host.filesystem.read_binary_file(metadata_path)
-        return io.BytesIO(contents_before), io.BytesIO(contents_after)
-
-    def _detect_new_metadata_failures(
-            self, exp_before: manifestexpected.ExpectedManifest,
-            exp_after: manifestexpected.ExpectedManifest) -> Set[str]:
-        failing_tests = set()
-        for test_after in exp_after.iterchildren():
-            test_before = exp_before.get_test(test_after.id)
-            if not test_before:
-                test_before = wpt_metadata.make_empty_test(test_after)
-            wpt_metadata.fill_implied_expectations(test_before,
-                                                   set(test_after.subtests))
-            wpt_metadata.fill_implied_expectations(test_after,
-                                                   set(test_before.subtests))
-            assert set(test_before.subtests) == set(test_after.subtests)
-            nodes = [(test_before, test_after)]
-            nodes.extend((
-                test_before.get_subtest(subtest),
-                test_after.get_subtest(subtest),
-            ) for subtest in test_after.subtests)
-            if any(
-                    self._has_new_failure(before, after)
-                    for before, after in nodes):
-                # Replace the test path's basename with the metadata section header.
-                test = urljoin(exp_after.test_path, test_after.id)
-                failing_tests.add(test)
-        return failing_tests
-
-    def _has_new_failure(self, test_before: manifestexpected.TestNode,
-                         test_after: manifestexpected.TestNode) -> bool:
-        is_subtest = isinstance(test_before, manifestexpected.SubtestNode)
-        default_statuses = wpt_metadata.default_expected_by_type()
-        default_status = default_statuses[test_after.test_type, is_subtest]
-        statuses_before = {
-            test_before.expected, *test_before.known_intermittent
-        }
-        # Never notify when `statuses_before` has known failures, even if they
-        # may not be the same as those for `test_after`. Doing so could be too
-        # noisy (e.g., a flaky TIMEOUT timing out a random subtest).
-        if statuses_before - {default_status}:
-            return False
-        statuses_after = {test_after.expected, *test_after.known_intermittent}
-        new_statuses = statuses_after - statuses_before
-        return bool(new_statuses - {default_status})
-
-    def _metadata_path_to_test_path(self, path: str) -> Optional[str]:
-        if path.startswith(path_finder.RELATIVE_WEB_TESTS) and path.endswith(
-                wpt_metadata.METADATA_EXTENSION):
-            path = path[len(path_finder.RELATIVE_WEB_TESTS):]
-            return path[:-len(wpt_metadata.METADATA_EXTENSION)]
-        return None
 
     def examine_new_test_expectations(self, test_expectations):
         """Examines new test expectations to find new failures.

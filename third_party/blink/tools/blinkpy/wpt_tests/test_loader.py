@@ -18,8 +18,10 @@ from typing import Container, List, Optional, Tuple
 from urllib.parse import urlsplit
 
 from blinkpy.common import path_finder
-from blinkpy.w3c import wpt_metadata
+from blinkpy.common.memoized import memoized
 from blinkpy.w3c.wpt_results_processor import (
+    RunInfo,
+    TestType,
     WPTResult,
     chromium_to_wptrunner_statuses,
     normalize_statuses,
@@ -35,7 +37,7 @@ from blinkpy.web_tests.port.base import Port
 
 path_finder.bootstrap_wpt_imports()
 from tools.manifest.manifest import Manifest
-from wptrunner import manifestexpected, testloader
+from wptrunner import manifestexpected, testloader, wpttest
 from wptrunner.wptmanifest import node as wptnode
 from wptrunner.wptmanifest.backends import static
 
@@ -58,7 +60,7 @@ class TestLoader(testloader.TestLoader):
 
     def load_dir_metadata(
         self,
-        run_info: wpt_metadata.RunInfo,
+        run_info: RunInfo,
         test_manifest: Manifest,
         metadata_path: str,
         test_path: str,
@@ -68,16 +70,16 @@ class TestLoader(testloader.TestLoader):
 
     def load_metadata(
         self,
-        run_info: wpt_metadata.RunInfo,
+        run_info: RunInfo,
         test_manifest: Manifest,
         metadata_path: str,
         test_path: str,
     ) -> Tuple[InheritedMetadata, manifestexpected.ExpectedManifest]:
         test_file_ast = wptnode.DataNode()
-        test_type: Optional[wpt_metadata.TestType] = None
+        test_type: Optional[TestType] = None
 
         for item in test_manifest.iterpath(test_path):
-            test_name = wpt_metadata.wpt_url_to_exp_test(item.id)
+            test_name = wpt_url_to_blink_test(item.id)
             virtual_suite = run_info.get('virtual_suite')
             if virtual_suite:
                 test_name = f'virtual/{virtual_suite}/{test_name}'
@@ -114,7 +116,7 @@ class TestLoader(testloader.TestLoader):
 
     def _build_test_ast(
         self,
-        test_type: wpt_metadata.TestType,
+        test_type: TestType,
         exp_line: Expectation,
         testharness_lines: List[TestharnessLine],
     ) -> wptnode.DataNode:
@@ -133,8 +135,9 @@ class TestLoader(testloader.TestLoader):
             error = harness_errors.pop()
             test_statuses = test_statuses & {'CRASH', 'TIMEOUT'}
             test_statuses.update(status.name for status in error.statuses)
-        elif wpt_metadata.can_have_subtests(
-                test_type) and exp_line.results == {ResultType.Failure}:
+        elif can_have_subtests(test_type) and exp_line.results == {
+                ResultType.Failure
+        }:
             # The `[ Failure ]` line for this test was only masking subtest
             # failures, but the harness is actually OK.
             test_statuses.add('OK')
@@ -205,8 +208,7 @@ def data_cls_getter(output_node, visited_node):
 
 class TestNode(manifestexpected.TestNode):
     def get_subtest(self, name: str):
-        if name not in self.subtests and wpt_metadata.can_have_subtests(
-                self.test_type):
+        if name not in self.subtests and can_have_subtests(self.test_type):
             # Create an implicit subtest that accepts any status. This supports
             # testharness tests marked with `[ Failure ]` without a checked-in
             # baseline, which would pass when run with `run_web_tests.py`.
@@ -238,3 +240,15 @@ def _test_basename(test_id: str) -> str:
     if len(path_parts) == 1:
         return test_id
     return test_id[len(path_parts[0]) + 1:]
+
+
+@memoized
+def can_have_subtests(test_type: TestType) -> bool:
+    return wpttest.manifest_test_cls[test_type].subtest_result_cls is not None
+
+
+def wpt_url_to_blink_test(test: str) -> str:
+    for wpt_dir, url_prefix in Port.WPT_DIRS.items():
+        if test.startswith(url_prefix):
+            return test.replace(url_prefix, wpt_dir + '/', 1)
+    raise ValueError('no matching WPT roots found')
