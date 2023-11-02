@@ -3665,11 +3665,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "enable-variations-google-group-filtering",
-    "owners": [ "ljjlee@google.com", "chrome-metrics-team@google.com" ],
-    "expiry_milestone": 119
-  },
-  {
     "name": "enable-vbr-encode-acceleration",
     "owners": [ "chromeos-gfx-video@google.com" ],
     "expiry_milestone": 120
