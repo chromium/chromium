@@ -434,17 +434,32 @@ void PrivilegedHelperInstall(UpdaterScope scope) {
   ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_dir));
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  base::FilePath temp_browser = temp_dir.GetPath().Append(
+  base::FilePath helpers_dir = temp_dir.GetPath().Append(
       "Contents/Frameworks/" BROWSER_PRODUCT_NAME_STRING
       " Framework.framework/Helpers/");
-  ASSERT_TRUE(base::CreateDirectory(temp_browser));
+  ASSERT_TRUE(base::CreateDirectory(helpers_dir));
   ASSERT_TRUE(CopyDir(src_dir.Append("third_party")
                           .Append("updater")
                           .Append("chrome_mac_universal_prod")
                           .Append(PRODUCT_FULLNAME_STRING ".app"),
-                      temp_browser, false));
+                      helpers_dir, false));
+  ASSERT_TRUE(
+      base::WriteFile(temp_dir.GetPath().Append("Contents/Info.plist"),
+                      R"(<?xml version="1.0" encoding="UTF-8"?>)"
+                      R"(<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN")"
+                      R"(    "http://www.apple.com/DTDs/PropertyList-1.0.dtd">)"
+                      R"(<plist version="1.0">)"
+                      R"(<dict>)"
+                      R"(<key>KSProductID</key>)"
+                      R"(<string>test1</string>)"
+                      R"(<key>KSChannelID</key>)"
+                      R"(<string>tag</string>)"
+                      R"(<key>KSVersion</key>)"
+                      R"(<string>1.2.3.4</string>)"
+                      R"(</dict>)"
+                      R"(</plist>)"));
   ASSERT_TRUE(VerifyUpdaterSignature(
-      temp_browser.Append(PRODUCT_FULLNAME_STRING ".app")));
+      helpers_dir.Append(PRODUCT_FULLNAME_STRING ".app")));
   ASSERT_EQ(InstallUpdater(temp_dir.GetPath()), 0);
 }
 

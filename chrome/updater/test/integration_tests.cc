@@ -1388,6 +1388,9 @@ TEST_F(IntegrationTest, PrivilegedHelperInstall) {
     return;  // Test is only applicable to system scope.
   }
   ASSERT_NO_FATAL_FAILURE(PrivilegedHelperInstall());
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectRegistered("test1"));
+  ASSERT_NO_FATAL_FAILURE(ExpectAppVersion("test1", base::Version("1.2.3.4")));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
