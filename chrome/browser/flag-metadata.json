@@ -320,8 +320,8 @@
   },
   {
     "name": "arc-keyboard-shortcut-helper-integration",
-    "owners": [ "yhanada@chromium.org", "mduggan@chromium.org" ],
-    "expiry_milestone": 120
+    "owners": [ "yhanada@chromium.org", "hirokisato@chromium.org" ],
+    "expiry_milestone": 130
   },
   {
     "name": "arc-native-bridge-toggle",
