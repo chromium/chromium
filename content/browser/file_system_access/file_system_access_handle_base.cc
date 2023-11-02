@@ -507,12 +507,6 @@ void FileSystemAccessHandleBase::DoRemove(
   DCHECK_EQ(GetWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
-  if (!base::FeatureList::IsEnabled(features::kFileSystemAccessRemove)) {
-    std::move(callback).Run(file_system_access_error::FromStatus(
-        blink::mojom::FileSystemAccessStatus::kNotSupportedError));
-    return;
-  }
-
   // A locked file cannot be removed. Acquire a lock and release it after the
   // remove operation completes.
   manager()->TakeLock(

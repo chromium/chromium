@@ -17,13 +17,6 @@ BASE_FEATURE(kFileSystemAccessDragAndDropCheckBlocklist,
              "FileSystemAccessDragAndDropCheckBlocklist",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// TODO(crbug.com/1114923): Remove this flag eventually.
-// When enabled, the remove() method is enabled. Otherwise, throws a
-// NotSupportedError DomException.
-BASE_FEATURE(kFileSystemAccessRemove,
-             "FileSystemAccessRemove",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // TODO(crbug.com/1247850): Remove this flag eventually.
 // When enabled, move operations within the same file system that do not change
 // the file extension will not be subject to safe browsing checks.
