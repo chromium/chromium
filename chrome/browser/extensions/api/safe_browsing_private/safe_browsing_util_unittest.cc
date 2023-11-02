@@ -51,15 +51,14 @@ void ValidateReferrerChain(
     const safe_browsing_private::ReferrerChainEntry& referrer) {
   ASSERT_FALSE(referrer.url.empty());
   EXPECT_EQ(*referrer.main_frame_url, kMainFrameUrl);
-  EXPECT_EQ(referrer.url_type,
-            safe_browsing_private::URLType::URL_TYPE_LANDING_PAGE);
+  EXPECT_EQ(referrer.url_type, safe_browsing_private::URLType::kLandingPage);
   EXPECT_EQ(referrer.ip_addresses->at(0), kIpAddress);
   EXPECT_EQ(*referrer.referrer_url, kReferrerUrl);
   EXPECT_EQ(*referrer.is_retargeting, kIsRetargeting);
   EXPECT_EQ(*referrer.navigation_time_ms, kNavTime);
   EXPECT_EQ(*referrer.server_redirect_chain->at(0).url, kServerRedirectUrl);
   EXPECT_EQ(referrer.navigation_initiation,
-            safe_browsing_private::NAVIGATION_INITIATION_BROWSER_INITIATED);
+            safe_browsing_private::NavigationInitiation::kBrowserInitiated);
   EXPECT_EQ(*referrer.maybe_launched_by_external_app, kMaybeLaunched);
   EXPECT_EQ(*referrer.is_subframe_url_removed, kIsSubframeUrlRemoved);
   EXPECT_EQ(*referrer.is_subframe_referrer_url_removed,
