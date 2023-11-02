@@ -121,11 +121,6 @@ class Vp9ParserTest : public TestWithParam<TestParams> {
     return vp9_parser_->context().loop_filter();
   }
 
-  void VerifyNoContextManagersNeedUpdate() {
-    for (const auto& manager : vp9_parser_->context().frame_context_managers_)
-      ASSERT_FALSE(manager.needs_client_update());
-  }
-
   IvfParser ivf_parser_;
   std::unique_ptr<base::MemoryMappedFile> stream_;
 
@@ -576,33 +571,6 @@ TEST_F(Vp9ParserTest, StreamFileParsingWithoutCompressedHeader) {
     if (ParseNextFrame(&fhdr) != Vp9Parser::kOk)
       break;
 
-    ++num_parsed_frames;
-  }
-
-  DVLOG(1) << "Number of successfully parsed frames before EOS: "
-           << num_parsed_frames;
-
-  EXPECT_EQ(num_expected_frames, num_parsed_frames);
-}
-
-TEST_F(Vp9ParserTest, StreamFileParsingWithCompressedHeaderButNoContextUpdate) {
-  Initialize("bear-vp9.ivf", /*parsing_compressed_header=*/true);
-
-  // Number of frames in the test stream to be parsed.
-  constexpr int num_expected_frames = 82;
-  int num_parsed_frames = 0;
-
-  // Allow to parse twice as many frames in order to detect any extra frames
-  // parsed.
-  while (num_parsed_frames < num_expected_frames * 2) {
-    Vp9FrameHeader fhdr;
-    const auto parse_result = ParseNextFrame(&fhdr);
-    // We shouldn't be waiting for a refresh.
-    EXPECT_NE(Vp9Parser::kAwaitingRefresh, parse_result);
-    if (parse_result != Vp9Parser::kOk)
-      break;
-
-    VerifyNoContextManagersNeedUpdate();
     ++num_parsed_frames;
   }
 

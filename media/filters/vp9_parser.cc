@@ -452,30 +452,11 @@ Vp9Parser::Context::Vp9FrameContextManager::~Vp9FrameContextManager() = default;
 const Vp9FrameContext&
 Vp9Parser::Context::Vp9FrameContextManager::frame_context() const {
   DCHECK(initialized_);
-  DCHECK(!needs_client_update_);
   return frame_context_;
 }
 
 void Vp9Parser::Context::Vp9FrameContextManager::Reset() {
   initialized_ = false;
-  needs_client_update_ = false;
-  weak_ptr_factory_.InvalidateWeakPtrs();
-}
-
-void Vp9Parser::Context::Vp9FrameContextManager::SetNeedsClientUpdate() {
-  DCHECK(!needs_client_update_);
-  initialized_ = true;
-  needs_client_update_ = true;
-}
-
-Vp9Parser::ContextRefreshCallback
-Vp9Parser::Context::Vp9FrameContextManager::GetUpdateCb() {
-  if (needs_client_update_) {
-    return base::BindOnce(&Vp9FrameContextManager::UpdateFromClient,
-                          weak_ptr_factory_.GetWeakPtr());
-  }
-
-  return {};
 }
 
 bool Vp9Parser::Context::Vp9FrameContextManager::Update(
@@ -487,28 +468,7 @@ bool Vp9Parser::Context::Vp9FrameContextManager::Update(
   initialized_ = true;
   frame_context_ = frame_context;
 
-  // For frame context we are updating, it may be still awaiting previous
-  // ContextRefreshCallback. Because we overwrite the value of context here and
-  // previous ContextRefreshCallback no longer matters, invalidate the weak ptr
-  // to prevent previous ContextRefreshCallback run.
-  // With this optimization, we may be able to parse more frames while previous
-  // are still decoding.
-  weak_ptr_factory_.InvalidateWeakPtrs();
-  needs_client_update_ = false;
   return true;
-}
-
-void Vp9Parser::Context::Vp9FrameContextManager::UpdateFromClient(
-    const Vp9FrameContext& frame_context) {
-  DVLOG(2) << "Got external frame_context update";
-  DCHECK(needs_client_update_);
-  if (!frame_context.IsValid()) {
-    DLOG(ERROR) << "Invalid prob value in frame_context";
-    return;
-  }
-  needs_client_update_ = false;
-  initialized_ = true;
-  frame_context_ = frame_context;
 }
 
 void Vp9Parser::Context::Reset() {
@@ -517,11 +477,6 @@ void Vp9Parser::Context::Reset() {
   memset(&ref_slots_, 0, sizeof(ref_slots_));
   for (auto& manager : frame_context_managers_)
     manager.Reset();
-}
-
-void Vp9Parser::Context::MarkFrameContextForUpdate(size_t frame_context_idx) {
-  DCHECK_LT(frame_context_idx, std::size(frame_context_managers_));
-  frame_context_managers_[frame_context_idx].SetNeedsClientUpdate();
 }
 
 bool Vp9Parser::Context::UpdateFrameContext(
@@ -636,13 +591,7 @@ bool Vp9Parser::ParseCompressedHeader(const FrameInfo& frame_info,
     *result = kInvalidStream;
     return true;
   }
-  if (context_to_load.needs_client_update()) {
-    DVLOG(3) << "waiting frame_context_idx=" << frame_context_idx
-             << " to update";
-    curr_frame_info_ = frame_info;
-    *result = kAwaitingRefresh;
-    return true;
-  }
+
   curr_frame_header_.initial_frame_context = curr_frame_header_.frame_context =
       context_to_load.frame_context();
 
@@ -750,15 +699,6 @@ Vp9Parser::Result Vp9Parser::ParseNextFrame(
   }
 
   return kOk;
-}
-
-Vp9Parser::ContextRefreshCallback Vp9Parser::GetContextRefreshCb(
-    size_t frame_context_idx) {
-  DCHECK_LT(frame_context_idx, std::size(context_.frame_context_managers_));
-  auto& frame_context_manager =
-      context_.frame_context_managers_[frame_context_idx];
-
-  return frame_context_manager.GetUpdateCb();
 }
 
 std::unique_ptr<DecryptConfig> Vp9Parser::NextFrameDecryptContextForTesting() {

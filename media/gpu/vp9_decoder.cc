@@ -386,14 +386,6 @@ VP9Decoder::VP9Accelerator::Status VP9Decoder::DecodeAndOutputPicture(
   DCHECK(pic->frame_hdr);
 
   base::OnceClosure done_cb;
-  Vp9Parser::ContextRefreshCallback context_refresh_cb =
-      parser_.GetContextRefreshCb(pic->frame_hdr->frame_context_idx);
-  if (context_refresh_cb) {
-    done_cb =
-        base::BindOnce(&VP9Decoder::UpdateFrameContext, base::Unretained(this),
-                       pic, std::move(context_refresh_cb));
-  }
-
   const Vp9Parser::Context& context = parser_.context();
   VP9Accelerator::Status status = accelerator_->SubmitDecode(
       pic, context.segmentation(), context.loop_filter(), ref_frames_,

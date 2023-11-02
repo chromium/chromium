@@ -304,37 +304,21 @@ class MEDIA_EXPORT Vp9Parser {
       Vp9FrameContextManager();
       ~Vp9FrameContextManager();
       bool initialized() const { return initialized_; }
-      bool needs_client_update() const { return needs_client_update_; }
       const Vp9FrameContext& frame_context() const;
 
       // Resets to uninitialized state.
       void Reset();
 
-      // Marks this context as requiring an update from parser's client.
-      void SetNeedsClientUpdate();
-
       // Updates frame context. Returns false if |frame_content| is not valid,
       // true otherwise.
       bool Update(const Vp9FrameContext& frame_context);
 
-      // Returns a callback to update frame context at a later time with.
-      ContextRefreshCallback GetUpdateCb();
-
      private:
-      // Updates frame context from parser's client.
-      void UpdateFromClient(const Vp9FrameContext& frame_context);
-
       bool initialized_ = false;
-      bool needs_client_update_ = false;
       Vp9FrameContext frame_context_;
-
-      base::WeakPtrFactory<Vp9FrameContextManager> weak_ptr_factory_{this};
     };
 
     void Reset();
-
-    // Mark |frame_context_idx| as requiring update from the client.
-    void MarkFrameContextForUpdate(size_t frame_context_idx);
 
     // Update frame context at |frame_context_idx| with the contents of
     // |frame_context|. Returns false if |frame_content| is not valid,
