@@ -2089,28 +2089,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Controls.Show.Audio" enum="MediaControlsShowReason"
-    expires_after="2023-12-24">
-  <owner>steimel@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Record whether the default media controls of an audio element were shown and
-    why every time they could be shown. Note that audio elements that were not
-    insterted to the DOM and do not have a controls attribute are not taken into
-    account.
-  </summary>
-</histogram>
-
-<histogram name="Media.Controls.Show.Video" enum="MediaControlsShowReason"
-    expires_after="2022-10-30">
-  <owner>steimel@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Record whether the default media controls of a video element were shown and
-    why every time they could be shown.
-  </summary>
-</histogram>
-
 <histogram name="Media.CrosBeamformingDeviceState"
     enum="CrosBeamformingDeviceState" expires_after="M85">
   <owner>dalecurtis@chromium.org</owner>
@@ -4576,18 +4554,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time for the platform-specific (set of) video decode acceleration command(s)
     to be executed. Output once per decode request submit.
-  </summary>
-</histogram>
-
-<histogram name="Media.ProgressEventTimerState"
-    enum="HTMLMediaElement_ProgressEventTimerState" expires_after="2021-08-01">
-  <owner>fdoray@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Records the state of an HTMLMediaElement when its &quot;progress event&quot;
-    timer fires. Used to determine how often the timer causes unnecessary wake
-    ups, to prioritize crbug.com/1143317 and measure the impact of eventual
-    fixes.
   </summary>
 </histogram>
 

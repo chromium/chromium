@@ -133,8 +133,6 @@ class CORE_EXPORT HTMLMediaElement
 
   static MIMETypeRegistry::SupportsType GetSupportsType(const ContentType&);
 
-  enum class RecordMetricsBehavior { kDoNotRecord, kDoRecord };
-
   static bool IsHLSURL(const KURL&);
 
   // Notify the HTMLMediaElement that the media controls settings have changed
@@ -264,8 +262,7 @@ class CORE_EXPORT HTMLMediaElement
   void DurationChanged(double duration, bool request_seek);
 
   // controls
-  bool ShouldShowControls(
-      const RecordMetricsBehavior = RecordMetricsBehavior::kDoNotRecord) const;
+  bool ShouldShowControls() const;
   bool ShouldShowAllControls() const;
   DOMTokenList* controlsList() const;
   HTMLMediaElementControlsList* ControlsListInternal() const;

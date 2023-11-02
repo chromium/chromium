@@ -42548,22 +42548,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1074610802" label="MF_I_MANUAL_PROXY"/>
 </enum>
 
-<enum name="HTMLMediaElement_ProgressEventTimerState">
-  <int value="0" label="networkState is not NETWORK_LOADING."/>
-  <int value="1" label="MediaShouldBeOpaque() is true."/>
-  <int value="2" label="progress event was scheduled."/>
-  <int value="3" label="No progress. The stalled event was scheduled."/>
-  <int value="4"
-      label="No progress. No stalled event scheduled because a Media Source
-             Attachment is used."/>
-  <int value="5"
-      label="No progress. No stalled event scheduled because there was recent
-             progress."/>
-  <int value="6"
-      label="No progress. No stalled event scheduled because it was already
-             scheduled."/>
-</enum>
-
 <enum name="Http2WireErrorCodes">
   <summary>
     Error codes defined at
@@ -59266,16 +59250,6 @@ Called by update_use_counter_css.py.-->
   <int value="5" label="1.5"/>
   <int value="6" label="1.75"/>
   <int value="7" label="2"/>
-</enum>
-
-<enum name="MediaControlsShowReason">
-  <int value="0" label="Attribute"/>
-  <int value="1" label="Fullscreen"/>
-  <int value="2" label="No scripts allowed"/>
-  <int value="3" label="Not shown"/>
-  <int value="4" label="Disabled by settings"/>
-  <int value="5" label="User explicitly enabled"/>
-  <int value="6" label="User explicitly disabled"/>
 </enum>
 
 <enum name="MediaDrmProvisioningResult">

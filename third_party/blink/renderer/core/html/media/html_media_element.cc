@@ -34,7 +34,6 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "cc/layers/layer.h"
@@ -177,13 +176,6 @@ enum class ProgressEventTimerState {
   kStalledEventAlreadyScheduled,
   kMaxValue = kStalledEventAlreadyScheduled
 };
-
-// Records the state of the HTMLMediaElement when its "progress event" timer
-// fires.
-// TODO(crbug.com/1143317): Remove once the bug is fixed.
-void RecordProgressEventTimerState(ProgressEventTimerState state) {
-  UMA_HISTOGRAM_ENUMERATION("Media.ProgressEventTimerState", state);
-}
 
 static const base::TimeDelta kStalledNotificationInterval = base::Seconds(3);
 
@@ -352,15 +344,6 @@ String PreloadTypeToString(WebMediaPlayer::Preload preload_type) {
 
   NOTREACHED();
   return String();
-}
-
-void RecordShowControlsUsage(const HTMLMediaElement* element,
-                             MediaControlsShow value) {
-  if (element->IsHTMLVideoElement()) {
-    base::UmaHistogramEnumeration("Media.Controls.Show.Video", value);
-    return;
-  }
-  base::UmaHistogramEnumeration("Media.Controls.Show.Audio", value);
 }
 
 bool IsValidPlaybackRate(double rate) {
@@ -2245,7 +2228,6 @@ void HTMLMediaElement::ProgressEventTimerFired() {
   }
 
   if (network_state_ != kNetworkLoading) {
-    RecordProgressEventTimerState(ProgressEventTimerState::kNotLoading);
     return;
   }
 
@@ -2254,8 +2236,6 @@ void HTMLMediaElement::ProgressEventTimerFired() {
   // those may let the page know information about the resource that it's
   // not supposed to know.
   if (MediaShouldBeOpaque()) {
-    RecordProgressEventTimerState(
-        ProgressEventTimerState::kMediaShouldBeOpaque);
     return;
   }
 
@@ -2266,17 +2246,10 @@ void HTMLMediaElement::ProgressEventTimerFired() {
     previous_progress_time_ = base::ElapsedTimer();
     sent_stalled_event_ = false;
     UpdateLayoutObject();
-    RecordProgressEventTimerState(ProgressEventTimerState::kProgress);
-  } else if (media_source_attachment_) {
-    RecordProgressEventTimerState(
-        ProgressEventTimerState::kHasMediaSourceAttachment);
-  } else if (previous_progress_time_->Elapsed() <=
-             kStalledNotificationInterval) {
-    RecordProgressEventTimerState(ProgressEventTimerState::kRecentProgress);
-  } else if (sent_stalled_event_) {
-    RecordProgressEventTimerState(
-        ProgressEventTimerState::kStalledEventAlreadyScheduled);
-  } else {
+  } else if (!media_source_attachment_ &&
+             previous_progress_time_->Elapsed() >
+                 kStalledNotificationInterval &&
+             !sent_stalled_event_) {
     // Note the !media_source_attachment_ condition above. The 'stalled' event
     // is not fired when using MSE. MSE's resource is considered 'local' (we
     // don't manage the download - the app does), so the HTML5 spec text around
@@ -2286,7 +2259,6 @@ void HTMLMediaElement::ProgressEventTimerFired() {
     ScheduleEvent(event_type_names::kStalled);
     sent_stalled_event_ = true;
     SetShouldDelayLoadEvent(false);
-    RecordProgressEventTimerState(ProgressEventTimerState::kStalled);
   }
 }
 
@@ -2949,48 +2921,26 @@ void HTMLMediaElement::SetLoop(bool b) {
   SetBooleanAttribute(html_names::kLoopAttr, b);
 }
 
-bool HTMLMediaElement::ShouldShowControls(
-    const RecordMetricsBehavior record_metrics) const {
+bool HTMLMediaElement::ShouldShowControls() const {
   Settings* settings = GetDocument().GetSettings();
   if (settings && !settings->GetMediaControlsEnabled()) {
-    if (record_metrics == RecordMetricsBehavior::kDoRecord)
-      RecordShowControlsUsage(this, MediaControlsShow::kDisabledSettings);
     return false;
   }
 
   // If the user has explicitly shown or hidden the controls, then force that
   // choice.
   if (user_wants_controls_visible_.has_value()) {
-    if (record_metrics == RecordMetricsBehavior::kDoRecord) {
-      RecordShowControlsUsage(this,
-                              *user_wants_controls_visible_
-                                  ? MediaControlsShow::kUserExplicitlyEnabled
-                                  : MediaControlsShow::kUserExplicitlyDisabled);
-    }
     return *user_wants_controls_visible_;
   }
 
-  if (FastHasAttribute(html_names::kControlsAttr)) {
-    if (record_metrics == RecordMetricsBehavior::kDoRecord)
-      RecordShowControlsUsage(this, MediaControlsShow::kAttribute);
-    return true;
-  }
-
-  if (IsFullscreen()) {
-    if (record_metrics == RecordMetricsBehavior::kDoRecord)
-      RecordShowControlsUsage(this, MediaControlsShow::kFullscreen);
+  if (FastHasAttribute(html_names::kControlsAttr) || IsFullscreen()) {
     return true;
   }
 
   ExecutionContext* context = GetExecutionContext();
   if (context && !context->CanExecuteScripts(kNotAboutToExecuteScript)) {
-    if (record_metrics == RecordMetricsBehavior::kDoRecord)
-      RecordShowControlsUsage(this, MediaControlsShow::kNoScript);
     return true;
   }
-
-  if (record_metrics == RecordMetricsBehavior::kDoRecord)
-    RecordShowControlsUsage(this, MediaControlsShow::kNotShown);
   return false;
 }
 
@@ -4259,7 +4209,7 @@ void HTMLMediaElement::UpdateControlsVisibility() {
   if (!isConnected())
     return;
 
-  bool native_controls = ShouldShowControls(RecordMetricsBehavior::kDoRecord);
+  bool native_controls = ShouldShowControls();
 
   // When LazyInitializeMediaControls is enabled, initialize the controls only
   // if native controls should be used or if using the cast overlay.
@@ -4646,7 +4596,7 @@ void HTMLMediaElement::AudioSourceProviderImpl::Trace(Visitor* visitor) const {
 }
 
 bool HTMLMediaElement::HasNativeControls() {
-  return ShouldShowControls(RecordMetricsBehavior::kDoRecord);
+  return ShouldShowControls();
 }
 
 bool HTMLMediaElement::IsAudioElement() {
