@@ -73,8 +73,15 @@ bool SurfaceRange::IsValid() const {
   if (!start_->is_valid())
     return false;
 
+  // The start/end SurfaceIds can have a different FrameSinkId or embed token
+  // for cross SiteInstanceGroup navigations.
   if (end_.frame_sink_id() != start_->frame_sink_id())
     return true;
+
+  if (end_.local_surface_id().embed_token() !=
+      start_->local_surface_id().embed_token()) {
+    return true;
+  }
 
   return end_.local_surface_id().IsSameOrNewerThan(start_->local_surface_id());
 }

@@ -366,19 +366,21 @@ void SurfaceManager::RemoveTemporaryReferenceImpl(const SurfaceId& surface_id,
   std::vector<LocalSurfaceId>& frame_sink_temp_refs =
       temporary_reference_ranges_[frame_sink_id];
 
-  // Find the iterator to the range tracking entry for |surface_id|. Use that
-  // iterator to find the right end iterator for the temporary references we
-  // want to remove.
-  auto end_iter = base::ranges::find_if(
-      frame_sink_temp_refs, [&surface_id](const LocalSurfaceId& id) {
-        return id.IsNewerThan(surface_id.local_surface_id());
-      });
-  auto begin_iter = frame_sink_temp_refs.begin();
+  auto iter = frame_sink_temp_refs.begin();
+  while (iter != frame_sink_temp_refs.end()) {
+    const auto& temp_id = SurfaceId(frame_sink_id, *iter);
+    // SurfaceIDs corresponding to the same FrameSinkId can have different embed
+    // tokens for cross SiteInstanceGroup navigations. Only delete older IDs
+    // with the same embed token as `surface_id`.
+    if (!temp_id.HasSameEmbedTokenAs(surface_id) ||
+        temp_id.IsNewerThan(surface_id)) {
+      ++iter;
+      continue;
+    }
 
-  // Remove temporary references and range tracking information.
-  for (auto iter = begin_iter; iter != end_iter; ++iter)
-    temporary_references_.erase(SurfaceId(frame_sink_id, *iter));
-  frame_sink_temp_refs.erase(begin_iter, end_iter);
+    iter = frame_sink_temp_refs.erase(iter);
+    temporary_references_.erase(temp_id);
+  }
 
   // If last temporary reference is removed for |frame_sink_id| then cleanup
   // range tracking map entry.

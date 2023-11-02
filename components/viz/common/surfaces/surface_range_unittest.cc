@@ -66,3 +66,15 @@ TEST(SurfaceRangeTest, InRangeTest) {
   EXPECT_FALSE(surface_range1.IsInRangeInclusive(surface_id4));
   EXPECT_FALSE(surface_range2.IsInRangeInclusive(surface_id4));
 }
+
+TEST(SurfaceRangeTest, SameFrameSinkDifferentEmbedToken) {
+  viz::FrameSinkId frame_sink_id(1, 0);
+  const base::UnguessableToken token1 = base::UnguessableToken::Create();
+  const base::UnguessableToken token2 = base::UnguessableToken::Create();
+
+  const viz::SurfaceId start(frame_sink_id, viz::LocalSurfaceId(2, 2, token1));
+  const viz::SurfaceId end(frame_sink_id, viz::LocalSurfaceId(1, 1, token2));
+
+  const viz::SurfaceRange surface_range(start, end);
+  EXPECT_TRUE(surface_range.IsValid());
+}
