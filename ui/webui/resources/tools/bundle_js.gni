@@ -67,6 +67,14 @@ template("bundle_js") {
       args += [ "--exclude" ] + invoker.excludes
     }
 
+    external_paths = []
+
+    # Add invoker.external_paths before the default external_paths so that they
+    # are considered first.
+    if (defined(invoker.external_paths)) {
+      external_paths += invoker.external_paths
+    }
+
     # Specify default external_paths. The order here matters in multiple ways.
     #   1) chrome:// URLs need to be listed before scheme relative URLs
     #      (otherwise chrome-extension:// contexts break)
@@ -84,7 +92,6 @@ template("bundle_js") {
     is_chrome_untrusted =
         string_replace(invoker.host, "chrome-untrusted://", "") != invoker.host
 
-    external_paths = []
     if (is_chromeos_ash) {
       ash_resources_path =
           rebase_path("$root_gen_dir/ash/webui/common/resources/preprocessed/",
@@ -106,9 +113,6 @@ template("bundle_js") {
     }
     external_paths += [ "//resources/|$resources_path" ]
 
-    if (defined(invoker.external_paths)) {
-      external_paths += invoker.external_paths
-    }
     args += [ "--external_paths" ] + external_paths
 
     args += [ "--js_module_in_files" ] + invoker.js_module_in_files

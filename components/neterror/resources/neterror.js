@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/js/jstemplate_compiled.js';
+
 import {mobileNav} from 'chrome://interstitials/common/resources/interstitial_mobile_nav.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
@@ -86,7 +88,7 @@ if (window.top.location !== window.location || window.portalHost) {
 // Used by NetErrorTabHelper to update DNS error pages with probe results.
 function updateForDnsProbe(strings) {
   const context = new JsEvalContext(strings);
-  jstProcess(context, document.getElementById('t'));
+  jstProcess(context, document.body);
   onDocumentLoadOrUpdate();
 }
 
@@ -377,6 +379,7 @@ function onDocumentLoadOrUpdate() {
 function onDocumentLoad() {
   // `loadTimeDataRaw` is injected to the `window` scope from C++.
   loadTimeData.data = window.loadTimeDataRaw;
+  jstProcess(new JsEvalContext(window.loadTimeDataRaw), document.body);
 
   // Sets up the proper button layout for the current platform.
   const buttonsDiv = document.getElementById('buttons');

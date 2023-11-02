@@ -53,39 +53,6 @@ void AppendLoadTimeData(std::string* output) {
   output->append("</script>");
 }
 
-// Appends the source for JsTemplates in a script tag.
-void AppendJsTemplateSourceHtml(std::string* output) {
-  // fetch and cache the pointer of the jstemplate resource source text.
-  std::string jstemplate_src =
-      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          IDR_JSTEMPLATE_JSTEMPLATE_COMPILED_JS);
-
-  if (jstemplate_src.empty()) {
-    NOTREACHED() << "Unable to get jstemplate src";
-    return;
-  }
-
-  output->append("<script>");
-  output->append(jstemplate_src);
-  output->append("</script>");
-}
-
-// Appends the code that processes the JsTemplate with the JSON. You should
-// call AppendJsTemplateSourceHtml before calling this.
-void AppendJsTemplateProcessHtml(const std::string& json,
-                                 base::StringPiece template_id,
-                                 std::string* output) {
-  output->append("<script>");
-  output->append("const pageData = ");
-  output->append(json);
-  output->append(";");
-  output->append("var tp = document.getElementById('");
-  output->append(template_id);
-  output->append("');");
-  output->append("jstProcess(new JsEvalContext(pageData), tp);");
-  output->append("</script>");
-}
-
 }  // namespace
 
 std::string GetI18nTemplateHtml(base::StringPiece html_template,
@@ -98,30 +65,6 @@ std::string GetI18nTemplateHtml(base::StringPiece html_template,
   AppendLoadTimeData(&output);
   AppendJsonHtml(json, &output);
 
-  return output;
-}
-
-std::string GetTemplatesHtml(base::StringPiece html_template,
-                             const base::Value::Dict& strings,
-                             base::StringPiece template_id) {
-  ui::TemplateReplacements replacements;
-  ui::TemplateReplacementsFromDictionaryValue(strings, &replacements);
-  std::string output =
-      ui::ReplaceTemplateExpressions(html_template, replacements);
-
-  // Inject data to the UI that will be used to populate loadTimeData upon
-  // initialization.
-  std::string json;
-  JSONStringValueSerializer serializer(&json);
-  serializer.Serialize(strings);
-  output.append("<script>");
-  output.append("var loadTimeDataRaw = ");
-  output.append(json);
-  output.append(";");
-  output.append("</script>");
-
-  AppendJsTemplateSourceHtml(&output);
-  AppendJsTemplateProcessHtml(json, template_id, &output);
   return output;
 }
 
