@@ -494,6 +494,33 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
       SigninInterceptionHeuristicOutcome::kInterceptEnterprise);
 }
 
+TEST_P(
+    DiceWebSigninInterceptorManagedAccountTest,
+    NoForcedInterceptionShowsNoDialogIfFeatureEnabledButDisabledDialogByPolicy) {
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndEnableFeature(
+      kShowEnterpriseDialogForAllManagedAccountsSignin);
+  // Reauth intercepted if enterprise confirmation not shown yet for forced
+  // managed separation.
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "alice@example.com", signin::ConsentLevel::kSignin);
+  MakeValidAccountInfo(&account_info, "example.com");
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+  interceptor()->SetInterceptedAccountProfileSeparationPoliciesForTesting(
+      policy::ProfileSeparationPolicies(
+          policy::ProfileSeparationSettings::DISABLED, absl::nullopt));
+
+  if (signin_interception_enabled_) {
+    TestAsynchronousInterception(
+        account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
+        SigninInterceptionHeuristicOutcome::kAbortAccountInfoNotCompatible);
+  } else {
+    TestAsynchronousInterception(
+        account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
+        SigninInterceptionHeuristicOutcome::kAbortInterceptionDisabled);
+  }
+}
+
 TEST_P(DiceWebSigninInterceptorManagedAccountTest,
        NoForcedInterceptionShowsNoBubble) {
   // Reauth intercepted if enterprise confirmation not shown yet for forced

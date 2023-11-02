@@ -449,6 +449,14 @@ bool DiceWebSigninInterceptor::ShouldShowEnterpriseDialog(
     return false;
   }
 
+  if (intercepted_account_profile_separation_policies_
+          .value_or(policy::ProfileSeparationPolicies())
+          .profile_separation_settings()
+          .value_or(policy::ProfileSeparationSettings::SUGGESTED) !=
+      policy::ProfileSeparationSettings::SUGGESTED) {
+    return false;
+  }
+
   // Check if the intercepted account is managed.
   if (!intercepted_account_info.IsManaged()) {
     return false;
