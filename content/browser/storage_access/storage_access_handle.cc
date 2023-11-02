@@ -4,6 +4,7 @@
 
 #include "content/browser/storage_access/storage_access_handle.h"
 
+#include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/network/cross_origin_embedder_policy_reporter.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/permission_controller.h"
@@ -71,6 +72,19 @@ void StorageAccessHandle::BindCaches(
       storage::BucketLocator::ForDefaultBucket(
           blink::StorageKey::CreateFirstParty(host.GetStorageKey().origin())),
       std::move(receiver));
+}
+
+void StorageAccessHandle::GetDirectory(GetDirectoryCallback callback) {
+  static_cast<RenderFrameHostImpl&>(render_frame_host())
+      .GetStoragePartition()
+      ->GetFileSystemAccessManager()
+      ->GetSandboxedFileSystem(
+          FileSystemAccessManagerImpl::BindingContext(
+              blink::StorageKey::CreateFirstParty(
+                  render_frame_host().GetStorageKey().origin()),
+              render_frame_host().GetLastCommittedURL(),
+              render_frame_host().GetGlobalId()),
+          /*bucket=*/absl::nullopt, std::move(callback));
 }
 
 StorageAccessHandle::StorageAccessHandle(

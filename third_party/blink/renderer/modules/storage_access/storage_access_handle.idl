@@ -9,7 +9,7 @@ interface StorageAccessHandle {
     [LogActivity=GetterOnly, RaisesException=Getter] readonly attribute IDBFactory indexedDB;
     [LogActivity=GetterOnly, RaisesException=Getter] readonly attribute LockManager locks;
     [LogActivity=GetterOnly, RaisesException=Getter] readonly attribute CacheStorage caches;
-    // TODO(crbug.com/1484966): Add origin private file system
+    [CallWith=ScriptState, LogActivity, RaisesException] Promise<FileSystemDirectoryHandle> getDirectory();
     // TODO(crbug.com/1484966): Add quota
     // TODO(crbug.com/1484966): Add blob storage
     // TODO(crbug.com/1484966): Add broadcast channel

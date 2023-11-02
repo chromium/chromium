@@ -47,6 +47,14 @@
         }
         break;
       }
+      case "getDirectory": {
+        const root = await handle.getDirectory();
+        let has = await root.getFileHandle(id).then(() => true, () => false);;
+        if (has) {
+          message = "Cross-site first-party Origin Private File System should be empty";
+        }
+        break;
+      }
       default: {
         message = "Unexpected type " + type;
         break;

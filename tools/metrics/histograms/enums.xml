@@ -35720,6 +35720,10 @@ Called by update_use_counter_feature_enum.py.-->
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_caches"/>
   <int value="4713"
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_caches_Use"/>
+  <int value="4714"
+      label="StorageAccessAPI_requestStorageAccess_BeyondCookies_getDirectory"/>
+  <int value="4715"
+      label="StorageAccessAPI_requestStorageAccess_BeyondCookies_getDirectory_Use"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

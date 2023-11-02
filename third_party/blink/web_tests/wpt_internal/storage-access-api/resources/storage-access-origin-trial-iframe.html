@@ -20,6 +20,7 @@
     await handle.indexedDB.databases();
     await handle.locks.query();
     await handle.caches.keys();
+    await handle.getDirectory();
   } catch (_) {
     message = "NoAccess";
   }

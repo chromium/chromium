@@ -7,6 +7,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/modules/file_system_access/storage_manager_file_system_access.h"
 #include "third_party/blink/renderer/modules/storage/storage_controller.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -34,6 +35,11 @@ const char StorageAccessHandle::kLocksNotRequested[] =
 // static
 const char StorageAccessHandle::kCachesNotRequested[] =
     "Cache Storage not requested when storage access handle was initialized.";
+
+// static
+const char StorageAccessHandle::kGetDirectoryNotRequested[] =
+    "Origin Private File System not requested when storage access handle was "
+    "initialized.";
 
 StorageAccessHandle::StorageAccessHandle(
     LocalDOMWindow& window,
@@ -71,6 +77,11 @@ StorageAccessHandle::StorageAccessHandle(
         WebFeature::
             kStorageAccessAPI_requestStorageAccess_BeyondCookies_caches);
   }
+  if (storage_access_types_->getDirectory()) {
+    window.CountUse(
+        WebFeature::
+            kStorageAccessAPI_requestStorageAccess_BeyondCookies_getDirectory);
+  }
   if (storage_access_types_->all() || storage_access_types_->sessionStorage()) {
     InitSessionStorage();
   }
@@ -85,6 +96,9 @@ StorageAccessHandle::StorageAccessHandle(
   }
   if (storage_access_types_->all() || storage_access_types_->caches()) {
     InitCaches();
+  }
+  if (storage_access_types_->all() || storage_access_types_->getDirectory()) {
+    InitGetDirectory();
   }
 }
 
@@ -182,6 +196,39 @@ CacheStorage* StorageAccessHandle::caches(
   return caches_;
 }
 
+ScriptPromise StorageAccessHandle::getDirectory(
+    ScriptState* script_state,
+    ExceptionState& exception_state) const {
+  if (!storage_access_types_->all() && !storage_access_types_->getDirectory()) {
+    ScriptPromiseResolver* resolver =
+        MakeGarbageCollected<ScriptPromiseResolver>(
+            script_state, exception_state.GetContext());
+    ScriptPromise promise = resolver->Promise();
+    resolver->RejectWithSecurityError(kGetDirectoryNotRequested,
+                                      kGetDirectoryNotRequested);
+    return promise;
+  }
+  GetSupplementable()->CountUse(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_getDirectory_Use);
+  return StorageManagerFileSystemAccess::CheckGetDirectoryIsAllowed(
+      script_state, exception_state,
+      WTF::BindOnce(&StorageAccessHandle::GetDirectoryImpl,
+                    WrapWeakPersistent(this)));
+}
+
+void StorageAccessHandle::GetDirectoryImpl(
+    ScriptPromiseResolver* resolver) const {
+  if (!remote_) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError));
+    return;
+  }
+  remote_->GetDirectory(
+      WTF::BindOnce(&StorageManagerFileSystemAccess::DidGetSandboxedFileSystem,
+                    WrapPersistent(resolver)));
+}
+
 void StorageAccessHandle::InitSessionStorage() {
   LocalDOMWindow* window = GetSupplementable();
   if (!window->GetSecurityOrigin()->CanAccessSessionStorage()) {
@@ -277,6 +324,14 @@ void StorageAccessHandle::InitCaches() {
       GetSupplementable()->GetExecutionContext(),
       GlobalFetch::ScopedFetcher::From(*GetSupplementable()),
       std::move(cache_remote));
+}
+
+void StorageAccessHandle::InitGetDirectory() {
+  if (!GetSupplementable()->GetSecurityOrigin()->CanAccessFileSystem()) {
+    return;
+  }
+  GetRemote();
+  // Nothing else to init as getDirectory is an async function not a handle.
 }
 
 }  // namespace blink

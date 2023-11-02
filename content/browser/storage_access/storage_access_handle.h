@@ -30,6 +30,7 @@ class StorageAccessHandle
       mojo::PendingReceiver<blink::mojom::LockManager> receiver) override;
   void BindCaches(
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override;
+  void GetDirectory(GetDirectoryCallback callback) override;
 
  private:
   StorageAccessHandle(

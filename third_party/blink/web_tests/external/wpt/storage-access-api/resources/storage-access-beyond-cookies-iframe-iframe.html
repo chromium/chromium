@@ -73,6 +73,21 @@
         await handle.caches.delete(id);
         break;
       }
+      case "getDirectory": {
+        const handle = await document.requestStorageAccess({getDirectory: true});
+        const handle_root = await handle.getDirectory();
+        let handle_has = await handle_root.getFileHandle(id).then(() => true, () => false);
+        if (!handle_has) {
+          message = "No first-party Origin Private File System access";
+        }
+        const local_root = await window.navigator.storage.getDirectory();
+        let local_has = await local_root.getFileHandle(id).then(() => true, () => false);
+        if (local_has) {
+          message = "Handle should not override window Origin Private File System";
+        }
+        await handle_root.removeEntry(id);
+        break;
+      }
       default: {
         message = "Unexpected type " + type;
         break;

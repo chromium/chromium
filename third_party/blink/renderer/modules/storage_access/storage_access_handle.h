@@ -35,6 +35,7 @@ class MODULES_EXPORT StorageAccessHandle final
   static const char kIndexedDBNotRequested[];
   static const char kLocksNotRequested[];
   static const char kCachesNotRequested[];
+  static const char kGetDirectoryNotRequested[];
 
   explicit StorageAccessHandle(LocalDOMWindow& window,
                                const StorageAccessTypes* storage_access_types);
@@ -45,6 +46,8 @@ class MODULES_EXPORT StorageAccessHandle final
   IDBFactory* indexedDB(ExceptionState& exception_state) const;
   LockManager* locks(ExceptionState& exception_state) const;
   CacheStorage* caches(ExceptionState& exception_state) const;
+  ScriptPromise getDirectory(ScriptState* script_state,
+                             ExceptionState& exception_state) const;
 
  private:
   void InitSessionStorage();
@@ -53,6 +56,9 @@ class MODULES_EXPORT StorageAccessHandle final
   void InitIndexedDB();
   void InitLocks();
   void InitCaches();
+  void InitGetDirectory();
+
+  void GetDirectoryImpl(ScriptPromiseResolver* resolver) const;
 
   Member<const StorageAccessTypes> storage_access_types_;
   Member<StorageArea> session_storage_;

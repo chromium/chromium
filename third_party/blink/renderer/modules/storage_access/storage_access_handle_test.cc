@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/modules/storage_access/storage_access_handle.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_access_types.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -17,7 +19,7 @@ namespace blink {
 
 class StorageAccessHandleTest
     : public testing::TestWithParam<
-          testing::tuple<bool, bool, bool, bool, bool, bool>> {
+          testing::tuple<bool, bool, bool, bool, bool, bool, bool>> {
  public:
   bool all() { return std::get<0>(GetParam()); }
   bool session_storage() { return std::get<1>(GetParam()); }
@@ -25,6 +27,7 @@ class StorageAccessHandleTest
   bool indexed_db() { return std::get<3>(GetParam()); }
   bool locks() { return std::get<4>(GetParam()); }
   bool caches() { return std::get<5>(GetParam()); }
+  bool getDirectory() { return std::get<6>(GetParam()); }
 
   LocalDOMWindow* getLocalDOMWindow() {
     test::ScopedMockedURLLoad scoped_mocked_url_load_root(
@@ -50,6 +53,7 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
   storage_access_types->setIndexedDB(indexed_db());
   storage_access_types->setLocks(locks());
   storage_access_types->setCaches(caches());
+  storage_access_types->setGetDirectory(getDirectory());
   StorageAccessHandle* storage_access_handle =
       MakeGarbageCollected<StorageAccessHandle>(*window, storage_access_types);
   EXPECT_TRUE(window->document()->IsUseCounted(
@@ -82,6 +86,11 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_caches),
       caches());
+  EXPECT_EQ(
+      window->document()->IsUseCounted(
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_getDirectory),
+      getDirectory());
   EXPECT_FALSE(window->document()->IsUseCounted(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage_Use));
@@ -97,6 +106,9 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
   EXPECT_FALSE(window->document()->IsUseCounted(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_caches_Use));
+  EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_getDirectory_Use));
   {
     V8TestingScope scope;
     storage_access_handle->sessionStorage(scope.GetExceptionState());
@@ -150,6 +162,22 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
               (all() || caches()) ? nullptr
                                   : StorageAccessHandle::kCachesNotRequested);
   }
+  {
+    V8TestingScope scope;
+    ScriptPromise promise = storage_access_handle->getDirectory(
+        scope.GetScriptState(), scope.GetExceptionState());
+    ScriptPromiseTester tester(scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsRejected());
+    auto* dom_exception = V8DOMException::ToWrappable(scope.GetIsolate(),
+                                                      tester.Value().V8Value());
+    EXPECT_EQ(dom_exception->code(),
+              (uint16_t)DOMExceptionCode::kSecurityError);
+    EXPECT_EQ(dom_exception->message(),
+              (all() || getDirectory())
+                  ? "Storage directory access is denied."
+                  : StorageAccessHandle::kGetDirectoryNotRequested);
+  }
   EXPECT_EQ(
       window->document()->IsUseCounted(
           WebFeature::
@@ -175,11 +203,17 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_caches_Use),
       all() || caches());
+  EXPECT_EQ(
+      window->document()->IsUseCounted(
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_getDirectory_Use),
+      all() || getDirectory());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
                          StorageAccessHandleTest,
                          testing::Combine(testing::Bool(),
+                                          testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool(),

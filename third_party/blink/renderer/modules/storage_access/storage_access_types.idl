@@ -9,7 +9,7 @@ dictionary StorageAccessTypes {
     boolean indexedDB = false;
     boolean locks = false;
     boolean caches = false;
-    // TODO(crbug.com/1484966): Add origin private file system
+    boolean getDirectory = false;
     // TODO(crbug.com/1484966): Add quota
     // TODO(crbug.com/1484966): Add blob storage
     // TODO(crbug.com/1484966): Add broadcast channel
