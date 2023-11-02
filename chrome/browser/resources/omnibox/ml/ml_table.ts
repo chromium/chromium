@@ -95,7 +95,16 @@ export class MlTableElement extends CustomElement {
         additionalInfo['ml model output'] || '',
         additionalInfo['ml legacy relevance'] || '',
       ];
-      const signalValues = Object.values(match.scoringSignals);
+      const signalValues = Object.values(match.scoringSignals).map(value => {
+        if (typeof value === 'number') {
+          return value.toLocaleString('en-US', {
+            'roundingPriority': 'morePrecision',
+          } as Intl.NumberFormatOptions);
+        } else if (typeof value === 'bigint') {
+          return value.toLocaleString('en-US');
+        }
+        return value;
+      });
 
       const tr = createEl('div', tbody, ['tr']);
       tr.addEventListener('click', async () => {
