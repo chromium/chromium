@@ -10981,24 +10981,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="3" label="Success"/>
 </enum>
 
-<enum name="BrowsingTopicsApiActionType">
-  <int value="0" label="get via document api"/>
-  <int value="1" label="get and observe via document api"/>
-  <int value="2" label="get via fetch-like api"/>
-  <int value="3" label="observe via fetch-like api"/>
-  <int value="4" label="get via iframe attribute api"/>
-  <int value="5" label="observe via iframe attribute api"/>
-</enum>
-
-<enum name="BrowsingTopicsCalculatorResultStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Failure: permission denied"/>
-  <int value="2" label="Failure: api usage context query error"/>
-  <int value="3" label="Failure: annotation execution error"/>
-  <int value="4"
-      label="Failure: taxonomy version not supported in the Chrome binary"/>
-</enum>
-
 <enum name="BrowsingTopicsEmptyApiResultReason">
   <obsolete>
     Deprecated 10/2022 in favor of BrowsingTopicsApiAccessFailureReason.
@@ -11007,14 +10989,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Access disallowed by settings"/>
   <int value="2" label="No candicate topics"/>
   <int value="3" label="Candicate topics filtered"/>
-</enum>
-
-<enum name="BrowsingTopicsOverrideListFileLoadResult">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Success"/>
-  <int value="2" label="Could not read file"/>
-  <int value="3" label="Could not uncompress file"/>
-  <int value="4" label="Could not unmarshal the encoded protobuf"/>
 </enum>
 
 <enum name="BruschettaInstallResult">
