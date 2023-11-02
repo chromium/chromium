@@ -139,6 +139,8 @@ void LayerTreeView::ReattachTo(
     scoped_refptr<scheduler::WidgetScheduler> scheduler) {
   layer_tree_host_->WaitForProtectedSequenceCompletion();
   layer_tree_host_->DetachInputDelegateAndRenderFrameObserver();
+  layer_tree_host_->StopDeferringCommits(
+      cc::PaintHoldingCommitTrigger::kWidgetSwapped);
   delegate_ = delegate;
   CHECK_GE(layer_tree_host_->SourceFrameNumber(),
            first_source_frame_for_current_delegate_)

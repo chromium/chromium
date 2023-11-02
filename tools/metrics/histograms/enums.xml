@@ -66367,6 +66367,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="Not Deferred"/>
   <int value="5" label="View Transition"/>
   <int value="6" label="View Transition Timeout"/>
+  <int value="7" label="Widget swapped"/>
 </enum>
 
 <enum name="PaintHoldingInputTiming">
