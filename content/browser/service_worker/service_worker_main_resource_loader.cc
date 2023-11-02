@@ -176,6 +176,13 @@ ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader(
         break;
       case blink::EmbeddedWorkerStatus::kStopped:
         initial_service_worker_status_ = InitialServiceWorkerStatus::kStopped;
+        if (base::WeakPtr<ServiceWorkerContextCore> core =
+                active_worker->context()) {
+          base::UmaHistogramBoolean(
+              "ServiceWorker.LoadTiming.MainFrame.MainResource."
+              "ServiceWorkerIsStopped.WaitingForWarmUp",
+              core->IsWaitingForWarmUp(active_worker->key()));
+        }
         break;
     }
     if (active_worker->IsWarmingUp()) {

@@ -860,6 +860,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="ServiceWorker.LoadTiming.MainFrame.MainResource.ServiceWorkerIsStopped.WaitingForWarmUp"
+    enum="Boolean" expires_after="2024-03-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Record true if the service worker is waiting for being warmed up. Otherwise
+    record false.
+
+    Recorded for each navigation request (including redirects) where there is a
+    fetch event handler and service worker is a STOPPED state.
+  </summary>
+</histogram>
+
+<histogram
     name="ServiceWorker.LoadTiming.MainFrame.MainResource.StartToCompleted{EmbeddedWorkerInitialStatus}"
     units="ms" expires_after="2024-06-01">
   <owner>chikamune@chromium.org</owner>
