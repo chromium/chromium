@@ -109,6 +109,17 @@ struct DocumentProvider : Config<DocumentProvider> {
   size_t min_query_length;
 };
 
+// If enabled, pretends all matches are allowed to be default. This is very
+// blunt, and needs refining before being launch ready. E.g. how does this
+// affect transferred matches? This might cause crashes. This can result in
+// misleading inline autocompletion; e.g. the bing.com favicon looks like the
+// search loupe, so inlined bing results will like DSE search suggestions.
+struct ForceAllowedToBeDefault : Config<ForceAllowedToBeDefault> {
+  DECLARE_FEATURE(kForceAllowedToBeDefault);
+  ForceAllowedToBeDefault();
+  bool enabled;
+};
+
 // If enabled, the shortcut provider is more aggressive in scoring.
 struct ShortcutBoosting : Config<ShortcutBoosting> {
   DECLARE_FEATURE(kShortcutBoost);
@@ -131,6 +142,8 @@ struct ShortcutBoosting : Config<ShortcutBoosting> {
   // `group_with_searches`.
   bool group_with_searches;
 };
+
+#undef DECLARE_FEATURE
 
 }  // namespace omnibox_feature_configs
 

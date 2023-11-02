@@ -6178,6 +6178,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxDriveSuggestionsNoSyncRequirementDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kDocumentProviderNoSyncRequirement)},
+    {"omnibox-force-allowed-to-be-default",
+     flag_descriptions::kOmniboxForceAllowedToBeDefaultName,
+     flag_descriptions::kOmniboxForceAllowedToBeDefaultDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox_feature_configs::ForceAllowedToBeDefault::
+                            kForceAllowedToBeDefault)},
     {"omnibox-pref-based-data-collection-consent-helper",
      flag_descriptions::kOmniboxPrefBasedDataCollectionConsentHelperName,
      flag_descriptions::kOmniboxPrefBasedDataCollectionConsentHelperDescription,

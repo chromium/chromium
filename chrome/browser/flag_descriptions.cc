@@ -2338,6 +2338,12 @@ const char kOmniboxDomainSuggestionsDescription[] =
     "If enabled, history URL suggestions from hosts visited often bypass the "
     "per provider limit.";
 
+const char kOmniboxForceAllowedToBeDefaultName[] =
+    "Omnibox Force Allowed To Be Default";
+const char kOmniboxForceAllowedToBeDefaultDescription[] =
+    "If enabled, all omnibox suggestions pretend to be inlineable. This likely "
+    "has a bunch of problems.";
+
 const char kOmniboxGM3SteadyStateBackgroundColorName[] =
     "Omnibox Steady State Background Color";
 const char kOmniboxGM3SteadyStateBackgroundColorDescription[] =

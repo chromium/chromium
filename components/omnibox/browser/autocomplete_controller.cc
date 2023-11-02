@@ -59,6 +59,7 @@
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/local_history_zero_suggest_provider.h"
 #include "components/omnibox/browser/most_visited_sites_provider.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/on_device_head_provider.h"
 #include "components/omnibox/browser/open_tab_provider.h"
@@ -950,6 +951,9 @@ void AutocompleteController::UpdateResult(
           match->type != AutocompleteMatchType::DOCUMENT_SUGGESTION) {
         match->swap_contents_and_description = true;
       }
+
+      if (omnibox_feature_configs::ForceAllowedToBeDefault::Get().enabled)
+        match->allowed_to_be_default_match = true;
     }
 
     internal_result_.MergeSuggestionGroupsMap(

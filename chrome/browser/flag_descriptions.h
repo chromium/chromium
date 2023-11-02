@@ -1356,6 +1356,9 @@ extern const char kOmniboxKeywordModeRefreshDescription[];
 extern const char kOmniboxDomainSuggestionsName[];
 extern const char kOmniboxDomainSuggestionsDescription[];
 
+extern const char kOmniboxForceAllowedToBeDefaultName[];
+extern const char kOmniboxForceAllowedToBeDefaultDescription[];
+
 extern const char kOmniboxGM3SteadyStateBackgroundColorName[];
 extern const char kOmniboxGM3SteadyStateBackgroundColorDescription[];
 

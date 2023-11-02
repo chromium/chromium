@@ -50533,6 +50533,7 @@ from previous Chrome versions.
   <int value="-766805224" label="MirroringService:enabled"/>
   <int value="-765669184" label="LauncherNudgeShortInterval:disabled"/>
   <int value="-764463072" label="WebViewMixedContentAutoupgrades:disabled"/>
+  <int value="-764363697" label="OmniboxForceAllowedToBeDefault:disabled"/>
   <int value="-763900417" label="CCTModuleUseIntentExtras:enabled"/>
   <int value="-763759697" label="enable-audio-support-for-desktop-share"/>
   <int value="-763730918" label="CCTTargetTranslateLanguage:disabled"/>
@@ -53053,6 +53054,7 @@ from previous Chrome versions.
       label="AutofillEnableStickyManualFallbackForCards:enabled"/>
   <int value="438447086" label="AutocorrectToggle:disabled"/>
   <int value="439267320" label="ScreenTime:disabled"/>
+  <int value="439858569" label="OmniboxForceAllowedToBeDefault:enabled"/>
   <int value="441096714" label="WebBluetoothConfirmPairingSupport:disabled"/>
   <int value="442561299" label="FeatureNotificationGuide:disabled"/>
   <int value="444411390" label="enable-incognito-shortcut-on-desktop"/>

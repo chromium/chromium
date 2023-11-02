@@ -29,13 +29,20 @@ CalcProvider::CalcProvider() {
           .Get();
 }
 
-// static
 DocumentProvider::DocumentProvider() {
   enabled = base::FeatureList::IsEnabled(omnibox::kDocumentProvider);
   min_query_length =
       base::FeatureParam<int>(&omnibox::kDocumentProvider,
                               "DocumentProviderMinQueryLength", 4)
           .Get();
+}
+
+// static
+BASE_FEATURE(ForceAllowedToBeDefault::kForceAllowedToBeDefault,
+             "OmniboxForceAllowedToBeDefault",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+ForceAllowedToBeDefault::ForceAllowedToBeDefault() {
+  enabled = base::FeatureList::IsEnabled(kForceAllowedToBeDefault);
 }
 
 // static
