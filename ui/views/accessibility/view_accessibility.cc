@@ -248,6 +248,12 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
     }
   }
 
+  if (custom_data_.HasBoolAttribute(ax::mojom::BoolAttribute::kSelected)) {
+    data->AddBoolAttribute(
+        ax::mojom::BoolAttribute::kSelected,
+        custom_data_.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+  }
+
   data->relative_bounds.bounds = gfx::RectF(view_->GetBoundsInScreen());
   if (!custom_data_.relative_bounds.bounds.IsEmpty())
     data->relative_bounds.bounds = custom_data_.relative_bounds.bounds;
@@ -513,6 +519,10 @@ void ViewAccessibility::OverridePosInSet(int pos_in_set, int set_size) {
 void ViewAccessibility::ClearPosInSetOverride() {
   custom_data_.RemoveIntAttribute(ax::mojom::IntAttribute::kPosInSet);
   custom_data_.RemoveIntAttribute(ax::mojom::IntAttribute::kSetSize);
+}
+
+void ViewAccessibility::OverrideIsSelected(bool selected) {
+  custom_data_.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, selected);
 }
 
 void ViewAccessibility::OverrideNextFocus(Widget* widget) {

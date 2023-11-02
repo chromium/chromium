@@ -13,17 +13,6 @@ namespace autofill {
 
 class PopupCellView;
 
-class TestAccessibilityDelegate : public PopupCellView::AccessibilityDelegate {
- public:
-  static constexpr char16_t kVoiceOverName[] = u"Sample voice over name";
-
-  TestAccessibilityDelegate() = default;
-  ~TestAccessibilityDelegate() override = default;
-
-  void GetAccessibleNodeData(bool is_selected,
-                             ui::AXNodeData* node_data) const override;
-};
-
 // A `PopupRowStrategy` used solely in tests.
 class TestPopupRowStrategy : public PopupRowStrategy {
  public:

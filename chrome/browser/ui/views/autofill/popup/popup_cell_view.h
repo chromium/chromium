@@ -35,19 +35,6 @@ namespace autofill {
 // information.
 class PopupCellView : public views::View {
  public:
-  // Interface for injecting accessibility data into `PopupCellView`. This
-  // allows to have `PopupCellViews` with different a11y roles without needing
-  // to subclass them.
-  class AccessibilityDelegate {
-   public:
-    virtual ~AccessibilityDelegate() = default;
-
-    // Sets the a11y information in `node_data` based on whether the cell in
-    // question `is_selected`
-    virtual void GetAccessibleNodeData(bool is_selected,
-                                       ui::AXNodeData* node_data) const = 0;
-  };
-
   METADATA_HEADER(PopupCellView);
 
   PopupCellView();
@@ -58,11 +45,6 @@ class PopupCellView : public views::View {
   // Gets and sets the selected state of the cell.
   bool GetSelected() const { return selected_; }
   virtual void SetSelected(bool selected);
-
-  // Sets the accessibility delegate that is consulted when providing accessible
-  // node data.
-  void SetAccessibilityDelegate(
-      std::unique_ptr<AccessibilityDelegate> a11y_delegate);
 
   // Adds `label` to a list of labels whose style is refreshed whenever the
   // selection status of the cell changes. Assumes that `label` is a child of
@@ -78,9 +60,6 @@ class PopupCellView : public views::View {
   virtual bool HandleKeyPressEvent(
       const content::NativeWebKeyboardEvent& event);
 
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
  protected:
   // The selection state.
   bool selected_ = false;
@@ -90,17 +69,12 @@ class PopupCellView : public views::View {
   // into account) and runs the OnAccepted callback.
   void RunOnAcceptedForEvent(const ui::Event& event);
 
-  // The accessibility delegate.
-  std::unique_ptr<AccessibilityDelegate> a11y_delegate_;
-
   // The labels whose style is updated when the cell's selection status changes.
   std::vector<raw_ptr<views::Label>> tracked_labels_;
 
 };
 
 BEGIN_VIEW_BUILDER(/* no export*/, PopupCellView, views::View)
-VIEW_BUILDER_PROPERTY(std::unique_ptr<PopupCellView::AccessibilityDelegate>,
-                      AccessibilityDelegate)
 END_VIEW_BUILDER
 
 }  // namespace autofill

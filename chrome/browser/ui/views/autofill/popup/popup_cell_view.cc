@@ -15,9 +15,6 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/accessibility/ax_action_data.h"
-#include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/events/event.h"
@@ -53,19 +50,8 @@ void PopupCellView::SetSelected(bool selected) {
   RefreshStyle();
 }
 
-void PopupCellView::SetAccessibilityDelegate(
-    std::unique_ptr<AccessibilityDelegate> a11y_delegate) {
-  a11y_delegate_ = std::move(a11y_delegate);
-}
-
 void PopupCellView::TrackLabel(views::Label* label) {
   tracked_labels_.push_back(label);
-}
-
-void PopupCellView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  if (a11y_delegate_) {
-    a11y_delegate_->GetAccessibleNodeData(GetSelected(), node_data);
-  }
 }
 
 void PopupCellView::RefreshStyle() {

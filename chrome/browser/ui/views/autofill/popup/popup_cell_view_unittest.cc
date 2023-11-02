@@ -63,7 +63,6 @@ class PopupCellViewTest : public ChromeViewsTestBase {
 
   std::unique_ptr<PopupCellView> CreatePopupCellView() {
     return views::Builder<PopupCellView>(std::make_unique<PopupCellView>())
-        .SetAccessibilityDelegate(std::make_unique<TestAccessibilityDelegate>())
         .Build();
   }
 
@@ -77,16 +76,6 @@ class PopupCellViewTest : public ChromeViewsTestBase {
   std::unique_ptr<ui::test::EventGenerator> generator_;
   raw_ptr<PopupCellView> view_ = nullptr;
 };
-
-TEST_F(PopupCellViewTest, AccessibleNodeData) {
-  ShowView(CreatePopupCellView());
-
-  ui::AXNodeData node_data;
-  view().GetAccessibleNodeData(&node_data);
-
-  EXPECT_EQ(TestAccessibilityDelegate::kVoiceOverName,
-            node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
-}
 
 TEST_F(PopupCellViewTest, SetSelectedUpdatesBackground) {
   ShowView(CreatePopupCellView());

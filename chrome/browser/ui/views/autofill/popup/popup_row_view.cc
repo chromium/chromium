@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -75,6 +76,29 @@ class EnterExitHandler : public ui::EventHandler {
 
 constexpr int kExpandableControlCellInsetPadding = 16;
 constexpr int kExpandableControlCellIconSize = 6;
+
+// Computes the position and set size of the suggestion at `suggestion_index` in
+// `controller`'s suggestions ignoring `PopupItemId::kSeparator`s.
+// Returns a pair of numbers: <position, size>. The position value is 1-base.
+std::pair<int, int> ComputePositionInSet(
+    base::WeakPtr<AutofillPopupController> controller,
+    int suggestion_index) {
+  CHECK(controller);
+
+  int set_size = 0;
+  int set_index = suggestion_index + 1;
+  for (int i = 0; i < controller->GetLineCount(); ++i) {
+    if (controller->GetSuggestionAt(i).popup_item_id !=
+        PopupItemId::kSeparator) {
+      ++set_size;
+      continue;
+    }
+    if (i < suggestion_index) {
+      --set_index;
+    }
+  }
+  return {set_index, set_size};
+}
 
 }  // namespace
 
@@ -224,6 +248,8 @@ PopupRowView::PopupRowView(
           controller &&
           controller->ShouldIgnoreMouseObservedOutsideItemBoundsCheck()) {
   CHECK(strategy_);
+  CHECK(controller_);
+  CHECK_LT(line_number_, controller_->GetLineCount());
 
   SetNotifyEnterExitOnChild(true);
   SetProperty(views::kMarginsKey, gfx::Insets::VH(0, GetHorizontalMargin()));
@@ -269,12 +295,19 @@ PopupRowView::PopupRowView(
   content_view_ = AddChildView(strategy_->CreateContent());
   content_view_->SetFocusBehavior(FocusBehavior::ALWAYS);
   content_view_->AddObserver(this);
+  content_view_->GetViewAccessibility().OverrideRole(
+      ax::mojom::Role::kListBoxOption);
+  content_view_->GetViewAccessibility().OverrideName(
+      popup_cell_utils::GetVoiceOverStringFromSuggestion(
+          controller_->GetSuggestionAt(line_number)));
+  auto [position, set_size] = ComputePositionInSet(controller_, line_number);
+  content_view_->GetViewAccessibility().OverridePosInSet(position, set_size);
+  content_view_->GetViewAccessibility().OverrideIsSelected(false);
   content_event_handler_ =
       set_exit_enter_callbacks(CellType::kContent, *content_view_);
   layout->SetFlexForView(content_view_.get(), 1);
 
-  if (controller_ && line_number_ < controller_->GetLineCount() &&
-      !controller_->GetSuggestionAt(line_number_).children.empty()) {
+  if (!controller_->GetSuggestionAt(line_number_).children.empty()) {
     expand_child_suggestions_view_ =
         AddChildView(std::make_unique<ExpandChildSuggestionsView>());
     expand_child_suggestions_view_->SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -359,6 +392,7 @@ void PopupRowView::SetSelectedCell(absl::optional<CellType> new_cell) {
   // If the previous cell was content, set it as unselected.
   if (selected_cell_ == CellType::kContent) {
     content_view_->SetSelected(false);
+    content_view_->GetViewAccessibility().OverrideIsSelected(false);
     if (controller_) {
       controller_->SelectSuggestion(absl::nullopt);
     }
@@ -369,6 +403,7 @@ void PopupRowView::SetSelectedCell(absl::optional<CellType> new_cell) {
       controller_->SelectSuggestion(line_number_);
     }
     content_view_->SetSelected(true);
+    content_view_->GetViewAccessibility().OverrideIsSelected(true);
     GetA11ySelectionDelegate().NotifyAXSelection(*content_view_);
     NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
     selected_cell_ = new_cell;

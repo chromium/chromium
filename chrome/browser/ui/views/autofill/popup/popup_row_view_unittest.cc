@@ -17,12 +17,14 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/test_popup_row_strategy.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/compositor/canvas_painter.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -105,9 +107,20 @@ class PopupRowViewTest : public ChromeViewsTestBase {
 
   void ShowView(int line_number, bool has_control) {
     std::vector<Suggestion> suggestions(line_number + 1);
+    suggestions[line_number].popup_item_id = PopupItemId::kAddressEntry;
+    suggestions[line_number].main_text = Suggestion::Text(u"Suggestion");
     if (has_control) {
       suggestions[line_number].children = {Suggestion()};
     }
+    ShowView(line_number, std::move(suggestions));
+  }
+
+  void ShowView(int line_number, std::vector<Suggestion> suggestions) {
+    mock_controller_.set_suggestions(suggestions);
+    ShowView(std::make_unique<TestPopupRowStrategy>(line_number));
+  }
+
+  void ShowView(int line_number, std::vector<PopupItemId> suggestions) {
     mock_controller_.set_suggestions(suggestions);
     ShowView(std::make_unique<TestPopupRowStrategy>(line_number));
   }
@@ -411,6 +424,98 @@ TEST_F(PopupRowViewTest, SelectSuggestionOnFocusedContent) {
 
   row_view().GetContentView().RequestFocus();
 }
+
+TEST_F(PopupRowViewTest, ContentViewA11yAttributes) {
+  ShowView(/*line_number=*/0, {Suggestion("dummy_value", "dummy_label", "",
+                                          PopupItemId::kAddressEntry)});
+
+  views::ViewAccessibility& accessibility =
+      row_view().GetContentView().GetViewAccessibility();
+
+  ui::AXNodeData node_data;
+  accessibility.GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kListBoxOption);
+  EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kName),
+            "dummy_value dummy_label");
+  EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet), 1);
+  EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize), 1);
+  EXPECT_FALSE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+}
+
+struct PosInSetTestdata {
+  // The popup item ids of the suggestions to be shown.
+  std::vector<PopupItemId> popup_item_ids;
+  // The index of the suggestion to be tested.
+  int line_number;
+  // The number of (non-separator) entries and the 1-indexed position of the
+  // entry with `line_number` inside them.
+  int set_size;
+  int set_index;
+};
+
+const PosInSetTestdata kPosInSetTestcases[] = {
+    PosInSetTestdata{
+        .popup_item_ids = {PopupItemId::kAddressEntry,
+                           PopupItemId::kAddressEntry, PopupItemId::kSeparator,
+                           PopupItemId::kAutofillOptions},
+        .line_number = 1,
+        .set_size = 3,
+        .set_index = 2,
+    },
+    PosInSetTestdata{
+        .popup_item_ids = {PopupItemId::kPasswordEntry,
+                           PopupItemId::kAccountStoragePasswordEntry,
+                           PopupItemId::kSeparator,
+                           PopupItemId::kAllSavedPasswordsEntry},
+        .line_number = 0,
+        .set_size = 3,
+        .set_index = 1,
+    },
+    PosInSetTestdata{
+        .popup_item_ids = {PopupItemId::kAddressEntry,
+                           PopupItemId::kAddressEntry, PopupItemId::kSeparator,
+                           PopupItemId::kAutofillOptions},
+        .line_number = 3,
+        .set_size = 3,
+        .set_index = 3,
+    },
+    PosInSetTestdata{
+        .popup_item_ids = {PopupItemId::kAutocompleteEntry,
+                           PopupItemId::kAutocompleteEntry,
+                           PopupItemId::kAutocompleteEntry},
+        .line_number = 1,
+        .set_size = 3,
+        .set_index = 2,
+    },
+    PosInSetTestdata{
+        .popup_item_ids = {PopupItemId::kCompose},
+        .line_number = 0,
+        .set_size = 1,
+        .set_index = 1,
+    }};
+
+class PopupRowPosInSetViewTest
+    : public PopupRowViewTest,
+      public ::testing::WithParamInterface<PosInSetTestdata> {};
+
+TEST_P(PopupRowPosInSetViewTest, All) {
+  const PosInSetTestdata kTestdata = GetParam();
+
+  ShowView(kTestdata.line_number, kTestdata.popup_item_ids);
+
+  ui::AXNodeData node_data;
+  row_view().GetContentView().GetViewAccessibility().GetAccessibleNodeData(
+      &node_data);
+
+  EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize),
+            kTestdata.set_size);
+  EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet),
+            kTestdata.set_index);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PopupRowPosInSetViewTest,
+                         ::testing::ValuesIn(kPosInSetTestcases));
 
 TEST_F(PopupRowViewTest, ChildSuggestionsExpandingControlA11yCheckedState) {
   ShowView(/*line_number=*/0, /*has_control=*/true);

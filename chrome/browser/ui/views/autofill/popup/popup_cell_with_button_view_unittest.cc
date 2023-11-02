@@ -80,8 +80,6 @@ class PopupCellWithButtonViewTest : public ChromeViewsTestBase {
     cell->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal));
     cell->AddChildView(std::make_unique<views::Label>(u"Some label"));
-    cell->SetAccessibilityDelegate(
-        std::make_unique<TestAccessibilityDelegate>());
     cell->SetCellButtonBehavior(cell_button_behavior);
     cell->SetCellButton(
         std::make_unique<views::ImageButton>(std::move(button_callback)));

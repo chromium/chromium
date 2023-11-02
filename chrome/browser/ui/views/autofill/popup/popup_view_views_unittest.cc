@@ -52,6 +52,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -361,7 +362,10 @@ TEST_F(PopupViewViewsTest, AccessibilityTest) {
 
   // Item 0.
   ui::AXNodeData node_data_0;
-  GetPopupRowViewAt(0).GetContentView().GetAccessibleNodeData(&node_data_0);
+  GetPopupRowViewAt(0)
+      .GetContentView()
+      .GetViewAccessibility()
+      .GetAccessibleNodeData(&node_data_0);
   EXPECT_EQ(ax::mojom::Role::kListBoxOption, node_data_0.role);
   EXPECT_EQ(1, node_data_0.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
   EXPECT_EQ(3, node_data_0.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
@@ -370,7 +374,7 @@ TEST_F(PopupViewViewsTest, AccessibilityTest) {
 
   // Item 1 (separator).
   ui::AXNodeData node_data_1;
-  GetRowViewAt(1).GetAccessibleNodeData(&node_data_1);
+  GetRowViewAt(1).GetViewAccessibility().GetAccessibleNodeData(&node_data_1);
   EXPECT_FALSE(node_data_1.HasIntAttribute(ax::mojom::IntAttribute::kPosInSet));
   EXPECT_FALSE(node_data_1.HasIntAttribute(ax::mojom::IntAttribute::kSetSize));
   EXPECT_EQ(ax::mojom::Role::kSplitter, node_data_1.role);
@@ -379,7 +383,10 @@ TEST_F(PopupViewViewsTest, AccessibilityTest) {
 
   // Item 2.
   ui::AXNodeData node_data_2;
-  GetPopupRowViewAt(2).GetContentView().GetAccessibleNodeData(&node_data_2);
+  GetPopupRowViewAt(2)
+      .GetContentView()
+      .GetViewAccessibility()
+      .GetAccessibleNodeData(&node_data_2);
   EXPECT_EQ(2, node_data_2.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
   EXPECT_EQ(3, node_data_2.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
   EXPECT_EQ(ax::mojom::Role::kListBoxOption, node_data_2.role);
@@ -388,7 +395,10 @@ TEST_F(PopupViewViewsTest, AccessibilityTest) {
 
   // Item 3 (footer).
   ui::AXNodeData node_data_3;
-  GetPopupRowViewAt(3).GetContentView().GetAccessibleNodeData(&node_data_3);
+  GetPopupRowViewAt(3)
+      .GetContentView()
+      .GetViewAccessibility()
+      .GetAccessibleNodeData(&node_data_3);
   EXPECT_EQ(3, node_data_3.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
   EXPECT_EQ(3, node_data_3.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
   EXPECT_EQ(ax::mojom::Role::kListBoxOption, node_data_3.role);
@@ -428,7 +438,7 @@ TEST_F(PopupViewViewsTest, SelectionOnTouchAndUnselectionOnCancel) {
 #endif  // !BUILDFLAG(IS_MAC)
 
 TEST_F(PopupViewViewsTest, ClickDisabledEntry) {
-  Suggestion opt_int_suggestion("", "", "",
+  Suggestion opt_int_suggestion("dummy_main_text", "", "",
                                 PopupItemId::kPasswordAccountStorageOptIn);
   opt_int_suggestion.is_loading = Suggestion::IsLoading(true);
   controller().set_suggestions({opt_int_suggestion});
@@ -784,7 +794,10 @@ TEST_F(PopupViewViewsTest, VoiceOverTest) {
 
   // Verify that the accessibility layer gets the right string to read out.
   ui::AXNodeData node_data;
-  GetPopupRowViewAt(0).GetContentView().GetAccessibleNodeData(&node_data);
+  GetPopupRowViewAt(0)
+      .GetContentView()
+      .GetViewAccessibility()
+      .GetAccessibleNodeData(&node_data);
   EXPECT_EQ(voice_over_value,
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
@@ -800,7 +813,10 @@ TEST_F(PopupViewViewsTest, ExpandableSuggestionA11yMessageTest) {
 
   // Verify that the accessibility layer gets the right string to read out.
   ui::AXNodeData node_data;
-  GetPopupRowViewAt(0).GetContentView().GetAccessibleNodeData(&node_data);
+  GetPopupRowViewAt(0)
+      .GetContentView()
+      .GetViewAccessibility()
+      .GetAccessibleNodeData(&node_data);
   EXPECT_EQ(
       node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
       base::JoinString(
@@ -1034,7 +1050,7 @@ TEST_F(PopupViewViewsTest, GetPopupScreenLocation) {
 #endif  // !BUILDFLAG(IS_MAC)
 
 TEST_F(PopupViewViewsTest, StandaloneCvcSuggestion_ElementId) {
-  Suggestion suggestion;
+  Suggestion suggestion(u"dummy_main_text");
   suggestion.feature_for_iph =
       feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature.name;
   controller().set_suggestions({suggestion});
@@ -1045,7 +1061,7 @@ TEST_F(PopupViewViewsTest, StandaloneCvcSuggestion_ElementId) {
 }
 
 TEST_F(PopupViewViewsTest, VirtualCardSuggestion_ElementId) {
-  Suggestion suggestion;
+  Suggestion suggestion(u"dummy_main_text");
   suggestion.feature_for_iph =
       feature_engagement::kIPHAutofillVirtualCardSuggestionFeature.name;
   controller().set_suggestions({suggestion});

@@ -67,66 +67,6 @@ base::RepeatingClosure CreateExecuteSoonWrapper(base::RepeatingClosure task) {
       std::move(task));
 }
 
-// ********************* AccessibilityDelegate implementations *****************
-
-// ********************* ContentItemAccessibilityDelegate  *********************
-class ContentItemAccessibilityDelegate
-    : public PopupCellView::AccessibilityDelegate {
- public:
-  // Creates an a11y delegate for the `line_number`. `controller` must not be
-  // null.
-  ContentItemAccessibilityDelegate(
-      base::WeakPtr<AutofillPopupController> controller,
-      int line_number);
-  ~ContentItemAccessibilityDelegate() override = default;
-
-  void GetAccessibleNodeData(bool is_selected,
-                             ui::AXNodeData* node_data) const override;
-
- private:
-  // The string announced via VoiceOver.
-  std::u16string voice_over_string_;
-  // The number of suggestions in the popup and the (1-based) index of the
-  // suggestion this delegate belongs to.
-  int set_index_ = 0;
-  int set_size_ = 0;
-};
-
-ContentItemAccessibilityDelegate::ContentItemAccessibilityDelegate(
-    base::WeakPtr<AutofillPopupController> controller,
-    int line_number) {
-  DCHECK(controller);
-
-  voice_over_string_ = popup_cell_utils::GetVoiceOverStringFromSuggestion(
-      controller->GetSuggestionAt(line_number));
-
-  set_size_ = 0;
-  set_index_ = line_number + 1;
-  for (int i = 0; i < controller->GetLineCount(); ++i) {
-    if (controller->GetSuggestionAt(i).popup_item_id ==
-        PopupItemId::kSeparator) {
-      if (i < line_number) {
-        --set_index_;
-      }
-    } else {
-      ++set_size_;
-    }
-  }
-}
-
-void ContentItemAccessibilityDelegate::GetAccessibleNodeData(
-    bool is_selected,
-    ui::AXNodeData* node_data) const {
-  DCHECK(node_data);
-  // Options are selectable.
-  node_data->role = ax::mojom::Role::kListBoxOption;
-  node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, is_selected);
-  node_data->SetNameChecked(voice_over_string_);
-
-  node_data->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet, set_index_);
-  node_data->AddIntAttribute(ax::mojom::IntAttribute::kSetSize, set_size_);
-}
-
 }  // namespace
 
 /**************************** PopupRowBaseStrategy ****************************/
@@ -225,10 +165,6 @@ PopupSuggestionStrategy::CreateAutocompleteWithDeleteButtonCell() {
 
 void PopupSuggestionStrategy::AddContentLabelsAndCallbacks(
     PopupCellView& view) {
-  view.SetAccessibilityDelegate(
-      std::make_unique<ContentItemAccessibilityDelegate>(GetController(),
-                                                         GetLineNumber()));
-
   // Add the actual views.
   const Suggestion& kSuggestion =
       GetController()->GetSuggestionAt(GetLineNumber());
@@ -267,9 +203,6 @@ std::unique_ptr<PopupCellView> PopupComposeSuggestionStrategy::CreateContent() {
       GetController()->GetSuggestionAt(GetLineNumber());
   std::unique_ptr<PopupCellView> view =
       views::Builder<PopupCellView>(std::make_unique<PopupCellView>())
-          .SetAccessibilityDelegate(
-              std::make_unique<ContentItemAccessibilityDelegate>(
-                  GetController(), GetLineNumber()))
           .Build();
 
   auto main_text_label = std::make_unique<user_education::NewBadgeLabel>(
@@ -306,9 +239,6 @@ PopupPasswordSuggestionStrategy::CreateContent() {
       GetController()->GetSuggestionAt(GetLineNumber());
   std::unique_ptr<PopupCellView> view =
       views::Builder<PopupCellView>(std::make_unique<PopupCellView>())
-          .SetAccessibilityDelegate(
-              std::make_unique<ContentItemAccessibilityDelegate>(
-                  GetController(), GetLineNumber()))
           .Build();
 
   // Add the actual views.
@@ -376,9 +306,6 @@ std::unique_ptr<PopupCellView> PopupFooterStrategy::CreateContent() {
       GetController()->GetSuggestionAt(GetLineNumber());
   std::unique_ptr<PopupCellView> view =
       views::Builder<PopupCellView>(std::make_unique<PopupCellView>())
-          .SetAccessibilityDelegate(
-              std::make_unique<ContentItemAccessibilityDelegate>(
-                  GetController(), GetLineNumber()))
           .Build();
 
   views::BoxLayout* layout_manager =

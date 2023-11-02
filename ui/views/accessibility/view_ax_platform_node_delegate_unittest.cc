@@ -508,6 +508,32 @@ TEST_F(ViewAXPlatformNodeDelegateTest, OverrideNameAndDescription) {
                            "Check failed: labelled_by_view != view_");
 }
 
+TEST_F(ViewAXPlatformNodeDelegateTest, OverrideIsSelected) {
+  View::Views view_ids = SetUpExtraViews();
+
+  view_ids[1]->GetViewAccessibility().OverrideIsSelected(true);
+  view_ids[2]->GetViewAccessibility().OverrideIsSelected(false);
+
+  ui::AXNodeData node_data_0;
+  view_ids[0]->GetViewAccessibility().GetAccessibleNodeData(&node_data_0);
+  EXPECT_FALSE(
+      node_data_0.HasBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  ui::AXNodeData node_data_1;
+  view_ids[1]->GetViewAccessibility().GetAccessibleNodeData(&node_data_1);
+  EXPECT_TRUE(
+      node_data_1.HasBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+  EXPECT_TRUE(
+      node_data_1.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  ui::AXNodeData node_data_2;
+  view_ids[2]->GetViewAccessibility().GetAccessibleNodeData(&node_data_2);
+  EXPECT_TRUE(
+      node_data_2.HasBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(
+      node_data_2.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+}
+
 TEST_F(ViewAXPlatformNodeDelegateTest, IsOrderedSet) {
   View::Views group_ids = SetUpExtraViews();
   SetUpExtraViewsGroups(group_ids);
