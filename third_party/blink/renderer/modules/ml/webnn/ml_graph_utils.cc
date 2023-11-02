@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <numeric>
+
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
@@ -211,4 +213,9 @@ Vector<uint32_t> CreateDefaultPermutation(const wtf_size_t rank) {
   return default_permutation;
 }
 
+Vector<uint32_t> CreateAllAxes(const wtf_size_t rank) {
+  Vector<uint32_t> default_axes(rank);
+  std::iota(default_axes.begin(), default_axes.end(), 0);
+  return default_axes;
+}
 }  // namespace blink

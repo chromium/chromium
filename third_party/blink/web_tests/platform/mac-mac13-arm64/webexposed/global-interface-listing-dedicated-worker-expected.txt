@@ -1201,16 +1201,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method pad
 [Worker]     method pow
 [Worker]     method prelu
-[Worker]     method reduceL1
-[Worker]     method reduceL2
-[Worker]     method reduceLogSum
-[Worker]     method reduceLogSumExp
-[Worker]     method reduceMax
 [Worker]     method reduceMean
-[Worker]     method reduceMin
-[Worker]     method reduceProduct
 [Worker]     method reduceSum
-[Worker]     method reduceSumSquare
 [Worker]     method relu
 [Worker]     method resample2d
 [Worker]     method reshape

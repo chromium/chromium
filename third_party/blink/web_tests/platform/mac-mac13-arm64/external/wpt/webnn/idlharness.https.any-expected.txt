@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
-Found 414 tests; 325 PASS, 89 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 408 tests; 302 PASS, 106 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] idl_test setup
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'buildSync' on 'MLGraphBuilder': The input layout nchw is not supported."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [PASS] idl_test validation
 [PASS] Partial interface MLContext: original interface defined
 [PASS] Partial interface MLContext: member names are unique
@@ -107,9 +107,8 @@ Found 414 tests; 325 PASS, 89 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] NavigatorML must be primary interface of navigator
   assert_own_property: self does not have own property "NavigatorML" expected property "NavigatorML" missing
 [FAIL] Stringification of navigator
-  assert_class_string: class string of navigator expected "[object NavigatorML]" but got "[object WorkerNavigator]"
-[FAIL] NavigatorML interface: navigator must not have property "ml"
-  assert_false: expected false got true
+  assert_class_string: class string of navigator expected "[object NavigatorML]" but got "[object Navigator]"
+[PASS] NavigatorML interface: navigator must inherit property "ml" with the proper type
 [PASS] ML interface: existence and properties of interface object
 [PASS] ML interface object length
 [PASS] ML interface object name
@@ -118,18 +117,14 @@ Found 414 tests; 325 PASS, 89 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] ML interface: existence and properties of interface prototype object's @@unscopables property
 [PASS] ML interface: operation createContext(optional MLContextOptions)
 [PASS] ML interface: operation createContext(GPUDevice)
-[PASS] ML interface: operation createContextSync(optional MLContextOptions)
-[PASS] ML interface: operation createContextSync(GPUDevice)
+[PASS] ML interface: member createContextSync
 [PASS] ML must be primary interface of navigator.ml
 [PASS] Stringification of navigator.ml
 [PASS] ML interface: navigator.ml must inherit property "createContext(optional MLContextOptions)" with the proper type
 [PASS] ML interface: calling createContext(optional MLContextOptions) on navigator.ml with too few arguments must throw TypeError
 [PASS] ML interface: navigator.ml must inherit property "createContext(GPUDevice)" with the proper type
 [PASS] ML interface: calling createContext(GPUDevice) on navigator.ml with too few arguments must throw TypeError
-[PASS] ML interface: navigator.ml must inherit property "createContextSync(optional MLContextOptions)" with the proper type
-[PASS] ML interface: calling createContextSync(optional MLContextOptions) on navigator.ml with too few arguments must throw TypeError
-[PASS] ML interface: navigator.ml must inherit property "createContextSync(GPUDevice)" with the proper type
-[PASS] ML interface: calling createContextSync(GPUDevice) on navigator.ml with too few arguments must throw TypeError
+[PASS] ML interface: navigator.ml must not have property "createContextSync"
 [PASS] MLGraph interface: existence and properties of interface object
 [PASS] MLGraph interface object length
 [PASS] MLGraph interface object name
@@ -166,19 +161,15 @@ Found 414 tests; 325 PASS, 89 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] MLContext interface: existence and properties of interface prototype object
 [PASS] MLContext interface: existence and properties of interface prototype object's "constructor" property
 [PASS] MLContext interface: existence and properties of interface prototype object's @@unscopables property
-[PASS] MLContext interface: operation computeSync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)
-[FAIL] MLContext interface: operation compute(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)
-  assert_own_property: interface prototype object missing non-static operation expected property "compute" missing
+[PASS] MLContext interface: member computeSync
+[PASS] MLContext interface: operation compute(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)
 [FAIL] MLContext interface: operation createCommandEncoder()
   assert_own_property: interface prototype object missing non-static operation expected property "createCommandEncoder" missing
 [PASS] MLContext must be primary interface of context
 [PASS] Stringification of context
-[PASS] MLContext interface: context must inherit property "computeSync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)" with the proper type
-[PASS] MLContext interface: calling computeSync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) on context with too few arguments must throw TypeError
-[FAIL] MLContext interface: context must inherit property "compute(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)" with the proper type
-  assert_inherits: property "compute" not found in prototype chain
-[FAIL] MLContext interface: calling compute(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) on context with too few arguments must throw TypeError
-  assert_inherits: property "compute" not found in prototype chain
+[PASS] MLContext interface: context must not have property "computeSync"
+[PASS] MLContext interface: context must inherit property "compute(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)" with the proper type
+[PASS] MLContext interface: calling compute(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) on context with too few arguments must throw TypeError
 [FAIL] MLContext interface: context must inherit property "createCommandEncoder()" with the proper type
   assert_inherits: property "createCommandEncoder" not found in prototype chain
 [FAIL] MLCommandEncoder interface: existence and properties of interface object
@@ -210,9 +201,8 @@ Found 414 tests; 325 PASS, 89 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: property has wrong .length expected 1 but got 2
 [FAIL] MLGraphBuilder interface: operation constant(double, optional MLOperandType)
   assert_equals: property has wrong .length expected 1 but got 2
-[FAIL] MLGraphBuilder interface: operation build(MLNamedOperands)
-  assert_own_property: interface prototype object missing non-static operation expected property "build" missing
-[PASS] MLGraphBuilder interface: operation buildSync(MLNamedOperands)
+[PASS] MLGraphBuilder interface: operation build(MLNamedOperands)
+[PASS] MLGraphBuilder interface: member buildSync
 [FAIL] MLGraphBuilder interface: operation batchNormalization(MLOperand, MLOperand, MLOperand, optional MLBatchNormalizationOptions)
   assert_own_property: interface prototype object missing non-static operation expected property "batchNormalization" missing
 [PASS] MLGraphBuilder interface: operation clamp(MLOperand, optional MLClampOptions)
@@ -273,16 +263,24 @@ Found 414 tests; 325 PASS, 89 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: interface prototype object missing non-static operation expected property "l2Pool2d" missing
 [PASS] MLGraphBuilder interface: operation maxPool2d(MLOperand, optional MLPool2dOptions)
 [PASS] MLGraphBuilder interface: operation prelu(MLOperand, MLOperand)
-[PASS] MLGraphBuilder interface: operation reduceL1(MLOperand, optional MLReduceOptions)
-[PASS] MLGraphBuilder interface: operation reduceL2(MLOperand, optional MLReduceOptions)
-[PASS] MLGraphBuilder interface: operation reduceLogSum(MLOperand, optional MLReduceOptions)
-[PASS] MLGraphBuilder interface: operation reduceLogSumExp(MLOperand, optional MLReduceOptions)
-[PASS] MLGraphBuilder interface: operation reduceMax(MLOperand, optional MLReduceOptions)
+[FAIL] MLGraphBuilder interface: operation reduceL1(MLOperand, optional MLReduceOptions)
+  assert_own_property: interface prototype object missing non-static operation expected property "reduceL1" missing
+[FAIL] MLGraphBuilder interface: operation reduceL2(MLOperand, optional MLReduceOptions)
+  assert_own_property: interface prototype object missing non-static operation expected property "reduceL2" missing
+[FAIL] MLGraphBuilder interface: operation reduceLogSum(MLOperand, optional MLReduceOptions)
+  assert_own_property: interface prototype object missing non-static operation expected property "reduceLogSum" missing
+[FAIL] MLGraphBuilder interface: operation reduceLogSumExp(MLOperand, optional MLReduceOptions)
+  assert_own_property: interface prototype object missing non-static operation expected property "reduceLogSumExp" missing
+[FAIL] MLGraphBuilder interface: operation reduceMax(MLOperand, optional MLReduceOptions)
+  assert_own_property: interface prototype object missing non-static operation expected property "reduceMax" missing
 [PASS] MLGraphBuilder interface: operation reduceMean(MLOperand, optional MLReduceOptions)
-[PASS] MLGraphBuilder interface: operation reduceMin(MLOperand, optional MLReduceOptions)
-[PASS] MLGraphBuilder interface: operation reduceProduct(MLOperand, optional MLReduceOptions)
+[FAIL] MLGraphBuilder interface: operation reduceMin(MLOperand, optional MLReduceOptions)
+  assert_own_property: interface prototype object missing non-static operation expected property "reduceMin" missing
+[FAIL] MLGraphBuilder interface: operation reduceProduct(MLOperand, optional MLReduceOptions)
+  assert_own_property: interface prototype object missing non-static operation expected property "reduceProduct" missing
 [PASS] MLGraphBuilder interface: operation reduceSum(MLOperand, optional MLReduceOptions)
-[PASS] MLGraphBuilder interface: operation reduceSumSquare(MLOperand, optional MLReduceOptions)
+[FAIL] MLGraphBuilder interface: operation reduceSumSquare(MLOperand, optional MLReduceOptions)
+  assert_own_property: interface prototype object missing non-static operation expected property "reduceSumSquare" missing
 [PASS] MLGraphBuilder interface: operation relu(MLOperand)
 [PASS] MLGraphBuilder interface: operation relu()
 [PASS] MLGraphBuilder interface: operation resample2d(MLOperand, optional MLResample2dOptions)
@@ -316,12 +314,9 @@ Found 414 tests; 325 PASS, 89 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] MLGraphBuilder interface: calling constant(MLOperandDescriptor, MLBufferView) on builder with too few arguments must throw TypeError
 [PASS] MLGraphBuilder interface: builder must inherit property "constant(double, optional MLOperandType)" with the proper type
 [PASS] MLGraphBuilder interface: calling constant(double, optional MLOperandType) on builder with too few arguments must throw TypeError
-[FAIL] MLGraphBuilder interface: builder must inherit property "build(MLNamedOperands)" with the proper type
-  assert_inherits: property "build" not found in prototype chain
-[FAIL] MLGraphBuilder interface: calling build(MLNamedOperands) on builder with too few arguments must throw TypeError
-  assert_inherits: property "build" not found in prototype chain
-[PASS] MLGraphBuilder interface: builder must inherit property "buildSync(MLNamedOperands)" with the proper type
-[PASS] MLGraphBuilder interface: calling buildSync(MLNamedOperands) on builder with too few arguments must throw TypeError
+[PASS] MLGraphBuilder interface: builder must inherit property "build(MLNamedOperands)" with the proper type
+[PASS] MLGraphBuilder interface: calling build(MLNamedOperands) on builder with too few arguments must throw TypeError
+[PASS] MLGraphBuilder interface: builder must not have property "buildSync"
 [FAIL] MLGraphBuilder interface: builder must inherit property "batchNormalization(MLOperand, MLOperand, MLOperand, optional MLBatchNormalizationOptions)" with the proper type
   assert_inherits: property "batchNormalization" not found in prototype chain
 [FAIL] MLGraphBuilder interface: calling batchNormalization(MLOperand, MLOperand, MLOperand, optional MLBatchNormalizationOptions) on builder with too few arguments must throw TypeError
@@ -441,26 +436,42 @@ Found 414 tests; 325 PASS, 89 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] MLGraphBuilder interface: calling maxPool2d(MLOperand, optional MLPool2dOptions) on builder with too few arguments must throw TypeError
 [PASS] MLGraphBuilder interface: builder must inherit property "prelu(MLOperand, MLOperand)" with the proper type
 [PASS] MLGraphBuilder interface: calling prelu(MLOperand, MLOperand) on builder with too few arguments must throw TypeError
-[PASS] MLGraphBuilder interface: builder must inherit property "reduceL1(MLOperand, optional MLReduceOptions)" with the proper type
-[PASS] MLGraphBuilder interface: calling reduceL1(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError
-[PASS] MLGraphBuilder interface: builder must inherit property "reduceL2(MLOperand, optional MLReduceOptions)" with the proper type
-[PASS] MLGraphBuilder interface: calling reduceL2(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError
-[PASS] MLGraphBuilder interface: builder must inherit property "reduceLogSum(MLOperand, optional MLReduceOptions)" with the proper type
-[PASS] MLGraphBuilder interface: calling reduceLogSum(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError
-[PASS] MLGraphBuilder interface: builder must inherit property "reduceLogSumExp(MLOperand, optional MLReduceOptions)" with the proper type
-[PASS] MLGraphBuilder interface: calling reduceLogSumExp(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError
-[PASS] MLGraphBuilder interface: builder must inherit property "reduceMax(MLOperand, optional MLReduceOptions)" with the proper type
-[PASS] MLGraphBuilder interface: calling reduceMax(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError
+[FAIL] MLGraphBuilder interface: builder must inherit property "reduceL1(MLOperand, optional MLReduceOptions)" with the proper type
+  assert_inherits: property "reduceL1" not found in prototype chain
+[FAIL] MLGraphBuilder interface: calling reduceL1(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError
+  assert_inherits: property "reduceL1" not found in prototype chain
+[FAIL] MLGraphBuilder interface: builder must inherit property "reduceL2(MLOperand, optional MLReduceOptions)" with the proper type
+  assert_inherits: property "reduceL2" not found in prototype chain
+[FAIL] MLGraphBuilder interface: calling reduceL2(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError
+  assert_inherits: property "reduceL2" not found in prototype chain
+[FAIL] MLGraphBuilder interface: builder must inherit property "reduceLogSum(MLOperand, optional MLReduceOptions)" with the proper type
+  assert_inherits: property "reduceLogSum" not found in prototype chain
+[FAIL] MLGraphBuilder interface: calling reduceLogSum(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError
+  assert_inherits: property "reduceLogSum" not found in prototype chain
+[FAIL] MLGraphBuilder interface: builder must inherit property "reduceLogSumExp(MLOperand, optional MLReduceOptions)" with the proper type
+  assert_inherits: property "reduceLogSumExp" not found in prototype chain
+[FAIL] MLGraphBuilder interface: calling reduceLogSumExp(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError
+  assert_inherits: property "reduceLogSumExp" not found in prototype chain
+[FAIL] MLGraphBuilder interface: builder must inherit property "reduceMax(MLOperand, optional MLReduceOptions)" with the proper type
+  assert_inherits: property "reduceMax" not found in prototype chain
+[FAIL] MLGraphBuilder interface: calling reduceMax(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError
+  assert_inherits: property "reduceMax" not found in prototype chain
 [PASS] MLGraphBuilder interface: builder must inherit property "reduceMean(MLOperand, optional MLReduceOptions)" with the proper type
 [PASS] MLGraphBuilder interface: calling reduceMean(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError
-[PASS] MLGraphBuilder interface: builder must inherit property "reduceMin(MLOperand, optional MLReduceOptions)" with the proper type
-[PASS] MLGraphBuilder interface: calling reduceMin(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError
-[PASS] MLGraphBuilder interface: builder must inherit property "reduceProduct(MLOperand, optional MLReduceOptions)" with the proper type
-[PASS] MLGraphBuilder interface: calling reduceProduct(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError
+[FAIL] MLGraphBuilder interface: builder must inherit property "reduceMin(MLOperand, optional MLReduceOptions)" with the proper type
+  assert_inherits: property "reduceMin" not found in prototype chain
+[FAIL] MLGraphBuilder interface: calling reduceMin(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError
+  assert_inherits: property "reduceMin" not found in prototype chain
+[FAIL] MLGraphBuilder interface: builder must inherit property "reduceProduct(MLOperand, optional MLReduceOptions)" with the proper type
+  assert_inherits: property "reduceProduct" not found in prototype chain
+[FAIL] MLGraphBuilder interface: calling reduceProduct(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError
+  assert_inherits: property "reduceProduct" not found in prototype chain
 [PASS] MLGraphBuilder interface: builder must inherit property "reduceSum(MLOperand, optional MLReduceOptions)" with the proper type
 [PASS] MLGraphBuilder interface: calling reduceSum(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError
-[PASS] MLGraphBuilder interface: builder must inherit property "reduceSumSquare(MLOperand, optional MLReduceOptions)" with the proper type
-[PASS] MLGraphBuilder interface: calling reduceSumSquare(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError
+[FAIL] MLGraphBuilder interface: builder must inherit property "reduceSumSquare(MLOperand, optional MLReduceOptions)" with the proper type
+  assert_inherits: property "reduceSumSquare" not found in prototype chain
+[FAIL] MLGraphBuilder interface: calling reduceSumSquare(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError
+  assert_inherits: property "reduceSumSquare" not found in prototype chain
 [PASS] MLGraphBuilder interface: builder must inherit property "relu(MLOperand)" with the proper type
 [PASS] MLGraphBuilder interface: calling relu(MLOperand) on builder with too few arguments must throw TypeError
 [PASS] MLGraphBuilder interface: builder must inherit property "relu()" with the proper type
@@ -501,7 +512,7 @@ Found 414 tests; 325 PASS, 89 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] MLGraphBuilder interface: builder must inherit property "tanh()" with the proper type
 [PASS] MLGraphBuilder interface: builder must inherit property "transpose(MLOperand, optional MLTransposeOptions)" with the proper type
 [PASS] MLGraphBuilder interface: calling transpose(MLOperand, optional MLTransposeOptions) on builder with too few arguments must throw TypeError
-[PASS] WorkerNavigator interface: attribute ml
-[PASS] WorkerNavigator interface: navigator must inherit property "ml" with the proper type
+[PASS] Navigator interface: attribute ml
+[PASS] Navigator interface: navigator must inherit property "ml" with the proper type
 Harness: the test ran to completion.
 

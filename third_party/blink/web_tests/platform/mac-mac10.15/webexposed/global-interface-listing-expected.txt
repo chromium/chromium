@@ -5245,7 +5245,6 @@ interface IIRFilterNode : AudioNode
     method getFrequencyResponse
 interface IdentityCredential : Credential
     static method logoutRPs
-    static method revoke
     attribute @@toStringTag
     getter isAutoSelected
     getter token
@@ -5635,16 +5634,8 @@ interface MLGraphBuilder
     method pad
     method pow
     method prelu
-    method reduceL1
-    method reduceL2
-    method reduceLogSum
-    method reduceLogSumExp
-    method reduceMax
     method reduceMean
-    method reduceMin
-    method reduceProduct
     method reduceSum
-    method reduceSumSquare
     method relu
     method resample2d
     method reshape

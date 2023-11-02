@@ -5245,7 +5245,6 @@ interface IIRFilterNode : AudioNode
     method getFrequencyResponse
 interface IdentityCredential : Credential
     static method logoutRPs
-    static method revoke
     attribute @@toStringTag
     getter isAutoSelected
     getter token
