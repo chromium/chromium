@@ -392,6 +392,10 @@ export class RealboxDropdownElement extends PolymerElement {
    * @returns Icon name for suggestion group show/hide toggle button.
    */
   private toggleButtonIconForGroup_(groupId: number): string {
+    if (loadTimeData.getBoolean('realboxCr23ExpandedStateIcons')) {
+      return this.groupIsHidden_(groupId) ? 'icon-arrow-drop-down-cr23' :
+                                            'icon-arrow-drop-up-cr23';
+    }
     return this.groupIsHidden_(groupId) ? 'icon-expand-more' :
                                           'icon-expand-less';
   }

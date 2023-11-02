@@ -73,28 +73,28 @@
 
 namespace {
 
-constexpr char kAnswerCurrencyIconResourceName[] =
+// TODO(niharm): convert back to constexpr char[] once feature is cleaned up
+const char* kAnswerCurrencyIconResourceName =
     "//resources/cr_components/omnibox/icons/currency.svg";
 constexpr char kAnswerDefaultIconResourceName[] =
     "//resources/cr_components/omnibox/icons/default.svg";
-constexpr char kAnswerDictionaryIconResourceName[] =
+const char* kAnswerDictionaryIconResourceName =
     "//resources/cr_components/omnibox/icons/definition.svg";
-constexpr char kAnswerFinanceIconResourceName[] =
+const char* kAnswerFinanceIconResourceName =
     "//resources/cr_components/omnibox/icons/finance.svg";
-constexpr char kAnswerSunriseIconResourceName[] =
+const char* kAnswerSunriseIconResourceName =
     "//resources/cr_components/omnibox/icons/sunrise.svg";
-constexpr char kAnswerTranslationIconResourceName[] =
+const char* kAnswerTranslationIconResourceName =
     "//resources/cr_components/omnibox/icons/translation.svg";
-constexpr char kAnswerWhenIsIconResourceName[] =
+const char* kAnswerWhenIsIconResourceName =
     "//resources/cr_components/omnibox/icons/when_is.svg";
-constexpr char kBookmarkIconResourceName[] =
-    "//resources/images/icon_bookmark.svg";
-constexpr char kCalculatorIconResourceName[] =
+const char* kBookmarkIconResourceName = "//resources/images/icon_bookmark.svg";
+const char* kCalculatorIconResourceName =
     "//resources/cr_components/omnibox/icons/calculator.svg";
-constexpr char kChromeProductIconResourceName[] =
+const char* kChromeProductIconResourceName =
     "//resources/cr_components/omnibox/icons/chrome_product.svg";
-constexpr char kClockIconResourceName[] = "//resources/images/icon_clock.svg";
-constexpr char kDinoIconResourceName[] =
+const char* kClockIconResourceName = "//resources/images/icon_clock.svg";
+const char* kDinoIconResourceName =
     "//resources/cr_components/omnibox/icons/dino.svg";
 constexpr char kDriveDocsIconResourceName[] =
     "//resources/cr_components/omnibox/icons/drive_docs.svg";
@@ -119,41 +119,98 @@ constexpr char kExtensionAppIconResourceName[] =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr char kGoogleCalendarIconResourceName[] =
     "//resources/cr_components/omnibox/icons/calendar.svg";
-constexpr char kGoogleGIconResourceName[] =
+const char* kGoogleGIconResourceName =
     "//resources/cr_components/omnibox/icons/google_g.svg";
 constexpr char kGoogleKeepNoteIconResourceName[] =
     "//resources/cr_components/omnibox/icons/note.svg";
 constexpr char kGoogleSitesIconResourceName[] =
     "//resources/cr_components/omnibox/icons/sites.svg";
 #endif
-constexpr char kHistoryIconResourceName[] =
-    "//resources/images/icon_history.svg";
-constexpr char kIncognitoIconResourceName[] =
+const char* kHistoryIconResourceName = "//resources/images/icon_history.svg";
+const char* kIncognitoIconResourceName =
     "//resources/cr_components/omnibox/icons/incognito.svg";
-constexpr char kJourneysIconResourceName[] =
+const char* kJourneysIconResourceName =
     "//resources/cr_components/omnibox/icons/journeys.svg";
-constexpr char kPageIconResourceName[] =
+const char* kPageIconResourceName =
     "//resources/cr_components/omnibox/icons/page.svg";
 constexpr char kPedalsIconResourceName[] = "//theme/current-channel-logo";
-constexpr char kSearchIconResourceName[] = "//resources/images/icon_search.svg";
-constexpr char kTabIconResourceName[] =
+const char* kSearchIconResourceName = "//resources/images/icon_search.svg";
+const char* kTabIconResourceName =
     "//resources/cr_components/omnibox/icons/tab.svg";
-constexpr char kTrendingUpIconResourceName[] =
+const char* kTrendingUpIconResourceName =
     "//resources/cr_components/omnibox/icons/trending_up.svg";
 
 #if BUILDFLAG(IS_MAC)
-constexpr char kMacShareIconResourceName[] =
+const char* kMacShareIconResourceName =
     "//resources/cr_components/omnibox/icons/mac_share.svg";
 #elif BUILDFLAG(IS_WIN)
-constexpr char kWinShareIconResourceName[] =
+const char* kWinShareIconResourceName =
     "//resources/cr_components/omnibox/icons/win_share.svg";
 #elif BUILDFLAG(IS_LINUX)
-constexpr char kLinuxShareIconResourceName[] =
+const char* kLinuxShareIconResourceName =
     "//resources/cr_components/omnibox/icons/share.svg";
 #else
-constexpr char kShareIconResourceName[] =
+const char* kShareIconResourceName =
     "//resources/cr_components/omnibox/icons/share.svg";
 #endif
+
+static void DefineChromeRefreshRealboxIcons() {
+  kAnswerCurrencyIconResourceName =
+      "//resources/cr_components/omnibox/icons/currency_cr23.svg";
+  kAnswerDictionaryIconResourceName =
+      "//resources/cr_components/omnibox/icons/definition_cr23.svg";
+  kAnswerFinanceIconResourceName =
+      "//resources/cr_components/omnibox/icons/finance_cr23.svg";
+  kAnswerSunriseIconResourceName =
+      "//resources/cr_components/omnibox/icons/sunrise_cr23.svg";
+  kAnswerTranslationIconResourceName =
+      "//resources/cr_components/omnibox/icons/translation_cr23.svg";
+  kAnswerWhenIsIconResourceName =
+      "//resources/cr_components/omnibox/icons/when_is_cr23.svg";
+  kBookmarkIconResourceName =
+      "//resources/cr_components/omnibox/icons/bookmark_cr23.svg";
+  kCalculatorIconResourceName =
+      "//resources/cr_components/omnibox/icons/calculator_cr23.svg";
+  kChromeProductIconResourceName =
+      "//resources/cr_components/omnibox/icons/chrome_product_cr23.svg";
+  kClockIconResourceName =
+      "//resources/cr_components/omnibox/icons/clock_cr23.svg";
+  kDinoIconResourceName =
+      "//resources/cr_components/omnibox/icons/dino_cr23.svg";
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  kGoogleGIconResourceName =
+      "//resources/cr_components/omnibox/icons/google_g_cr23.svg";
+#endif
+
+  kHistoryIconResourceName =
+      "//resources/cr_components/omnibox/icons/history_cr23.svg";
+  kIncognitoIconResourceName =
+      "//resources/cr_components/omnibox/icons/incognito_cr23.svg";
+  kJourneysIconResourceName =
+      "//resources/cr_components/omnibox/icons/journeys_cr23.svg";
+  kPageIconResourceName =
+      "//resources/cr_components/omnibox/icons/page_cr23.svg";
+  kSearchIconResourceName =
+      "//resources/cr_components/omnibox/icons/search_cr23.svg";
+  kTabIconResourceName = "//resources/cr_components/omnibox/icons/tab_cr23.svg";
+  kTrendingUpIconResourceName =
+      "//resources/cr_components/omnibox/icons/trending_up_cr23.svg";
+
+#if BUILDFLAG(IS_MAC)
+  kMacShareIconResourceName =
+      "//resources/cr_components/omnibox/icons/mac_share_cr23.svg";
+#elif BUILDFLAG(IS_WIN)
+  kWinShareIconResourceName =
+      "//resources/cr_components/omnibox/icons/win_share_cr23.svg";
+#elif BUILDFLAG(IS_LINUX)
+  kLinuxShareIconResourceName =
+      "//resources/cr_components/omnibox/icons/share_cr23.svg";
+#else
+  kShareIconResourceName =
+      "//resources/cr_components/omnibox/icons/share_cr23.svg";
+#endif
+}
 
 base::flat_map<int32_t, omnibox::mojom::SuggestionGroupPtr>
 CreateSuggestionGroupsMap(
@@ -575,7 +632,11 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
                         ntp_features::kNtpRealboxWidthBehaviorParam));
   source->AddBoolean("realboxIsTall", base::FeatureList::IsEnabled(
                                           ntp_features::kRealboxIsTall));
-
+  if ((base::FeatureList::IsEnabled(
+           ntp_features::kRealboxCr23ExpandedStateIcons) ||
+       base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All))) {
+    DefineChromeRefreshRealboxIcons();
+  }
   source->AddString(
       "realboxDefaultIcon",
       base::FeatureList::IsEnabled(ntp_features::kRealboxUseGoogleGIcon)
