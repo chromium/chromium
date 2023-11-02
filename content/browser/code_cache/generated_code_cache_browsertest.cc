@@ -11,6 +11,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
@@ -32,9 +33,34 @@ enum class CodeCacheTestCase {
   kCachePartitioningDisabled,
 };
 
+std::string CodeCacheTestCaseToString(CodeCacheTestCase param) {
+  switch (param) {
+    case CodeCacheTestCase::kCachePartitioningEnabled:
+      return "CachePartitioningEnabled";
+    case CodeCacheTestCase::kCachePartitioningDisabled:
+      return "CachePartitioningDisabled";
+  }
+}
+
+enum class BackgroundResourceFetchTestCase {
+  kBackgroundResourceFetchEnabled,
+  kBackgroundResourceFetchDisabled,
+};
+
+std::string BackgroundResourceFetchTestCaseToString(
+    BackgroundResourceFetchTestCase param) {
+  switch (param) {
+    case BackgroundResourceFetchTestCase::kBackgroundResourceFetchEnabled:
+      return "BackgroundResourceFetchEnabled";
+    case BackgroundResourceFetchTestCase::kBackgroundResourceFetchDisabled:
+      return "BackgroundResourceFetchDisabled";
+  }
+}
+
 class CodeCacheBrowserTest
     : public ContentBrowserTest,
-      public testing::WithParamInterface<CodeCacheTestCase> {
+      public testing::WithParamInterface<
+          std::pair<CodeCacheTestCase, BackgroundResourceFetchTestCase>> {
  public:
   CodeCacheBrowserTest() {
     // Enable the split HTTP cache since the GeneratedCodeCache won't consider
@@ -51,10 +77,20 @@ class CodeCacheBrowserTest
     feature_split_code_cache_by_network_isolation_key_.InitWithFeatureState(
         net::features::kSplitCodeCacheByNetworkIsolationKey,
         IsCachePartitioningEnabled());
+
+    if (IsBackgroundResourceFetchEnabled()) {
+      feature_background_resource_fetch_.InitAndEnableFeature(
+          blink::features::kBackgroundResourceFetch);
+    }
   }
 
   bool IsCachePartitioningEnabled() const {
-    return GetParam() == CodeCacheTestCase::kCachePartitioningEnabled;
+    return GetParam().first == CodeCacheTestCase::kCachePartitioningEnabled;
+  }
+
+  bool IsBackgroundResourceFetchEnabled() const {
+    return GetParam().second ==
+           BackgroundResourceFetchTestCase::kBackgroundResourceFetchEnabled;
   }
 
   void SetUpOnMainThread() override {
@@ -180,20 +216,29 @@ class CodeCacheBrowserTest
   base::test::ScopedFeatureList feature_third_party_storage_partitioning_;
   base::test::ScopedFeatureList
       feature_split_code_cache_by_network_isolation_key_;
+  base::test::ScopedFeatureList feature_background_resource_fetch_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     CodeCacheBrowserTest,
-    testing::ValuesIn({CodeCacheTestCase::kCachePartitioningEnabled,
-                       CodeCacheTestCase::kCachePartitioningDisabled}),
-    [](const testing::TestParamInfo<CodeCacheTestCase>& info) {
-      switch (info.param) {
-        case (CodeCacheTestCase::kCachePartitioningEnabled):
-          return "CachePartitioningEnabled";
-        case (CodeCacheTestCase::kCachePartitioningDisabled):
-          return "CachePartitioningDisabled";
-      }
+    testing::Values(
+        std::make_pair(
+            CodeCacheTestCase::kCachePartitioningEnabled,
+            BackgroundResourceFetchTestCase::kBackgroundResourceFetchEnabled),
+        std::make_pair(
+            CodeCacheTestCase::kCachePartitioningEnabled,
+            BackgroundResourceFetchTestCase::kBackgroundResourceFetchDisabled),
+        std::make_pair(
+            CodeCacheTestCase::kCachePartitioningDisabled,
+            BackgroundResourceFetchTestCase::kBackgroundResourceFetchEnabled),
+        std::make_pair(
+            CodeCacheTestCase::kCachePartitioningDisabled,
+            BackgroundResourceFetchTestCase::kBackgroundResourceFetchDisabled)),
+    [](const testing::TestParamInfo<
+        std::pair<CodeCacheTestCase, BackgroundResourceFetchTestCase>>& info) {
+      return CodeCacheTestCaseToString(info.param.first) +
+             BackgroundResourceFetchTestCaseToString(info.param.second);
     });
 
 IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest, CachingFromThirdPartyFrames) {

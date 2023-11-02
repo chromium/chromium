@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/prefetched_signed_exchange_manager.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
+#include "third_party/blink/renderer/platform/loader/fetch/background_code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/background_url_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_factory.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -197,7 +198,8 @@ std::unique_ptr<URLLoader> LoaderFactoryForFrame::CreateURLLoader(
       return std::make_unique<BackgroundURLLoader>(
           std::move(web_background_resource_fetch_assets),
           GetCorsExemptHeaderList(), freezable_task_runner,
-          unfreezable_task_runner, std::move(throttles));
+          unfreezable_task_runner, std::move(throttles),
+          GetBackgroundCodeCacheHost());
     }
   }
 
@@ -234,6 +236,22 @@ void LoaderFactoryForFrame::IssueKeepAliveHandleIfRequested(
     // done.
     CHECK(window_->IsContextDestroyed());
   }
+}
+
+scoped_refptr<BackgroundCodeCacheHost>
+LoaderFactoryForFrame::GetBackgroundCodeCacheHost() {
+  if (!background_code_cache_host_) {
+    // TODO(crbug.com/1379780): Consider passing a pending_remote in the
+    // navigation IPC instead.
+    mojo::PendingRemote<mojom::blink::CodeCacheHost> pending_remote;
+    document_loader_->GetFrame()
+        ->Client()
+        ->GetBrowserInterfaceBroker()
+        .GetInterface(pending_remote.InitWithNewPipeAndPassReceiver());
+    background_code_cache_host_ = base::MakeRefCounted<BackgroundCodeCacheHost>(
+        std::move(pending_remote));
+  }
+  return background_code_cache_host_;
 }
 
 }  // namespace blink

@@ -19,6 +19,7 @@ struct ResourceRequest;
 
 namespace blink {
 
+class BackgroundCodeCacheHost;
 class WebBackgroundResourceFetchAssets;
 class URLLoaderClient;
 class ResourceRequestHead;
@@ -49,7 +50,8 @@ class BLINK_PLATFORM_EXPORT BackgroundURLLoader : public URLLoader {
       const Vector<String>& cors_exempt_header_list,
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
-      Vector<std::unique_ptr<URLLoaderThrottle>> throttles);
+      Vector<std::unique_ptr<URLLoaderThrottle>> throttles,
+      scoped_refptr<BackgroundCodeCacheHost> background_code_cache_host);
   ~BackgroundURLLoader() override;
 
   void LoadSynchronously(std::unique_ptr<network::ResourceRequest> request,

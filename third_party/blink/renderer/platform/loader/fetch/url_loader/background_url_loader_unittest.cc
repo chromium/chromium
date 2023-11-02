@@ -26,6 +26,7 @@
 #include "third_party/blink/public/platform/web_background_resource_fetch_assets.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_response.h"
+#include "third_party/blink/renderer/platform/loader/fetch/background_code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
@@ -367,7 +368,8 @@ class BackgroundResourceFecherTest : public testing::Test {
             std::move(background_resource_fetch_assets),
             /*cors_exempt_header_list=*/Vector<String>(),
             freezable_task_runner_, unfreezable_task_runner_,
-            Vector<std::unique_ptr<URLLoaderThrottle>>());
+            Vector<std::unique_ptr<URLLoaderThrottle>>(),
+            /*background_code_cache_host=*/nullptr);
     background_url_loader->LoadAsynchronously(
         std::move(request), SecurityOrigin::Create(KURL(kTestURL)),
         /*no_mime_sniffing=*/false,
@@ -555,7 +557,8 @@ TEST_F(BackgroundResourceFecherTest, CancelSoonAfterStart) {
           std::move(background_resource_fetch_assets),
           /*cors_exempt_header_list=*/Vector<String>(), freezable_task_runner_,
           unfreezable_task_runner_,
-          Vector<std::unique_ptr<URLLoaderThrottle>>());
+          Vector<std::unique_ptr<URLLoaderThrottle>>(),
+          /*background_code_cache_host*/ nullptr);
   FakeURLLoaderClient client(freezable_task_runner_);
   background_url_loader->LoadAsynchronously(
       CreateTestRequest(), SecurityOrigin::Create(KURL(kTestURL)),

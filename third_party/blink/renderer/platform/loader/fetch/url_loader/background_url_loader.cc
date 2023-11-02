@@ -21,6 +21,7 @@
 #include "third_party/blink/public/platform/web_background_resource_fetch_assets.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_response.h"
+#include "third_party/blink/renderer/platform/loader/fetch/background_code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
@@ -156,7 +157,8 @@ class BackgroundURLLoader::Context
           const Vector<String>& cors_exempt_header_list,
           scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
           scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
-          Vector<std::unique_ptr<URLLoaderThrottle>> throttles)
+          Vector<std::unique_ptr<URLLoaderThrottle>> throttles,
+          scoped_refptr<BackgroundCodeCacheHost> background_code_cache_host)
       : background_resource_fetch_context_(
             std::move(background_resource_fetch_context)),
         cors_exempt_header_list_(cors_exempt_header_list),
@@ -164,7 +166,8 @@ class BackgroundURLLoader::Context
         unfreezable_task_runner_(std::move(unfreezable_task_runner)),
         background_task_runner_(
             background_resource_fetch_context_->GetTaskRunner()),
-        throttles_(std::move(throttles)) {
+        throttles_(std::move(throttles)),
+        background_code_cache_host_(std::move(background_code_cache_host)) {
     DETACH_FROM_SEQUENCE(background_sequence_checker_);
   }
 
@@ -320,14 +323,15 @@ class BackgroundURLLoader::Context
           std::make_unique<MimeSniffingThrottle>(background_task_runner_));
     }
 
-    // TODDO(crbug.com/1379780): Fetch code cache from the background
-    // thread when `should_use_code_cache_host` is set.
     request_id_ = resource_request_sender_->SendAsync(
         std::move(request), background_task_runner_, tag, loader_options,
         cors_exempt_header_list, base::MakeRefCounted<RequestClient>(this),
         background_resource_fetch_context->GetLoaderFactory(),
         std::move(throttles), std::move(resource_load_info_notifier_wrapper),
-        /*code_cache_host=*/nullptr,
+        should_use_code_cache_host
+            ? &background_code_cache_host_->GetCodeCacheHost(
+                  background_task_runner_)
+            : nullptr,
         base::BindOnce(&Context::EvictFromBackForwardCacheOnBackground, this),
         base::BindRepeating(
             &Context::DidBufferLoadWhileInBackForwardCacheOnBackground, this));
@@ -487,6 +491,9 @@ class BackgroundURLLoader::Context
   Vector<std::unique_ptr<URLLoaderThrottle>> throttles_
       GUARDED_BY_CONTEXT(main_thread_sequence_checker_);
 
+  scoped_refptr<BackgroundCodeCacheHost> background_code_cache_host_
+      GUARDED_BY_CONTEXT(background_sequence_checker_);
+
   Deque<CrossThreadOnceFunction<void(void)>> tasks_ GUARDED_BY(tasks_lock_);
   base::Lock tasks_lock_;
 
@@ -524,13 +531,15 @@ BackgroundURLLoader::BackgroundURLLoader(
     const Vector<String>& cors_exempt_header_list,
     scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
-    Vector<std::unique_ptr<URLLoaderThrottle>> throttles)
+    Vector<std::unique_ptr<URLLoaderThrottle>> throttles,
+    scoped_refptr<BackgroundCodeCacheHost> background_code_cache_host)
     : context_(base::MakeRefCounted<Context>(
           std::move(background_resource_fetch_context),
           cors_exempt_header_list,
           std::move(freezable_task_runner),
           std::move(unfreezable_task_runner),
-          std::move(throttles))) {
+          std::move(throttles),
+          std::move(background_code_cache_host))) {
   CHECK(IsMainThread());
 }
 
