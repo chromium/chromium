@@ -52,7 +52,7 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
     private final Map<String, Boolean> mTimepointsSupportedMap = new HashMap<>();
     private final HashSet<String> mPendingRequests = new HashSet<>();
     private final TabModel mTabModel;
-    private Player mPlayerCoordinator;
+    @Nullable private Player mPlayerCoordinator;
 
     private TabModelTabObserver mTabObserver;
 
@@ -144,6 +144,7 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
                             Log.d(TAG, "onPageLoad called for %s", url.getPossiblyInvalidSpec());
                             maybeCheckReadability(url);
                             maybeHandleTabReload(tab, url);
+                            maybeStopPlayback(tab);
                         }
 
                         @Override
@@ -154,6 +155,11 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
                                             + tab.getUrl().getPossiblyInvalidSpec());
                             super.onTabSelected(tab);
                             maybeCheckReadability(tab.getUrl());
+                        }
+
+                        @Override
+                        public void willCloseTab(Tab tab) {
+                            maybeStopPlayback(tab);
                         }
                     };
         }
@@ -334,6 +340,19 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
     private void maybeHighlightText(PhraseTiming phraseTiming) {
         if (mHighligher != null && mGlobalRenderFrameId != null && mCurrentlyPlayingTab != null) {
             mHighligher.highlightText(mGlobalRenderFrameId, mCurrentlyPlayingTab, phraseTiming);
+        }
+    }
+
+    private void maybeStopPlayback(Tab tab) {
+        if (mCurrentlyPlayingTab == null && mPlayerCoordinator != null) {
+            // in case there's an error and UI is drawn
+            mPlayerCoordinator.removeObserver(this);
+            mPlayerCoordinator.dismissPlayers();
+            return;
+        }
+        if (mCurrentlyPlayingTab != null && mCurrentlyPlayingTab.getId() == tab.getId()) {
+            stopPlayback();
+            return;
         }
     }
 

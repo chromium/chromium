@@ -161,6 +161,94 @@ public class ReadAloudControllerUnitTest {
         assertFalse(mController.isAvailable());
     }
 
+    @Test
+    public void testReloadingPage() {
+        // Reload tab before any playback starts - tests null checks
+        mController.getTabModelTabObserverforTests().onPageLoadStarted(mTab, mTab.getUrl());
+
+        verify(mPlayerCoordinator, never()).dismissPlayers();
+        verify(mPlayback, never()).release();
+
+        // now start playing a tab
+        mController.playTab(mTab);
+        verify(mPlaybackHooks, times(1))
+                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+        mPlaybackCallbackCaptor.getValue().onSuccess(mPlayback);
+
+        // reload some other tab, playback should keep going
+        MockTab newTab = mTabModelSelector.addMockTab();
+        newTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Alphabet_Inc."));
+        mController.getTabModelTabObserverforTests().onPageLoadStarted(newTab, newTab.getUrl());
+
+        verify(mPlayerCoordinator, never()).dismissPlayers();
+        verify(mPlayback, never()).release();
+
+        // now reload the playing tab
+        mController.getTabModelTabObserverforTests().onPageLoadStarted(mTab, mTab.getUrl());
+
+        verify(mPlayerCoordinator).dismissPlayers();
+        verify(mPlayback).release();
+    }
+
+    @Test
+    public void testReloadPage_errorUiDismissed() {
+        // start a playback with an error
+        mController.playTab(mTab);
+        verify(mPlaybackHooks, times(1))
+                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+        mPlaybackCallbackCaptor.getValue().onFailure(new Exception("Very bad error"));
+
+        // Reload this url
+        mController.getTabModelTabObserverforTests().onPageLoadStarted(mTab, mTab.getUrl());
+
+        // No playback but error UI should get dismissed
+        verify(mPlayerCoordinator).dismissPlayers();
+    }
+
+    @Test
+    public void testClosingTab() {
+        // Close a  tab before any playback starts - tests null checks
+        mController.getTabModelTabObserverforTests().willCloseTab(mTab);
+
+        verify(mPlayerCoordinator, never()).dismissPlayers();
+        verify(mPlayback, never()).release();
+
+        // now start playing a tab
+        mController.playTab(mTab);
+        verify(mPlaybackHooks, times(1))
+                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+        mPlaybackCallbackCaptor.getValue().onSuccess(mPlayback);
+
+        // close some other tab, playback should keep going
+        MockTab newTab = mTabModelSelector.addMockTab();
+        newTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Alphabet_Inc."));
+        mController.getTabModelTabObserverforTests().willCloseTab(newTab);
+
+        verify(mPlayerCoordinator, never()).dismissPlayers();
+        verify(mPlayback, never()).release();
+
+        // now close the playing tab
+        mController.getTabModelTabObserverforTests().willCloseTab(mTab);
+
+        verify(mPlayerCoordinator).dismissPlayers();
+        verify(mPlayback).release();
+    }
+
+    @Test
+    public void testClosingTab_errorUiDismissed() {
+        // start a playback with an error
+        mController.playTab(mTab);
+        verify(mPlaybackHooks, times(1))
+                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+        mPlaybackCallbackCaptor.getValue().onFailure(new Exception("Very bad error"));
+
+        // Close this tab
+        mController.getTabModelTabObserverforTests().willCloseTab(mTab);
+
+        // No playback but error UI should get dismissed
+        verify(mPlayerCoordinator).dismissPlayers();
+    }
+
     // Helper function for checkReadabilityOnPageLoad_URLnotReadAloudSupported() to check
     // the provided url is recognized as unreadable
     private void checkURLNotReadAloudSupported(GURL url) {
