@@ -1957,6 +1957,13 @@ void AuthenticatorCommonImpl::OnTimeout() {
     req_state_->awaiting_attestation_response = false;
   }
 
+  if (!req_state_->request_delegate) {
+    // If no UI has been shown yet (likely because we timed out waiting for RP
+    // ID validation) then simply cancel the request.
+    CancelWithStatus(blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+    return;
+  }
+
   DCHECK(req_state_->request_delegate);
   if (req_state_->get_assertion_response_callback) {
     req_state_->get_assertion_result = GetAssertionResult::kTimeout;

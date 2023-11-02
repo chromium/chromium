@@ -467,6 +467,13 @@ class WebAuthBrowserTestContentBrowserClient
         std::move(fake_url_loader_factory));
   }
 
+  // sinkhole_webauthn_origins_requests causes the RP ID validation request to
+  // be dropped.
+  void sinkhole_webauthn_origins_requests() {
+    fake_url_loader_factory_ =
+        base::MakeRefCounted<NoopSharedURLLoaderFactory>();
+  }
+
  private:
   class FakeSharedURLLoaderFactory : public network::SharedURLLoaderFactory {
    public:
@@ -503,9 +510,43 @@ class WebAuthBrowserTestContentBrowserClient
     std::unique_ptr<FakeNetworkURLLoaderFactory> fake_;
   };
 
+  // NoopSharedURLLoaderFactory ignores requests and thus makes it look like
+  // fetches take forever.
+  class NoopSharedURLLoaderFactory : public network::SharedURLLoaderFactory {
+   public:
+    void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
+        override {
+      CHECK(false);
+    }
+
+    std::unique_ptr<network::PendingSharedURLLoaderFactory> Clone() override {
+      CHECK(false);
+      return nullptr;
+    }
+
+    void CreateLoaderAndStart(
+        mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+        int32_t request_id,
+        uint32_t options,
+        const network::ResourceRequest& url_request,
+        mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+        const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
+        override {
+      receiver_ = std::move(receiver);
+      client_ = std::move(client);
+    }
+
+   private:
+    friend class base::RefCounted<NoopSharedURLLoaderFactory>;
+    ~NoopSharedURLLoaderFactory() override = default;
+
+    mojo::PendingReceiver<network::mojom::URLLoader> receiver_;
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client_;
+  };
+
   const raw_ptr<WebAuthBrowserTestState> test_state_;
   const std::string source_origin_;
-  scoped_refptr<FakeSharedURLLoaderFactory> fake_url_loader_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory> fake_url_loader_factory_;
   WebAuthBrowserTestWebAuthenticationDelegate web_authentication_delegate_{
       test_state_};
 };
@@ -1874,6 +1915,19 @@ IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, CreateBadOrigin) {
                            .ExtractString();
 
   EXPECT_EQ(kRpIdNoEntryMessage, result);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, Timeout) {
+  // Have the request timeout happen while RP ID validation is pending.
+  CreateParameters parameters;
+  parameters.rp_id = "foo.com";
+  parameters.timeout = kShortTimeout;
+  test_client()->sinkhole_webauthn_origins_requests();
+  std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                              BuildCreateCallWithParameters(parameters))
+                           .ExtractString();
+
+  EXPECT_EQ(kNotAllowedErrorMessage, result);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, Get) {
