@@ -203,7 +203,7 @@ bool NotificationsApiFunction::CreateNotification(
   // These fields are defined as optional in IDL such that they can be used as
   // optional for notification updates. But for notification creations, they
   // should be present.
-  if (options->type == api::notifications::TEMPLATE_TYPE_NONE ||
+  if (options->type == api::notifications::TemplateType::kNone ||
       !options->icon_url || !options->title || !options->message) {
     *error = kMissingRequiredPropertiesForCreateNotification;
     return false;
@@ -380,8 +380,9 @@ bool NotificationsApiFunction::UpdateNotification(
   const float image_scale = ui::GetScaleForMaxSupportedResourceScaleFactor();
 
   // Update optional fields if provided.
-  if (options->type != api::notifications::TEMPLATE_TYPE_NONE)
+  if (options->type != api::notifications::TemplateType::kNone) {
     notification->set_type(MapApiTemplateTypeToType(options->type));
+  }
   if (options->title)
     notification->set_title(base::UTF8ToUTF16(*options->title));
   if (options->message)
@@ -542,14 +543,14 @@ message_center::NotificationType
 NotificationsApiFunction::MapApiTemplateTypeToType(
     api::notifications::TemplateType type) {
   switch (type) {
-    case api::notifications::TEMPLATE_TYPE_NONE:
-    case api::notifications::TEMPLATE_TYPE_BASIC:
+    case api::notifications::TemplateType::kNone:
+    case api::notifications::TemplateType::kBasic:
       return message_center::NOTIFICATION_TYPE_SIMPLE;
-    case api::notifications::TEMPLATE_TYPE_IMAGE:
+    case api::notifications::TemplateType::kImage:
       return message_center::NOTIFICATION_TYPE_IMAGE;
-    case api::notifications::TEMPLATE_TYPE_LIST:
+    case api::notifications::TemplateType::kList:
       return message_center::NOTIFICATION_TYPE_MULTIPLE;
-    case api::notifications::TEMPLATE_TYPE_PROGRESS:
+    case api::notifications::TemplateType::kProgress:
       return message_center::NOTIFICATION_TYPE_PROGRESS;
     default:
       // Gracefully handle newer application code that is running on an older
@@ -683,8 +684,8 @@ ExtensionFunction::ResponseAction
 NotificationsGetPermissionLevelFunction::RunNotificationsApi() {
   api::notifications::PermissionLevel result =
       AreExtensionNotificationsAllowed()
-          ? api::notifications::PERMISSION_LEVEL_GRANTED
-          : api::notifications::PERMISSION_LEVEL_DENIED;
+          ? api::notifications::PermissionLevel::kGranted
+          : api::notifications::PermissionLevel::kDenied;
 
   return RespondNow(WithArguments(api::notifications::ToString(result)));
 }
