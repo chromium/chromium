@@ -35,17 +35,22 @@ class LacrosBrowserShortcutsController : public WebAppInstallManagerObserver {
       const LacrosBrowserShortcutsController&) = delete;
   ~LacrosBrowserShortcutsController() override;
 
- private:
+  static void SetInitializedCallbackForTesting(base::OnceClosure callback);
+
   void Initialize();
 
+ private:
   void InitializeOnRegistryReady();
 
   // Publish web app identified by `app_id` as browser shortcut to the
   // AppService if the web app is considered as shortcut in ChromeOS.
   // `raw_icon_updated` should be set when the manifest raw icon has
   // changed to allow AppService icon directory to clear the old icons.
-  void MaybePublishBrowserShortcuts(const std::vector<webapps::AppId>& app_ids,
-                                    bool raw_icon_updated = false);
+  void MaybePublishBrowserShortcuts(
+      const std::vector<webapps::AppId>& app_ids,
+      bool raw_icon_updated = false,
+      crosapi::mojom::AppShortcutPublisher::PublishShortcutsCallback callback =
+          base::DoNothing());
 
   // WebAppInstallManagerObserver:
   void OnWebAppInstalled(const webapps::AppId& app_id) override;
@@ -61,8 +66,6 @@ class LacrosBrowserShortcutsController : public WebAppInstallManagerObserver {
 
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
-  raw_ptr<crosapi::mojom::AppShortcutPublisher> remote_publisher_ = nullptr;
-  int remote_publisher_version_ = 0;
   base::WeakPtrFactory<LacrosBrowserShortcutsController> weak_ptr_factory_{
       this};
 };

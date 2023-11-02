@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/app_service/publisher_helper.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -15,21 +16,40 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_effects.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 
+namespace {
+
+base::OnceClosure* GetInitializedCallbackForTesting() {
+  static base::NoDestructor<base::OnceClosure> g_initialized_callback;
+  return g_initialized_callback.get();
+}
+
+void OnInitialBrowserShortcutsPublished() {
+  if (*GetInitializedCallbackForTesting()) {
+    std::move(*GetInitializedCallbackForTesting()).Run();
+  }
+}
+
+}  // namespace
+
 namespace web_app {
 
 LacrosBrowserShortcutsController::LacrosBrowserShortcutsController(
     Profile* profile)
-    : profile_(profile), provider_(WebAppProvider::GetForWebApps(profile_)) {
-  Initialize();
-}
+    : profile_(profile), provider_(WebAppProvider::GetForWebApps(profile_)) {}
 
 LacrosBrowserShortcutsController::~LacrosBrowserShortcutsController() = default;
+
+void LacrosBrowserShortcutsController::SetInitializedCallbackForTesting(
+    base::OnceClosure callback) {
+  *GetInitializedCallbackForTesting() = std::move(callback);
+}
 
 void LacrosBrowserShortcutsController::Initialize() {
   CHECK(profile_);
@@ -37,21 +57,13 @@ void LacrosBrowserShortcutsController::Initialize() {
     return;
   }
 
-  if (!remote_publisher_) {
-    auto* service = chromeos::LacrosService::Get();
-    if (!service ||
-        !service->IsAvailable<crosapi::mojom::AppShortcutPublisher>()) {
-      return;
-    }
-    if (!chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
-      return;
-    }
-
-    remote_publisher_version_ =
-        service->GetInterfaceVersion<crosapi::mojom::AppShortcutPublisher>();
-
-    remote_publisher_ =
-        service->GetRemote<crosapi::mojom::AppShortcutPublisher>().get();
+  auto* service = chromeos::LacrosService::Get();
+  if (!service ||
+      !service->IsAvailable<crosapi::mojom::AppShortcutPublisher>()) {
+    return;
+  }
+  if (!chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
+    return;
   }
 
   CHECK(provider_);
@@ -63,24 +75,29 @@ void LacrosBrowserShortcutsController::Initialize() {
 }
 
 void LacrosBrowserShortcutsController::InitializeOnRegistryReady() {
-  MaybePublishBrowserShortcuts(provider_->registrar_unsafe().GetAppIds());
+  MaybePublishBrowserShortcuts(
+      provider_->registrar_unsafe().GetAppIds(), false,
+      base::BindOnce(&OnInitialBrowserShortcutsPublished));
 
   install_manager_observation_.Observe(&provider_->install_manager());
 }
 
 void LacrosBrowserShortcutsController::MaybePublishBrowserShortcuts(
     const std::vector<webapps::AppId>& app_ids,
-    bool raw_icon_updated) {
-  if (!remote_publisher_) {
-    return;
-  }
+    bool raw_icon_updated,
+    crosapi::mojom::AppShortcutPublisher::PublishShortcutsCallback callback) {
+  auto* service = chromeos::LacrosService::Get();
+  auto* remote_publisher =
+      service->GetRemote<crosapi::mojom::AppShortcutPublisher>().get();
 
-  if (remote_publisher_version_ <
-      int{crosapi::mojom::AppShortcutPublisher::MethodMinVersions::
-              kPublishShortcutsMinVersion}) {
-    LOG(WARNING) << "Ash AppShortcutPublisher version "
-                 << remote_publisher_version_
-                 << " does not support PublishShortcuts().";
+  if (service->GetInterfaceVersion<crosapi::mojom::AppShortcutPublisher>() <
+          int{crosapi::mojom::AppShortcutPublisher::MethodMinVersions::
+                  kPublishShortcutsMinVersion} &&
+      !chromeos::BrowserParamsProxy::Get()->IsCrosapiDisabledForTesting()) {
+    LOG(WARNING)
+        << "Ash AppShortcutPublisher version "
+        << service->GetInterfaceVersion<crosapi::mojom::AppShortcutPublisher>()
+        << " does not support PublishShortcuts().";
     return;
   }
 
@@ -107,8 +124,7 @@ void LacrosBrowserShortcutsController::MaybePublishBrowserShortcuts(
 
     shortcuts.push_back(std::move(shortcut));
   }
-
-  remote_publisher_->PublishShortcuts(std::move(shortcuts), base::DoNothing());
+  remote_publisher->PublishShortcuts(std::move(shortcuts), std::move(callback));
 }
 
 void LacrosBrowserShortcutsController::OnWebAppInstalled(

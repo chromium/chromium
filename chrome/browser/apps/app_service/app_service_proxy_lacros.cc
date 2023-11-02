@@ -526,6 +526,7 @@ void AppServiceProxyLacros::Initialize() {
     if (chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
       lacros_browser_shortcuts_controller_ =
           std::make_unique<web_app::LacrosBrowserShortcutsController>(profile_);
+      lacros_browser_shortcuts_controller_->Initialize();
     }
   }
 

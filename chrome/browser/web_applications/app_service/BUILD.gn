@@ -73,6 +73,7 @@ source_set("app_service") {
       "//chromeos/constants",
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
+      "//chromeos/startup",
       "//components/app_constants",
     ]
   }
@@ -120,10 +121,13 @@ source_set("unit_tests") {
   }
 
   if (is_chromeos_lacros) {
+    sources += [ "lacros_browser_shortcuts_controller_unittest.cc" ]
     deps += [
       ":test_support",
       "//chromeos/lacros",
+      "//chromeos/lacros:test_support",
       "//chromeos/startup",
+      "//components/app_constants",
     ]
   }
 }

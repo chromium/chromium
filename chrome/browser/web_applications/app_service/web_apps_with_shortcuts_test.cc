@@ -15,6 +15,7 @@
 #endif
 
 namespace web_app {
+
 void WebAppsWithShortcutsTest::EnableCrosWebAppShortcutUiUpdate(bool enable) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   scoped_feature_list_.InitWithFeatureState(
@@ -26,4 +27,5 @@ void WebAppsWithShortcutsTest::EnableCrosWebAppShortcutUiUpdate(bool enable) {
   chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
+
 }  // namespace web_app
