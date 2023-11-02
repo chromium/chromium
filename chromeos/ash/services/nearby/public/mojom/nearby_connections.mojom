@@ -105,11 +105,21 @@ interface PayloadListener {
 // used by the browser process to listen for connection status associated with
 // remote devices.
 //
-// This should stay aligned with ConnectionListenerV3 defined at:
+// This should stay aligned with v3::ConnectionListener defined at:
 // //third_party/nearby/src/connections/v3/listeners.h
 //
 // TODO(b/308178927): Introduce functions when callback implementation begins.
 interface ConnectionListenerV3 {};
+
+// Listener for payload status, used by the V3 APIs. Methods in this interface
+// are called from utility process, and is used by the browser process to listen
+// for payload status associated with remote endpoints.
+//
+// This should stay aligned with v3::PayloadListener defined at:
+// //third_party/nearby/src/connections/v3/listeners.h
+//
+// TODO(b/308178927): Introduce functions when callback implementation begins.
+interface PayloadListenerV3 {};
 
 // Main interface to control the NearbyConnections library. Implemented in a
 // sandboxed process. This interface is used by the browser process to connect
@@ -400,5 +410,38 @@ interface NearbyConnections {
                       ash.nearby.presence.mojom.PresenceDevice remote_device,
                       ConnectionOptions connection_options,
                       pending_remote<ConnectionListenerV3> listener)
+      => (Status status);
+
+  // Accepts a connection to a remote device. This method must be called
+  // before Payloads can be exchanged with the remote device.
+  //
+  // service_id    - Service ID used to discover the device.
+  // remote_device - The remote device we are accepting the connection from.
+  // listener      - An interface for payloads exchanged with the remote device.
+  // Possible status codes include:
+  // TODO(b/307319934): Clean up Status values to no longer reference endpoints
+  // when the V3 API migration occurs.
+  //   Status::kSuccess if the connection request was accepted.
+  //   Status::kAlreadyConnectedToEndpoint if the app already has a connection
+  //       to the specified device.
+  //   Status::kEndpointUnknown if the app doesn't currently have a pending
+  //       connection to the remote device.
+  AcceptConnectionV3(string service_id,
+                     ash.nearby.presence.mojom.PresenceDevice remote_device,
+                     pending_remote<PayloadListenerV3> listener)
+      => (Status status);
+
+  // Rejects a connection to a remote device.
+  //
+  // service_id    - Service ID used to discover the device.
+  // remote_device - The device for the remote device.
+  // Possible status codes include:
+  // TODO(b/307319934): Clean up Status values to no longer reference endpoints
+  // when the V3 API migration occurs.
+  //   Status::kSuccess if the connection request was rejected.
+  //   Status::kAlreadyConnectedToEndpoint if the app already has a connection
+  //       to the specified device.
+  RejectConnectionV3(string service_id,
+                     ash.nearby.presence.mojom.PresenceDevice remote_device)
       => (Status status);
 };

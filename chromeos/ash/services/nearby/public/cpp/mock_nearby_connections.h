@@ -22,6 +22,7 @@ using DiscoveryOptionsPtr = ::nearby::connections::mojom::DiscoveryOptionsPtr;
 using EndpointDiscoveryListener =
     ::nearby::connections::mojom::EndpointDiscoveryListener;
 using PayloadListener = ::nearby::connections::mojom::PayloadListener;
+using PayloadListenerV3 = ::nearby::connections::mojom::PayloadListenerV3;
 using PayloadPtr = ::nearby::connections::mojom::PayloadPtr;
 
 namespace ash::nearby {
@@ -137,7 +138,20 @@ class MockNearbyConnections : public NearbyConnectionsMojom {
                presence::mojom::PresenceDevicePtr remote_device,
                ConnectionOptionsPtr connection_options,
                mojo::PendingRemote<ConnectionListenerV3> listener,
-               RequestConnectionCallback callback),
+               RequestConnectionV3Callback callback),
+              (override));
+  MOCK_METHOD(void,
+              AcceptConnectionV3,
+              (const std::string& service_id,
+               presence::mojom::PresenceDevicePtr remote_device,
+               mojo::PendingRemote<PayloadListenerV3> listener,
+               AcceptConnectionV3Callback callback),
+              (override));
+  MOCK_METHOD(void,
+              RejectConnectionV3,
+              (const std::string& service_id,
+               presence::mojom::PresenceDevicePtr remote_device,
+               RejectConnectionV3Callback callback),
               (override));
 
  private:

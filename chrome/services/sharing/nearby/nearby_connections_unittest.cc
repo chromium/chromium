@@ -204,6 +204,24 @@ ConnectionListener ConvertConnectionListenerV3ToV1(
   });
 }
 
+PayloadListener ConvertPayloadListenerV3ToV1(v3::PayloadListener v3_listener) {
+  PayloadListener old_listener{
+      .payload_cb =
+          [v3_received = std::move(v3_listener.payload_received_cb)](
+              std::string_view endpoint_id, Payload payload) {
+            v3_received(v3::ConnectionsDevice(endpoint_id, "", {}),
+                        std::move(payload));
+          },
+      .payload_progress_cb =
+          [v3_cb = std::move(v3_listener.payload_progress_cb)](
+              std::string_view endpoint_id,
+              const PayloadProgressInfo& info) mutable {
+            v3_cb(v3::ConnectionsDevice(endpoint_id, "", {}), info);
+          },
+  };
+  return old_listener;
+}
+
 }  // namespace
 
 class FakeEndpointDiscoveryListener : public mojom::EndpointDiscoveryListener {
@@ -299,6 +317,18 @@ class FakeConnectionListenerV3 : public mojom::ConnectionListenerV3 {
       base::DoNothing();
   base::RepeatingCallback<void(PresenceDevicePtr, mojom::BandwidthInfo)>
       bandwidth_changed_cb = base::DoNothing();
+};
+
+class FakePayloadListenerV3 : public mojom::PayloadListenerV3 {
+ public:
+  // TODO(b/308178927): Introduce functions when callback implementation begins.
+
+  mojo::Receiver<mojom::PayloadListenerV3> receiver{this};
+  base::RepeatingCallback<void(PresenceDevicePtr, mojom::PayloadPtr)>
+      payload_received_cb = base::DoNothing();
+  base::RepeatingCallback<void(PresenceDevicePtr,
+                               mojom::PayloadTransferUpdatePtr)>
+      payload_progress_cb = base::DoNothing();
 };
 
 using ::testing::_;
@@ -584,6 +614,60 @@ class NearbyConnectionsTest : public testing::Test {
         }));
     request_connection_run_loop.Run();
     return client_proxy;
+  }
+
+  ClientProxy* AcceptConnectionV3(
+      FakePayloadListenerV3& fake_payload_listener_v3,
+      PresenceDevicePtr remote_device) {
+    ClientProxy* client_proxy;
+
+    EXPECT_CALL(*service_controller_router_ptr_, AcceptConnectionV3)
+        .WillOnce([&client_proxy](
+                      ClientProxy* client, const NearbyDevice& nearby_device,
+                      v3::PayloadListener listener, ResultCallback callback) {
+          client_proxy = client;
+          client_proxy->LocalEndpointAcceptedConnection(
+              nearby_device.GetEndpointId(),
+              ConvertPayloadListenerV3ToV1(std::move(listener)));
+          client_proxy->OnConnectionAccepted(nearby_device.GetEndpointId());
+          EXPECT_TRUE(callback);
+          callback({Status::kSuccess});
+        });
+
+    base::RunLoop accept_connection_run_loop;
+    nearby_connections_->AcceptConnectionV3(
+        kServiceId, std::move(remote_device),
+        fake_payload_listener_v3.receiver.BindNewPipeAndPassRemote(),
+        base::BindLambdaForTesting([&](mojom::Status status) {
+          EXPECT_EQ(mojom::Status::kSuccess, status);
+          accept_connection_run_loop.Quit();
+        }));
+    accept_connection_run_loop.Run();
+
+    return client_proxy;
+  }
+
+  void RejectConnectionV3(PresenceDevicePtr remote_device) {
+    ClientProxy* client_proxy;
+
+    EXPECT_CALL(*service_controller_router_ptr_, RejectConnectionV3)
+        .WillOnce([&client_proxy](ClientProxy* client,
+                                  const NearbyDevice& nearby_device,
+                                  ResultCallback callback) {
+          client_proxy = client;
+          client_proxy->CancelEndpoint(nearby_device.GetEndpointId());
+          EXPECT_TRUE(callback);
+          callback({Status::kConnectionRejected});
+        });
+
+    base::RunLoop reject_connection_run_loop;
+    nearby_connections_->RejectConnectionV3(
+        kServiceId, std::move(remote_device),
+        base::BindLambdaForTesting([&](mojom::Status status) {
+          EXPECT_EQ(mojom::Status::kConnectionRejected, status);
+          reject_connection_run_loop.Quit();
+        }));
+    reject_connection_run_loop.Run();
   }
 
  protected:
@@ -1505,6 +1589,8 @@ TEST_F(NearbyConnectionsTest, RequestConnectionV3Initiated) {
   nearby::presence::PresenceDevice presence_device(CreateMetadata());
   PresenceDevicePtr presence_device_mojom =
       ash::nearby::presence::BuildPresenceMojomDevice(presence_device);
+  EXPECT_EQ(presence_device_mojom->endpoint_id,
+            presence_device.GetEndpointId());
 
   FakeConnectionListenerV3 fake_connection_listener_v3;
 
@@ -1515,6 +1601,48 @@ TEST_F(NearbyConnectionsTest, RequestConnectionV3Initiated) {
 
   RequestConnectionV3(fake_connection_listener_v3,
                       std::move(presence_device_mojom));
+}
+
+TEST_F(NearbyConnectionsTest, AcceptConnectionV3) {
+  nearby::presence::PresenceDevice presence_device(CreateMetadata());
+  PresenceDevicePtr presence_device_mojom =
+      ash::nearby::presence::BuildPresenceMojomDevice(presence_device);
+  EXPECT_EQ(presence_device_mojom->endpoint_id,
+            presence_device.GetEndpointId());
+
+  FakeConnectionListenerV3 fake_connection_listener_v3;
+  RequestConnectionV3(fake_connection_listener_v3,
+                      presence_device_mojom.Clone());
+
+  // TODO(b/308178927): When callback functions are created, introduce an
+  // `accepted_run_loop` to check for `result_cb` in
+  // `fake_connection_listener_v3`.
+
+  EXPECT_EQ(presence_device_mojom->endpoint_id,
+            presence_device.GetEndpointId());
+  FakePayloadListenerV3 fake_payload_listener_v3;
+  AcceptConnectionV3(fake_payload_listener_v3,
+                     std::move(presence_device_mojom));
+}
+
+TEST_F(NearbyConnectionsTest, RejectConnectionV3) {
+  nearby::presence::PresenceDevice presence_device(CreateMetadata());
+  PresenceDevicePtr presence_device_mojom =
+      ash::nearby::presence::BuildPresenceMojomDevice(presence_device);
+  EXPECT_EQ(presence_device_mojom->endpoint_id,
+            presence_device.GetEndpointId());
+
+  FakeConnectionListenerV3 fake_connection_listener_v3;
+  RequestConnectionV3(fake_connection_listener_v3,
+                      presence_device_mojom.Clone());
+
+  // TODO(b/308178927): When callback functions are created, introduce an
+  // `rejected_run_loop` to check for `result_cb` in
+  // `fake_connection_listener_v3`.
+
+  EXPECT_EQ(presence_device_mojom->endpoint_id,
+            presence_device.GetEndpointId());
+  RejectConnectionV3(std::move(presence_device_mojom));
 }
 
 }  // namespace nearby::connections

@@ -353,8 +353,9 @@ void NearbyConnections::AcceptConnection(
       .payload_cb =
           [&, remote, core = GetCore(service_id)](base::StringPiece endpoint_id,
                                                   Payload payload) {
-            if (!remote)
+            if (!remote) {
               return;
+            }
 
             switch (payload.GetType()) {
               case PayloadType::kBytes: {
@@ -398,8 +399,9 @@ void NearbyConnections::AcceptConnection(
       .payload_progress_cb =
           [&, remote](base::StringPiece endpoint_id,
                       const PayloadProgressInfo& info) {
-            if (!remote)
+            if (!remote) {
               return;
+            }
 
             // TODO(crbug.com/1237525): Investigate if OnPayloadTransferUpdate()
             // should not be called if |info.total_bytes| is negative.
@@ -410,8 +412,9 @@ void NearbyConnections::AcceptConnection(
                     info.payload_id, PayloadStatusToMojom(info.status),
                     info.total_bytes, info.bytes_transferred));
 
-            if (!buffer_manager_.IsTrackingPayload(info.payload_id))
+            if (!buffer_manager_.IsTrackingPayload(info.payload_id)) {
               return;
+            }
 
             switch (info.status) {
               case PayloadProgressInfo::Status::kFailure:
@@ -564,6 +567,109 @@ void NearbyConnections::RequestConnectionV3(
           presence::PresenceDevice(ash::nearby::presence::MetadataFromMojom(
               remote_device->metadata.get())),
           connection_options, CreateConnectionListenerV3(std::move(listener)),
+          ResultCallbackFromMojom(std::move(callback)));
+}
+
+void NearbyConnections::AcceptConnectionV3(
+    const std::string& service_id,
+    ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
+    mojo::PendingRemote<mojom::PayloadListenerV3> listener,
+    AcceptConnectionCallback callback) {
+  mojo::SharedRemote<mojom::PayloadListenerV3> remote(std::move(listener));
+
+  v3::PayloadListener payload_listener_v3 = {
+      .payload_received_cb =
+          [&, remote, core = GetCore(service_id)](
+              const NearbyDevice& remote_device, Payload payload) {
+            if (!remote) {
+              return;
+            }
+
+            switch (payload.GetType()) {
+              case PayloadType::kBytes: {
+                mojom::BytesPayloadPtr bytes_payload = mojom::BytesPayload::New(
+                    ByteArrayToMojom(payload.AsBytes()));
+
+                // TODO(b/308178927): Call `remote->OnPayloadReceived()` when
+                // callback is implemented.
+                break;
+              }
+              case PayloadType::kFile: {
+                CHECK(payload.AsFile());
+
+                // InputFile is created by Chrome, so it's safe to downcast.
+                chrome::InputFile& input_file = static_cast<chrome::InputFile&>(
+                    payload.AsFile()->GetInputStream());
+                base::File file = input_file.ExtractUnderlyingFile();
+                if (!file.IsValid()) {
+                  core->CancelPayload(payload.GetId(), /* callback= */ {});
+                  return;
+                }
+
+                mojom::FilePayloadPtr file_payload =
+                    mojom::FilePayload::New(std::move(file));
+
+                // TODO(b/308178927): Call `remote->OnPayloadReceived()` when
+                // callback is implemented.
+                break;
+              }
+              case PayloadType::kStream: {
+                buffer_manager_.StartTrackingPayload(std::move(payload));
+                break;
+              }
+              case PayloadType::kUnknown: {
+                core->CancelPayload(payload.GetId(), /* callback= */ {});
+                return;
+              }
+            }
+          },
+      .payload_progress_cb =
+          [&, remote](const NearbyDevice& remote_device,
+                      const PayloadProgressInfo& info) {
+            if (!remote) {
+              return;
+            }
+
+            // TODO(b/308178927): Call `remote->OnPayloadTransferUpdate()` when
+            // callback is implemented.
+
+            if (!buffer_manager_.IsTrackingPayload(info.payload_id)) {
+              return;
+            }
+
+            switch (info.status) {
+              case PayloadProgressInfo::Status::kFailure:
+                [[fallthrough]];
+              case PayloadProgressInfo::Status::kCanceled:
+                buffer_manager_.StopTrackingFailedPayload(info.payload_id);
+                break;
+              case PayloadProgressInfo::Status::kInProgress:
+                buffer_manager_.HandleBytesTransferred(info.payload_id,
+                                                       info.bytes_transferred);
+                break;
+              case PayloadProgressInfo::Status::kSuccess:
+                // TODO(b/308178927): Call `remote->OnPayloadReceived()` when
+                // callback is implemented.
+                break;
+            }
+          }};
+
+  GetCore(service_id)
+      ->AcceptConnectionV3(
+          presence::PresenceDevice(ash::nearby::presence::MetadataFromMojom(
+              remote_device->metadata.get())),
+          std::move(payload_listener_v3),
+          ResultCallbackFromMojom(std::move(callback)));
+}
+
+void NearbyConnections::RejectConnectionV3(
+    const std::string& service_id,
+    ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
+    RejectConnectionCallback callback) {
+  GetCore(service_id)
+      ->RejectConnectionV3(
+          presence::PresenceDevice(ash::nearby::presence::MetadataFromMojom(
+              remote_device->metadata.get())),
           ResultCallbackFromMojom(std::move(callback)));
 }
 
