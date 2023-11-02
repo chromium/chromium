@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.Pair;
 
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.LazyOneshotSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
@@ -137,7 +138,7 @@ public class ImprovedBookmarkRowCoordinator {
             propertyModel.set(ImprovedBookmarkRowProperties.START_ICON_TINT, null);
         }
 
-        LazyOneshotSupplierImpl<Drawable> drawableSupplier =
+        LazyOneshotSupplier<Drawable> drawableSupplier =
                 new LazyOneshotSupplierImpl<>() {
                     @Override
                     public void doSet() {

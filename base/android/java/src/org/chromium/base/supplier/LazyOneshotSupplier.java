@@ -34,4 +34,31 @@ public interface LazyOneshotSupplier<T> {
 
     /** Returns whether the supplier holds a value currently. */
     boolean hasValue();
+
+    /**
+     * Creates a supplier using a lambda closure to hold onto the given value. Should only be used
+     * when the value already exists or in tests, as otherwise it defeats the purpose of the lazy
+     * part of this supplier.
+     */
+    static <T> LazyOneshotSupplier<T> fromValue(T value) {
+        return new LazyOneshotSupplierImpl<>() {
+            @Override
+            public void doSet() {
+                set(value);
+            }
+        };
+    }
+
+    /**
+     * Allows callers to inline a lambda to satisfy the implementation of this object. The supplier
+     * must be able to run and complete synchronously at any point.
+     */
+    static <T> LazyOneshotSupplier<T> fromSupplier(Supplier<T> supplier) {
+        return new LazyOneshotSupplierImpl<>() {
+            @Override
+            public void doSet() {
+                set(supplier.get());
+            }
+        };
+    }
 }

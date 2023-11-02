@@ -46,7 +46,6 @@ import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.base.supplier.LazyOneshotSupplierImpl;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -186,13 +185,7 @@ public class TabGroupUiMediatorUnitTest {
         }
 
         // Fake a similar behavior to the supplier in TabGroupUiCoordinator.
-        mDialogControllerSupplier =
-                new LazyOneshotSupplierImpl<>() {
-                    @Override
-                    public void doSet() {
-                        set(mTabGridDialogController);
-                    }
-                };
+        mDialogControllerSupplier = LazyOneshotSupplier.fromValue(mTabGridDialogController);
         doReturn(mTabGridDialogBackPressSupplier)
                 .when(mTabGridDialogController)
                 .getHandleBackPressChangedSupplier();

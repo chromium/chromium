@@ -41,7 +41,6 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.base.supplier.LazyOneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
@@ -81,29 +80,13 @@ public class ImprovedBookmarkRowTest {
     ImprovedBookmarkRow mImprovedBookmarkRow;
     PropertyModel mModel;
     BitmapDrawable mDrawable;
-    LazyOneshotSupplierImpl<Drawable> mDrawableSupplier;
-    LazyOneshotSupplierImpl<Drawable> mNullDrawableSupplier;
+    LazyOneshotSupplier<Drawable> mDrawableSupplier;
+    LazyOneshotSupplier<Drawable> mNullDrawableSupplier;
 
     @Before
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
-
         doReturn(mStartImageViewAnimator).when(mStartImageView).animate();
-        mDrawableSupplier =
-                new LazyOneshotSupplierImpl<>() {
-                    @Override
-                    public void doSet() {
-                        set(mDrawable);
-                    }
-                };
-        mNullDrawableSupplier =
-                new LazyOneshotSupplierImpl<>() {
-                    @Override
-                    public void doSet() {
-                        set(null);
-                    }
-                };
-
         mStartImageView =
                 spy(
                         new ImageView(mActivity) {
@@ -118,6 +101,8 @@ public class ImprovedBookmarkRowTest {
                 new BitmapDrawable(
                         mActivity.getResources(),
                         Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888));
+        mDrawableSupplier = LazyOneshotSupplier.fromValue(mDrawable);
+        mNullDrawableSupplier = LazyOneshotSupplier.fromValue(null);
         mImprovedBookmarkRow = ImprovedBookmarkRow.buildView(mActivity, /* isVisual= */ true);
 
         mModel =

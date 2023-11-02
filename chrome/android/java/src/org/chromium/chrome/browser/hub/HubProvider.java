@@ -9,7 +9,6 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.base.supplier.LazyOneshotSupplierImpl;
 
 /**
  * Main entrypoint for providing core Hub objects to Chrome.
@@ -27,12 +26,8 @@ public class HubProvider {
     public HubProvider(@NonNull Context context, @NonNull PaneOrderController orderController) {
         mPaneListBuilder = new PaneListBuilder(orderController);
         mHubManagerSupplier =
-                new LazyOneshotSupplierImpl<HubManager>() {
-                    @Override
-                    public void doSet() {
-                        set(HubManagerFactory.createHubManager(context, mPaneListBuilder));
-                    }
-                };
+                LazyOneshotSupplier.fromSupplier(
+                        () -> HubManagerFactory.createHubManager(context, mPaneListBuilder));
     }
 
     /** Returns the lazy supplier for {@link HubManager}. */

@@ -28,7 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.LazyOneshotSupplierImpl;
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
@@ -160,17 +160,13 @@ public class ImprovedBookmarkRowRenderTest {
                                             "test description")
                                     .with(
                                             ImprovedBookmarkRowProperties.START_ICON_DRAWABLE,
-                                            new LazyOneshotSupplierImpl<>() {
-                                                @Override
-                                                public void doSet() {
-                                                    set(
+                                            LazyOneshotSupplier.fromSupplier(
+                                                    () ->
                                                             new BitmapDrawable(
                                                                     mActivityTestRule
                                                                             .getActivity()
                                                                             .getResources(),
-                                                                    mBitmap));
-                                                }
-                                            })
+                                                                    mBitmap)))
                                     .with(ImprovedBookmarkRowProperties.SELECTED, false)
                                     .with(
                                             ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE,

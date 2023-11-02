@@ -28,7 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.LazyOneshotSupplierImpl;
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
@@ -150,13 +150,8 @@ public class ImprovedBookmarkFolderViewRenderTest {
     public void testNoImage() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    LazyOneshotSupplierImpl<Pair<Drawable, Drawable>> imageSupplier =
-                            new LazyOneshotSupplierImpl<>() {
-                                @Override
-                                public void doSet() {
-                                    set(new Pair<Drawable, Drawable>(null, null));
-                                }
-                            };
+                    LazyOneshotSupplier<Pair<Drawable, Drawable>> imageSupplier =
+                            LazyOneshotSupplier.fromSupplier(() -> new Pair<>(null, null));
                     mModel.set(
                             ImprovedBookmarkRowProperties.FOLDER_START_IMAGE_FOLDER_DRAWABLES,
                             imageSupplier);
@@ -192,12 +187,7 @@ public class ImprovedBookmarkFolderViewRenderTest {
 
                     mModel.set(
                             ImprovedBookmarkRowProperties.FOLDER_START_IMAGE_FOLDER_DRAWABLES,
-                            new LazyOneshotSupplierImpl<>() {
-                                @Override
-                                public void doSet() {
-                                    set(new Pair<Drawable, Drawable>(null, null));
-                                }
-                            });
+                            LazyOneshotSupplier.fromSupplier(() -> new Pair<>(null, null)));
                     mModel.set(
                             ImprovedBookmarkRowProperties.FOLDER_START_ICON_DRAWABLE,
                             BookmarkUtils.getFolderIcon(
@@ -226,12 +216,7 @@ public class ImprovedBookmarkFolderViewRenderTest {
                 () -> {
                     mModel.set(
                             ImprovedBookmarkRowProperties.FOLDER_START_IMAGE_FOLDER_DRAWABLES,
-                            new LazyOneshotSupplierImpl<>() {
-                                @Override
-                                public void doSet() {
-                                    set(new Pair<Drawable, Drawable>(null, null));
-                                }
-                            });
+                            LazyOneshotSupplier.fromSupplier(() -> new Pair<>(null, null)));
                     mModel.set(
                             ImprovedBookmarkRowProperties.FOLDER_START_ICON_DRAWABLE,
                             BookmarkUtils.getFolderIcon(
@@ -258,13 +243,9 @@ public class ImprovedBookmarkFolderViewRenderTest {
     public void testOneImage() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    LazyOneshotSupplierImpl<Pair<Drawable, Drawable>> imageSupplier =
-                            new LazyOneshotSupplierImpl<>() {
-                                @Override
-                                public void doSet() {
-                                    set(new Pair<Drawable, Drawable>(mPrimaryDrawable, null));
-                                }
-                            };
+                    LazyOneshotSupplier<Pair<Drawable, Drawable>> imageSupplier =
+                            LazyOneshotSupplier.fromSupplier(
+                                    () -> new Pair<>(mPrimaryDrawable, null));
                     mModel.set(
                             ImprovedBookmarkRowProperties.FOLDER_START_IMAGE_FOLDER_DRAWABLES,
                             imageSupplier);
@@ -278,15 +259,9 @@ public class ImprovedBookmarkFolderViewRenderTest {
     public void testTwoImages() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    LazyOneshotSupplierImpl<Pair<Drawable, Drawable>> imageSupplier =
-                            new LazyOneshotSupplierImpl<>() {
-                                @Override
-                                public void doSet() {
-                                    set(
-                                            new Pair<Drawable, Drawable>(
-                                                    mPrimaryDrawable, mSecondaryDrawable));
-                                }
-                            };
+                    LazyOneshotSupplier<Pair<Drawable, Drawable>> imageSupplier =
+                            LazyOneshotSupplier.fromSupplier(
+                                    () -> new Pair<>(mPrimaryDrawable, mSecondaryDrawable));
                     mModel.set(
                             ImprovedBookmarkRowProperties.FOLDER_START_IMAGE_FOLDER_DRAWABLES,
                             imageSupplier);
@@ -300,15 +275,9 @@ public class ImprovedBookmarkFolderViewRenderTest {
     public void testTwoImages_99Children() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    LazyOneshotSupplierImpl<Pair<Drawable, Drawable>> imageSupplier =
-                            new LazyOneshotSupplierImpl<>() {
-                                @Override
-                                public void doSet() {
-                                    set(
-                                            new Pair<Drawable, Drawable>(
-                                                    mPrimaryDrawable, mSecondaryDrawable));
-                                }
-                            };
+                    LazyOneshotSupplier<Pair<Drawable, Drawable>> imageSupplier =
+                            LazyOneshotSupplier.fromSupplier(
+                                    () -> new Pair<>(mPrimaryDrawable, mSecondaryDrawable));
                     mModel.set(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT, 99);
                     mModel.set(
                             ImprovedBookmarkRowProperties.FOLDER_START_IMAGE_FOLDER_DRAWABLES,
@@ -323,15 +292,9 @@ public class ImprovedBookmarkFolderViewRenderTest {
     public void testTwoImages_999Children() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    LazyOneshotSupplierImpl<Pair<Drawable, Drawable>> imageSupplier =
-                            new LazyOneshotSupplierImpl<>() {
-                                @Override
-                                public void doSet() {
-                                    set(
-                                            new Pair<Drawable, Drawable>(
-                                                    mPrimaryDrawable, mSecondaryDrawable));
-                                }
-                            };
+                    LazyOneshotSupplier<Pair<Drawable, Drawable>> imageSupplier =
+                            LazyOneshotSupplier.fromSupplier(
+                                    () -> new Pair<>(mPrimaryDrawable, mSecondaryDrawable));
                     mModel.set(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT, 999);
                     mModel.set(
                             ImprovedBookmarkRowProperties.FOLDER_START_IMAGE_FOLDER_DRAWABLES,

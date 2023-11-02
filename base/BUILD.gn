@@ -4820,6 +4820,7 @@ if (is_android) {
       "android/junit/src/org/chromium/base/shared_preferences/SharedPreferencesManagerTest.java",
       "android/junit/src/org/chromium/base/shared_preferences/StrictPreferenceKeyCheckerTest.java",
       "android/junit/src/org/chromium/base/supplier/LazyOneshotSupplierImplTest.java",
+      "android/junit/src/org/chromium/base/supplier/LazyOneshotSupplierTest.java",
       "android/junit/src/org/chromium/base/supplier/ObservableSupplierImplTest.java",
       "android/junit/src/org/chromium/base/supplier/OneShotCallbackTest.java",
       "android/junit/src/org/chromium/base/supplier/OneshotSupplierImplTest.java",
