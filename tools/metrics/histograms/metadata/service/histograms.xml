@@ -1258,18 +1258,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ServiceWorker.ResourceSha256Checksums.Update.Status"
-    enum="ServiceWorkerStatusCode" expires_after="2024-06-01">
-  <owner>sisidovski@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>
-    The result of the checksum update operation. Each ServiceWorker resource
-    should have a sha256 cehcksum hash string in the database, and that will be
-    updated when there is a change in ServiceWorker scripts, or the field is
-    empty.
-  </summary>
-</histogram>
-
 <histogram name="ServiceWorker.RouterEvaluator.Error"
     enum="ServiceWorkerRouterEvaluatorErrorEnums" expires_after="2023-12-31">
   <owner>yyanagisawa@chromium.org</owner>
@@ -1651,6 +1639,18 @@ chromium-metrics-reviews@google.com.
     every time a subresource load finishes.
 
     See ServiceWorker.Subresource.Fallbacked.Type for fallbacked cases.
+  </summary>
+</histogram>
+
+<histogram name="ServiceWorker.UpdateResourceSha256ChecksumsResult"
+    enum="ServiceWorkerStatusCode" expires_after="2024-06-01">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The result of the checksum update operation. Each ServiceWorker resource
+    should have a sha256 cehcksum hash string in the database, and that will be
+    updated when there is a change in ServiceWorker scripts, or the field is
+    empty.
   </summary>
 </histogram>
 
