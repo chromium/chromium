@@ -2939,7 +2939,7 @@
   {
     "name": "enable-lens-in-omnibox-copied-image",
     "owners": [ "schechter@chromium.org", "hujasonx@chromium.org" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "enable-lens-ping",
