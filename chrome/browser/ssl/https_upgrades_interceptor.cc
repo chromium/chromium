@@ -511,8 +511,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
           HttpsFirstModeServiceFactory::GetForProfile(profile);
       // HttpsFirstModeService can be null in tests.
       if (hfm_service) {
-        hfm_service->MaybeEnableHttpsFirstModeForUser(
-            /*add_fallback_entry=*/true);
+        hfm_service->RecordHttpsUpgradeFallbackEvent();
       }
     }
 
@@ -653,8 +652,7 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
         HttpsFirstModeServiceFactory::GetForProfile(profile);
     // HttpsFirstModeService can be null in tests.
     if (hfm_service) {
-      hfm_service->MaybeEnableHttpsFirstModeForUser(
-          /*add_fallback_entry=*/true);
+      hfm_service->RecordHttpsUpgradeFallbackEvent();
     }
   }
 

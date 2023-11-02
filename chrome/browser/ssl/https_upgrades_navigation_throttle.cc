@@ -34,26 +34,6 @@ namespace {
 // showing the HTTPS-First Mode interstitial.
 base::TimeDelta g_fallback_delay = base::Seconds(3);
 
-// Returns true if HTTPS-First Mode interstitial should be enabled by the
-// Typically Secure User heuristic. The heuristic can set the HFM pref to true,
-// but it shouldn't override user preference. If the user ever modified
-// the HFM pref by enabling or disabling it before, this will return false.
-bool IsInterstitialEnabledByTypicallySecureUserHeuristic(Profile* profile) {
-  if (!base::FeatureList::IsEnabled(
-          features::kHttpsFirstModeV2ForTypicallySecureUsers)) {
-    return false;
-  }
-  HttpsFirstModeService* hfm_service =
-      HttpsFirstModeServiceFactory::GetForProfile(profile);
-  // HttpsFirstModeService can be null in tests.
-  if (hfm_service) {
-    hfm_service->MaybeEnableHttpsFirstModeForUser(
-        /*add_fallback_entry=*/false);
-  }
-  return profile->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled) &&
-         profile->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled);
-}
-
 }  // namespace
 
 // static
@@ -95,15 +75,15 @@ HttpsUpgradesNavigationThrottle::MaybeCreateThrottleFor(
   if (hfm_service) {
     // Can be null in some cases, e.g. when using Ash sign-in profile.
     hfm_service->MaybeEnableHttpsFirstModeForUrl(handle->GetURL());
+    interstitial_state.enabled_by_typically_secure_browsing =
+        hfm_service->IsInterstitialEnabledByTypicallySecureUserHeuristic();
   }
+
   // StatefulSSLHostStateDelegate can be null during tests.
   if (state && state->IsHttpsEnforcedForHost(handle->GetURL().host(),
                                              storage_partition)) {
     interstitial_state.enabled_by_engagement_heuristic = true;
   }
-
-  interstitial_state.enabled_by_typically_secure_browsing =
-      IsInterstitialEnabledByTypicallySecureUserHeuristic(profile);
 
   bool https_upgrades_enabled =
       interstitial_state.enabled_by_pref ||

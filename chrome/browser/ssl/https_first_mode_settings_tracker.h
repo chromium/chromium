@@ -7,10 +7,13 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
+#include "base/memory/weak_ptr.h"
+#include "base/task/task_traits.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "content/public/browser/browser_thread.h"
 
 class Profile;
 namespace base {
@@ -47,18 +50,31 @@ class HttpsFirstModeService
   // HFM on the hostname if the HTTPS score is high enough.
   void MaybeEnableHttpsFirstModeForUrl(const GURL& url);
 
-  // Check previous HTTPS-Upgrade fallback events and enable HTTPS-First Mode
-  // if the user typically visits secure sites. HTTPS-Upgrade fallback events
-  // are stored in a pref. This method extracts the fallback events, deletes old
-  // events, adds a new event if `add_fallback_entry` is true and updates the
-  // pref.
-  bool MaybeEnableHttpsFirstModeForUser(bool add_fallback_entry);
+  // Returns true if the Typically Secure Heuristic enabled HTTPS-First Mode
+  // in this profile. Does not update the recorded fallback events list.
+  bool IsInterstitialEnabledByTypicallySecureUserHeuristic() const;
+  // Records an HTTPS-Upgrade fallback event if the Typically Secure heuristic
+  // isn't yet enabled and evicts old fallback events.
+  void RecordHttpsUpgradeFallbackEvent();
+  // Updates HTTPS-Upgrade fallback events and enables HTTPS-First Mode
+  // if the user typically visits secure sites.
+  void CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstMode();
 
   // Sets the clock for use in tests.
   void SetClockForTesting(base::Clock* clock);
+  // Returns the current number of fallback entries recorded.
+  size_t GetFallbackEntryCountForTesting() const;
 
  private:
   void OnHttpsFirstModePrefChanged();
+  // HTTPS-Upgrade fallback events are stored in a pref. This method extracts
+  // the fallback events, deletes old events, adds a new event if
+  // `add_new_entry` is true. Returns true if the heuristic indicates that
+  // HFM can be auto-enabled, but this function doesn't auto-enable it.
+  bool UpdateFallbackEntries(bool add_new_entry);
+  // Returns true if the user is considered typically secure. Does not
+  // auto-enable HFM pref, but updates the fallback events, evicting old ones.
+  bool IsUserTypicallySecure();
 
   raw_ptr<Profile> profile_;
   PrefChangeRegistrar pref_change_registrar_;
@@ -68,6 +84,8 @@ class HttpsFirstModeService
       safe_browsing::AdvancedProtectionStatusManager,
       safe_browsing::AdvancedProtectionStatusManager::StatusChangedObserver>
       obs_{this};
+
+  base::WeakPtrFactory<HttpsFirstModeService> weak_factory_{this};
 };
 
 // Factory boilerplate for creating the `HttpsFirstModeService` for each browser
@@ -84,6 +102,9 @@ class HttpsFirstModeServiceFactory : public ProfileKeyedServiceFactory {
   // Returns the default factory, useful in tests where it's null by default.
   static BrowserContextKeyedServiceFactory::TestingFactory
   GetDefaultFactoryForTesting();
+
+  // Sets the clock to use when creating the service.
+  static base::Clock* SetClockForTesting(base::Clock* clock);
 
  private:
   friend struct base::DefaultSingletonTraits<HttpsFirstModeServiceFactory>;
