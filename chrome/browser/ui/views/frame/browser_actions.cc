@@ -86,10 +86,10 @@ void BrowserActions::InitializeBrowserActions() {
       actions::ActionItem::Builder()
           .CopyAddressTo(&root_action_item_)
           .AddChildren(
-              SidePanelAction(SidePanelEntryId::kBookmarks,
-                              IDS_BOOKMARK_MANAGER_TITLE, omnibox::kStarIcon,
-                              kActionSidePanelShowBookmarks, &(browser_.get()),
-                              true),
+              SidePanelAction(
+                  SidePanelEntryId::kBookmarks, IDS_BOOKMARK_MANAGER_TITLE,
+                  kBookmarksSidePanelIcon, kActionSidePanelShowBookmarks,
+                  &(browser_.get()), true),
               SidePanelAction(SidePanelEntryId::kReadingList,
                               IDS_READ_LATER_TITLE, kReadLaterIcon,
                               kActionSidePanelShowReadingList,
