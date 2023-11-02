@@ -1882,9 +1882,36 @@ void HttpHandler::OnClose(HttpServerInterface* http_server, int connection_id) {
     return;
   }
   std::string session_id = it->second;
-  std::vector<int>& bucket = session_connection_map_[session_id];
+  auto ses_it = session_connection_map_.find(session_id);
+  // This situation can never happen: the session related entry is removed from
+  // the session_connection_map_ only after all connections have been closed
+  // either by the client or by the session thread.
+  // Therefore if the session related entry is missing in the
+  // session_connection_map_ the corresponding connection entry must miss in the
+  // connection_session_map_. This situation is handled above.
+  // We leave this check just to be on the safe side.
+  if (ses_it == session_connection_map_.end()) {
+    VLOG(logging::LOGGING_WARNING)
+        << "Session related entry is missing in session_connection_map_.";
+    return;
+  }
+  std::vector<int>& bucket = ses_it->second;
   auto bucket_it = base::ranges::find(bucket, connection_id);
-  DCHECK(bucket_it != bucket.end());
+  // The case when it can happen:
+  // The session thread has sent a response (e.g. Quit command) to the client.
+  // After that the session thread preempted before closing all connections.
+  // The client has handled the response and closed all connections.
+  // The command thread has handled the connection close requests initiated by
+  // the client. Therefore the connection is no longer in the bucket.
+  // The session thread wakes up and posts a request to close all connections.
+  // The request arrives to the CMD thread but some or all connections don't
+  // exist any longer.
+  // TODO (crbug.com/chromedriver/4597): Fix this by callback chaining.
+  // The reproducer is testConnectionIsClosedIfSessionIsDestroyed that flakes
+  // from time to time.
+  if (bucket_it == bucket.end()) {
+    return;
+  }
   bucket.erase(bucket_it);
   connection_session_map_.erase(it);
 
