@@ -16958,10 +16958,11 @@
             ],
             "experiments": [
                 {
-                    "name": "CSC_ImageSearchEnabled_NewTab_20231011",
+                    "name": "CSC_GlobalLensPanel_20231102",
                     "params": {
-                        "open-companion-for-image-search": "true",
+                        "open-companion-for-image-search": "false",
                         "open-companion-for-web-search": "false",
+                        "open-contextual-lens-panel": "false",
                         "open-links-in-current-tab": "false"
                     },
                     "enable_features": [
