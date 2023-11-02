@@ -68,13 +68,6 @@ preprocess_if_expr("preprocess_static") {
   }
 
   in_files = static_js_files + unittest_files
-
-  deps = [
-    "//ui/file_manager/file_manager/background/js:js_modules",
-    "//ui/file_manager/file_manager/common/js:js_modules",
-    "//ui/file_manager/file_manager/foreground/elements:web_components",
-    "//ui/file_manager/file_manager/foreground/js:deferred_elements",
-  ]
 }
 
 if (enable_webui_inline_sourcemaps) {
@@ -106,8 +99,6 @@ preprocess_if_expr("preprocess_static_image_loader") {
   }
 
   in_files = image_loader_static_js_files
-
-  deps = [ "//ui/file_manager/image_loader:js_modules" ]
 }
 
 if (enable_webui_inline_sourcemaps) {

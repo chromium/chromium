@@ -169,20 +169,6 @@ group("closure_compile") {
   ]
 }
 
-group("js_modules") {
-  deps = [
-    ":cache",
-    ":image_loader",
-    ":image_loader_client",
-    ":image_loader_util",
-    ":image_orientation",
-    ":image_request_task",
-    ":load_image_request",
-    ":piex_loader",
-    ":scheduler",
-  ]
-}
-
 preprocess_folder = "$target_gen_dir/preprocessed"
 tsc_folder = "$target_gen_dir/tsc"
 files_app_path = rebase_path("$tsc_folder/file_manager", root_build_dir)
