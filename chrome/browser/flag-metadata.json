@@ -3070,7 +3070,7 @@
   {
     "name": "enable-new-base-url-inheritance-behavior",
     "owners": [ "wjmaclean@chromium.org", "creis@chromium.org", "alexmos@chromium.org", "domenic@chromium.org" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "enable-new-download-backend",
