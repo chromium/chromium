@@ -393,6 +393,35 @@ INSTANTIATE_TEST_SUITE_P(
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_LINUX)
+class SystemNetworkContextManagerKerberosWorksCommandLineFlag
+    : public SystemNetworkContextManagerNetworkServiceSandboxBrowsertest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kForceEnableKerberosOnFirstRun);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(SystemNetworkContextManagerKerberosWorksCommandLineFlag,
+                       KerberosWorksAndNetworkServiceUnsandboxed) {
+  PrefService* local_state = g_browser_process->local_state();
+
+  // Ensure GSSAPI starts as "desired".
+  EXPECT_TRUE(local_state->GetBoolean(kGssapiDesiredPref));
+  // Ensure the network service starts unsandboxed (no matter the feature state)
+  // and can load GSSAPI libraries.
+  ExpectNetworkService(/*seccomp_sandboxed=*/false,
+                       /*allows_gssapi_library_load=*/true);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SystemNetworkContextManagerKerberosWorksCommandLineFlag,
+    testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "NetworkSandboxDesired"
+                        : "NetworkSandboxFullyDisabled";
+    });
+
 class SystemNetworkContextManagerHttpNegotiateHeader
     : public SystemNetworkContextManagerBrowsertest {
  public:

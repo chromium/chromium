@@ -319,6 +319,18 @@ const char kForceAppMode[] = "force-app-mode";
 const char kForceDevToolsAvailable[] = "force-devtools-available";
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+// In certain situations, the browser will cancel a page load the first time
+// (per profile) a site tries to negotiate kerberos auth. Reloading the page
+// will retry the kerberos negotiation. For some tools (e.g. some automation
+// tools will start with a fresh profile on every run), this page load
+// cancellation can cause hard-to-debug problems. This flag disables the load
+// cancellation, even for a new profile. For more details see
+// https://crbug.com/1493257.
+const char kForceEnableKerberosOnFirstRun[] =
+    "force-enable-kerberos-on-first-run";
+#endif  // BUILDFLAG(IS_LINUX)
+
 // Displays the First Run experience when the browser is started, regardless of
 // whether or not it's actually the First Run (this overrides kNoFirstRun).
 const char kForceFirstRun[] = "force-first-run";
