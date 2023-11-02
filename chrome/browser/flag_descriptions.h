@@ -463,9 +463,6 @@ extern const char kConsumerAutoUpdateToggleAllowedDescription[];
 extern const char kContextMenuSearchWithGoogleLensName[];
 extern const char kContextMenuSearchWithGoogleLensDescription[];
 
-extern const char kContextMenuGoogleLensSearchOptimizationsName[];
-extern const char kContextMenuGoogleLensSearchOptimizationsDescription[];
-
 extern const char kClearCrossSiteCrossBrowsingContextGroupWindowNameName[];
 extern const char
     kClearCrossSiteCrossBrowsingContextGroupWindowNameDescription[];

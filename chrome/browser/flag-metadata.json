@@ -1261,11 +1261,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "context-menu-google-lens-search-optimizations",
-    "owners": [ "apalanki@google.com", "lens-chrome@google.com" ],
-    "expiry_milestone": 114
-  },
-  {
     "name": "context-menu-popup-for-all-screen-sizes",
     "owners": ["wenyufu@chromium.org", "clank-large-form-factors@google.com"],
     "expiry_milestone": 112

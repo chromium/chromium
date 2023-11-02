@@ -234,8 +234,6 @@ public abstract class ChromeFeatureList {
             "ContextMenuPopupForAllScreenSizes";
     public static final String CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS =
             "ContextMenuSearchWithGoogleLens";
-    public static final String CONTEXT_MENU_GOOGLE_LENS_SEARCH_OPTIMIZATIONS =
-            "ContextMenuGoogleLensSearchOptimizations";
     public static final String CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS =
             "ContextMenuTranslateWithGoogleLens";
     public static final String CORMORANT = "Cormorant";
