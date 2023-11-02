@@ -13,7 +13,7 @@
 // behavior.
 TEST(JsonSchemaCompilerReturnsAsyncTest, ReturnsObjectResultCreate) {
   test::api::returns_async::SupportsPromises::Results::SomeObject some_object;
-  some_object.state = test::api::returns_async::ENUMERATION_FOO;
+  some_object.state = test::api::returns_async::Enumeration::kFoo;
   base::Value results(
       test::api::returns_async::SupportsPromises::Results::Create(some_object));
 
