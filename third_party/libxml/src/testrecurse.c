@@ -444,7 +444,7 @@ xmlParserPrintFileContextInternal(xmlParserInputPtr input ,
 }
 
 static void
-testStructuredErrorHandler(void *ctx  ATTRIBUTE_UNUSED, xmlErrorPtr err) {
+testStructuredErrorHandler(void *ctx ATTRIBUTE_UNUSED, const xmlError *err) {
     char *file = NULL;
     int line = 0;
     int code = -1;

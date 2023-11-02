@@ -856,7 +856,7 @@ typedef void (*xmlGenericErrorFunc) (void *ctx,
  * Signature of the function to use when there is an error and
  * the module handles the new error reporting mechanism.
  */
-typedef void (*xmlStructuredErrorFunc) (void *userData, xmlErrorPtr error);
+typedef void (*xmlStructuredErrorFunc) (void *userData, const xmlError *error);
 
 /** DOC_DISABLE */
 #define XML_GLOBALS_ERROR \
@@ -932,7 +932,7 @@ XMLPUBFUN const xmlError *
     xmlGetLastError		(void);
 XMLPUBFUN void
     xmlResetLastError		(void);
-XMLPUBFUN xmlErrorPtr
+XMLPUBFUN const xmlError *
     xmlCtxtGetLastError		(void *ctx);
 XMLPUBFUN void
     xmlCtxtResetLastError	(void *ctx);

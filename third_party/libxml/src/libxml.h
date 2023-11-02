@@ -59,4 +59,12 @@
   #define ATTRIBUTE_NO_SANITIZE(arg)
 #endif
 
+#ifdef __clang__
+  #define ATTRIBUTE_NO_SANITIZE_INTEGER \
+    ATTRIBUTE_NO_SANITIZE("unsigned-integer-overflow") \
+    ATTRIBUTE_NO_SANITIZE("unsigned-shift-base")
+#else
+  #define ATTRIBUTE_NO_SANITIZE_INTEGER
+#endif
+
 #endif /* ! __XML_LIBXML_H__ */

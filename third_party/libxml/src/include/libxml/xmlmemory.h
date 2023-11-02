@@ -80,7 +80,7 @@ typedef char *(*xmlStrdupFunc)(const char *str);
   #define XML_OP XML_DECLARE_GLOBAL
     XML_GLOBALS_ALLOC
   #undef XML_OP
-  #ifdef LIBXML_THREAD_ENABLED
+  #if defined(LIBXML_THREAD_ENABLED) && !defined(XML_GLOBALS_NO_REDEFINITION)
     #define xmlMalloc XML_GLOBAL_MACRO(xmlMalloc)
     #define xmlMallocAtomic XML_GLOBAL_MACRO(xmlMallocAtomic)
     #define xmlRealloc XML_GLOBAL_MACRO(xmlRealloc)

@@ -480,7 +480,7 @@ UTF16LEToUTF8(unsigned char* out, int *outlen,
     unsigned char* outstart = out;
     const unsigned char* processed = inb;
     unsigned char* outend;
-    unsigned short* in = (unsigned short*) inb;
+    unsigned short* in = (unsigned short *) (void *) inb;
     unsigned short* inend;
     unsigned int c, d, inlen;
     unsigned char *tmp;
@@ -566,7 +566,7 @@ static int
 UTF8ToUTF16LE(unsigned char* outb, int *outlen,
             const unsigned char* in, int *inlen)
 {
-    unsigned short* out = (unsigned short*) outb;
+    unsigned short* out = (unsigned short *) (void *) outb;
     const unsigned char* processed = in;
     const unsigned char *const instart = in;
     unsigned short* outstart= out;
@@ -718,7 +718,7 @@ UTF16BEToUTF8(unsigned char* out, int *outlen,
     unsigned char* outstart = out;
     const unsigned char* processed = inb;
     unsigned char* outend;
-    unsigned short* in = (unsigned short*) inb;
+    unsigned short* in = (unsigned short *) (void *) inb;
     unsigned short* inend;
     unsigned int c, d, inlen;
     unsigned char *tmp;
@@ -804,7 +804,7 @@ static int
 UTF8ToUTF16BE(unsigned char* outb, int *outlen,
             const unsigned char* in, int *inlen)
 {
-    unsigned short* out = (unsigned short*) outb;
+    unsigned short* out = (unsigned short *) (void *) outb;
     const unsigned char* processed = in;
     const unsigned char *const instart = in;
     unsigned short* outstart= out;
@@ -1989,9 +1989,22 @@ xmlEncInputChunk(xmlCharEncodingHandler *handler, unsigned char *out,
     int ret;
 
     if (handler->input != NULL) {
+        int oldinlen = *inlen;
+
         ret = handler->input(out, outlen, in, inlen);
-        if (ret > 0)
-           ret = XML_ENC_ERR_SUCCESS;
+        if (ret >= 0) {
+            /*
+             * The built-in converters don't signal XML_ENC_ERR_SPACE.
+             */
+            if (*inlen < oldinlen) {
+                if (*outlen > 0)
+                    ret = XML_ENC_ERR_SPACE;
+                else
+                    ret = XML_ENC_ERR_PARTIAL;
+            } else {
+                ret = XML_ENC_ERR_SUCCESS;
+            }
+        }
     }
 #ifdef LIBXML_ICONV_ENABLED
     else if (handler->iconv_in != NULL) {
@@ -2036,9 +2049,22 @@ xmlEncOutputChunk(xmlCharEncodingHandler *handler, unsigned char *out,
     int ret;
 
     if (handler->output != NULL) {
+        int oldinlen = *inlen;
+
         ret = handler->output(out, outlen, in, inlen);
-        if (ret > 0)
-           ret = XML_ENC_ERR_SUCCESS;
+        if (ret >= 0) {
+            /*
+             * The built-in converters don't signal XML_ENC_ERR_SPACE.
+             */
+            if (*inlen < oldinlen) {
+                if (*outlen > 0)
+                    ret = XML_ENC_ERR_SPACE;
+                else
+                    ret = XML_ENC_ERR_PARTIAL;
+            } else {
+                ret = XML_ENC_ERR_SUCCESS;
+            }
+        }
     }
 #ifdef LIBXML_ICONV_ENABLED
     else if (handler->iconv_out != NULL) {
@@ -2118,8 +2144,8 @@ xmlCharEncInput(xmlParserInputBufferPtr input)
         avail = xmlBufAvail(out);
         if (avail > INT_MAX)
             avail = INT_MAX;
-        if (avail < toconv * 2) {
-            if (xmlBufGrow(out, toconv * 2) < 0) {
+        if (avail < 4096) {
+            if (xmlBufGrow(out, 4096) < 0) {
                 input->error = XML_ERR_NO_MEMORY;
                 return(XML_ENC_ERR_MEMORY);
             }

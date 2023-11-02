@@ -754,12 +754,20 @@ xmlInitGlobalState(xmlGlobalStatePtr gs) {
     gs->gs_xmlDefaultSAXLocator.getColumnNumber = xmlSAX2GetColumnNumber;
     gs->gs_xmlDoValidityCheckingDefaultValue =
          xmlDoValidityCheckingDefaultValueThrDef;
-#if defined(DEBUG_MEMORY_LOCATION)
-    gs->gs_xmlFree = (xmlFreeFunc) xmlMemFree;
-    gs->gs_xmlMalloc = (xmlMallocFunc) xmlMemMalloc;
-    gs->gs_xmlMallocAtomic = (xmlMallocFunc) xmlMemMalloc;
-    gs->gs_xmlRealloc = (xmlReallocFunc) xmlMemRealloc;
-    gs->gs_xmlMemStrdup = (xmlStrdupFunc) xmlMemoryStrdup;
+#ifdef LIBXML_THREAD_ALLOC_ENABLED
+#ifdef DEBUG_MEMORY_LOCATION
+    gs->gs_xmlFree = xmlMemFree;
+    gs->gs_xmlMalloc = xmlMemMalloc;
+    gs->gs_xmlMallocAtomic = xmlMemMalloc;
+    gs->gs_xmlRealloc = xmlMemRealloc;
+    gs->gs_xmlMemStrdup = xmlMemoryStrdup;
+#else
+    gs->gs_xmlFree = free;
+    gs->gs_xmlMalloc = malloc;
+    gs->gs_xmlMallocAtomic = malloc;
+    gs->gs_xmlRealloc = realloc;
+    gs->gs_xmlMemStrdup = xmlPosixStrdup;
+#endif
 #endif
     gs->gs_xmlGetWarningsDefaultValue = xmlGetWarningsDefaultValueThrDef;
 #ifdef LIBXML_OUTPUT_ENABLED
