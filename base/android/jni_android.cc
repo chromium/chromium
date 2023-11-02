@@ -268,11 +268,17 @@ void CheckException(JNIEnv* env) {
   if (!HasException(env))
     return;
 
-  ScopedJavaLocalRef<jthrowable> throwable(env, env->ExceptionOccurred());
-  if (throwable) {
-    // Clear the pending exception, since a local reference is now held.
+  // We cannot use `ScopedJavaLocalRef` directly because that ends up calling
+  // env->GetObjectRefType() when DCHECK is on, and that call is not allowed
+  // with a pending exception according to the JNI spec.
+  jthrowable raw_throwable = env->ExceptionOccurred();
+  if (raw_throwable) {
     env->ExceptionDescribe();
     env->ExceptionClear();
+    // The reference returned by `ExceptionOccurred()` is a local reference.
+    // `ExceptionClear()` merely removes the exception information from `env`;
+    // it doesn't delete the reference, which is why this call is valid.
+    auto throwable = ScopedJavaLocalRef<jthrowable>::Adopt(env, raw_throwable);
 
     if (g_fatal_exception_occurred) {
       // Another exception (probably OOM) occurred during GetJavaExceptionInfo.
