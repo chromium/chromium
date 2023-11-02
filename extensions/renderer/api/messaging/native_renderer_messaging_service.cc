@@ -179,8 +179,16 @@ class NativeRendererMessagingService::MessagePortScope
   }
 
   mojom::MessagePortHost* GetMessagePortHost(const PortId& port_id) {
+    auto* result = GetMessagePortHostIfExists(port_id);
+    CHECK(result);
+    return result;
+  }
+
+  mojom::MessagePortHost* GetMessagePortHostIfExists(const PortId& port_id) {
     auto it = message_port_hosts_.find(port_id);
-    CHECK(it != message_port_hosts_.end());
+    if (it == message_port_hosts_.end()) {
+      return nullptr;
+    }
     return it->second.get();
   }
 
@@ -893,6 +901,14 @@ mojom::MessagePortHost* NativeRendererMessagingService::GetMessagePortHost(
     const PortId& port_id) {
   return GetMessagePortScope(script_context->GetRenderFrame())
       ->GetMessagePortHost(port_id);
+}
+
+mojom::MessagePortHost*
+NativeRendererMessagingService::GetMessagePortHostIfExists(
+    ScriptContext* script_context,
+    const PortId& port_id) {
+  return GetMessagePortScope(script_context->GetRenderFrame())
+      ->GetMessagePortHostIfExists(port_id);
 }
 
 base::SafeRef<NativeRendererMessagingService>
