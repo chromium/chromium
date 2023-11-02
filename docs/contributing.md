@@ -233,15 +233,20 @@ policies][code-reviews] page.
 
 ### Finding a reviewer
 
-Ideally, the reviewer is someone who is familiar with the area of code in
-question. If you're not sure who that should be, check with anyone in the
-nearest ancestor OWNERS file.
+Please note here that a "reviewer" in this context is someone that not
+only provides comment on the CL but also someone who can approve the
+submission by providing a CR+1.
 
-- Anybody can review code, but there must be at least one owner for each
-  affected directory.
-- If there are multiple reviewers, make it clear what each reviewer is expected
-  to review.
-- `git cl owners` automatically suggests reviewers based on the OWNERS files.
+Reviewers must be [committers](https://www.chromium.org/getting-involved/become-a-committer/).
+Ideally they should be committers who are familiar with the area of code
+in question. If you're not sure who these should be, check with anyone in
+the nearest ancestor OWNERS file.
+
+- There must be at least one owner for each affected directory.
+- If there are multiple reviewers, make it clear what each reviewer is
+expected to review.
+- `git cl owners` automatically suggests reviewers based on the OWNERS
+files.
 
 _Note:_ By default, please only select one reviewer for each file (that is, a
 single reviewer may review multiple files, but typically each file only needs
@@ -256,6 +261,11 @@ There are times when requesting multiple reviewers for the same file may be
 desirable - such as when the code is particularly complicated, or when the file
 uses multiple systems and a perspective from each is valuable. In this case,
 please make it explicit that you would like both reviewers to review.
+
+Submissions to the chromium/src repository by a change contributor who is
+not a Chromium committer will require two committers to Code-Review+1 the
+submissions. If the owner of the CL is already a committer, then only one
+other committer is needed to Code-Review+1.
 
 ### Requesting review
 

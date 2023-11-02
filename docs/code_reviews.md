@@ -10,14 +10,18 @@ and OWNERS policy changes launched on March 24, 2021, see
 
 # Code review policies
 
-Ideally the reviewer is someone who is familiar with the area of code you are
-touching. Any committer can review code, but an owner must provide a review
-for each directory you are touching. If you have doubts, look at the `git blame`
-for the file and the `OWNERS` files ([more info](#owners-files)).
+Any [committer](https://www.chromium.org/getting-involved/become-a-committer/#what-is-a-committer) can review code, but
+an owner must provide a review for each directory you are touching. Ideally you should choose
+reviewers who are familiar with the area of code you are touching. If you have doubts, look
+at the `git blame` for the file and the `OWNERS` files ([more info](#owners-files)).
 
 To indicate a positive review, the reviewer provides a `Code-Review +1` in
 Gerrit, also known as an LGTM ("Looks Good To Me"). A score of "-1" indicates
 the change should not be submitted as-is.
+
+Submissions to the chromium/src repository by a change contributor who is not a Chromium
+committer require two committers to Code-Review+1 the submission. If the owner of the CL
+is already a committer, then only one other committer is needed to review.
 
 If you have multiple reviewers, provide a message indicating what you expect
 from each reviewer. Otherwise people might assume their input is not required
