@@ -1,0 +1,155 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="BooleanWebApkNotificationPermission">
+  <int value="0" label="WebAPK notification permission disabled"/>
+  <int value="1" label="WebAPK notification permission enabled"/>
+</enum>
+
+<enum name="PwaInstallPath">
+  <summary>The path taken by the user to reach install point for PWAs.</summary>
+  <int value="0" label="Unknown metric (error case)"/>
+  <int value="1" label="Install via Install modal (Ambient Badge)"/>
+  <int value="2" label="Install via Install modal (App menu)"/>
+  <int value="3" label="Install via Install modal (API)"/>
+  <int value="4" label="Install via BottomSheet (shown ambiently)"/>
+  <int value="5" label="Install via BottomSheet (App menu)"/>
+  <int value="6" label="Install via BottomSheet (API)"/>
+  <int value="7"
+      label="IPH shown, then install via Install modal (shown ambiently)"/>
+  <int value="8" label="IPH shown, then install via Install modal (App menu)"/>
+  <int value="9" label="IPH shown, then install via Install modal (API)"/>
+  <int value="10"
+      label="IPH shown, then install via BottomSheet (shown ambiently)"/>
+  <int value="11" label="IPH shown, then install via BottomSheet (App menu)"/>
+  <int value="12" label="IPH shown, then install via BottomSheet (API)"/>
+</enum>
+
+<enum name="WebApkGooglePlayInstallResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Install delegate unavailable"/>
+  <int value="2" label="Failed to connect to Google Play Install Service"/>
+  <int value="3" label="Caller verification failure"/>
+  <int value="4" label="Policy violation"/>
+  <int value="5" label="Play install API disabled"/>
+  <int value="6" label="Request to Play install API failed"/>
+  <int value="7" label="Download cancelled"/>
+  <int value="8" label="Download error"/>
+  <int value="9" label="Install error"/>
+  <int value="10" label="Install timed out"/>
+  <int value="11" label="Request to Play install API failed - Policy disabled"/>
+  <int value="12"
+      label="Request to Play install API failed - User not signed into Play"/>
+  <int value="13" label="Request to Play install API failed - Network Error"/>
+  <int value="14" label="Request to Play install API failed - Resolve Error"/>
+  <int value="15"
+      label="Request to Play install API failed - Not Google Signed"/>
+</enum>
+
+<enum name="WebApkInstallEvent">
+  <int value="0" label="Infobar is ignored (deprecated)"/>
+  <int value="1"
+      label="Add-to-homescreen dialog dismissed prior to installation"/>
+  <int value="2" label="Infobar is dismissed during installation (deprecated)"/>
+  <int value="3" label="Success"/>
+  <int value="4" label="Failed"/>
+</enum>
+
+<enum name="WebApkInstallGooglePlayErrorCode">
+  <int value="192" label="STATUS_RUNNING"/>
+  <int value="194" label="STATUS_WAITING_TO_RETRY"/>
+  <int value="198" label="STATUS_INSUFFICIENT_SPACE_ERROR"/>
+  <int value="400" label="STATUS_BAD_REQUEST"/>
+  <int value="406" label="STATUS_NOT_ACCEPTABLE"/>
+  <int value="489" label="STATUS_CANNOT_RESUME"/>
+  <int value="490" label="STATUS_CANCELED"/>
+  <int value="491" label="STATUS_UNKNOWN_ERROR"/>
+  <int value="492" label="STATUS_FILE_ERROR"/>
+  <int value="495" label="STATUS_HTTP_DATA_ERROR"/>
+  <int value="907" label="ERROR_DOWNLOAD_INTERNAL_CONDITION_5"/>
+  <int value="908" label="ERROR_DOWNLOAD_INTERNAL_FREE_SPACE_0"/>
+  <int value="910" label="ERROR_INSTALL_INCOMPLETE"/>
+  <int value="919" label="ERROR_INSTALL_APK_VERIFICATION_SIZE"/>
+  <int value="920" label="ERROR_VOLLEY_AUTH_FAILURE"/>
+  <int value="922" label="ERROR_VOLLEY_DFE_SERVER_0"/>
+  <int value="923" label="ERROR_VOLLEY_NETWORK"/>
+  <int value="924" label="ERROR_VOLLEY_NO_CONNECTION_0"/>
+  <int value="927" label="ERROR_VOLLEY_TIMEOUT_0"/>
+  <int value="961" label="ERROR_INSTALL_APK_VERIFICATION_OTHER"/>
+  <int value="963" label="ERROR_INSTALL_APK_COPY_FAILURE"/>
+  <int value="1008" label="ERROR_DOWNLOAD_INTERNAL_FREE_SPACE"/>
+  <int value="1010" label="ERROR_DELIVERY_RESPONSE_NOT_FOUND"/>
+  <int value="1148" label="ERROR_INSTALLER_NO_ACTIVE_DOWNLOADDATA"/>
+  <int value="1149" label="ERROR_INSTALLER_TASK_START_FAILED"/>
+  <int value="1402" label="ERROR_VOLLEY_DFE_SERVER"/>
+  <int value="1404" label="ERROR_VOLLEY_NO_CONNECTION"/>
+  <int value="1407" label="ERROR_VOLLEY_TIMEOUT"/>
+  <int value="5200" label="ERROR_DOWNLOAD_FAILED"/>
+</enum>
+
+<enum name="WebApkInstallResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Play install failed"/>
+  <int value="2" label="Install timed out"/>
+  <int value="3" label="No installer"/>
+  <int value="4" label="No server"/>
+  <int value="5" label="Server error"/>
+  <int value="6" label="Request timed out"/>
+  <int value="7" label="Request invalid"/>
+  <int value="8" label="Not enough space"/>
+  <int value="9" label="Download icon and hash error"/>
+</enum>
+
+<enum name="WebApkUpdateManifestResult">
+  <int value="0" label="Treated as another WebAPK"/>
+  <int value="1"
+      label="Treated as another WebAPK for legacy WebAPK(without ID)"/>
+  <int value="2" label="Found a manifest for update"/>
+</enum>
+
+<enum name="WebApkUpdateRequestQueued">
+  <int value="0" label="Queued for the first time"/>
+  <int value="1" label="Queued for the second time"/>
+  <int value="2" label="Queued for the third time"/>
+</enum>
+
+<enum name="WebApkUpdateRequestSent">
+  <int value="0" label="Sent immediately after an update check (deprecated)"/>
+  <int value="1" label="Sent when WebAPK is moved to background (deprecated)"/>
+  <int value="2" label="Sent by forcing an update (deprecated)"/>
+  <int value="3" label="Sent when WebAPK is closed"/>
+</enum>
+
+<enum name="WebApkUserTheme">
+  <int value="0" label="Light Theme"/>
+  <int value="1" label="Dark Theme"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>
