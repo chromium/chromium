@@ -253,8 +253,9 @@ IN_PROC_BROWSER_TEST_F(HTTPErrProcBrowserTest, TPCBlocked4xxErr) {
       /*settings_blocked=*/true);
 }
 
-// Check that multiple entries are entered correctly
-IN_PROC_BROWSER_TEST_F(HTTPErrProcBrowserTest, MultiErrs) {
+// Check that multiple entries are entered correctly.
+// TODO(https://crbug.com/1498862): Fix flakiness and re-enable.
+IN_PROC_BROWSER_TEST_F(HTTPErrProcBrowserTest, DISABLED_MultiErrs) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   SetThirdPartyCookieBlocking(true);
