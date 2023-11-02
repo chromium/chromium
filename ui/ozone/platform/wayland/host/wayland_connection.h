@@ -279,7 +279,7 @@ class WaylandConnection {
   // available.
   bool SupportsSetWindowGeometry() const;
 
-  // Returns true when dragging is entered or started.
+  // Returns true when there an active outgoing drag-and-drop session.
   bool IsDragInProgress() const;
 
   // Creates a new wl_surface.
