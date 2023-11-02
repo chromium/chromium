@@ -59,7 +59,7 @@ ConnectionType GetConnectionType() {
       SCNetworkReachabilityCreateWithAddress(
           kCFAllocatorDefault, reinterpret_cast<struct sockaddr*>(&addr)));
   SCNetworkReachabilityFlags flags;
-  BOOL success = SCNetworkReachabilityGetFlags(reachability, &flags);
+  BOOL success = SCNetworkReachabilityGetFlags(reachability.get(), &flags);
   if (!success) {
     return ConnectionType::UNKNOWN;
   }
