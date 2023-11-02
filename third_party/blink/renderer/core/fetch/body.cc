@@ -135,8 +135,13 @@ class BodyFormDataConsumer final : public BodyConsumerBase {
 
   void DidFetchDataLoadedString(const String& string) override {
     auto* formData = MakeGarbageCollected<FormData>();
-    for (const auto& pair : URLSearchParams::Create(string)->Params())
+    // URLSearchParams::Create() returns an on-heap object, but it can be
+    // garbage collected, so making it a persistent variable on the stack
+    // mitigates use-after-free scenarios. See crbug.com/1497997.
+    Persistent<URLSearchParams> search_params = URLSearchParams::Create(string);
+    for (const auto& pair : search_params->Params()) {
       formData->append(pair.first, pair.second);
+    }
     DidFetchDataLoadedFormData(formData);
   }
 };
