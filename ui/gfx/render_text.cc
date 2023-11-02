@@ -1349,9 +1349,10 @@ bool RenderText::GetLookupDataForRange(const Range& range,
   const internal::ShapedText* shaped_text = GetShapedText();
 
   const std::vector<Rect> word_bounds = GetSubstringBounds(range);
-  if (word_bounds.empty() || !GetDecoratedTextForRange(range, decorated_text)) {
+  if (word_bounds.empty()) {
     return false;
   }
+  GetDecoratedTextForRange(range, decorated_text);
 
   // Retrieve the baseline origin of the left-most glyph.
   const auto left_rect = std::min_element(

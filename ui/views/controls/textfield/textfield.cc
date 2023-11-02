@@ -1256,6 +1256,9 @@ bool Textfield::GetWordLookupDataAtPoint(const gfx::Point& point,
 bool Textfield::GetWordLookupDataFromSelection(
     gfx::DecoratedText* decorated_text,
     gfx::Point* baseline_point) {
+  if (GetRenderText()->obscured()) {
+    return false;
+  }
   return GetRenderText()->GetLookupDataForRange(GetRenderText()->selection(),
                                                 decorated_text, baseline_point);
 }

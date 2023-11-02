@@ -887,9 +887,12 @@ class GFX_EXPORT RenderText {
   virtual internal::TextRunList* GetRunList() = 0;
   virtual const internal::TextRunList* GetRunList() const = 0;
 
-  // Returns the decorated text corresponding to |range|. Returns false if the
-  // text cannot be retrieved, e.g. if the text is obscured.
-  virtual bool GetDecoratedTextForRange(const Range& range,
+  // Returns the decorated text corresponding to `text_range`, in logical
+  // offsets. The text returned in the decorated text object is the text(), not
+  // the display_text(), and it's not obscured. It's the responsibility of the
+  // callers of this function to replace the text by the password replacement
+  // character if it is obscured and exposed to platform APIs.
+  virtual void GetDecoratedTextForRange(const Range& text_range,
                                         DecoratedText* decorated_text) = 0;
 
   // Logical UTF-16 string data to be drawn.

@@ -305,7 +305,7 @@ class GFX_EXPORT RenderTextHarfBuzz : public RenderText {
   // RenderText:
   internal::TextRunList* GetRunList() override;
   const internal::TextRunList* GetRunList() const override;
-  bool GetDecoratedTextForRange(const Range& range,
+  void GetDecoratedTextForRange(const Range& range,
                                 DecoratedText* decorated_text) override;
 
   // Text run list for |layout_text_| and |display_text_|.

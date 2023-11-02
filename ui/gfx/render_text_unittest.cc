@@ -8620,6 +8620,87 @@ TEST_F(RenderTextTest, DrawSelectAll) {
   ExpectTextLog(kUnselected);
 }
 
+TEST_F(RenderTextTest, GetLookupDataForRange_Obscured) {
+  const char16_t kText[] = u"a\U0001F44D\uFE0Fb";
+  constexpr Range kWordRange1 = Range(0, 1);
+  constexpr Range kWordRange2 = Range(1, 4);
+  constexpr Range kWordRange3 = Range(4, 5);
+
+  SetGlyphWidth(5);
+
+  RenderText* render_text = GetRenderText();
+  render_text->SetText(kText);
+  render_text->SetCursorEnabled(false);
+  render_text->ApplyStyle(TEXT_STYLE_ITALIC, true, kWordRange1);
+  render_text->ApplyStyle(TEXT_STYLE_STRIKE, true, kWordRange2);
+  render_text->ApplyStyle(TEXT_STYLE_UNDERLINE, true, kWordRange3);
+
+  // This lambda function is used to validate that the values returned by
+  // GetLookUpDataForRange are the same whether the text is obscured or not.
+  // One difference is expected, though: the font should be different for the
+  // middle word (the emoji), so we need to create two different expectations
+  // for obscured/not obscured.
+  auto validate = [render_text, kWordRange1, kWordRange2, kWordRange3, this]() {
+    // Set up test expectations.
+    const std::vector<FontSpan> font_spans = GetFontSpans();
+
+    DecoratedText expected_word_1;
+    expected_word_1.text = u"a";
+    expected_word_1.attributes.push_back(CreateRangedAttribute(
+        font_spans, 0, kWordRange1.start(), Font::Weight::NORMAL, ITALIC_MASK));
+
+    DecoratedText expected_word_2;
+    // We shouldn't need to create 3 ranged attributes here since the decorated
+    // text we'll receive from GetLookUpDataForRange will only contain one, but
+    // VerifyDecoratedWordsAreEqual, that we use to validate the expected
+    // attributes, iterates over all codepoints instead of the graphemes.
+    //
+    // TODO(1498166): Remove the last two ranged attributes once this is fixed.
+    expected_word_2.text = u"\U0001F44D\uFE0F";
+    expected_word_2.attributes.push_back(CreateRangedAttribute(
+        font_spans, 0, kWordRange2.start(), Font::Weight::NORMAL, STRIKE_MASK));
+    expected_word_2.attributes.push_back(
+        CreateRangedAttribute(font_spans, 1, kWordRange2.start() + 1,
+                              Font::Weight::NORMAL, STRIKE_MASK));
+    expected_word_2.attributes.push_back(
+        CreateRangedAttribute(font_spans, 2, kWordRange2.start() + 2,
+                              Font::Weight::NORMAL, STRIKE_MASK));
+
+    DecoratedText expected_word_3;
+    expected_word_3.text = u"b";
+    expected_word_3.attributes.push_back(
+        CreateRangedAttribute(font_spans, 0, kWordRange3.start(),
+                              Font::Weight::NORMAL, UNDERLINE_MASK));
+
+    DecoratedText decorated_word;
+    Point baseline_point;
+
+    // Validation for the first word, u"a".
+    EXPECT_TRUE(render_text->GetLookupDataForRange(kWordRange1, &decorated_word,
+                                                   &baseline_point));
+    VerifyDecoratedWordsAreEqual(expected_word_1, decorated_word);
+    EXPECT_EQ(baseline_point, Point(0, 5));
+
+    // Validation for the middle word, u"\U0001F44D\uFE0F" (thumbs up emoji).
+    EXPECT_TRUE(render_text->GetLookupDataForRange(kWordRange2, &decorated_word,
+                                                   &baseline_point));
+    VerifyDecoratedWordsAreEqual(expected_word_2, decorated_word);
+    EXPECT_EQ(baseline_point, Point(5, 5));
+
+    // Validation for the last word, u"b".
+    EXPECT_TRUE(render_text->GetLookupDataForRange(kWordRange3, &decorated_word,
+                                                   &baseline_point));
+    VerifyDecoratedWordsAreEqual(expected_word_3, decorated_word);
+    EXPECT_EQ(baseline_point, Point(10, 5));
+  };
+
+  render_text->SetObscured(false);
+  validate();
+
+  render_text->SetObscured(true);
+  validate();
+}
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 TEST_F(RenderTextTest, StringSizeUpdatedWhenDeviceScaleFactorChanges) {
   RenderText* render_text = GetRenderText();

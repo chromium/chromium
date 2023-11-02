@@ -1041,9 +1041,11 @@ bool Label::GetWordLookupDataAtPoint(const gfx::Point& point,
                                      gfx::DecoratedText* decorated_word,
                                      gfx::Point* baseline_point) {
   gfx::RenderText* render_text = GetRenderTextForSelectionController();
-  return render_text ? render_text->GetWordLookupDataAtPoint(
-                           point, decorated_word, baseline_point)
-                     : false;
+  if (render_text && !render_text->obscured()) {
+    return render_text->GetWordLookupDataAtPoint(point, decorated_word,
+                                                 baseline_point);
+  }
+  return false;
 }
 
 bool Label::GetWordLookupDataFromSelection(gfx::DecoratedText* decorated_text,
