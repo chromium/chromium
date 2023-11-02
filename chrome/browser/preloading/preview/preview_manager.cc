@@ -11,9 +11,15 @@
 #include "url/gurl.h"
 
 PreviewManager::PreviewManager(content::WebContents* web_contents)
-    : content::WebContentsUserData<PreviewManager>(*web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<PreviewManager>(*web_contents) {}
 
 PreviewManager::~PreviewManager() = default;
+
+void PreviewManager::PrimaryPageChanged(content::Page& page) {
+  // When initiator page has gone, cancel preview.
+  tab_.reset();
+}
 
 void PreviewManager::InitiatePreview(const GURL& url) {
   // TODO(b:292184832): Pass more load params.

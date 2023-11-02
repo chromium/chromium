@@ -46,6 +46,29 @@ class PreviewBrowserTest : public PlatformBrowserTest {
   std::unique_ptr<test::PreviewTestHelper> helper_;
 };
 
+IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, CancelWhenPrimaryPageChanged) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+
+  helper().InitiatePreview(embedded_test_server()->GetURL("/title2.html"));
+  helper().WaitUntilLoadFinished();
+
+  base::WeakPtr<content::WebContents> preview_web_contents =
+      helper().GetWebContentsForPreviewTab();
+  ASSERT_TRUE(preview_web_contents);
+
+  EXPECT_EQ(1, tab_strip_model->count());
+  EXPECT_EQ(true,
+            content::EvalJs(preview_web_contents, "document.prerendering"));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+
+  ASSERT_FALSE(preview_web_contents);
+}
+
 IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, PromoteToNewTab) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
 
