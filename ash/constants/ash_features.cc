@@ -31,7 +31,7 @@ BASE_FEATURE(kInstantTetheringBackgroundAdvertisementSupport,
 // at full battery. This preserves battery lifetime.
 BASE_FEATURE(kAdaptiveCharging,
              "AdaptiveCharging",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable the logic to show the notifications for Adaptive Charging features.
 // This is intended to be used by developers to test the UI aspect of the
