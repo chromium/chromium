@@ -485,20 +485,20 @@ LanguageSettingsPrivateMoveLanguageFunction::Run() {
   translate::TranslatePrefs::RearrangeSpecifier where =
       translate::TranslatePrefs::kNone;
   switch (move_type) {
-    case language_settings_private::MOVE_TYPE_TOP:
+    case language_settings_private::MoveType::kTop:
       where = translate::TranslatePrefs::kTop;
       break;
 
-    case language_settings_private::MOVE_TYPE_UP:
+    case language_settings_private::MoveType::kUp:
       where = translate::TranslatePrefs::kUp;
       break;
 
-    case language_settings_private::MOVE_TYPE_DOWN:
+    case language_settings_private::MoveType::kDown:
       where = translate::TranslatePrefs::kDown;
       break;
 
-    case language_settings_private::MOVE_TYPE_NONE:
-    case language_settings_private::MOVE_TYPE_LAST:
+    case language_settings_private::MoveType::kNone:
+    case language_settings_private::MoveType::kMaxValue:
       NOTREACHED();
   }
 
