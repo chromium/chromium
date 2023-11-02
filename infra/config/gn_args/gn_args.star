@@ -26,9 +26,24 @@ gn_args.config(
 )
 
 gn_args.config(
+    "chrome_with_codecs",
+    args = {
+        "ffmpeg_branding": "Chrome",
+        "proprietary_codecs": True,
+    },
+)
+
+gn_args.config(
     "chromeos_device",
     args = {
         "is_chromeos_device": True,
+    },
+)
+
+gn_args.config(
+    "dcheck_always_on",
+    args = {
+        "dcheck_always_on": True,
     },
 )
 
@@ -40,9 +55,59 @@ gn_args.config(
 )
 
 gn_args.config(
+    "debug",
+    args = {
+        "is_debug": True,
+    },
+)
+
+gn_args.config(
+    "debug_builder",
+    configs = [
+        "debug",
+        "shared",
+        "minimal_symbols",
+    ],
+)
+
+gn_args.config(
     "disable_nacl",
     args = {
         "enable_nacl": False,
+    },
+)
+
+gn_args.config(
+    "goma",
+    args = {
+        "use_goma": True,
+    },
+)
+
+gn_args.config(
+    "gpu_tests",
+    configs = [
+        "chrome_with_codecs",
+    ],
+)
+
+gn_args.config(
+    "ios",
+    args = {
+        "target_os": "ios",
+    },
+)
+
+gn_args.config(
+    "ios_simulator",
+    args = {"target_environment": "simulator"},
+    configs = ["ios"],
+)
+
+gn_args.config(
+    "minimal_symbols",
+    args = {
+        "symbol_level": 1,
     },
 )
 
@@ -68,24 +133,28 @@ gn_args.config(
 )
 
 gn_args.config(
-    "minimal_symbols",
+    "reclient_with_remoteexec_links",
     args = {
-        "symbol_level": 1,
+        "use_remoteexec_links": True,
+        "concurrent_links": 50,
+    },
+    configs = ["reclient"],
+)
+
+gn_args.config(
+    "release",
+    args = {
+        "is_debug": False,
+        "dcheck_always_on": False,
     },
 )
 
 gn_args.config(
-    "dcheck_always_on",
-    args = {
-        "dcheck_always_on": True,
-    },
-)
-
-gn_args.config(
-    "debug",
-    args = {
-        "is_debug": True,
-    },
+    "release_builder",
+    configs = [
+        "release",
+        "static",
+    ],
 )
 
 gn_args.config(
@@ -96,17 +165,19 @@ gn_args.config(
 )
 
 gn_args.config(
-    "goma",
+    "static",
     args = {
-        "use_goma": True,
+        "is_component_build": False,
     },
 )
 
 gn_args.config(
-    "ios",
-    args = {
-        "target_os": "ios",
-    },
+    "try_builder",
+    args = {"dcheck_always_on": True},
+    configs = [
+        "minimal_symbols",
+        "use_dummy_lastchange",
+    ],
 )
 
 gn_args.config(
@@ -121,77 +192,6 @@ gn_args.config(
     args = {
         "use_real_dbus_clients": False,
     },
-)
-
-gn_args.config(
-    "release",
-    args = {
-        "is_debug": False,
-        "dcheck_always_on": False,
-    },
-)
-
-gn_args.config(
-    "static",
-    args = {
-        "is_component_build": False,
-    },
-)
-
-gn_args.config(
-    "chrome_with_codecs",
-    args = {
-        "ffmpeg_branding": "Chrome",
-        "proprietary_codecs": True,
-    },
-)
-
-gn_args.config(
-    "reclient_with_remoteexec_links",
-    args = {
-        "use_remoteexec_links": True,
-        "concurrent_links": 50,
-    },
-    configs = ["reclient"],
-)
-
-gn_args.config(
-    "gpu_tests",
-    configs = [
-        "chrome_with_codecs",
-    ],
-)
-
-gn_args.config(
-    "ios_simulator",
-    args = {"target_environment": "simulator"},
-    configs = ["ios"],
-)
-
-gn_args.config(
-    "try_builder",
-    args = {"dcheck_always_on": True},
-    configs = [
-        "minimal_symbols",
-        "use_dummy_lastchange",
-    ],
-)
-
-gn_args.config(
-    "debug_build",
-    configs = [
-        "debug",
-        "shared",
-        "minimal_symbols",
-    ],
-)
-
-gn_args.config(
-    "release_builder",
-    configs = [
-        "release",
-        "static",
-    ],
 )
 
 gn_args.config(

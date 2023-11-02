@@ -663,7 +663,7 @@ ci.builder(
     ),
     execution_timeout = 14 * time.hour,
     gn_args = gn_args.config(
-        configs = ["gpu_tests", "debug_build", "reclient"],
+        configs = ["gpu_tests", "debug_builder", "reclient"],
     ),
     reclient_bootstrap_env = {
         "GOMA_DEPS_CACHE_TABLE_THRESHOLD": "40000",

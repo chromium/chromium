@@ -174,9 +174,9 @@ ci.builder(
     ),
     execution_timeout = 7 * time.hour,
     gn_args = {
-        "local": "debug_build",
+        "local": "debug_builder",
         "reclient": gn_args.config(
-            configs = ["debug_build", "reclient"],
+            configs = ["debug_builder", "reclient"],
         ),
     },
     reclient_jobs = reclient.jobs.DEFAULT,
