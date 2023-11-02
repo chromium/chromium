@@ -28,6 +28,10 @@ class ProfilePasswordStoreFactory
   ProfilePasswordStoreFactory& operator=(const ProfilePasswordStoreFactory&) =
       delete;
 
+  // Returns the default factory, useful in tests where the service is null by
+  // default.
+  static TestingFactory GetDefaultFactoryForTesting();
+
  private:
   friend base::NoDestructor<ProfilePasswordStoreFactory>;
 

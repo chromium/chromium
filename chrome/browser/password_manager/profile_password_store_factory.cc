@@ -36,45 +36,10 @@ using password_manager::AffiliatedMatchHelper;
 using password_manager::PasswordStore;
 using password_manager::PasswordStoreInterface;
 
-// static
-scoped_refptr<PasswordStoreInterface>
-ProfilePasswordStoreFactory::GetForProfile(Profile* profile,
-                                           ServiceAccessType access_type) {
-  // |profile| gets always redirected to a non-Incognito profile below, so
-  // Incognito & IMPLICIT_ACCESS means that incognito browsing session would
-  // result in traces in the normal profile without the user knowing it.
-  if (access_type == ServiceAccessType::IMPLICIT_ACCESS &&
-      profile->IsOffTheRecord())
-    return nullptr;
-  return base::WrapRefCounted(static_cast<PasswordStoreInterface*>(
-      GetInstance()->GetServiceForBrowserContext(profile, true).get()));
-}
+namespace {
 
-// static
-ProfilePasswordStoreFactory* ProfilePasswordStoreFactory::GetInstance() {
-  static base::NoDestructor<ProfilePasswordStoreFactory> instance;
-  return instance.get();
-}
-
-ProfilePasswordStoreFactory::ProfilePasswordStoreFactory()
-    : RefcountedProfileKeyedServiceFactory(
-          "PasswordStore",
-          ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kRedirectedToOriginal)
-              // TODO(crbug.com/1418376): Check if this service is needed in
-              // Guest mode.
-              .WithGuest(ProfileSelection::kRedirectedToOriginal)
-              .Build()) {
-  DependsOn(AffiliationServiceFactory::GetInstance());
-  DependsOn(AffiliationsPrefetcherFactory::GetInstance());
-  DependsOn(CredentialsCleanerRunnerFactory::GetInstance());
-}
-
-ProfilePasswordStoreFactory::~ProfilePasswordStoreFactory() = default;
-
-scoped_refptr<RefcountedKeyedService>
-ProfilePasswordStoreFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
+scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
+    content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
 
   DCHECK(!profile->IsOffTheRecord());
@@ -137,6 +102,56 @@ ProfilePasswordStoreFactory::BuildServiceInstanceFor(
   DelayReportingPasswordStoreMetrics(profile);
 
   return ps;
+}
+
+}  // namespace
+
+// static
+scoped_refptr<PasswordStoreInterface>
+ProfilePasswordStoreFactory::GetForProfile(Profile* profile,
+                                           ServiceAccessType access_type) {
+  // |profile| gets always redirected to a non-Incognito profile below, so
+  // Incognito & IMPLICIT_ACCESS means that incognito browsing session would
+  // result in traces in the normal profile without the user knowing it.
+  if (access_type == ServiceAccessType::IMPLICIT_ACCESS &&
+      profile->IsOffTheRecord()) {
+    return nullptr;
+  }
+  return base::WrapRefCounted(static_cast<PasswordStoreInterface*>(
+      GetInstance()->GetServiceForBrowserContext(profile, true).get()));
+}
+
+// static
+ProfilePasswordStoreFactory* ProfilePasswordStoreFactory::GetInstance() {
+  static base::NoDestructor<ProfilePasswordStoreFactory> instance;
+  return instance.get();
+}
+
+ProfilePasswordStoreFactory::ProfilePasswordStoreFactory()
+    : RefcountedProfileKeyedServiceFactory(
+          "PasswordStore",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              .Build()) {
+  DependsOn(AffiliationServiceFactory::GetInstance());
+  DependsOn(AffiliationsPrefetcherFactory::GetInstance());
+  DependsOn(CredentialsCleanerRunnerFactory::GetInstance());
+}
+
+ProfilePasswordStoreFactory::~ProfilePasswordStoreFactory() = default;
+
+ProfilePasswordStoreFactory::TestingFactory
+ProfilePasswordStoreFactory::GetDefaultFactoryForTesting() {
+  return base::BindRepeating(&BuildPasswordStore);
+}
+
+scoped_refptr<RefcountedKeyedService>
+ProfilePasswordStoreFactory::BuildServiceInstanceFor(
+    content::BrowserContext* context) const {
+  return BuildPasswordStore(context);
 }
 
 bool ProfilePasswordStoreFactory::ServiceIsNULLWhileTesting() const {
