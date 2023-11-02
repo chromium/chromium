@@ -11,7 +11,7 @@
 #include "v8/include/v8.h"
 
 namespace blink {
-
+class ExceptionState;
 class ScriptState;
 
 // Implementation of the "read request" struct from the standard. ReadRequest
@@ -24,7 +24,9 @@ class CORE_EXPORT ReadRequest : public GarbageCollected<ReadRequest> {
   ReadRequest& operator=(const ReadRequest&) = delete;
   virtual ~ReadRequest() = default;
 
-  virtual void ChunkSteps(ScriptState*, v8::Local<v8::Value> chunk) const = 0;
+  virtual void ChunkSteps(ScriptState*,
+                          v8::Local<v8::Value> chunk,
+                          ExceptionState&) const = 0;
   virtual void CloseSteps(ScriptState*) const = 0;
   virtual void ErrorSteps(ScriptState*, v8::Local<v8::Value> e) const = 0;
 

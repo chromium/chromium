@@ -9,7 +9,7 @@
 #include "v8/include/v8.h"
 
 namespace blink {
-
+class ExceptionState;
 class ReadRequest;
 class ScriptState;
 
@@ -23,7 +23,7 @@ class ReadableStreamController : public ScriptWrappable {
                                              v8::Local<v8::Value> reason) = 0;
 
   // https://streams.spec.whatwg.org/#abstract-opdef-readablestreamcontroller-pullsteps
-  virtual void PullSteps(ScriptState*, ReadRequest*) = 0;
+  virtual void PullSteps(ScriptState*, ReadRequest*, ExceptionState&) = 0;
 
   // https://streams.spec.whatwg.org/#abstract-opdef-readablestreamcontroller-releasesteps
   virtual void ReleaseSteps() = 0;

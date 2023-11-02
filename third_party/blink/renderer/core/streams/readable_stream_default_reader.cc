@@ -26,7 +26,8 @@ class ReadableStreamDefaultReader::DefaultReaderReadRequest final
       : resolver_(resolver) {}
 
   void ChunkSteps(ScriptState* script_state,
-                  v8::Local<v8::Value> chunk) const override {
+                  v8::Local<v8::Value> chunk,
+                  ExceptionState&) const override {
     // This is needed so that there is a valid v8::Context when fulfilling the
     // read request.
     ScriptState::Scope scope(script_state);
@@ -112,7 +113,7 @@ ScriptPromise ReadableStreamDefaultReader::read(
   auto* read_request = MakeGarbageCollected<DefaultReaderReadRequest>(promise);
 
   // 4. Perform ! ReadableStreamReaderRead(this).
-  Read(script_state, this, read_request);
+  Read(script_state, this, read_request, exception_state);
 
   // 5. Return promise.
   return promise->GetScriptPromise(script_state);
@@ -120,7 +121,8 @@ ScriptPromise ReadableStreamDefaultReader::read(
 
 void ReadableStreamDefaultReader::Read(ScriptState* script_state,
                                        ReadableStreamDefaultReader* reader,
-                                       ReadRequest* read_request) {
+                                       ReadRequest* read_request,
+                                       ExceptionState& exception_state) {
   auto* isolate = script_state->GetIsolate();
   // https://streams.spec.whatwg.org/#readable-stream-default-reader-read
   // 1. Let stream be reader.[[stream]].
@@ -151,7 +153,8 @@ void ReadableStreamDefaultReader::Read(ScriptState* script_state,
       DCHECK_EQ(stream->state_, ReadableStream::kReadable);
 
       //   2. Perform ! stream.[[controller]].[[PullSteps]](readRequest).
-      stream->GetController()->PullSteps(script_state, read_request);
+      stream->GetController()->PullSteps(script_state, read_request,
+                                         exception_state);
       break;
   }
 }

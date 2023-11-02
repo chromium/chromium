@@ -1085,7 +1085,8 @@ void ReadableStream::Error(ScriptState* script_state,
 void ReadableStream::FulfillReadIntoRequest(ScriptState* script_state,
                                             ReadableStream* stream,
                                             DOMArrayBufferView* chunk,
-                                            bool done) {
+                                            bool done,
+                                            ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#readable-stream-fulfill-read-into-request
   // 1. Assert: ! ReadableStreamHasBYOBReader(stream) is true.
   DCHECK(HasBYOBReader(stream));
@@ -1103,14 +1104,15 @@ void ReadableStream::FulfillReadIntoRequest(ScriptState* script_state,
     read_into_request->CloseSteps(script_state, chunk);
   } else {
     // 7. Otherwise, perform readIntoRequest’s chunk steps, given chunk.
-    read_into_request->ChunkSteps(script_state, chunk);
+    read_into_request->ChunkSteps(script_state, chunk, exception_state);
   }
 }
 
 void ReadableStream::FulfillReadRequest(ScriptState* script_state,
                                         ReadableStream* stream,
                                         v8::Local<v8::Value> chunk,
-                                        bool done) {
+                                        bool done,
+                                        ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#readable-stream-fulfill-read-request
   // 1. Assert: ! ReadableStreamHasDefaultReader(stream) is true.
   DCHECK(HasDefaultReader(stream));
@@ -1134,7 +1136,7 @@ void ReadableStream::FulfillReadRequest(ScriptState* script_state,
     read_request->CloseSteps(script_state);
   } else {
     // 7. Otherwise, perform readRequest’s chunk steps, given chunk.
-    read_request->ChunkSteps(script_state, chunk);
+    read_request->ChunkSteps(script_state, chunk, exception_state);
   }
 }
 

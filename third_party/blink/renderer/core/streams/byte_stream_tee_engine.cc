@@ -135,13 +135,15 @@ class ByteStreamTeeEngine::ByteTeeReadRequest final : public ReadRequest {
   explicit ByteTeeReadRequest(ByteStreamTeeEngine* engine) : engine_(engine) {}
 
   void ChunkSteps(ScriptState* script_state,
-                  v8::Local<v8::Value> chunk) const override {
+                  v8::Local<v8::Value> chunk,
+                  ExceptionState& exception_state) const override {
     scoped_refptr<scheduler::EventLoop> event_loop =
         ExecutionContext::From(script_state)->GetAgent()->event_loop();
     v8::Global<v8::Value> value(script_state->GetIsolate(), chunk);
     event_loop->EnqueueMicrotask(
         WTF::BindOnce(&ByteTeeReadRequest::ChunkStepsBody, WrapPersistent(this),
-                      WrapPersistent(script_state), std::move(value)));
+                      WrapPersistent(script_state), std::move(value),
+                      exception_state.GetContext()));
   }
 
   void CloseSteps(ScriptState* script_state) const override {
@@ -209,7 +211,8 @@ class ByteStreamTeeEngine::ByteTeeReadRequest final : public ReadRequest {
 
  private:
   void ChunkStepsBody(ScriptState* script_state,
-                      v8::Global<v8::Value> value) const {
+                      v8::Global<v8::Value> value,
+                      const ExceptionContext& exception_context) const {
     ScriptState::Scope scope(script_state);
     // 1. Set readAgainForBranch1 to false.
     engine_->read_again_for_branch_[0] = false;
@@ -217,7 +220,7 @@ class ByteStreamTeeEngine::ByteTeeReadRequest final : public ReadRequest {
     engine_->read_again_for_branch_[1] = false;
 
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionContextType::kUnknown, "", "");
+                                   exception_context);
 
     // 3. Let chunk1 and chunk2 be chunk.
     NotShared<DOMUint8Array> chunk[2];
@@ -302,12 +305,14 @@ class ByteStreamTeeEngine::ByteTeeReadIntoRequest final
         for_branch_2_(for_branch_2) {}
 
   void ChunkSteps(ScriptState* script_state,
-                  DOMArrayBufferView* chunk) const override {
+                  DOMArrayBufferView* chunk,
+                  ExceptionState& exception_state) const override {
     scoped_refptr<scheduler::EventLoop> event_loop =
         ExecutionContext::From(script_state)->GetAgent()->event_loop();
-    event_loop->EnqueueMicrotask(WTF::BindOnce(
-        &ByteTeeReadIntoRequest::ChunkStepsBody, WrapPersistent(this),
-        WrapPersistent(script_state), WrapPersistent(chunk)));
+    event_loop->EnqueueMicrotask(
+        WTF::BindOnce(&ByteTeeReadIntoRequest::ChunkStepsBody,
+                      WrapPersistent(this), WrapPersistent(script_state),
+                      WrapPersistent(chunk), exception_state.GetContext()));
   }
 
   void CloseSteps(ScriptState* script_state,
@@ -396,7 +401,8 @@ class ByteStreamTeeEngine::ByteTeeReadIntoRequest final
 
  private:
   void ChunkStepsBody(ScriptState* script_state,
-                      DOMArrayBufferView* chunk) const {
+                      DOMArrayBufferView* chunk,
+                      const ExceptionContext& exception_context) const {
     // This is called in a microtask, the ScriptState needs to be put back
     // in scope.
     ScriptState::Scope scope(script_state);
@@ -414,7 +420,7 @@ class ByteStreamTeeEngine::ByteTeeReadIntoRequest final
         !for_branch_2_ ? engine_->canceled_[1] : engine_->canceled_[0];
     // 5. If otherCanceled is false,
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionContextType::kUnknown, "", "");
+                                   exception_context);
     if (!other_canceled) {
       //   a. Let cloneResult be CloneAsUint8Array(chunk).
       auto* clone_result = engine_->CloneAsUint8Array(chunk);
@@ -563,8 +569,9 @@ void ByteStreamTeeEngine::PullWithDefaultReader(
   auto* read_request = MakeGarbageCollected<ByteTeeReadRequest>(this);
   //   c. Perform ! ReadableStreamDefaultReaderRead(reader, readRequest).
   ReadableStreamGenericReader* reader = reader_;
-  ReadableStreamDefaultReader::Read(
-      script_state, To<ReadableStreamDefaultReader>(reader), read_request);
+  ReadableStreamDefaultReader::Read(script_state,
+                                    To<ReadableStreamDefaultReader>(reader),
+                                    read_request, exception_state);
 }
 
 void ByteStreamTeeEngine::PullWithBYOBReader(ScriptState* script_state,

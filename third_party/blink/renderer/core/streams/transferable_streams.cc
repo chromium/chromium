@@ -811,7 +811,8 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
         : source_(source), resolver_(resolver) {}
 
     void ChunkSteps(ScriptState* script_state,
-                    v8::Local<v8::Value> chunk) const override {
+                    v8::Local<v8::Value> chunk,
+                    ExceptionState&) const override {
       source_->Controller()->Enqueue(chunk);
       resolver_->ResolveWithUndefined(script_state);
     }
@@ -903,7 +904,7 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
         MakeGarbageCollected<ConcatenatingUnderlyingSourceReadRequest>(this,
                                                                        promise);
     ReadableStreamDefaultReader::Read(script_state, reader_for_stream1_,
-                                      read_request);
+                                      read_request, exception_state);
     return promise->GetScriptPromise(script_state);
   }
 

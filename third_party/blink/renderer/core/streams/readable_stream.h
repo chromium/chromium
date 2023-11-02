@@ -318,13 +318,15 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   static void FulfillReadIntoRequest(ScriptState*,
                                      ReadableStream*,
                                      DOMArrayBufferView* chunk,
-                                     bool done);
+                                     bool done,
+                                     ExceptionState&);
 
   // https://streams.spec.whatwg.org/#readable-stream-fulfill-read-request
   static void FulfillReadRequest(ScriptState*,
                                  ReadableStream*,
                                  v8::Local<v8::Value> chunk,
-                                 bool done);
+                                 bool done,
+                                 ExceptionState&);
 
   // https://streams.spec.whatwg.org/#readable-stream-get-num-read-into-requests
   static int GetNumReadIntoRequests(const ReadableStream*);

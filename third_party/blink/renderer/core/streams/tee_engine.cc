@@ -63,13 +63,17 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
       //      ii. Return a promise resolved with undefined.
       return PromiseResolveWithUndefined(script_state);
     }
+
+    ExceptionState exception_state(script_state->GetIsolate(),
+                                   ExceptionContextType::kUnknown, "", "");
+
     //   b. Set reading to true.
     engine_->reading_ = true;
     //   c. Let readRequest be a read request with the following items:
     auto* read_request = MakeGarbageCollected<TeeReadRequest>(engine_);
     //   d. Perform ! ReadableStreamDefaultReaderRead(reader, readRequest).
     ReadableStreamDefaultReader::Read(script_state, engine_->reader_,
-                                      read_request);
+                                      read_request, exception_state);
     //   e. Return a promise resolved with undefined.
     return PromiseResolveWithUndefined(script_state);
   }
@@ -85,13 +89,15 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
     explicit TeeReadRequest(TeeEngine* engine) : engine_(engine) {}
 
     void ChunkSteps(ScriptState* script_state,
-                    v8::Local<v8::Value> chunk) const override {
+                    v8::Local<v8::Value> chunk,
+                    ExceptionState& exception_state) const override {
       scoped_refptr<scheduler::EventLoop> event_loop =
           ExecutionContext::From(script_state)->GetAgent()->event_loop();
       v8::Global<v8::Value> value(script_state->GetIsolate(), chunk);
       event_loop->EnqueueMicrotask(
           WTF::BindOnce(&TeeReadRequest::ChunkStepsBody, WrapPersistent(this),
-                        WrapPersistent(script_state), std::move(value)));
+                        WrapPersistent(script_state), std::move(value),
+                        exception_state.GetContext()));
     }
 
     void CloseSteps(ScriptState* script_state) const override {
@@ -131,7 +137,8 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
 
    private:
     void ChunkStepsBody(ScriptState* script_state,
-                        v8::Global<v8::Value> value) const {
+                        v8::Global<v8::Value> value,
+                        const ExceptionContext& exception_context) const {
       // This is called in a microtask, the ScriptState needs to be put back
       // in scope.
       ScriptState::Scope scope(script_state);
@@ -139,7 +146,7 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
       engine_->read_again_ = false;
 
       ExceptionState exception_state(script_state->GetIsolate(),
-                                     ExceptionContextType::kUnknown, "", "");
+                                     exception_context);
 
       // 2. Let chunk1 and chunk2 be chunk.
       v8::Local<v8::Value> chunk[2];
