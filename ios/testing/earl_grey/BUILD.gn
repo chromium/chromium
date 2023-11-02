@@ -46,6 +46,8 @@ source_set("eg_test_support+eg2") {
     "earl_grey_test.h",
     "matchers.h",
     "matchers.mm",
+    "scoped_disable_fast_animation_earl_grey.h",
+    "scoped_disable_fast_animation_earl_grey.mm",
     "system_alert_handler.h",
     "system_alert_handler.mm",
   ]

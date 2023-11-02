@@ -9,8 +9,8 @@
 #import "ios/showcase/bubble/constants.h"
 #import "ios/showcase/test/showcase_eg_utils.h"
 #import "ios/showcase/test/showcase_test_case.h"
-#import "ios/testing/earl_grey/base_earl_grey_test_case_app_interface.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/earl_grey/scoped_disable_fast_animation_earl_grey.h"
 
 namespace {
 
@@ -46,15 +46,10 @@ id<GREYMatcher> DismissedWithTap() {
 
 @implementation SCSideSwipeBubbleTestCase
 
-- (void)tearDown {
-  [BaseEarlGreyTestCaseAppInterface enableFastAnimation];
-  [super tearDown];
-}
-
 // Tests that the side swipe bubble shows, and its "Dismiss" button works as
 // intended.
 - (void)testDismissButtonRemovesTheSideSwipeIPH {
-  [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
+  ScopedDisableFastAnimationEarlGrey fast_animation_disabler;
   Open(@"SideSwipeBubbleView");
   {
     // Disable scoped synchronization to perform checks with animation running.
@@ -88,8 +83,8 @@ id<GREYMatcher> DismissedWithTap() {
 // Tests that the side swipe bubble auto-dismisses after three iterations of
 // animation (~10s).
 - (void)testSideSwipeIPHAutoDismissesAfterTimeOut {
+  ScopedDisableFastAnimationEarlGrey fast_animation_disabler;
   base::TimeDelta timeout = base::Seconds(10);
-  [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   Open(@"SideSwipeBubbleView");
   {
