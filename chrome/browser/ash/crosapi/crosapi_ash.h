@@ -168,6 +168,8 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) override;
   void BindBrowserServiceHost(
       mojo::PendingReceiver<mojom::BrowserServiceHost> receiver) override;
+  void BindBrowserShortcutPublisher(
+      mojo::PendingReceiver<mojom::AppShortcutPublisher> receiver) override;
   void BindBrowserVersionService(
       mojo::PendingReceiver<mojom::BrowserVersionService> receiver) override;
   void BindCertDatabase(

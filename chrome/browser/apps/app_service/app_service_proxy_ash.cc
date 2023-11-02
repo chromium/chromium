@@ -25,6 +25,7 @@
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
+#include "chrome/browser/apps/app_service/publishers/browser_shortcuts_crosapi_publisher.h"
 #include "chrome/browser/apps/app_service/publishers/shortcut_publisher.h"
 #include "chrome/browser/apps/app_service/publishers/standalone_browser_apps.h"
 #include "chrome/browser/apps/app_service/shortcut_removal_dialog.h"
@@ -228,6 +229,12 @@ AppServiceProxyAsh::BrowserAppInstanceTracker() {
 apps::BrowserAppInstanceRegistry*
 AppServiceProxyAsh::BrowserAppInstanceRegistry() {
   return browser_app_instance_registry_.get();
+}
+
+apps::BrowserShortcutsCrosapiPublisher*
+AppServiceProxyAsh::BrowserShortcutsCrosapiPublisher() {
+  return publisher_host_ ? publisher_host_->BrowserShortcutsCrosapiPublisher()
+                         : nullptr;
 }
 
 apps::StandaloneBrowserApps* AppServiceProxyAsh::StandaloneBrowserApps() {

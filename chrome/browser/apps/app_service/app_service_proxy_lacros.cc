@@ -28,9 +28,11 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
+#include "chrome/browser/web_applications/app_service/lacros_browser_shortcuts_controller.h"
 #include "chrome/browser/web_applications/app_service/lacros_web_apps_controller.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -521,6 +523,10 @@ void AppServiceProxyLacros::Initialize() {
     lacros_web_apps_controller_ =
         std::make_unique<web_app::LacrosWebAppsController>(profile_);
     lacros_web_apps_controller_->Init();
+    if (chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
+      lacros_browser_shortcuts_controller_ =
+          std::make_unique<web_app::LacrosBrowserShortcutsController>(profile_);
+    }
   }
 
   // Make the chrome://app-icon/ resource available.

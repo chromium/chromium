@@ -63,6 +63,8 @@ source_set("app_service") {
   if (is_chromeos_lacros) {
     assert(enable_system_notifications)
     sources += [
+      "lacros_browser_shortcuts_controller.cc",
+      "lacros_browser_shortcuts_controller.h",
       "lacros_web_apps_controller.cc",
       "lacros_web_apps_controller.h",
     ]
@@ -71,6 +73,7 @@ source_set("app_service") {
       "//chromeos/constants",
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
+      "//components/app_constants",
     ]
   }
 }

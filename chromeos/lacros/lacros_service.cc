@@ -273,6 +273,10 @@ LacrosService::LacrosService()
   ConstructRemote<crosapi::mojom::AudioService, &Crosapi::BindAudioService,
                   Crosapi::MethodMinVersions::kBindAudioServiceMinVersion>();
   ConstructRemote<
+      crosapi::mojom::AppShortcutPublisher,
+      &Crosapi::BindBrowserShortcutPublisher,
+      Crosapi::MethodMinVersions::kBindBrowserShortcutPublisherMinVersion>();
+  ConstructRemote<
       crosapi::mojom::AppWindowTracker, &Crosapi::BindChromeAppWindowTracker,
       Crosapi::MethodMinVersions::kBindChromeAppWindowTrackerMinVersion>();
   ConstructRemote<

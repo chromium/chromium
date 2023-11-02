@@ -150,7 +150,7 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 123
+// Next version: 124
 // Next method id: 125
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
@@ -212,6 +212,12 @@ interface Crosapi {
   // Added in M90.
   [MinVersion=15]
   BindBrowserServiceHost@20(pending_receiver<BrowserServiceHost> receiver);
+
+  // Binds the browser shortcuts publisher service to allow browser shortcuts
+  // publishing from lacros-chrome to the App Service in ash-chrome.
+  [MinVersion=123]
+  BindBrowserShortcutPublisher@125(
+      pending_receiver<AppShortcutPublisher> receiver);
 
   // Binds the BrowserCdmFactory interface for proxying communication to the
   // HWDRM CDM hosted in a ChromeOS daemon process. We need to use a

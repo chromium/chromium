@@ -65,6 +65,7 @@ class ShortcutRegistryCache;
 class ShortcutRemovalDialog;
 class StandaloneBrowserApps;
 class UninstallDialog;
+class BrowserShortcutsCrosapiPublisher;
 
 struct PromiseApp;
 using PromiseAppPtr = std::unique_ptr<PromiseApp>;
@@ -102,6 +103,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   apps::BrowserAppInstanceRegistry* BrowserAppInstanceRegistry();
 
   apps::StandaloneBrowserApps* StandaloneBrowserApps();
+  apps::BrowserShortcutsCrosapiPublisher* BrowserShortcutsCrosapiPublisher();
 
   // Registers `crosapi_subscriber_`.
   void RegisterCrosApiSubScriber(SubscriberCrosapi* subscriber);

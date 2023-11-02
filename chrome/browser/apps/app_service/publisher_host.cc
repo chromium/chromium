@@ -13,6 +13,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 #include "chrome/browser/apps/app_service/publishers/borealis_apps.h"
+#include "chrome/browser/apps/app_service/publishers/browser_shortcuts_crosapi_publisher.h"
 #include "chrome/browser/apps/app_service/publishers/bruschetta_apps.h"
 #include "chrome/browser/apps/app_service/publishers/built_in_chromeos_apps.h"
 #include "chrome/browser/apps/app_service/publishers/crostini_apps.h"
@@ -23,8 +24,10 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/web_applications/app_service/browser_shortcuts.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
+#include "components/user_manager/user_manager.h"
 #endif
 
 namespace apps {
@@ -49,6 +52,13 @@ PublisherHost::~PublisherHost() = default;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 apps::StandaloneBrowserApps* PublisherHost::StandaloneBrowserApps() {
   return standalone_browser_apps_ ? standalone_browser_apps_.get() : nullptr;
+}
+
+apps::BrowserShortcutsCrosapiPublisher*
+PublisherHost::BrowserShortcutsCrosapiPublisher() {
+  return browser_shortcuts_crosapi_publisher_
+             ? browser_shortcuts_crosapi_publisher_.get()
+             : nullptr;
 }
 
 void PublisherHost::SetArcIsRegistered() {
@@ -150,7 +160,16 @@ void PublisherHost::Initialize() {
   web_apps_ = std::make_unique<web_app::WebApps>(proxy_);
 
   if (chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
-    browser_shortcuts_ = std::make_unique<web_app::BrowserShortcuts>(proxy_);
+    if (crosapi::browser_util::IsLacrosEnabled()) {
+      if (user_manager::UserManager::Get()->IsPrimaryUser(
+              ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+                  profile))) {
+        browser_shortcuts_crosapi_publisher_ =
+            std::make_unique<apps::BrowserShortcutsCrosapiPublisher>(proxy_);
+      }
+    } else {
+      browser_shortcuts_ = std::make_unique<web_app::BrowserShortcuts>(proxy_);
+    }
   }
 #else
   web_apps_ = std::make_unique<web_app::WebApps>(proxy_);

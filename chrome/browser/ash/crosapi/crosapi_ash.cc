@@ -14,6 +14,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
+#include "chrome/browser/apps/app_service/publishers/browser_shortcuts_crosapi_publisher.h"
 #include "chrome/browser/apps/app_service/publishers/standalone_browser_apps.h"
 #include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps.h"
 #include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps_factory.h"
@@ -387,6 +388,18 @@ void CrosapiAsh::BindBrowserServiceHost(
     mojo::PendingReceiver<crosapi::mojom::BrowserServiceHost> receiver) {
   browser_service_host_ash_->BindReceiver(receiver_set_.current_context(),
                                           std::move(receiver));
+}
+
+void CrosapiAsh::BindBrowserShortcutPublisher(
+    mojo::PendingReceiver<mojom::AppShortcutPublisher> receiver) {
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  auto* app_service_proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+  apps::BrowserShortcutsCrosapiPublisher* browser_shortcuts =
+      app_service_proxy->BrowserShortcutsCrosapiPublisher();
+  if (browser_shortcuts) {
+    browser_shortcuts->RegisterCrosapiHost(std::move(receiver));
+  }
 }
 
 void CrosapiAsh::BindBrowserVersionService(

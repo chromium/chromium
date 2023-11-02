@@ -240,3 +240,15 @@ interface AppServiceSubscriber {
   [MinVersion=15]
   InitializePreferredApps@2(array<PreferredApp> preferred_apps);
 };
+
+// Interacts with the app service. Implemented in ash-chrome.
+// This is a generic app-shortcut-publisher interface that is used by the
+// implementation for browser shortcuts and other future lacros based shortcut
+// (e.g. shortcut to a web app).
+[Stable, Uuid="f46f05bb-218e-4370-ad07-f2f0dfef0298"]
+interface AppShortcutPublisher {
+  // Publish a stream of app shortcuts from lacros-chrome.
+  // |deltas| holds a sparse data structure that includes the update
+  // AppShortcut data from the existing shortcut state in app service.
+  PublishShortcuts@0(array<AppShortcut> deltas) => ();
+};

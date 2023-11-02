@@ -106,6 +106,7 @@ source_set("app_service") {
 
     deps += [
       "//ash/webui/projector_app/public/cpp",
+      "//chromeos/constants",
       "//chromeos/crosapi/mojom",
       "//chromeos/startup",
       "//components/webapk:proto",
@@ -177,6 +178,8 @@ source_set("app_service") {
       "publishers/arc_apps_factory.h",
       "publishers/borealis_apps.cc",
       "publishers/borealis_apps.h",
+      "publishers/browser_shortcuts_crosapi_publisher.cc",
+      "publishers/browser_shortcuts_crosapi_publisher.h",
       "publishers/bruschetta_apps.cc",
       "publishers/bruschetta_apps.h",
       "publishers/built_in_chromeos_apps.cc",
