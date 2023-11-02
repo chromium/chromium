@@ -92,5 +92,11 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // Disable Shared Storage on WebView.
   aw_feature_overrides.DisableFeature(blink::features::kSharedStorageAPI);
 
+  // Disable scrollbar-color on WebView.
+  aw_feature_overrides.DisableFeature(blink::features::kScrollbarColor);
+
+  // Disable scrollbar-width on WebView.
+  aw_feature_overrides.DisableFeature(blink::features::kScrollbarWidth);
+
   aw_feature_overrides.RegisterOverrides(feature_list);
 }

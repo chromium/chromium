@@ -387,7 +387,9 @@ scrollSnapType
 scrollTimeline
 scrollTimelineAxis
 scrollTimelineName
+scrollbarColor
 scrollbarGutter
+scrollbarWidth
 setProperty
 shapeImageThreshold
 shapeMargin

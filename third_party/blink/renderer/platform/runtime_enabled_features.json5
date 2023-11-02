@@ -3353,11 +3353,11 @@
     },
     {
       name: "ScrollbarColor",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ScrollbarWidth",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ScrollEndEvents",
