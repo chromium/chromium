@@ -145,4 +145,28 @@ SettingsVisibleFieldTypeForMetrics ConvertSettingsVisibleFieldTypeForMetrics(
   }
 }
 
+void MergeFormGroupFillingStats(const FormGroupFillingStats& first,
+                                FormGroupFillingStats& second) {
+  second.num_accepted = first.num_accepted + second.num_accepted;
+  second.num_corrected_to_same_type =
+      first.num_corrected_to_same_type + second.num_corrected_to_same_type;
+  second.num_corrected_to_different_type =
+      first.num_corrected_to_different_type +
+      second.num_corrected_to_different_type;
+  second.num_corrected_to_unknown_type = first.num_corrected_to_unknown_type +
+                                         second.num_corrected_to_unknown_type;
+  second.num_corrected_to_empty =
+      first.num_corrected_to_empty + second.num_corrected_to_empty;
+  second.num_manually_filled_to_same_type =
+      first.num_manually_filled_to_same_type +
+      second.num_manually_filled_to_same_type;
+  second.num_manually_filled_to_differt_type =
+      first.num_manually_filled_to_differt_type +
+      second.num_manually_filled_to_differt_type;
+  second.num_manually_filled_to_unknown_type =
+      first.num_manually_filled_to_unknown_type +
+      second.num_manually_filled_to_unknown_type;
+  second.num_left_empty = first.num_left_empty + second.num_left_empty;
+}
+
 }  // namespace autofill::autofill_metrics

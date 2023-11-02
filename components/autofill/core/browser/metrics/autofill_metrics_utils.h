@@ -53,6 +53,11 @@ struct FormGroupFillingStats {
 AutofillMetrics::FieldFillingStatus GetFieldFillingStatus(
     const AutofillField& field);
 
+// Merge `first` into `second` by summing each attribute from
+// `FormGroupFillingStats`.
+void MergeFormGroupFillingStats(const FormGroupFillingStats& first,
+                                FormGroupFillingStats& second);
+
 // kAccount profiles are synced from an external source and have potentially
 // originated from outside of Autofill. In order to determine the added value
 // for Autofill, the `AutofillProfile::Source` is further resolved in some

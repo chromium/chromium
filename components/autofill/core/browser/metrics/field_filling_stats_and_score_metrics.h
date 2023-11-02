@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_FIELD_FILLING_STATS_AND_SCORE_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_FIELD_FILLING_STATS_AND_SCORE_METRICS_H_
 
+#include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 
 namespace autofill::autofill_metrics {
@@ -15,6 +16,12 @@ namespace autofill::autofill_metrics {
 void LogFieldFillingStatsAndScore(
     const FormGroupFillingStats& address_filling_stats,
     const FormGroupFillingStats& cc_filling_stats);
+
+// Same as above but keyed by `AutofillFillingMethod`.
+void LogAddressFieldFillingStatsAndScoreByAutofillFillingMethod(
+    const base::flat_map<AutofillFillingMethod,
+                         autofill_metrics::FormGroupFillingStats>&
+        address_filling_stats_by_filling_method);
 
 }  // namespace autofill::autofill_metrics
 

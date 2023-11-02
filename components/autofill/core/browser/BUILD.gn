@@ -306,6 +306,8 @@ static_library("browser") {
     "metrics/form_events/form_events.h",
     "metrics/granular_filling_metrics.cc",
     "metrics/granular_filling_metrics.h",
+    "metrics/granular_filling_metrics_utils.cc",
+    "metrics/granular_filling_metrics_utils.h",
     "metrics/log_event.cc",
     "metrics/log_event.h",
     "metrics/payments/better_auth_metrics.cc",

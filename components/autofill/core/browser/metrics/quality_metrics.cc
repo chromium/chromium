@@ -5,11 +5,13 @@
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
 
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
+#include "components/autofill/core/browser/metrics/granular_filling_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/precedence_over_autocomplete_metrics.h"
 #include "components/autofill/core/browser/metrics/shadow_prediction_metrics.h"
 #include "components/autofill/core/browser/validation.h"
@@ -44,6 +46,10 @@ void LogQualityMetrics(
   // and credit card forms.
   autofill_metrics::FormGroupFillingStats address_field_stats;
   autofill_metrics::FormGroupFillingStats cc_field_stats;
+
+  // Same as above, but keyed by `AutofillFillingMethod`.
+  base::flat_map<AutofillFillingMethod, autofill_metrics::FormGroupFillingStats>
+      address_field_stats_by_filling_method;
 
   // Count the number of autofilled and corrected non-credit card fields with
   // ac=unrecognized.
@@ -183,6 +189,16 @@ void LogQualityMetrics(
         // counter.
         group_stats.AddFieldFillingStatus(
             autofill_metrics::GetFieldFillingStatus(*field));
+        // For address forms we want to emit filling stats metrics per
+        // `AutofillFillingMethod`. Therefore, the stats generated are added to
+        // a map keyed by `AutofillFillingMethod`, so that later, metrics can
+        // emitted for each method used.
+        if (base::FeatureList::IsEnabled(
+                features::kAutofillGranularFillingAvailable) &
+            is_address_form_field) {
+          AddFillingStatsForAutofillFillingMethod(
+              *field, address_field_stats_by_filling_method);
+        }
       }
     }
 
@@ -387,8 +403,11 @@ void LogQualityMetrics(
     // Log the field filling statistics if autofill was used.
     // The metrics are only emitted if there was at least one field in the
     // corresponding form group that is or was filled by autofill.
+    // TODO(crbug.com/1459990): Remove this metric on cleanup.
     autofill_metrics::LogFieldFillingStatsAndScore(address_field_stats,
                                                    cc_field_stats);
+    LogAddressFieldFillingStatsAndScoreByAutofillFillingMethod(
+        address_field_stats_by_filling_method);
 
     if (card_form) {
       AutofillMetrics::LogCreditCardSeamlessnessAtSubmissionTime(
