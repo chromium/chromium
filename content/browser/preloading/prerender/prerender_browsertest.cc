@@ -7710,20 +7710,6 @@ class PrerenderWithProactiveBrowsingInstanceSwap : public PrerenderBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(nhiroki): Merge this into PrerenderBrowserTest.
-class PrerenderSameSiteCrossOriginBrowserTest : public PrerenderBrowserTest {
- public:
-  PrerenderSameSiteCrossOriginBrowserTest() = default;
-
-  GURL GetUrl(const std::string& path) {
-    return ssl_server().GetURL("a.a.test", path);
-  }
-
-  GURL GetCrossSiteUrl(const std::string& path) {
-    return ssl_server().GetURL("a.b.test", path);
-  }
-};
-
 // Make sure that we can deal with the speculative RFH that is created during
 // the activation navigation.
 // TODO(https://crbug.com/1190197): We should try to avoid creating the
@@ -9184,7 +9170,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SkipCrossSitePrerender) {
 // Tests that same-site cross-origin navigation by speculation rules is not
 // allowed with the feature enabled but without opt-in.
 IN_PROC_BROWSER_TEST_F(
-    PrerenderSameSiteCrossOriginBrowserTest,
+    PrerenderBrowserTest,
     SameSiteCrossOriginNavigationSpeculationRulesWithoutOptInHeader) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl =
@@ -9211,7 +9197,7 @@ IN_PROC_BROWSER_TEST_F(
 // Tests that same-site cross-origin redirection by speculation rules with the
 // feature enabled but without opt-in.
 IN_PROC_BROWSER_TEST_F(
-    PrerenderSameSiteCrossOriginBrowserTest,
+    PrerenderBrowserTest,
     SameSiteCrossOriginRedirectionSpeculationRulesWithoutOptInHeader) {
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/empty.html");
@@ -9241,7 +9227,7 @@ IN_PROC_BROWSER_TEST_F(
 // opt-in. This test verifies a case which is a.test -> a.test (credentialed
 // prerender) -> b.a.test (no credentialed prerender).
 IN_PROC_BROWSER_TEST_F(
-    PrerenderSameSiteCrossOriginBrowserTest,
+    PrerenderBrowserTest,
     SameSiteCrossOriginCredentialedPrerenderRedirectionSpeculationRulesWithoutOptInHeader) {
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/empty.html");
@@ -9271,7 +9257,7 @@ IN_PROC_BROWSER_TEST_F(
 // opt-in. This test verifies a case which is a.test -> b.a.test (credentialed
 // prerender) -> b.a.test (no credentialed prerender)
 IN_PROC_BROWSER_TEST_F(
-    PrerenderSameSiteCrossOriginBrowserTest,
+    PrerenderBrowserTest,
     SameSiteCrossOriginCredentialedPrerenderRedirectionSpeculationRulesWithoutOptInHeader2) {
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/empty.html");
@@ -9299,7 +9285,7 @@ IN_PROC_BROWSER_TEST_F(
 // Tests that same-site cross-origin navigation redirecting back to same-origin
 // without opt-in.
 IN_PROC_BROWSER_TEST_F(
-    PrerenderSameSiteCrossOriginBrowserTest,
+    PrerenderBrowserTest,
     SameSiteCrossOriginNavigationBackToSameOriginWithoutOptInHeader) {
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/empty.html");
@@ -9336,7 +9322,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests that cross-origin redirection in multiple redirections by speculation
 // rules should be canceled.
-IN_PROC_BROWSER_TEST_F(PrerenderSameSiteCrossOriginBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        CrossSiteMultipleRedirectionSpeculationRules) {
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/empty.html");
@@ -9367,7 +9353,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSameSiteCrossOriginBrowserTest,
 
 // Tests that same-site cross-origin navigation by speculation rules can be
 // prerendered with the feature enabled.
-IN_PROC_BROWSER_TEST_F(PrerenderSameSiteCrossOriginBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        CheckSameSiteCrossOriginSpeculationRulesPrerender) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl =
@@ -9389,7 +9375,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSameSiteCrossOriginBrowserTest,
 
 // Tests that same-site cross-origin redirection by speculation rules is
 // allowed.
-IN_PROC_BROWSER_TEST_F(PrerenderSameSiteCrossOriginBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        SameSiteCrossOriginSpeculationRulesRedirection) {
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/empty.html");
@@ -9449,7 +9435,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSameSiteCrossOriginBrowserTest,
 // Tests that multiple same-site cross-origin redirections by speculation rules
 // is allowed, and only the terminal one is checked for the opt in header.
 IN_PROC_BROWSER_TEST_F(
-    PrerenderSameSiteCrossOriginBrowserTest,
+    PrerenderBrowserTest,
     SameSiteCrossOriginSpeculationRulesMultipleRedirections) {
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/empty.html");
