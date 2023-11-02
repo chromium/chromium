@@ -25,8 +25,6 @@ class StubCredentialsFilter : public CredentialsFilter {
   bool ShouldSaveGaiaPasswordHash(const PasswordForm& form) const override;
   bool ShouldSaveEnterprisePasswordHash(
       const PasswordForm& form) const override;
-  void ReportFormLoginSuccess(
-      const PasswordFormManager& form_manager) const override;
   bool IsSyncAccountEmail(const std::string& username) const override;
 };
 

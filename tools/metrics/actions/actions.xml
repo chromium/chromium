@@ -27994,6 +27994,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="PasswordManager_SyncCredentialFilledAndLoginSuccessfull">
+  <obsolete>Obsolete and no longer recorded in M121 (2023-11).</obsolete>
   <owner>vabr@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <description>
@@ -28003,6 +28004,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="PasswordManager_SyncCredentialShown">
+  <obsolete>Obsolete and no longer recorded in M121 (2023-11).</obsolete>
   <owner>gcasto@chromium.org</owner>
   <owner>vabr@chromium.org</owner>
   <description>

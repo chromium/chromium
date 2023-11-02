@@ -1090,7 +1090,6 @@ void PasswordManager::OnLoginSuccessful() {
   if (!client_->IsSavingAndFillingEnabled(submitted_form->url))
     return;
 
-  client_->GetStoreResultFilter()->ReportFormLoginSuccess(*submitted_manager);
   // Check for leaks only if there are no muted credentials and it is not a
   // single username submission (a leak warning may offer an automated password
   // change, which requires a user to be logged in).

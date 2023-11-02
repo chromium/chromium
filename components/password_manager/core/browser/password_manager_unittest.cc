@@ -152,8 +152,6 @@ class MockLeakDetectionCheck : public LeakDetectionCheck {
 class MockStoreResultFilter : public StubCredentialsFilter {
  public:
   MOCK_CONST_METHOD1(ShouldSave, bool(const PasswordForm& form));
-  MOCK_CONST_METHOD1(ReportFormLoginSuccess,
-                     void(const PasswordFormManager& form_manager));
   MOCK_CONST_METHOD1(IsSyncAccountEmail, bool(const std::string&));
   MOCK_CONST_METHOD1(ShouldSaveGaiaPasswordHash, bool(const PasswordForm&));
   MOCK_CONST_METHOD1(ShouldSaveEnterprisePasswordHash,
@@ -1558,10 +1556,9 @@ TEST_F(PasswordManagerTest,
   manager()->DidNavigateMainFrame(false);
 }
 
-// On a successful login with an updated password,
-// CredentialsFilter::ReportFormLoginSuccess and CredentialsFilter::ShouldSave
+// On a successful login with an updated password, CredentialsFilter::ShouldSave
 // should be called. The argument of ShouldSave should be the submitted form.
-TEST_F(PasswordManagerTest, ReportFormLoginSuccessAndShouldSaveCalled) {
+TEST_F(PasswordManagerTest, ShouldSaveCalled) {
   PasswordForm stored_form(MakeSimpleForm());
   store_->AddLogin(stored_form);
 
@@ -1582,10 +1579,6 @@ TEST_F(PasswordManagerTest, ReportFormLoginSuccessAndShouldSaveCalled) {
       .WillRepeatedly(Return(true));
 
   OnPasswordFormSubmitted(observed_form.form_data);
-
-  // Chrome should recognise the successful login and call
-  // ReportFormLoginSuccess.
-  EXPECT_CALL(*client_.GetStoreResultFilter(), ReportFormLoginSuccess(_));
 
   PasswordForm submitted_form = observed_form;
   submitted_form.date_last_used = base::Time::Now();

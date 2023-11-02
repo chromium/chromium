@@ -64,7 +64,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/sync/base/features.h"
-#include "components/sync/service/sync_service.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/storage_partition.h"
@@ -1121,17 +1120,6 @@ void PasswordsPrivateDelegateImpl::InitializeIfNecessary() {
 void PasswordsPrivateDelegateImpl::EmitHistogramsForCredentialAccess(
     const CredentialUIEntry& entry,
     api::passwords_private::PlaintextReason reason) {
-  syncer::SyncService* sync_service = nullptr;
-  if (SyncServiceFactory::HasSyncService(profile_)) {
-    sync_service = SyncServiceFactory::GetForProfile(profile_);
-  }
-  if (password_manager::sync_util::IsSyncAccountCredential(
-          entry.GetURL(), entry.username, sync_service,
-          IdentityManagerFactory::GetForProfile(profile_))) {
-    base::RecordAction(
-        base::UserMetricsAction("PasswordManager_SyncCredentialShown"));
-  }
-
   UMA_HISTOGRAM_ENUMERATION(
       "PasswordManager.AccessPasswordInSettings",
       ConvertPlaintextReason(reason),

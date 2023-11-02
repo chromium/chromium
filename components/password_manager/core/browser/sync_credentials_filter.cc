@@ -7,10 +7,8 @@
 #include <algorithm>
 
 #include "base/feature_list.h"
-#include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -107,18 +105,6 @@ bool SyncCredentialsFilter::IsSyncAccountEmail(
   // deprecated. Remove this usage.
   return sync_util::IsSyncAccountEmail(username, client_->GetIdentityManager(),
                                        signin::ConsentLevel::kSync);
-}
-
-void SyncCredentialsFilter::ReportFormLoginSuccess(
-    const PasswordFormManager& form_manager) const {
-  const PasswordForm& form = form_manager.GetPendingCredentials();
-  if (!form_manager.IsNewLogin() &&
-      sync_util::IsSyncAccountCredential(form.url, form.username_value,
-                                         sync_service_factory_function_.Run(),
-                                         client_->GetIdentityManager())) {
-    base::RecordAction(base::UserMetricsAction(
-        "PasswordManager_SyncCredentialFilledAndLoginSuccessfull"));
-  }
 }
 
 }  // namespace password_manager

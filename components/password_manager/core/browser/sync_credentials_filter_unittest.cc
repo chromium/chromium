@@ -42,8 +42,6 @@ namespace password_manager {
 
 namespace {
 
-const char kFilledAndLoginActionName[] =
-    "PasswordManager_SyncCredentialFilledAndLoginSuccessfull";
 const char kEnterpriseURL[] = "https://enterprise.test/";
 
 class FakePasswordManagerClient : public StubPasswordManagerClient {
@@ -174,60 +172,6 @@ class CredentialsFilterTest : public SyncUsernameTestBase,
 
   std::unique_ptr<SyncCredentialsFilter> filter_;
 };
-
-TEST_P(CredentialsFilterTest, ReportFormLoginSuccess_ExistingSyncCredentials) {
-  FakeSigninAs("user@gmail.com");
-  SetSyncingPasswords(true);
-
-  base::UserActionTester tester;
-  SavePending(LoginState::EXISTING);
-  filter_->ReportFormLoginSuccess(*form_manager_);
-  EXPECT_EQ(1, tester.GetActionCount(kFilledAndLoginActionName));
-}
-
-TEST_P(CredentialsFilterTest, ReportFormLoginSuccess_NewSyncCredentials) {
-  FakeSigninAs("user@gmail.com");
-  SetSyncingPasswords(true);
-
-  base::UserActionTester tester;
-  SavePending(LoginState::NEW);
-  filter_->ReportFormLoginSuccess(*form_manager_);
-  EXPECT_EQ(0, tester.GetActionCount(kFilledAndLoginActionName));
-}
-
-TEST_P(CredentialsFilterTest, ReportFormLoginSuccess_GAIANotSyncCredentials) {
-  const char kOtherUsername[] = "other_user@gmail.com";
-  const char16_t kOtherUsername16[] = u"other_user@gmail.com";
-  FakeSigninAs(kOtherUsername);
-  ASSERT_NE(pending_.username_value, kOtherUsername16);
-  SetSyncingPasswords(true);
-
-  base::UserActionTester tester;
-  SavePending(LoginState::EXISTING);
-  filter_->ReportFormLoginSuccess(*form_manager_);
-  EXPECT_EQ(0, tester.GetActionCount(kFilledAndLoginActionName));
-}
-
-TEST_P(CredentialsFilterTest, ReportFormLoginSuccess_NotGAIACredentials) {
-  pending_ = SimpleNonGaiaForm("user@gmail.com");
-  FakeSigninAs("user@gmail.com");
-  SetSyncingPasswords(true);
-
-  base::UserActionTester tester;
-  SavePending(LoginState::EXISTING);
-  filter_->ReportFormLoginSuccess(*form_manager_);
-  EXPECT_EQ(0, tester.GetActionCount(kFilledAndLoginActionName));
-}
-
-TEST_P(CredentialsFilterTest, ReportFormLoginSuccess_NotSyncing) {
-  FakeSigninAs("user@gmail.com");
-  SetSyncingPasswords(false);
-
-  base::UserActionTester tester;
-  SavePending(LoginState::EXISTING);
-  filter_->ReportFormLoginSuccess(*form_manager_);
-  EXPECT_EQ(0, tester.GetActionCount(kFilledAndLoginActionName));
-}
 
 TEST_P(CredentialsFilterTest, ShouldSave_NotSignedIn) {
   PasswordForm form = SimpleGaiaForm("user@example.org");

@@ -9,7 +9,6 @@
 
 namespace password_manager {
 
-class PasswordFormManager;
 struct PasswordForm;
 
 // This interface is used to filter credentials during saving, retrieval from
@@ -34,11 +33,6 @@ class CredentialsFilter {
   // enterprise password reuse checking.
   virtual bool ShouldSaveEnterprisePasswordHash(
       const PasswordForm& form) const = 0;
-
-  // Call this if the form associated with |form_manager| was filled, and the
-  // subsequent sign-in looked like a success.
-  virtual void ReportFormLoginSuccess(
-      const PasswordFormManager& form_manager) const {}
 
   // If |username| matches Chrome sync account email. For incognito profile,
   // it matches |username| against the sync account email used in its original
