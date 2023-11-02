@@ -4104,9 +4104,6 @@ void RenderProcessHostImpl::Cleanup() {
   }
   for (auto& observer : observers_)
     observer.RenderProcessHostDestroyed(this);
-  NotificationService::current()->Notify(
-      NOTIFICATION_RENDERER_PROCESS_TERMINATED, Source<RenderProcessHost>(this),
-      NotificationService::NoDetails());
 
   RecentlyDestroyedHosts::Add(this, time_spent_running_unload_handlers_,
                               browser_context_);
@@ -5216,7 +5213,7 @@ void RenderProcessHostImpl::SendProcessStateToRenderer() {
 void RenderProcessHostImpl::OnProcessLaunched() {
   // No point doing anything, since this object will be destructed soon.  We
   // especially don't want to send the OnRenderProcessHostCreated notification,
-  // since some clients might expect a RENDERER_PROCESS_TERMINATED afterwards
+  // since some clients might expect a RenderProcessHostDestroyed() afterwards
   // to properly cleanup.
   if (deleting_soon_)
     return;
