@@ -152,21 +152,6 @@
             ]
         }
     ],
-    "AdvancedPeripheralsSupportTabStrip": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AdvancedPeripheralsSupportTabStrip"
-                    ]
-                }
-            ]
-        }
-    ],
     "AggressiveSkiaGpuResourcePurge": [
         {
             "platforms": [
@@ -519,6 +504,21 @@
                     },
                     "enable_features": [
                         "OmniboxModernizeVisualUpdate"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AndroidPeripheralsSupportTabStrip": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AdvancedPeripheralsSupportTabStrip"
                     ]
                 }
             ]
