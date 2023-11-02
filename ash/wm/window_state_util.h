@@ -16,6 +16,13 @@ class WindowStateDelegate;
 ASH_EXPORT void ToggleFullScreen(WindowState* window_state,
                                  WindowStateDelegate* delegate);
 
+// Toggle the maximized state by a caption event from inside a
+// `WindowState::State` handler.
+void ToggleMaximizeCaption(WindowState* window_state);
+
+// Toggle the maximized state from inside a `WindowState::State` handler.
+void ToggleMaximize(WindowState* window_state);
+
 }  // namespace ash
 
 #endif  // ASH_WM_WINDOW_STATE_UTIL_H_
