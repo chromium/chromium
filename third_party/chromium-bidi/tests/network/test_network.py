@@ -217,6 +217,62 @@ async def test_network_response_completed_event_emitted(websocket, context_id):
 
 
 @pytest.mark.asyncio
+async def test_network_response_started_event_emitted(websocket, context_id):
+    await subscribe(websocket, ["network.responseStarted"], [context_id])
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": "http://example.com",
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+
+    resp = await read_JSON_message(websocket)
+    headersSize = compute_response_headers_size(
+        resp["params"]["response"]["headers"])
+
+    assert resp == {
+        'type': 'event',
+        "method": "network.responseStarted",
+        "params": {
+            "isBlocked": False,
+            "context": context_id,
+            "navigation": ANY_STR,
+            "redirectCount": AnyOr(0, 1),
+            "request": {
+                "request": ANY_STR,
+                "url": AnyOr("http://example.com/", "https://example.com/"),
+                "method": "GET",
+                "headers": ANY_LIST,
+                "cookies": [],
+                "headersSize": ANY_NUMBER,
+                "bodySize": 0,
+                "timings": ANY_DICT
+            },
+            "timestamp": ANY_TIMESTAMP,
+            "response": {
+                "url": AnyOr("http://example.com/", "https://example.com/"),
+                "protocol": AnyOr("http/1.1", "h2"),
+                "status": AnyOr(200, 307),
+                "statusText": AnyOr("OK", "", "Temporary Redirect"),
+                "fromCache": False,
+                "headers": ANY_LIST,
+                "mimeType": AnyOr("", "text/html"),
+                "bytesReceived": ANY_NUMBER,
+                "headersSize": headersSize,
+                "bodySize": 0,
+                "content": {
+                    "size": 0
+                }
+            }
+        }
+    }
+
+
+@pytest.mark.asyncio
 async def test_network_bad_ssl(websocket, context_id, bad_ssl_url):
     await subscribe(websocket, ["network.fetchError"], [context_id])
 
