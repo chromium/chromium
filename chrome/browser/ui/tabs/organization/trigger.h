@@ -45,6 +45,10 @@ class TabOrganizationTrigger {
   std::unique_ptr<TriggerPolicy> policy_;
 };
 
+TriggerScoringFunction GetDefaultTriggerScoringFunction();
+float GetDefaultTriggerScoreThreshold();
+std::unique_ptr<TriggerPolicy> GetDefaultTriggerPolicy();
+
 std::unique_ptr<TabOrganizationTrigger> MakeMVPTrigger();
 
 #endif  // CHROME_BROWSER_UI_TABS_ORGANIZATION_TRIGGER_H_

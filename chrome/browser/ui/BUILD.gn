@@ -1477,6 +1477,8 @@ static_library("ui") {
       "tabs/organization/trigger.h",
       "tabs/organization/trigger_observer.cc",
       "tabs/organization/trigger_observer.h",
+      "tabs/organization/trigger_policies.cc",
+      "tabs/organization/trigger_policies.h",
       "tabs/pinned_tab_codec.cc",
       "tabs/pinned_tab_codec.h",
       "tabs/pinned_tab_service.cc",

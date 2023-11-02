@@ -1,0 +1,97 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/tabs/organization/trigger_policies.h"
+
+#include <numbers>
+
+#include "base/time/time.h"
+#include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
+
+UsageTickClock::UsageTickClock(const base::TickClock* base_clock)
+    : base_clock_(base_clock), start_time_(base_clock_->NowTicks()) {
+  if (metrics::DesktopSessionDurationTracker::IsInitialized()) {
+    auto* const tracker = metrics::DesktopSessionDurationTracker::Get();
+    tracker->AddObserver(this);
+    if (tracker->in_session()) {
+      current_usage_session_start_time_ = start_time_;
+    }
+  }
+}
+
+UsageTickClock::~UsageTickClock() {
+  if (metrics::DesktopSessionDurationTracker::IsInitialized()) {
+    metrics::DesktopSessionDurationTracker::Get()->RemoveObserver(this);
+  }
+}
+
+base::TimeTicks UsageTickClock::NowTicks() const {
+  const base::TimeTicks completed_session_time =
+      start_time_ + usage_time_in_completed_sessions_;
+  if (current_usage_session_start_time_.has_value()) {
+    return completed_session_time + (base_clock_->NowTicks() -
+                                     current_usage_session_start_time_.value());
+  }
+  return completed_session_time;
+}
+
+void UsageTickClock::OnSessionStarted(base::TimeTicks session_start) {
+  DCHECK(!current_usage_session_start_time_.has_value());
+
+  // Ignore `session_start`; it doesn't come from `base_clock_`.
+  current_usage_session_start_time_ = base_clock_->NowTicks();
+}
+
+void UsageTickClock::OnSessionEnded(base::TimeDelta session_length,
+                                    base::TimeTicks session_end) {
+  DCHECK(current_usage_session_start_time_.has_value());
+
+  // Ignore `session_length`/`session_end`; they don't come from `base_clock_`.
+  usage_time_in_completed_sessions_ +=
+      base_clock_->NowTicks() - current_usage_session_start_time_.value();
+  current_usage_session_start_time_ = absl::nullopt;
+}
+
+TargetFrequencyTriggerPolicy::TargetFrequencyTriggerPolicy(
+    std::unique_ptr<base::TickClock> clock,
+    base::TimeDelta period)
+    : clock_(std::move(clock)),
+      period_(period),
+      cycle_start_time_(clock_->NowTicks()) {}
+
+TargetFrequencyTriggerPolicy::~TargetFrequencyTriggerPolicy() = default;
+
+bool TargetFrequencyTriggerPolicy::ShouldTrigger(float score) {
+  const base::TimeTicks current_time = clock_->NowTicks();
+
+  // Restart the cycle if `period_` has elapsed.
+  if (current_time > cycle_start_time_ + period_) {
+    cycle_start_time_ += period_;
+    best_score = absl::nullopt;
+  }
+
+  // Update the best score if we're in the observation phase.
+  const base::TimeDelta observation_period = period_ / std::numbers::e_v<float>;
+  if (current_time < cycle_start_time_ + observation_period) {
+    best_score =
+        best_score.has_value() ? std::max(best_score.value(), score) : score;
+    return false;
+  }
+
+  // Trigger if we haven't triggered yet and have a new high score.
+  if (best_score.has_value() && score > best_score) {
+    best_score = absl::nullopt;
+    return true;
+  }
+
+  return false;
+}
+
+bool GreedyTriggerPolicy::ShouldTrigger(float score) {
+  if (has_triggered_) {
+    return false;
+  }
+  has_triggered_ = true;
+  return true;
+}
