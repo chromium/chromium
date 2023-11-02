@@ -417,13 +417,17 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_Success) {
 
   std::vector<side_panel::customize_chrome::mojom::WallpaperSearchResultPtr>
       images;
-  EXPECT_CALL(callback, Run(_)).WillOnce(MoveArg(&images));
+  side_panel::customize_chrome::mojom::WallpaperSearchStatus status;
+  EXPECT_CALL(callback, Run(_, _))
+      .WillOnce(DoAll(SaveArg<0>(&status), MoveArg<1>(&images)));
 
   std::move(done_callback).Run(base::ok(result));
 
   std::move(decoder_callback1).Run(gfx::Image::CreateFrom1xBitmap(bitmap1));
   std::move(decoder_callback2).Run(gfx::Image::CreateFrom1xBitmap(bitmap2));
 
+  ASSERT_EQ(status,
+            side_panel::customize_chrome::mojom::WallpaperSearchStatus::kOk);
   ASSERT_EQ(static_cast<int>(images.size()), response.images_size());
 
   // Check that resized encoded versions of the original bitmaps is what we
@@ -532,7 +536,9 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoResponse) {
 
   std::vector<side_panel::customize_chrome::mojom::WallpaperSearchResultPtr>
       images;
-  EXPECT_CALL(callback, Run(_)).WillOnce(MoveArg(&images));
+  side_panel::customize_chrome::mojom::WallpaperSearchStatus status;
+  EXPECT_CALL(callback, Run(_, _))
+      .WillOnce(DoAll(SaveArg<0>(&status), MoveArg<1>(&images)));
 
   std::move(done_callback)
       .Run(base::unexpected(
@@ -541,6 +547,8 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoResponse) {
                   optimization_guide::OptimizationGuideModelExecutionError::
                       ModelExecutionError::kGenericFailure)));
 
+  EXPECT_EQ(status,
+            side_panel::customize_chrome::mojom::WallpaperSearchStatus::kError);
   EXPECT_EQ(images.size(), 0u);
 }
 
@@ -580,10 +588,14 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoImages) {
 
   std::vector<side_panel::customize_chrome::mojom::WallpaperSearchResultPtr>
       images;
-  EXPECT_CALL(callback, Run(_)).WillOnce(MoveArg(&images));
+  side_panel::customize_chrome::mojom::WallpaperSearchStatus status;
+  EXPECT_CALL(callback, Run(_, _))
+      .WillOnce(DoAll(SaveArg<0>(&status), MoveArg<1>(&images)));
 
   std::move(done_callback).Run(base::ok(result));
 
+  EXPECT_EQ(status,
+            side_panel::customize_chrome::mojom::WallpaperSearchStatus::kError);
   EXPECT_EQ(static_cast<int>(images.size()), response.images_size());
 }
 
@@ -662,7 +674,7 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
 
   std::vector<side_panel::customize_chrome::mojom::WallpaperSearchResultPtr>
       images;
-  EXPECT_CALL(callback, Run(_)).WillOnce(MoveArg(&images));
+  EXPECT_CALL(callback, Run(_, _)).WillOnce(MoveArg<1>(&images));
 
   std::move(done_callback).Run(base::ok(result));
 

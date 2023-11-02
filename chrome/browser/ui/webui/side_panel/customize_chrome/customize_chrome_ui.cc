@@ -111,6 +111,10 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"lightMode", IDS_NTP_CUSTOMIZE_CHROME_COLOR_SCHEME_MODE_LIGHT_LABEL},
       {"darkMode", IDS_NTP_CUSTOMIZE_CHROME_COLOR_SCHEME_MODE_DARK_LABEL},
       {"systemMode", IDS_NTP_CUSTOMIZE_CHROME_COLOR_SCHEME_MODE_SYSTEM_LABEL},
+      // Wallpaper search strings.
+      {"genericErrorDescription",
+       IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_DESCRIPTION},
+      {"genericErrorTitle", IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_TITLE},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 

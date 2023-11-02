@@ -33,6 +33,12 @@ struct WallpaperSearchResult {
   string image;
 };
 
+enum WallpaperSearchStatus {
+  kOk,
+  // Generic error, not specified.
+  kError,
+};
+
 // Browser-side handler for requests from WebUI page.
 interface WallpaperSearchHandler {
   // Retrieves NTP descriptors.
@@ -43,7 +49,7 @@ interface WallpaperSearchHandler {
   GetWallpaperSearchResults(string descriptor_a,
       string? descriptor_b, string? descriptor_c,
       DescriptorDValue? descriptor_d_value)
-        => (array<WallpaperSearchResult> results);
+        => (WallpaperSearchStatus status, array<WallpaperSearchResult> results);
 
   // Sets wallpaper search result of index to background image.
   SetBackgroundToWallpaperSearchResult(mojo_base.mojom.Token result_id);

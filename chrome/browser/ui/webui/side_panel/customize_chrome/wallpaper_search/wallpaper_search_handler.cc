@@ -140,6 +140,7 @@ void WallpaperSearchHandler::GetWallpaperSearchResults(
     GetWallpaperSearchResultsCallback callback) {
   callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback),
+      side_panel::customize_chrome::mojom::WallpaperSearchStatus::kError,
       std::vector<
           side_panel::customize_chrome::mojom::WallpaperSearchResultPtr>());
   if (!base::FeatureList::IsEnabled(
@@ -348,5 +349,7 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsDecoded(
     }
   }
 
-  std::move(callback).Run(std::move(thumbnails));
+  std::move(callback).Run(
+      side_panel::customize_chrome::mojom::WallpaperSearchStatus::kOk,
+      std::move(thumbnails));
 }

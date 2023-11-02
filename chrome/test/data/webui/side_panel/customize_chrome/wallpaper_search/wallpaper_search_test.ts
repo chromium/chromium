@@ -7,8 +7,8 @@ import 'chrome://customize-chrome-side-panel.top-chrome/strings.m.js';
 
 import {CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
+import {Descriptors, WallpaperSearchHandlerInterface, WallpaperSearchHandlerRemote, WallpaperSearchStatus} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.mojom-webui.js';
 import {DESCRIPTOR_D_VALUE, WallpaperSearchElement} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search.js';
-import {Descriptors, WallpaperSearchHandlerInterface, WallpaperSearchHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.mojom-webui.js';
 import {WallpaperSearchProxy} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search_proxy.js';
 import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
@@ -17,7 +17,7 @@ import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {$$, assertStyle, createBackgroundImage, createTheme, installMock} from '../test_support.js';
+import {$$, assertNotStyle, assertStyle, createBackgroundImage, createTheme, installMock} from '../test_support.js';
 
 suite('WallpaperSearchTest', () => {
   let callbackRouterRemote: CustomizeChromePageRemote;
@@ -56,16 +56,6 @@ suite('WallpaperSearchTest', () => {
       createWallpaperSearchElement();
       assertTrue(document.body.contains(wallpaperSearchElement));
     });
-
-    test(
-        'wallpaper search element hidden if there are no descriptors',
-        async () => {
-          createWallpaperSearchElement();
-          await flushTasks();
-
-          assertStyle(
-              $$(wallpaperSearchElement, '.content')!, 'display', 'none');
-        });
 
     test('clicking back button creates event', async () => {
       createWallpaperSearchElement();
@@ -377,6 +367,58 @@ suite('WallpaperSearchTest', () => {
               '.tile [checked]');
       assertEquals(checkedResults.length, 1);
       assertEquals(checkedResults[0], firstResult);
+    });
+  });
+
+  suite('Error', () => {
+    test('shows search ui if there are no errors', async () => {
+      handler.setResultFor(
+          'getWallpaperSearchResults',
+          Promise.resolve({status: WallpaperSearchStatus.kOk, results: []}));
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+
+      assertStyle($$(wallpaperSearchElement, '#error')!, 'display', 'none');
+      assertNotStyle(
+          $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+
+      wallpaperSearchElement.$.submitButton.click();
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      assertStyle($$(wallpaperSearchElement, '#error')!, 'display', 'none');
+      assertNotStyle(
+          $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+    });
+
+    test(
+        'shows error ui if no descriptors are returned by the backend',
+        async () => {
+          createWallpaperSearchElement(/*descriptors=*/ null);
+          await flushTasks();
+
+          wallpaperSearchElement.$.submitButton.click();
+          await waitAfterNextRender(wallpaperSearchElement);
+
+          assertNotStyle(
+              $$(wallpaperSearchElement, '#error')!, 'display', 'none');
+          assertStyle(
+              $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display',
+              'none');
+        });
+
+    test('shows error ui if search fails', async () => {
+      handler.setResultFor(
+          'getWallpaperSearchResults',
+          Promise.resolve({status: WallpaperSearchStatus.kError, results: []}));
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+
+      wallpaperSearchElement.$.submitButton.click();
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      assertNotStyle($$(wallpaperSearchElement, '#error')!, 'display', 'none');
+      assertStyle(
+          $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
     });
   });
 });

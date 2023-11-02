@@ -189,7 +189,11 @@
       back-button-title="$i18n{backButton}">
     <h2 slot="heading">Wallpaper Search</h2>
   </sp-heading>
-  <div class="content" hidden$="[[!descriptors_]]">
+  <div class="content" id="error" hidden$="[[!errorState_]]">
+    <div>[[errorState_.title]]</div>
+    <div>[[errorState_.description]]</div>
+  </div>
+  <div class="content" id="wallpaperSearch" hidden$="[[errorState_]]">
     <customize-chrome-combobox id="descriptorComboboxA" label="Descriptor A"
         value="{{selectedDescriptorA_}}">
       <template is="dom-repeat" items="[[descriptors_.descriptorA]]">
