@@ -133,7 +133,6 @@ static_js_files = [
   "file_manager/foreground/js/metadata/metadata_item.js",
   "file_manager/foreground/js/metadata/metadata_model.js",
   "file_manager/foreground/js/metadata/metadata_parser.js",
-  "file_manager/foreground/js/metadata/metadata_provider.js",
   "file_manager/foreground/js/metadata/mock_metadata.js",
   "file_manager/foreground/js/metadata/mpeg_parser.js",
   "file_manager/foreground/js/metadata/multi_metadata_provider.js",
@@ -324,6 +323,7 @@ ts_files = [
   "file_manager/definitions/file_manager_private.ts",
 
   # Metadata:
+  "file_manager/foreground/js/metadata/metadata_provider.ts",
   "file_manager/foreground/js/metadata/metadata_request.ts",
 ]
 

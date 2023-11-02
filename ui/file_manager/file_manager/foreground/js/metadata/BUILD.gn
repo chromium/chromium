@@ -28,7 +28,6 @@ group("js_modules") {
     ":metadata_item",
     ":metadata_model",
     ":metadata_parser",
-    ":metadata_provider",
     ":mock_metadata",
     ":mpeg_parser",
     ":multi_metadata_provider",
@@ -42,7 +41,6 @@ js_library("byte_reader") {
 js_library("content_metadata_provider") {
   deps = [
     ":metadata_item",
-    ":metadata_provider",
     "//ash/webui/common/resources:assert",
     "//ui/file_manager/file_manager/common/js:file_type",
     "//ui/file_manager/file_manager/foreground/js:thumbnail_loader",
@@ -60,10 +58,7 @@ js_unittest("content_metadata_provider_unittest") {
 }
 
 js_library("dlp_metadata_provider") {
-  deps = [
-    ":metadata_item",
-    ":metadata_provider",
-  ]
+  deps = [ ":metadata_item" ]
 }
 
 js_library("exif_constants") {
@@ -93,7 +88,6 @@ js_unittest("exif_parser_unittest") {
 js_library("external_metadata_provider") {
   deps = [
     ":metadata_item",
-    ":metadata_provider",
     "//ash/webui/common/resources:assert",
     "//ui/file_manager/file_manager/externs:file_manager_private",
   ]
@@ -109,10 +103,7 @@ js_unittest("external_metadata_provider_unittest") {
 }
 
 js_library("file_system_metadata_provider") {
-  deps = [
-    ":metadata_item",
-    ":metadata_provider",
-  ]
+  deps = [ ":metadata_item" ]
 }
 
 js_unittest("file_system_metadata_provider_unittest") {
@@ -201,7 +192,6 @@ js_library("metadata_model") {
     ":file_system_metadata_provider",
     ":metadata_cache_set",
     ":metadata_item",
-    ":metadata_provider",
     ":multi_metadata_provider",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/externs/ts:state",
@@ -212,7 +202,6 @@ js_library("metadata_model") {
 js_unittest("metadata_model_unittest") {
   deps = [
     ":metadata_model",
-    ":metadata_provider",
     "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
   ]
@@ -222,13 +211,6 @@ js_library("metadata_parser") {
   deps = [
     ":byte_reader",
     "//ui/file_manager/file_manager/externs:metadata_worker_window",
-  ]
-}
-
-js_library("metadata_provider") {
-  deps = [
-    ":metadata_item",
-    "//ash/webui/common/resources:assert",
   ]
 }
 
@@ -251,7 +233,6 @@ js_library("multi_metadata_provider") {
     ":external_metadata_provider",
     ":file_system_metadata_provider",
     ":metadata_item",
-    ":metadata_provider",
     "//ash/webui/common/resources:assert",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
