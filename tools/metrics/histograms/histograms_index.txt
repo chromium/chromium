@@ -90,6 +90,7 @@ tools/metrics/histograms/metadata/network/histograms.xml
 tools/metrics/histograms/metadata/new_tab_page/histograms.xml
 tools/metrics/histograms/metadata/notifications/histograms.xml
 tools/metrics/histograms/metadata/offline/histograms.xml
+tools/metrics/histograms/metadata/omnibox/enums.xml
 tools/metrics/histograms/metadata/omnibox/histograms.xml
 tools/metrics/histograms/metadata/oobe/histograms.xml
 tools/metrics/histograms/metadata/optimization/enums.xml

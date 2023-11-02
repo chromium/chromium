@@ -1420,15 +1420,6 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="Activity not found"/>
 </enum>
 
-<enum name="ActionInSuggestType">
-  <summary>The type of Omnibox Action in Suggest.</summary>
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Call"/>
-  <int value="2" label="Directions"/>
-  <int value="3" label="Website"/>
-  <int value="4" label="Reviews"/>
-</enum>
-
 <enum name="ActionUponResourceRequest">
   <int value="0" label="Load resource"/>
   <int value="1" label="Revalidate resource"/>
@@ -10253,21 +10244,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Unmuted"/>
 </enum>
 
-<enum name="BooleanNavigated">
-  <int value="0" label="Navigation did not occur"/>
-  <int value="1" label="Navigation occurred"/>
-</enum>
-
-<enum name="BooleanOffered">
-  <int value="0" label="Not offered"/>
-  <int value="1" label="Offered"/>
-</enum>
-
-<enum name="BooleanOffTheRecord">
-  <int value="0" label="Regular"/>
-  <int value="1" label="Off the record"/>
-</enum>
-
 <enum name="BooleanOnBattery">
   <int value="0" label="Not on battery"/>
   <int value="1" label="On Battery"/>
@@ -13390,15 +13366,6 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="2" label="User closed tab"/>
   <int value="3" label="Selected by content settings"/>
   <int value="4" label="User selection not permitted"/>
-</enum>
-
-<enum name="ClientSummarizedResultType">
-  <int value="0" label="URL"/>
-  <int value="1" label="Search"/>
-  <int value="2" label="App"/>
-  <int value="3" label="Contact"/>
-  <int value="4" label="OnDevice"/>
-  <int value="5" label="Unknown"/>
 </enum>
 
 <enum name="ClipboardFormatRead">
@@ -40672,22 +40639,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="4" label="Got JPEG thumbnail on refetch"/>
 </enum>
 
-<enum name="GroupId">
-  <summary>
-    Suggestion group IDs toggled visible or hidden in the omnibox result list.
-    Reflects the omnibox::GroupId enum values for the Polaris zero-prefix
-    suggestions in //third_party/omnibox_proto/groups.proto.
-  </summary>
-  <int value="0" label="UNKNOWN (uncategorized)"/>
-  <int value="1" label="INVALID (unexpected)"/>
-  <int value="2" label="GROUP_PREVIOUS_SEARCH_RELATED"/>
-  <int value="3" label="GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS"/>
-  <int value="4" label="GROUP_TRENDS"/>
-  <int value="5" label="GROUP_TRENDS_ENTITY_CHIPS"/>
-  <int value="6" label="GROUP_RELATED_QUERIES"/>
-  <int value="7" label="GROUP_VISITED_DOC_RELATED"/>
-</enum>
-
 <enum name="GroupNotificationType">
   <int value="0" label="Group Parent"/>
   <int value="1" label="Group Child"/>
@@ -41087,14 +41038,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="0" label="Tab"/>
   <int value="1" label="Group"/>
   <int value="2" label="Bulk"/>
-</enum>
-
-<enum name="HistoryClusterKeywordType">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="EntityCategory"/>
-  <int value="2" label="EntityAlias"/>
-  <int value="3" label="Entity"/>
-  <int value="4" label="SearchTerms"/>
 </enum>
 
 <enum name="HistoryClustersFinalState">
@@ -64938,48 +64881,11 @@ Called by update_net_trust_anchors.py.-->
   </int>
 </enum>
 
-<enum name="OmniboxBuiltinEngineType">
-  <int value="0" label="Non built-in engine"/>
-  <int value="1" label="Prepopulated Engine"/>
-  <int value="2" label="@bookmarks starter pack engine"/>
-  <int value="3" label="@history starter pack engine"/>
-  <int value="4" label="@tabs starter pack engine"/>
-</enum>
-
 <enum name="OmniboxDeviceSwitcherResult">
   <int value="1" label="Unavailable"/>
   <int value="2" label="Top omnibox by default"/>
   <int value="3" label="Bottom omnibox by default"/>
   <int value="4" label="Not a new user (user is new for 30 days after FRE)"/>
-</enum>
-
-<enum name="OmniboxDocumentSuggestRequests">
-  <int value="1" label="requests sent"/>
-  <int value="2" label="requests invalidated"/>
-  <int value="3" label="(non-invalidated) replies received"/>
-</enum>
-
-<enum name="OmniboxEnteredKeywordMode2">
-  <int value="0" label="invalid"/>
-  <int value="1" label="via tab"/>
-  <int value="2" label="via space at end"/>
-  <int value="3" label="via space in middle"/>
-  <int value="4" label="keyboard shortcut"/>
-  <int value="5" label="question mark"/>
-  <int value="6" label="mouse click on hint view"/>
-  <int value="7" label="tap gesture on hint view"/>
-  <int value="8" label="select suggestion"/>
-</enum>
-
-<enum name="OmniboxEscapeAction">
-  <int value="0"
-      label="Deprecated: None; omnibox state unaffected - No longer logged
-             since m105"/>
-  <int value="1" label="Reverted temporary Text"/>
-  <int value="2" label="Closed popup"/>
-  <int value="3" label="Cleared user input"/>
-  <int value="4" label="Closed popup and cleared user input"/>
-  <int value="5" label="Blurred"/>
 </enum>
 
 <enum name="OmniboxFocusReason">
@@ -65001,32 +64907,9 @@ Called by update_net_trust_anchors.py.-->
   <int value="15" label="Drag and drop on the omnibox."/>
 </enum>
 
-<enum name="OmniboxFocusType">
-  <int value="0" label="INTERACTION_DEFAULT"/>
-  <int value="1" label="INTERACTION_FOCUS"/>
-  <int value="2" label="INTERACTION_CLOBBER"/>
-</enum>
-
-<enum name="OmniboxInputType">
-  <int value="0" label="empty"/>
-  <int value="1" label="unknown"/>
-  <int value="2" label="deprecated: requested url"/>
-  <int value="3" label="url"/>
-  <int value="4" label="query"/>
-  <int value="5" label="forced query"/>
-</enum>
-
 <enum name="OmniboxPositionType">
   <int value="0" label="Top"/>
   <int value="1" label="Bottom"/>
-</enum>
-
-<enum name="OmniboxRichAutocompletionType">
-  <int value="0" label="None"/>
-  <int value="1" label="URL non-prefix"/>
-  <int value="2" label="Title prefix"/>
-  <int value="3" label="Title non-prefix"/>
-  <int value="4" label="Shortcut text prefix"/>
 </enum>
 
 <!-- Not used in current metrics, see OmniboxSearchEngineType instead. -->
@@ -65118,37 +65001,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="8" label="PEDAL_SUGGESTION"/>
   <int value="9" label="DIVIDER_LINE"/>
   <int value="10" label="QUERY_TILES"/>
-</enum>
-
-<enum name="OmniboxSuggestRequests">
-  <int value="1" label="requests sent"/>
-  <int value="2" label="requests invalidated"/>
-  <int value="3" label="(non-invalidated) replies received"/>
-</enum>
-
-<enum name="OmniboxZeroSuggestRequests">
-  <obsolete>
-    Obsolete as of M105.
-  </obsolete>
-  <int value="1" label="requests sent">Suggest requests that were sent.</int>
-  <int value="2" label="requests invalidated">
-    Suggest requests that were invalidated, e.g., due to user starting to type.
-  </int>
-  <int value="3" label="responses received">
-    Suggest responses that were received. Includes both those received directly
-    from the server and those loaded from the HTTP cache.
-  </int>
-  <int value="4" label="responses loaded from HTTP cache">
-    Subset of Suggest responses that were loaded from the HTTP cache.
-  </int>
-  <int value="5"
-      label="out-of-date responses loaded from HTTP cache (deprecated)">
-    Subset of Suggest responses that were loaded from the HTTP cache and were
-    out-of-date.
-  </int>
-  <int value="6" label="responses updated displayed results">
-    Subset of Suggest responses that ended up updating the displayed results.
-  </int>
 </enum>
 
 <enum name="OnboardingStartupState">
@@ -75597,70 +75449,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="From omnibox"/>
 </enum>
 
-<enum name="SearchPrefetchEligibilityReason">
-  <int value="0" label="Prefetch started"/>
-  <int value="1" label="User disabled prefetch/preconnect"/>
-  <int value="2" label="User disabled Javascript"/>
-  <int value="3" label="Search engine not set"/>
-  <int value="4" label="Navigation URL was not a default search URL"/>
-  <int value="5" label="Recent network error"/>
-  <int value="6" label="Duplicate prefetch request"/>
-  <int value="7" label="Too many recent prefetches"/>
-  <int value="8" label="Throttle prevented the prefetch"/>
-</enum>
-
-<enum name="SearchPrefetchResponseDataReaderStatus">
-  <int value="0" label="kCreated"/>
-  <int value="1" label="kServingError"/>
-  <int value="2" label="kNetworkError"/>
-  <int value="3" label="kCompleted"/>
-  <int value="4" label="kCanceledByLoader"/>
-</enum>
-
-<enum name="SearchPrefetchServingReason">
-  <int value="0" label="Served a prefetch response"/>
-  <int value="1" label="Search engine not set"/>
-  <int value="2" label="User disabled Javascript"/>
-  <int value="3" label="Navigation URL was not a default search URL"/>
-  <int value="4" label="No prefetch issued for the search terms"/>
-  <int value="5" label="Prefetch was for a different origin"/>
-  <int value="6" label="Prefetch request was cancelled"/>
-  <int value="7" label="Prefetch request failed"/>
-  <int value="8" label="Another reason (unexpected)"/>
-  <int value="9" label="POST, reload, form, link, or other non-cache loads."/>
-  <int value="10"
-      label="A prerender navigation request has taken this response away."/>
-</enum>
-
-<enum name="SearchPrefetchStatus">
-  <int value="0" label="Not started"/>
-  <int value="1" label="In flight"/>
-  <int value="2" label="Headers received (for streaming responses)"/>
-  <int value="3"
-      label="Headers received and user navigated to search terms (for
-             streaming responses)"/>
-  <int value="4" label="Completed the prefetch"/>
-  <int value="5" label="Request failed"/>
-  <int value="6" label="Request cancelled"/>
-  <int value="7" label="Prefetch request served for real navigation"/>
-  <int value="8" label="Was served to prerender navigation stack"/>
-  <int value="9"
-      label="Serving to prerender navigation stack and user navigated to
-             search terms"/>
-  <int value="10" label="Upgraded to prerender and succeeded"/>
-</enum>
-
 <enum name="SearchPrefetchTouchDownPrefetchResult">
   <int value="0" label="Hit, last prefetch matches navigation"/>
   <int value="1" label="Miss, last prefetch does not match navigation"/>
   <int value="2" label="No prefetch"/>
-</enum>
-
-<enum name="SearchPreloadForwardingResult">
-  <int value="0" label="kNotServed (should not be recorded)"/>
-  <int value="1" label="kStartedServing"/>
-  <int value="2" label="kFailed"/>
-  <int value="3" label="kCompleted"/>
 </enum>
 
 <enum name="SearchResumptionModule.ModuleNotShownReason">
@@ -79657,99 +79449,6 @@ These values are based on the server-side type AnswerTriggererKey. Note that not
 all of the types are launched in Chrome but if they're sent erroneously, it
 would be helpful to identify which type is being sent.
 -->
-
-<enum name="SuggestionAnswerOptionalType">
-  <summary>
-    Type of Answer in omnibox suggestion list or No Answer, if not an answer.
-  </summary>
-  <int value="0" label="No Answer"/>
-  <int value="1" label="Dictionary"/>
-  <int value="2" label="Finance"/>
-  <int value="3" label="Knowledge graph"/>
-  <int value="4" label="Local"/>
-  <int value="5" label="Sports"/>
-  <int value="6" label="Sunrise"/>
-  <int value="7" label="Translation"/>
-  <int value="8" label="Weather"/>
-  <int value="9" label="When is"/>
-  <int value="10" label="Currency"/>
-  <int value="11" label="Local time"/>
-  <int value="12" label="Play install"/>
-</enum>
-
-<enum name="SuggestionAnswerType">
-  <summary>Type of Answer shown in omnibox suggestion list.</summary>
-  <int value="0" label="Invalid (unknown type)"/>
-  <int value="1" label="Dictionary"/>
-  <int value="2" label="Finance"/>
-  <int value="3" label="Knowledge graph"/>
-  <int value="4" label="Local"/>
-  <int value="5" label="Sports"/>
-  <int value="6" label="Sunrise"/>
-  <int value="7" label="Translation"/>
-  <int value="8" label="Weather"/>
-  <int value="9" label="When is"/>
-  <int value="10" label="Currency"/>
-  <int value="11" label="Local time"/>
-  <int value="12" label="Play install"/>
-</enum>
-
-<enum name="SuggestionGroupId">
-  <summary>
-    Suggestion group IDs toggled visible or hidden in the omnibox result list.
-    Based on the SuggestionGroupIds enum in suggestion_config.proto, contains
-    values currently known to Chrome.
-  </summary>
-  <int value="40001" label="Onboarding"/>
-  <int value="40009" label="Proactive zero-suggest"/>
-</enum>
-
-<enum name="SuggestionPedalType">
-  <summary>
-    Type of pedal shown or selected in the omnibox suggestion list.
-  </summary>
-  <int value="0" label="None"/>
-  <int value="1" label="Clear browsing data"/>
-  <int value="2" label="Manage passwords"/>
-  <int value="3" label="Update credit card"/>
-  <int value="4" label="Launch incognito"/>
-  <int value="5" label="Translate"/>
-  <int value="6" label="Update Chrome"/>
-  <int value="7" label="Run Chrome safety check"/>
-  <int value="8" label="Manage security settings"/>
-  <int value="9" label="Manage cookies"/>
-  <int value="10" label="Manage addresses"/>
-  <int value="11" label="Manage sync"/>
-  <int value="12" label="Manage site settings"/>
-  <int value="13" label="Create Google doc"/>
-  <int value="14" label="Create Google sheet"/>
-  <int value="15" label="Create Google slide"/>
-  <int value="16" label="Create Google calendar event"/>
-  <int value="17" label="Create Google site"/>
-  <int value="18" label="Create Google keep note"/>
-  <int value="19" label="Create Google form"/>
-  <int value="20" label="Compose email in Gmail"/>
-  <int value="21" label="See Chrome tips"/>
-  <int value="22" label="Manage Google account"/>
-  <int value="23" label="Clear YouTube history"/>
-  <int value="24" label="Change Google password"/>
-  <int value="25" label="Incognito-mode clear browsing data"/>
-  <int value="26" label="Close Incognito windows"/>
-  <int value="27" label="Play Chrome Dino game"/>
-  <int value="28" label="Find my phone"/>
-  <int value="29" label="Manage Google privacy"/>
-  <int value="30" label="Manage Google ad settings"/>
-  <int value="31" label="Manage Chrome settings"/>
-  <int value="32" label="Manage Chrome downloads"/>
-  <int value="33" label="View Chrome history"/>
-  <int value="34" label="Share this page"/>
-  <int value="35" label="Manage Chrome accessibility"/>
-  <int value="36" label="Customize Chrome fonts"/>
-  <int value="37" label="Manage Chrome themes"/>
-  <int value="38" label="Customize search engines"/>
-  <int value="39" label="Manage ChromeOS accessibility"/>
-  <int value="40" label="Set Chrome as default browser"/>
-</enum>
 
 <enum name="SuggestionsResponseState">
   <int value="0" label="Empty response received from the server."/>
@@ -90419,63 +90118,6 @@ Called by update_scheduler_enums.py.-->
   <int value="2" label="OmniboxSearch"/>
   <int value="3" label="ZeroStateFile"/>
   <int value="4" label="DriveQuickAccess"/>
-</enum>
-
-<enum name="ZeroSuggestEligibility">
-  <int value="0" label="Eligible for current context and external conditions">
-    Zero-prefix suggestions are eligible.
-  </int>
-  <int value="1" label="Remote request without page URL ineligible">
-    Suggest request without sending the current page URL cannot be made. E.g.,
-    the user is in incognito mode or Google is not set as the default search
-    provider.
-  </int>
-  <int value="2" label="Remote request with sending page URL ineligible">
-    Suggest request with sending the current page URL cannot be made. E.g., the
-    user has not consented and the page is not the SRP associated with the
-    default search provider.
-  </int>
-  <int value="3" label="Generally ineligible in current context">
-    Zero-prefix suggestions are not eligible in the given context. E.g., due to
-    the page classification, focus type, input type, or an invalid page URL.
-  </int>
-</enum>
-
-<enum name="ZeroSuggestEligibleOnFocus">
-  <obsolete>
-    Obsolete as of M106.
-  </obsolete>
-  <int value="0" label="Eligible">
-    URL can be currently sent to the suggest server.
-  </int>
-  <int value="1"
-      label="Generally eligible in current context but particular URL
-             ineligible">
-    URL cannot be sent to the suggest server but another URL would be eligible
-    at this time.
-  </int>
-  <int value="2" label="Generally ineligible in current context">
-    No URL can be sent to the suggest server at this time.
-  </int>
-</enum>
-
-<enum name="ZeroSuggestProviderEvent">
-  <int value="0" label="cached response converted to results">
-    Cached response was synchronously converted to displayed matches.
-  </int>
-  <int value="1" label="request sent">Remote request was sent.</int>
-  <int value="2" label="request invalidated">
-    Remote request was invalidated (due to user starting to type or another
-    zero-suggest request).
-  </int>
-  <int value="3" label="response received">
-    Remote response was received asynchronously.
-  </int>
-  <int value="4" label="response cached">Remote response was cached.</int>
-  <int value="5" label="response converted to results">
-    Remote response ended up being converted to displayed matches. This may
-    happen due to an empty displayed result set or an empty remote result set.
-  </int>
 </enum>
 
 <enum name="ZipFileCreator.Result">
