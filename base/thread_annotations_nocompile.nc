@@ -25,47 +25,37 @@ class SCOPED_LOCKABLE AutoLock {
  private:
   Lock& lock_;
 };
+
 class ThreadSafe {
  public:
-  void BuggyIncrement();
+  void IncrementWithoutRelease();
+  void IncrementWithoutAcquire();
+  void IncrementWithWronglyScopedLock();
  private:
   Lock lock_;
   int counter_ GUARDED_BY(lock_);
 };
 
-#if defined(NCTEST_LOCK_WITHOUT_UNLOCK)  // [r"fatal error: mutex 'lock_' is still held at the end of function"]
-
-void ThreadSafe::BuggyIncrement() {
+void ThreadSafe::IncrementWithoutRelease() {
   lock_.Acquire();
   ++counter_;
   // Forgot to release the lock.
-}
+}  // expected-error {{mutex 'lock_' is still held at the end of function}}
 
-#elif defined(NCTEST_ACCESS_WITHOUT_LOCK)  // [r"fatal error: writing variable 'counter_' requires holding mutex 'lock_' exclusively"]
-
-void ThreadSafe::BuggyIncrement() {
+void ThreadSafe::IncrementWithoutAcquire() {
   // Member access without holding the lock guarding it.
-  ++counter_;
+  ++counter_;  // expected-error {{writing variable 'counter_' requires holding mutex 'lock_' exclusively}}
 }
 
-#elif defined(NCTEST_ACCESS_WITHOUT_SCOPED_LOCK)  // [r"fatal error: writing variable 'counter_' requires holding mutex 'lock_' exclusively"]
-
-void ThreadSafe::BuggyIncrement() {
+void ThreadSafe::IncrementWithWronglyScopedLock() {
   {
     AutoLock auto_lock(lock_);
     // The AutoLock will go out of scope before the guarded member access.
   }
-  ++counter_;
+  ++counter_;  // expected-error {{writing variable 'counter_' requires holding mutex 'lock_' exclusively}}
 }
 
-#elif defined(NCTEST_GUARDED_BY_WRONG_TYPE)  // [r"fatal error: 'guarded_by' attribute requires arguments whose type is annotated"]
-
 int not_lockable;
-int global_counter GUARDED_BY(not_lockable);
-
-// Defined to avoid link error.
-void ThreadSafe::BuggyIncrement() { }
-
-#endif
+int global_counter GUARDED_BY(not_lockable);  // expected-error {{'guarded_by' attribute requires arguments whose type is annotated with 'capability' attribute}}
 
 }  // anonymous namespace
