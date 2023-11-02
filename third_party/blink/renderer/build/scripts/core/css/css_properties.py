@@ -60,8 +60,6 @@ def validate_property(prop, props_by_name):
     assert not prop.is_internal or prop.computable is None, \
         'Internal properties are always non-computable [%s]' % name
     if prop.supports_incremental_style:
-        assert not prop.inherited, \
-            'We do not currently support incremental style on inherited properties [%s]' % name
         assert not prop.is_animation_property, \
             'Animation properties can not be applied incrementally [%s]' % name
         assert prop.idempotent, \
