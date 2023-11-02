@@ -234,10 +234,10 @@ FileManagerPrivateGetPreferencesFunction::Run() {
                          service && !service->mount_failed();
   result.drive_sync_enabled_on_metered_network =
       !prefs->GetBoolean(drive::prefs::kDisableDriveOverCellular);
-  if (drive::util::IsDriveFsBulkPinningAvailable(profile)) {
-    result.drive_fs_bulk_pinning_enabled =
-        prefs->GetBoolean(drive::prefs::kDriveFsBulkPinningEnabled);
-  }
+  result.drive_fs_bulk_pinning_available =
+      drive::util::IsDriveFsBulkPinningAvailable(profile);
+  result.drive_fs_bulk_pinning_enabled =
+      prefs->GetBoolean(drive::prefs::kDriveFsBulkPinningEnabled);
   result.search_suggest_enabled =
       prefs->GetBoolean(prefs::kSearchSuggestEnabled);
   result.use24hour_clock = prefs->GetBoolean(prefs::kUse24HourClock);

@@ -828,6 +828,7 @@ dictionary Preferences {
   boolean trashEnabled;
   double officeFileMovedOneDrive;
   double officeFileMovedGoogleDrive;
+  boolean driveFsBulkPinningAvailable;
   boolean driveFsBulkPinningEnabled;
 };
 

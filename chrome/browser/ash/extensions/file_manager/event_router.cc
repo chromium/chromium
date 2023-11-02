@@ -729,6 +729,7 @@ void EventRouter::ObserveEvents() {
   {
     const base::RepeatingClosure cb = base::BindRepeating(
         &EventRouter::OnFileManagerPrefsChanged, weak_factory_.GetWeakPtr());
+    pref_change_registrar_->Add(drive::prefs::kDriveFsBulkPinningVisible, cb);
     pref_change_registrar_->Add(drive::prefs::kDriveFsBulkPinningEnabled, cb);
     pref_change_registrar_->Add(drive::prefs::kDisableDriveOverCellular, cb);
     pref_change_registrar_->Add(drive::prefs::kDisableDrive, cb);

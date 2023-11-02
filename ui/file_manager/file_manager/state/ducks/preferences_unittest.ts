@@ -23,6 +23,7 @@ const INITIAL_PREFERENCES: Preferences = {
   trashEnabled: false,
   officeFileMovedOneDrive: 0,
   officeFileMovedGoogleDrive: 0,
+  driveFsBulkPinningAvailable: false,
   driveFsBulkPinningEnabled: false,
 };
 

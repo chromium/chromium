@@ -14,7 +14,7 @@ import {getDriveQuotaMetadata, getSizeStats} from '../../common/js/api.js';
 import {RateLimiter} from '../../common/js/async_util.js';
 import {DialogType} from '../../common/js/dialog_type.js';
 import {getTeamDriveName} from '../../common/js/entry_utils.js';
-import {isDriveFsBulkPinningEnabled, isGoogleOneOfferFilesBannerEligibleAndEnabled} from '../../common/js/flags.js';
+import {isGoogleOneOfferFilesBannerEligibleAndEnabled} from '../../common/js/flags.js';
 import {storage} from '../../common/js/storage.js';
 import {isNullOrUndefined} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
@@ -248,9 +248,14 @@ export class BannerController extends EventTarget {
       MIN_INTERVAL_BETWEEN_DIRECTORY_SIZE_CHANGED_EVENTS);
 
   /**
-   * Whether the DriveBulkPinning preference is enabled.
+   * Whether the Drive bulk-pinning feature is available on this device.
    */
-  private isDriveBulkPinningPrefEnabled_ = false;
+  private bulkPinningAvailable_ = false;
+
+  /**
+   * Whether the Drive bulk-pinning feature is currently enabled.
+   */
+  private bulkPinningEnabled_ = false;
 
   constructor(
       private directoryModel_: DirectoryModel,
@@ -277,14 +282,12 @@ export class BannerController extends EventTarget {
 
   private onPreferencesChanged_() {
     chrome.fileManagerPrivate.getPreferences(pref => {
-      if (this.isDriveBulkPinningPrefEnabled_ ===
-          pref.driveFsBulkPinningEnabled) {
-        // The driveFsBulkPinningEnabled preference did not change.
-        return;
+      if (this.bulkPinningAvailable_ !== pref.driveFsBulkPinningAvailable ||
+          this.bulkPinningEnabled_ !== pref.driveFsBulkPinningEnabled) {
+        this.bulkPinningAvailable_ = pref.driveFsBulkPinningAvailable;
+        this.bulkPinningEnabled_ = pref.driveFsBulkPinningEnabled;
+        this.reconcile();
       }
-
-      this.isDriveBulkPinningPrefEnabled_ = pref.driveFsBulkPinningEnabled;
-      this.reconcile();
     });
   }
 
@@ -326,13 +329,10 @@ export class BannerController extends EventTarget {
           isGoogleOneOfferFilesBannerEligibleAndEnabled() ?
           [GoogleOneOfferBannerTagName] :
           [DriveWelcomeBannerTagName];
-      if (isDriveFsBulkPinningEnabled()) {
-        educationalBanners.push(DriveBulkPinningBannerTagName);
-      }
+
+      educationalBanners.push(DriveBulkPinningBannerTagName);
       educationalBanners.push(HoldingSpaceWelcomeBannerTagName);
-      if (!isDriveFsBulkPinningEnabled()) {
-        educationalBanners.push(DriveOfflinePinningBannerTagName);
-      }
+      educationalBanners.push(DriveOfflinePinningBannerTagName);
       educationalBanners.push(PhotosWelcomeBannerTagName);
       this.setEducationalBannersInOrder(educationalBanners);
 
@@ -367,7 +367,13 @@ export class BannerController extends EventTarget {
       });
 
       this.registerCustomBannerFilter(DriveBulkPinningBannerTagName, {
-        shouldShow: () => !this.isDriveBulkPinningPrefEnabled_,
+        shouldShow: () =>
+            this.bulkPinningAvailable_ && !this.bulkPinningEnabled_,
+        context: () => ({}),
+      });
+
+      this.registerCustomBannerFilter(DriveOfflinePinningBannerTagName, {
+        shouldShow: () => !this.bulkPinningAvailable_,
         context: () => ({}),
       });
 

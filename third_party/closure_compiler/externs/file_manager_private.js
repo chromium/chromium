@@ -703,6 +703,7 @@ chrome.fileManagerPrivate.GetVolumeRootOptions;
  *   trashEnabled: boolean,
  *   officeFileMovedOneDrive: number,
  *   officeFileMovedGoogleDrive: number,
+ *   driveFsBulkPinningAvailable: boolean,
  *   driveFsBulkPinningEnabled: boolean
  * }}
  */
