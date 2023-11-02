@@ -488,10 +488,10 @@ public class ShowNtpAtStartupTest {
                         org.chromium.chrome.R.dimen.mvt_container_bottom_margin_tablet);
         int expectedSingleTabCardTopMargin =
                 -res.getDimensionPixelSize(
-                        org.chromium.chrome.R.dimen.single_tab_card_top_margin_tablet);
+                        org.chromium.chrome.R.dimen.ntp_single_tab_card_top_margin);
         int expectedSingleTabCardBottomMargin =
-                res.getDimensionPixelOffset(
-                                org.chromium.chrome.R.dimen.single_tab_card_bottom_margin_tablet)
+                res.getDimensionPixelSize(
+                                org.chromium.chrome.R.dimen.ntp_single_tab_card_bottom_margin)
                         - res.getDimensionPixelOffset(
                                 org.chromium.chrome.R.dimen
                                         .feed_header_tab_list_view_top_bottom_margin);
@@ -573,10 +573,10 @@ public class ShowNtpAtStartupTest {
                         org.chromium.chrome.R.dimen.mvt_container_bottom_margin_tablet);
         int expectedSingleTabCardTopMargin =
                 -res.getDimensionPixelSize(
-                        org.chromium.chrome.R.dimen.single_tab_card_top_margin_tablet);
+                        org.chromium.chrome.R.dimen.ntp_single_tab_card_top_margin);
         int expectedSingleTabCardBottomMargin =
-                res.getDimensionPixelOffset(
-                                org.chromium.chrome.R.dimen.single_tab_card_bottom_margin_tablet)
+                res.getDimensionPixelSize(
+                                org.chromium.chrome.R.dimen.ntp_single_tab_card_bottom_margin)
                         - res.getDimensionPixelOffset(
                                 org.chromium.chrome.R.dimen
                                         .feed_header_tab_list_view_top_bottom_margin);
@@ -584,6 +584,82 @@ public class ShowNtpAtStartupTest {
         // correct.
         verifyMvtAndSingleTabCardVerticalMargins(
                 expectedMvtBottomMargin,
+                expectedSingleTabCardTopMargin,
+                expectedSingleTabCardBottomMargin,
+                /* isNtpHomepage= */ true,
+                ntp);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
+    @EnableFeatures({
+        ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
+        ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID
+    })
+    @DisableFeatures({ChromeFeatureList.SURFACE_POLISH})
+    public void testSingleTabCardMarginsWith1RowMvt_Phone() throws IOException {
+        StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
+        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForTabModel(cta);
+        waitForNtpLoaded(cta.getActivityTab());
+
+        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
+        Resources res = cta.getResources();
+
+        int expectedSingleTabCardTopMargin =
+                -res.getDimensionPixelSize(
+                        org.chromium.chrome.R.dimen.ntp_single_tab_card_top_margin);
+        int expectedSingleTabCardBottomMargin =
+                res.getDimensionPixelSize(
+                                org.chromium.chrome.R.dimen.ntp_single_tab_card_bottom_margin)
+                        - res.getDimensionPixelOffset(
+                                org.chromium.chrome.R.dimen
+                                        .feed_header_tab_list_view_top_bottom_margin);
+        // Verifies the vertical margins of the module most visited tiles and single tab card are
+        // correct.
+        verifySingleTabCardVerticalMargins(
+                expectedSingleTabCardTopMargin,
+                expectedSingleTabCardBottomMargin,
+                /* isNtpHomepage= */ true,
+                ntp);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
+    @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
+    @DisableFeatures({
+        ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
+        ChromeFeatureList.SURFACE_POLISH
+    })
+    public void testSingleTabCardMarginsWith2RowMvt_Phone() throws IOException {
+        StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
+        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForTabModel(cta);
+        waitForNtpLoaded(cta.getActivityTab());
+
+        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
+        Resources res = cta.getResources();
+
+        int expectedSingleTabCardTopMargin =
+                -res.getDimensionPixelSize(
+                        org.chromium.chrome.R.dimen.ntp_single_tab_card_top_margin);
+        int expectedSingleTabCardBottomMargin =
+                res.getDimensionPixelSize(
+                                org.chromium.chrome.R.dimen.ntp_single_tab_card_bottom_margin)
+                        - res.getDimensionPixelOffset(
+                                org.chromium.chrome.R.dimen
+                                        .feed_header_tab_list_view_top_bottom_margin);
+        // Verifies the vertical margins of the module most visited tiles and single tab card are
+        // correct.
+        verifySingleTabCardVerticalMargins(
                 expectedSingleTabCardTopMargin,
                 expectedSingleTabCardBottomMargin,
                 /* isNtpHomepage= */ true,
@@ -967,21 +1043,32 @@ public class ShowNtpAtStartupTest {
                 "The bottom margin of the most visited tiles container is wrong.",
                 expectedMvtBottomMargin,
                 ((MarginLayoutParams) mvTilesContainer.getLayoutParams()).bottomMargin);
-        if (isNtpHomepage) {
-            View singleTabCardContainer =
-                    ntpLayout.findViewById(
-                            org.chromium.chrome.test.R.id.tab_switcher_module_container);
-            MarginLayoutParams singleTabCardContainerMarginParams =
-                    (MarginLayoutParams) singleTabCardContainer.getLayoutParams();
-            Assert.assertEquals(
-                    "The top margin of the single tab card container is wrong.",
-                    expectedSingleTabCardTopMargin,
-                    singleTabCardContainerMarginParams.topMargin);
-            Assert.assertEquals(
-                    "The bottom margin of the single tab card container is wrong.",
-                    expectedSingleTabCardBottomMargin,
-                    singleTabCardContainerMarginParams.bottomMargin);
-        }
+        verifySingleTabCardVerticalMargins(
+                expectedSingleTabCardTopMargin,
+                expectedSingleTabCardBottomMargin,
+                isNtpHomepage,
+                ntp);
+    }
+
+    private void verifySingleTabCardVerticalMargins(
+            int expectedSingleTabCardTopMargin,
+            int expectedSingleTabCardBottomMargin,
+            boolean isNtpHomepage,
+            NewTabPage ntp) {
+        if (!isNtpHomepage) return;
+        View singleTabCardContainer =
+                ntp.getNewTabPageLayout()
+                        .findViewById(org.chromium.chrome.test.R.id.tab_switcher_module_container);
+        MarginLayoutParams singleTabCardContainerMarginParams =
+                (MarginLayoutParams) singleTabCardContainer.getLayoutParams();
+        Assert.assertEquals(
+                "The top margin of the single tab card container is wrong.",
+                expectedSingleTabCardTopMargin,
+                singleTabCardContainerMarginParams.topMargin);
+        Assert.assertEquals(
+                "The bottom margin of the single tab card container is wrong.",
+                expectedSingleTabCardBottomMargin,
+                singleTabCardContainerMarginParams.bottomMargin);
     }
 
     private void verifyTabCountAndActiveTabUrl(

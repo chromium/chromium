@@ -1181,12 +1181,13 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         MarginLayoutParams marginLayoutParams =
                 (MarginLayoutParams) mSingleTabCardContainer.getLayoutParams();
 
-        marginLayoutParams.topMargin = -mNewTabPageLayout.getResources().getDimensionPixelOffset(
-                R.dimen.single_tab_card_top_margin_tablet);
-        marginLayoutParams.bottomMargin = mNewTabPageLayout.getResources().getDimensionPixelOffset(
-                                                  R.dimen.single_tab_card_bottom_margin_tablet)
-                - mNewTabPageLayout.getResources().getDimensionPixelOffset(
-                        R.dimen.feed_header_tab_list_view_top_bottom_margin);
+        marginLayoutParams.topMargin = -mNewTabPageLayout.getResources().getDimensionPixelSize(
+            R.dimen.ntp_single_tab_card_top_margin);
+        marginLayoutParams.bottomMargin =
+            mNewTabPageLayout.getResources().getDimensionPixelSize(
+                R.dimen.ntp_single_tab_card_bottom_margin)
+                - mNewTabPageLayout.getResources().getDimensionPixelSize(
+                R.dimen.feed_header_tab_list_view_top_bottom_margin);
     }
 
     static boolean isScrollableMvtEnabled(Context context) {
