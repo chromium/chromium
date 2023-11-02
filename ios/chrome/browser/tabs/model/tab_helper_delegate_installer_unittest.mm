@@ -83,6 +83,7 @@ class FakeTabHelperWebStateListDelegate : public WebStateListDelegate {
   void WillAddWebState(web::WebState* web_state) override {
     FakeTabHelper::CreateForWebState(web_state);
   }
+  void WillActivateWebState(web::WebState* web_state) override {}
 };
 }  // namespace
 

@@ -789,11 +789,7 @@ void WebStateList::SetActiveIndex(int active_index) {
 void WebStateList::OnActiveWebStateChanged() {
   web::WebState* active_web_state = GetActiveWebState();
   if (active_web_state) {
-    // Do not trigger a CheckForOverRealization here, as it's expected
-    // that many WebStates may realize actions like side swipe or quickly
-    // multiple tabs.
-    web::IgnoreOverRealizationCheck();
-    active_web_state->ForceRealized();
+    delegate_->WillActivateWebState(active_web_state);
   }
 }
 

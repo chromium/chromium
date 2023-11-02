@@ -50,7 +50,8 @@ class FakeDependencyInstaller : public DependencyInstaller {
 class WebStateDependencyInstallationObserverTest : public PlatformTest {
  public:
   WebStateDependencyInstallationObserverTest()
-      : web_state_list_(&web_state_list_delegate_) {}
+      : web_state_list_delegate_(/* force_realization_on_activation */ true),
+        web_state_list_(&web_state_list_delegate_) {}
 
  protected:
   FakeWebStateListDelegate web_state_list_delegate_;
@@ -118,7 +119,7 @@ TEST_F(WebStateDependencyInstallationObserverTest, UnrealizedWebStates) {
                                  WebStateOpener());
   // The unrealized webstate should not have dependencies installed.
   EXPECT_FALSE(installer_.WasInstalled(web_state_2_raw));
-  // Once realized, dependencioes should be installed.
+  // Once realized, dependencies should be installed.
   web_state_2_raw->ForceRealized();
   EXPECT_TRUE(installer_.WasInstalled(web_state_2_raw));
 

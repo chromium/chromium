@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/url_loading/model/new_tab_animation_tab_helper.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -28,7 +29,9 @@ class TabInsertionBrowserAgentTest : public PlatformTest {
  public:
   TabInsertionBrowserAgentTest() {
     browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    browser_ = std::make_unique<TestBrowser>(
+        browser_state_.get(), std::make_unique<FakeWebStateListDelegate>(
+                                  /* force_realization_on_activation */ true));
     TabInsertionBrowserAgent::CreateForBrowser(browser_.get());
     agent_ = TabInsertionBrowserAgent::FromBrowser(browser_.get());
   }

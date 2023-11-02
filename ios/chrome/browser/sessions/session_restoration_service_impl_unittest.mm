@@ -617,9 +617,10 @@ TEST_F(SessionRestorationServiceImplTest, AdoptUnrealizedWebStateOnMove) {
   ASSERT_EQ(list0->count(), static_cast<int>(std::size(kURLs)));
   ASSERT_EQ(list1->count(), 0);
 
+  // Check that the WebState are not realized.
   for (int index = 0; index < list0->count(); ++index) {
     web::WebState* web_state = list0->GetWebStateAt(index);
-    EXPECT_EQ(web_state->IsRealized(), index == list0->active_index());
+    EXPECT_FALSE(web_state->IsRealized());
   }
 
   // Move all tabs from browser0 to browser1 and check that this results in

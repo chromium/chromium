@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/main/browser_web_state_list_delegate.h"
 
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
+#import "ios/web/public/web_state.h"
 
 BrowserWebStateListDelegate::BrowserWebStateListDelegate() = default;
 
@@ -15,4 +16,13 @@ void BrowserWebStateListDelegate::WillAddWebState(web::WebState* web_state) {
   // the method is idempotent and this ensure that any WebState in a
   // WebStateList has all the expected tab helpers.
   AttachTabHelpers(web_state, /*for_prerender=*/false);
+}
+
+void BrowserWebStateListDelegate::WillActivateWebState(
+    web::WebState* web_state) {
+  // Do not trigger a CheckForOverRealization here as some user actions
+  // (such as side swipe over multiple tab in the tab strip) can cause
+  // rapid change of the active WebState.
+  web::IgnoreOverRealizationCheck();
+  web_state->ForceRealized();
 }
